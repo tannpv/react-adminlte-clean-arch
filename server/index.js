@@ -56,6 +56,24 @@ function toPublicUser(u) {
   return pub
 }
 
+function validationError(res, fieldErrors) {
+  // Standardized error envelope while keeping backward compatibility
+  const simple = Object.fromEntries(
+    Object.entries(fieldErrors).map(([k, v]) => [k, typeof v === 'string' ? v : v.message])
+  )
+  return res.status(400).json({
+    message: 'Validation failed',
+    errors: simple, // legacy/simple shape
+    error: {
+      code: 'VALIDATION_ERROR',
+      message: 'Validation failed',
+      details: {
+        fieldErrors,
+      },
+    },
+  })
+}
+
 function signToken(userId) {
   return jwt.sign({ sub: userId }, JWT_SECRET, { expiresIn: '1h' })
 }
@@ -124,10 +142,27 @@ app.get('/api/users/:id', authRequired, (req, res) => {
 // Create user (protected)
 app.post('/api/users', authRequired, (req, res) => {
   const { name, email } = req.body || {}
-  if (!name || !email) return res.status(400).json({ message: 'name and email required' })
   const db = readDb()
+
+  const errors = {}
+  if (!name || String(name).trim().length < 2) {
+    errors.name = { code: 'NAME_MIN', message: 'Name is required (min 2 characters)' }
+  }
+  const emailStr = String(email || '')
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailStr) {
+    errors.email = { code: 'EMAIL_REQUIRED', message: 'Email is required' }
+  } else if (!emailRe.test(emailStr)) {
+    errors.email = { code: 'EMAIL_INVALID', message: 'Email is invalid' }
+  } else if (db.users.some(u => u.email.toLowerCase() === emailStr.toLowerCase())) {
+    errors.email = { code: 'EMAIL_EXISTS', message: 'Email is already in use' }
+  }
+  if (Object.keys(errors).length) {
+    return validationError(res, errors)
+  }
+
   const nextId = (db.users.reduce((m, u) => Math.max(m, u.id), 0) || 0) + 1
-  const user = { id: nextId, name, email, passwordHash: bcrypt.hashSync('secret', 10) }
+  const user = { id: nextId, name: String(name).trim(), email: emailStr, passwordHash: bcrypt.hashSync('secret', 10) }
   db.users.push(user)
   writeDb(db)
   res.status(201).json(toPublicUser(user))
@@ -140,8 +175,34 @@ app.put('/api/users/:id', authRequired, (req, res) => {
   const db = readDb()
   const idx = db.users.findIndex(u => u.id === id)
   if (idx === -1) return res.status(404).json({ message: 'Not found' })
+
+  const errors = {}
+  if (name !== undefined) {
+    if (!String(name).trim() || String(name).trim().length < 2) {
+      errors.name = { code: 'NAME_MIN', message: 'Name is required (min 2 characters)' }
+    }
+  }
+  if (email !== undefined) {
+    const emailStr = String(email || '')
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailStr) {
+      errors.email = { code: 'EMAIL_REQUIRED', message: 'Email is required' }
+    } else if (!emailRe.test(emailStr)) {
+      errors.email = { code: 'EMAIL_INVALID', message: 'Email is invalid' }
+    } else if (db.users.some(u => u.id !== id && u.email.toLowerCase() === emailStr.toLowerCase())) {
+      errors.email = { code: 'EMAIL_EXISTS', message: 'Email is already in use' }
+    }
+  }
+  if (Object.keys(errors).length) {
+    return validationError(res, errors)
+  }
+
   const existing = db.users[idx]
-  const updated = { ...existing, ...(name !== undefined ? { name } : {}), ...(email !== undefined ? { email } : {}) }
+  const updated = {
+    ...existing,
+    ...(name !== undefined ? { name: String(name).trim() } : {}),
+    ...(email !== undefined ? { email: String(email).trim() } : {}),
+  }
   db.users[idx] = updated
   writeDb(db)
   res.json(toPublicUser(updated))
