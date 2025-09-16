@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { UserList } from '../components/UserList'
 import { UserModal } from '../components/UserModal'
 import { ConfirmModal } from '../components/ConfirmModal'
+import toastr from 'toastr'
+import 'toastr/build/toastr.min.css'
 
 export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCase, deleteUserUseCase }) {
   const [users, setUsers] = useState([])
@@ -11,6 +13,17 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
   const [modalOpen, setModalOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [targetUser, setTargetUser] = useState(null)
+
+  // Configure toastr (once)
+  useEffect(() => {
+    toastr.options = {
+      positionClass: 'toast-top-right',
+      timeOut: 3000,
+      closeButton: true,
+      progressBar: true,
+      newestOnTop: true,
+    }
+  }, [])
 
   useEffect(() => {
     let mounted = true
@@ -28,6 +41,8 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
     return () => (mounted = false)
   }, [getUsersUseCase])
 
+  // no local success banner; we use toasts instead
+
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -41,11 +56,7 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
       </div>
 
       {loading && <div>Loading...</div>}
-      {!loading && error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
-      )}
+      {/* Errors and successes are reported via toasts */}
       {!loading && !error && (
         <UserList
           users={users}
@@ -69,14 +80,18 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
             if (editing?.id) {
               const updated = await updateUserUseCase.execute(editing.id, payload)
               setUsers(prev => prev.map(u => (u.id === updated.id ? updated : u)))
+              toastr.success('User updated successfully')
             } else {
               const created = await createUserUseCase.execute(payload)
               setUsers(prev => [...prev, created])
+              toastr.success('User created successfully')
             }
             setModalOpen(false)
             setEditing(null)
           } catch (e) {
-            setError(e?.message || 'Failed to save user')
+            const msg = e?.message || 'Failed to save user'
+            setError(msg)
+            toastr.error(msg)
           }
         }}
       />
@@ -95,8 +110,11 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
             await deleteUserUseCase.execute(id)
             setUsers(prev => prev.filter(u => u.id !== id))
             if (editing?.id === id) setEditing(null)
+            toastr.success('User deleted successfully')
           } catch (e) {
-            setError(e?.message || 'Failed to delete user')
+            const msg = e?.message || 'Failed to delete user'
+            setError(msg)
+            toastr.error(msg)
           } finally {
             setConfirmOpen(false)
             setTargetUser(null)
