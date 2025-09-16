@@ -3,18 +3,10 @@ import { UsersPage } from './presentation/pages/UsersPage'
 import { LoginPage } from './presentation/pages/LoginPage'
 import { RegisterPage } from './presentation/pages/RegisterPage'
 import { getUsersUseCase, createUserUseCase, updateUserUseCase, deleteUserUseCase, loginUseCase, registerUseCase } from './composition/container'
+import { useAuth } from './presentation/context/AuthContext'
 
 export default function App() {
-  const [currentUser, setCurrentUser] = useState(null)
-  useEffect(() => {
-    const u = localStorage.getItem('user')
-    if (u) setCurrentUser(JSON.parse(u))
-  }, [])
-  const logout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    setCurrentUser(null)
-  }
+  const { user: currentUser, setUser: setCurrentUser, logout } = useAuth()
   const [authScreen, setAuthScreen] = useState('login') // 'login' | 'register'
   return (
     <div className="wrapper">

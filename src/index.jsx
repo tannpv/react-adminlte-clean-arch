@@ -1,6 +1,9 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { queryClient } from './infra/query/client'
+import { AuthProvider } from './presentation/context/AuthContext'
 
 // Styles: Bootstrap first, then AdminLTE and Font Awesome
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -14,4 +17,10 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import 'admin-lte/dist/js/adminlte.min.js'
 
 const root = createRoot(document.getElementById('root'))
-root.render(<App />)
+root.render(
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </QueryClientProvider>
+)

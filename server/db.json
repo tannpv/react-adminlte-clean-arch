@@ -14,9 +14,9 @@
     },
     {
       "id": 3,
-      "name": "tan",
-      "email": "tannpv@gmail.com",
-      "passwordHash": "$2a$10$e0zDvkWm0acF/YCOvGG2Xeu/hxz6ul8ijlrzg81wrB5sJZmenDHqG"
+      "name": "test",
+      "email": "test@gmail.com",
+      "passwordHash": "$2a$10$u6rpykkjpbBG8NNrVjxtD.yV24uU07wSwq7s2Nb8RuGlHVhTIt43K"
     }
   ]
 }

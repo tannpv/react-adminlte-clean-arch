@@ -4,11 +4,14 @@ import { UserModal } from '../components/UserModal'
 import { ConfirmModal } from '../components/ConfirmModal'
 import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCase, deleteUserUseCase }) {
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const qc = useQueryClient()
+  const { data: users = [], isLoading: loading, isError, error } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => getUsersUseCase.execute(),
+  })
   const [editing, setEditing] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -25,21 +28,33 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
     }
   }, [])
 
-  useEffect(() => {
-    let mounted = true
-    ;(async () => {
-      try {
-        const res = await getUsersUseCase.execute()
-        if (mounted) setUsers(res)
-      } catch (err) {
-        console.error(err)
-        if (mounted) setError(err?.message || 'Failed to load users')
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    })()
-    return () => (mounted = false)
-  }, [getUsersUseCase])
+  // Mutations for CRUD
+  const createMutation = useMutation({
+    mutationFn: (payload) => createUserUseCase.execute(payload),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['users'] })
+      toastr.success('User created successfully')
+    },
+    onError: (e) => toastr.error(e?.message || 'Failed to create user'),
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, payload }) => updateUserUseCase.execute(id, payload),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['users'] })
+      toastr.success('User updated successfully')
+    },
+    onError: (e) => toastr.error(e?.message || 'Failed to update user'),
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => deleteUserUseCase.execute(id),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['users'] })
+      toastr.success('User deleted successfully')
+    },
+    onError: (e) => toastr.error(e?.message || 'Failed to delete user'),
+  })
 
   // no local success banner; we use toasts instead
 
@@ -56,8 +71,8 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
       </div>
 
       {loading && <div>Loading...</div>}
-      {/* Errors and successes are reported via toasts */}
-      {!loading && !error && (
+      {/* Errors and successes are reported via toasts; show initial load error inline */}
+      {!loading && !isError && (
         <UserList
           users={users}
           onEdit={(u) => { setEditing(u); setModalOpen(true) }}
@@ -68,6 +83,11 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
           }}
         />
       )}
+      {!loading && isError && (
+        <div className="alert alert-danger" role="alert">
+          {error?.message || 'Failed to load users'}
+        </div>
+      )}
 
       <UserModal
         show={modalOpen}
@@ -75,24 +95,13 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
         initialUser={editing}
         onClose={() => { setModalOpen(false); setEditing(null) }}
         onSubmit={async (payload) => {
-          try {
-            setError(null)
-            if (editing?.id) {
-              const updated = await updateUserUseCase.execute(editing.id, payload)
-              setUsers(prev => prev.map(u => (u.id === updated.id ? updated : u)))
-              toastr.success('User updated successfully')
-            } else {
-              const created = await createUserUseCase.execute(payload)
-              setUsers(prev => [...prev, created])
-              toastr.success('User created successfully')
-            }
-            setModalOpen(false)
-            setEditing(null)
-          } catch (e) {
-            const msg = e?.message || 'Failed to save user'
-            setError(msg)
-            toastr.error(msg)
+          if (editing?.id) {
+            await updateMutation.mutateAsync({ id: editing.id, payload })
+          } else {
+            await createMutation.mutateAsync(payload)
           }
+          setModalOpen(false)
+          setEditing(null)
         }}
       />
 
@@ -104,21 +113,11 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
         cancelText="Cancel"
         onCancel={() => { setConfirmOpen(false); setTargetUser(null) }}
         onConfirm={async () => {
-          try {
-            setError(null)
-            const id = targetUser?.id
-            await deleteUserUseCase.execute(id)
-            setUsers(prev => prev.filter(u => u.id !== id))
-            if (editing?.id === id) setEditing(null)
-            toastr.success('User deleted successfully')
-          } catch (e) {
-            const msg = e?.message || 'Failed to delete user'
-            setError(msg)
-            toastr.error(msg)
-          } finally {
-            setConfirmOpen(false)
-            setTargetUser(null)
-          }
+          const id = targetUser?.id
+          await deleteMutation.mutateAsync(id)
+          if (editing?.id === id) setEditing(null)
+          setConfirmOpen(false)
+          setTargetUser(null)
         }}
       />
     </>
