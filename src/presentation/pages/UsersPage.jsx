@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { UserList } from '../components/UserList'
 import { UserModal } from '../components/UserModal'
+import { ConfirmModal } from '../components/ConfirmModal'
 
 export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCase, deleteUserUseCase }) {
   const [users, setUsers] = useState([])
@@ -8,6 +9,8 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
   const [error, setError] = useState(null)
   const [editing, setEditing] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [targetUser, setTargetUser] = useState(null)
 
   useEffect(() => {
     let mounted = true
@@ -47,15 +50,10 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
         <UserList
           users={users}
           onEdit={(u) => { setEditing(u); setModalOpen(true) }}
-          onDelete={async (id) => {
-            try {
-              setError(null)
-              await deleteUserUseCase.execute(id)
-              setUsers(prev => prev.filter(u => u.id !== id))
-              if (editing?.id === id) setEditing(null)
-            } catch (e) {
-              setError(e?.message || 'Failed to delete user')
-            }
+          onDelete={(id) => {
+            const user = users.find(u => u.id === id)
+            setTargetUser(user || { id })
+            setConfirmOpen(true)
           }}
         />
       )}
@@ -79,6 +77,29 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
             setEditing(null)
           } catch (e) {
             setError(e?.message || 'Failed to save user')
+          }
+        }}
+      />
+
+      <ConfirmModal
+        show={confirmOpen}
+        title="Delete User"
+        message={`Are you sure you want to delete ${targetUser?.name || 'this user'}?`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onCancel={() => { setConfirmOpen(false); setTargetUser(null) }}
+        onConfirm={async () => {
+          try {
+            setError(null)
+            const id = targetUser?.id
+            await deleteUserUseCase.execute(id)
+            setUsers(prev => prev.filter(u => u.id !== id))
+            if (editing?.id === id) setEditing(null)
+          } catch (e) {
+            setError(e?.message || 'Failed to delete user')
+          } finally {
+            setConfirmOpen(false)
+            setTargetUser(null)
           }
         }}
       />

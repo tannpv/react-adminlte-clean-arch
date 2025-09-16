@@ -11,6 +11,12 @@
       "name": "Ervin Howell",
       "email": "Shanna@melissa.tv",
       "passwordHash": "$2a$10$qc4lYfStyGHXOdsADGsPFOKZG.ndSnc7/ZEIAFPeL8rvt90fr6vm."
+    },
+    {
+      "id": 3,
+      "name": "tan",
+      "email": "tannpv@gmail.com",
+      "passwordHash": "$2a$10$e0zDvkWm0acF/YCOvGG2Xeu/hxz6ul8ijlrzg81wrB5sJZmenDHqG"
     }
   ]
 }
