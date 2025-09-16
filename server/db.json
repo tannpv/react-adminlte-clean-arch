@@ -2,18 +2,21 @@
   "users": [
     {
       "id": 1,
-      "name": "Leanne Graham",
-      "email": "Sincere@april.biz"
+      "name": "Leanne Graham123",
+      "email": "Sincere@april.biz",
+      "passwordHash": "$2a$10$Dl7v9kkI6pm3F5JVZElwnOXfhvHCT1UoyypfDzXHGbYWRZMC8Rg3O"
     },
     {
       "id": 2,
       "name": "Ervin Howell",
-      "email": "Shanna@melissa.tv"
+      "email": "Shanna@melissa.tv",
+      "passwordHash": "$2a$10$qc4lYfStyGHXOdsADGsPFOKZG.ndSnc7/ZEIAFPeL8rvt90fr6vm."
     },
     {
       "id": 3,
       "name": "test",
-      "email": "tannpv@gmail.com"
+      "email": "tannpv@gmail.com",
+      "passwordHash": "$2a$10$8p1d7NGsE9ksdmdc3BVZQOH78VZZOX8yuvgfE3pHHIpNt6mNwGDLa"
     }
   ]
 }

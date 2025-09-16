@@ -10,3 +10,29 @@ if (import.meta?.env?.DEV) {
   // eslint-disable-next-line no-console
   console.log('[ApiClient] baseURL =', baseURL)
 }
+
+// Attach Authorization header if token exists
+ApiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers = config.headers || {}
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+// Handle 401 responses globally
+ApiClient.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err?.response?.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      // Force redirect to login for protected routes
+      if (typeof window !== 'undefined') {
+        window.location.reload()
+      }
+    }
+    return Promise.reject(err)
+  }
+)
