@@ -16,6 +16,8 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
   const [modalOpen, setModalOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [targetUser, setTargetUser] = useState(null)
+  const [formErrors, setFormErrors] = useState({})
+  const [submitting, setSubmitting] = useState(false)
 
   // Configure toastr (once)
   useEffect(() => {
@@ -35,7 +37,10 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
       await qc.invalidateQueries({ queryKey: ['users'] })
       toastr.success('User created successfully')
     },
-    onError: (e) => toastr.error(e?.message || 'Failed to create user'),
+    onError: (e) => {
+      const status = e?.response?.status
+      if (status !== 400) toastr.error(e?.message || 'Failed to create user')
+    },
   })
 
   const updateMutation = useMutation({
@@ -44,7 +49,10 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
       await qc.invalidateQueries({ queryKey: ['users'] })
       toastr.success('User updated successfully')
     },
-    onError: (e) => toastr.error(e?.message || 'Failed to update user'),
+    onError: (e) => {
+      const status = e?.response?.status
+      if (status !== 400) toastr.error(e?.message || 'Failed to update user')
+    },
   })
 
   const deleteMutation = useMutation({
@@ -64,7 +72,7 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
         <h3 className="mb-0">Users</h3>
         <button
           className="btn btn-primary"
-          onClick={() => { setEditing(null); setModalOpen(true) }}
+          onClick={() => { setEditing(null); setFormErrors({}); setModalOpen(true) }}
         >
           Add User
         </button>
@@ -75,7 +83,7 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
       {!loading && !isError && (
         <UserList
           users={users}
-          onEdit={(u) => { setEditing(u); setModalOpen(true) }}
+          onEdit={(u) => { setEditing(u); setFormErrors({}); setModalOpen(true) }}
           onDelete={(id) => {
             const user = users.find(u => u.id === id)
             setTargetUser(user || { id })
@@ -93,15 +101,33 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
         show={modalOpen}
         title={editing ? 'Edit User' : 'Add User'}
         initialUser={editing}
-        onClose={() => { setModalOpen(false); setEditing(null) }}
+        errors={formErrors}
+        submitting={submitting}
+        onClose={() => { setModalOpen(false); setEditing(null); setFormErrors({}) }}
         onSubmit={async (payload) => {
-          if (editing?.id) {
-            await updateMutation.mutateAsync({ id: editing.id, payload })
-          } else {
-            await createMutation.mutateAsync(payload)
+          setSubmitting(true)
+          setFormErrors({})
+          try {
+            if (editing?.id) {
+              await updateMutation.mutateAsync({ id: editing.id, payload })
+            } else {
+              await createMutation.mutateAsync(payload)
+            }
+            setModalOpen(false)
+            setEditing(null)
+          } catch (e) {
+            const status = e?.response?.status
+            const vErrors = e?.response?.data?.errors || e?.response?.data?.error?.details?.fieldErrors
+            if (status === 400 && vErrors && typeof vErrors === 'object') {
+              // Normalize values to strings
+              const norm = Object.fromEntries(
+                Object.entries(vErrors).map(([k, v]) => [k, typeof v === 'string' ? v : v?.message || 'Invalid'])
+              )
+              setFormErrors(norm)
+            }
+          } finally {
+            setSubmitting(false)
           }
-          setModalOpen(false)
-          setEditing(null)
         }}
       />
 
