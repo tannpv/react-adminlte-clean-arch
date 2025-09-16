@@ -1,0 +1,32 @@
+{
+  "name": "react-adminlte-clean-arch",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "admin-lte": "^3.2.0",
+    "bootstrap": "^4.6.2",
+    "axios": "^1.5.0",
+    "express": "^4.19.2"
+  },
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "server": "node server/index.js",
+    "dev:server": "nodemon --watch server --ext js,json --exec \"node server/index.js\"",
+    "dev:client": "vite",
+    "dev:all": "concurrently -k -n server,client -c green,blue \"npm:dev:server\" \"npm:dev:client\""
+  },
+  "devDependencies": {
+    "vite": "^4.5.0",
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.0"
+  },
+  "overrides": {
+    "summernote": "0.8.18"
+  }
+}
