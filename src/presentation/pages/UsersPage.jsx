@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { UserList } from '../components/UserList'
-import { UserForm } from '../components/UserForm'
+import { UserModal } from '../components/UserModal'
 
 export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCase, deleteUserUseCase }) {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [editing, setEditing] = useState(null)
+  const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     let mounted = true
@@ -26,26 +27,15 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
 
   return (
     <>
-      <h3>Users</h3>
-      <UserForm
-        initialUser={editing}
-        onCancel={() => setEditing(null)}
-        onSubmit={async (payload) => {
-          try {
-            setError(null)
-            if (editing?.id) {
-              const updated = await updateUserUseCase.execute(editing.id, payload)
-              setUsers(prev => prev.map(u => (u.id === updated.id ? updated : u)))
-              setEditing(null)
-            } else {
-              const created = await createUserUseCase.execute(payload)
-              setUsers(prev => [...prev, created])
-            }
-          } catch (e) {
-            setError(e?.message || 'Failed to save user')
-          }
-        }}
-      />
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h3 className="mb-0">Users</h3>
+        <button
+          className="btn btn-primary"
+          onClick={() => { setEditing(null); setModalOpen(true) }}
+        >
+          Add User
+        </button>
+      </div>
 
       {loading && <div>Loading...</div>}
       {!loading && error && (
@@ -56,7 +46,7 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
       {!loading && !error && (
         <UserList
           users={users}
-          onEdit={(u) => setEditing(u)}
+          onEdit={(u) => { setEditing(u); setModalOpen(true) }}
           onDelete={async (id) => {
             try {
               setError(null)
@@ -69,6 +59,29 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
           }}
         />
       )}
+
+      <UserModal
+        show={modalOpen}
+        title={editing ? 'Edit User' : 'Add User'}
+        initialUser={editing}
+        onClose={() => { setModalOpen(false); setEditing(null) }}
+        onSubmit={async (payload) => {
+          try {
+            setError(null)
+            if (editing?.id) {
+              const updated = await updateUserUseCase.execute(editing.id, payload)
+              setUsers(prev => prev.map(u => (u.id === updated.id ? updated : u)))
+            } else {
+              const created = await createUserUseCase.execute(payload)
+              setUsers(prev => [...prev, created])
+            }
+            setModalOpen(false)
+            setEditing(null)
+          } catch (e) {
+            setError(e?.message || 'Failed to save user')
+          }
+        }}
+      />
     </>
   )
 }
