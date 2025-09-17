@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 export function LoginPage({ loginUseCase, onLoggedIn, onSwitchToRegister }) {
-  const [email, setEmail] = useState('tannpv2@gmail.com')
+  const [email, setEmail] = useState('tannpv@gmail.com')
   const [password, setPassword] = useState('1234567890')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)

@@ -23,12 +23,15 @@ Backend
 Prerequisites
 - Node.js 18 or newer (tested with Node 24)
 - npm 8 or newer
+- MySQL 8+ available on port 7777 (defaults can be overridden via env vars)
 
 Quick Start
-1. Install dependencies
+1. Start MySQL (default expects localhost:7777 with user `root` / password `password` and database `adminlte`).
+   Example Docker command: docker run -p 7777:3306 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=adminlte mysql:8
+2. Install dependencies
    npm run install:all
    (or run npm --prefix admin install && npm --prefix backend install)
-2. Run frontend + API together
+3. Run frontend + API together
    npm run dev:all
 
    - Frontend: http://localhost:5174
@@ -60,9 +63,14 @@ Environment
 Frontend (admin/.env)
 - VITE_API_BASE_URL=/api (default). In dev, requests go to /api and Vite proxies them to NestJS.
 
-Backend (env vars)
+Backend (backend/.env or process env vars)
 - PORT: Defaults to 3001. The server retries the next port if busy.
 - JWT_SECRET: Secret key for signing JWTs (defaults to dev_secret_change_me; set a strong value in non-dev environments).
+- DB_HOST: Defaults to localhost.
+- DB_PORT: Defaults to 7777.
+- DB_USER: Defaults to root.
+- DB_PASSWORD: Defaults to password.
+- DB_NAME: Defaults to adminlte (created automatically if missing).
 
 API Endpoints (Base: /api)
 Auth
@@ -96,13 +104,12 @@ admin/
 backend/
   package.json      NestJS project metadata + scripts
   tsconfig*.json    TypeScript build configs
-  db.json           JSON persistence (auto-seeded; passwords hashed if missing)
   src/
     app.module.ts   Root module wiring feature modules
     main.ts         Bootstrap with global validation envelope
     domain/         Entities + repository contracts
     application/    DTOs + use-case services (auth, users, roles, authorization)
-    infrastructure/ Controllers, guards, persistence adapters, modules
+    infrastructure/ Controllers, guards, MySQL persistence adapters, modules
     shared/         Password hashing, JWT service, validation helpers, constants
 scripts/
   smoke.mjs         Simple end-to-end smoke test harness for the API
@@ -110,7 +117,8 @@ scripts/
 How It Works
 - Vite proxies /api/* requests to the NestJS backend while keeping relative URLs in the client.
 - NestJS keeps a lightweight clean architecture boundary: controllers call application services which
-  depend on repository interfaces; the file persistence adapter satisfies those interfaces via db.json.
+  depend on repository interfaces; the MySQL persistence adapter fulfils those contracts via SQL queries and a shared database service.
+- On startup the backend auto-migrates the schema (roles, users, role permissions, and user-role join table) and seeds default records when empty.
 - Retro-compatible validation envelopes mirror the previous Express responses so the existing React UI
   consumes errors without change.
 - JWTs are issued for one hour; client-side interceptors attach Authorization headers and clear
@@ -121,6 +129,7 @@ Troubleshooting
 - Proxy ECONNREFUSED: ensure npm run dev:server (or dev:all) is running.
 - Invalid token after JWT_SECRET change: clear localStorage or re-login.
 - Port already in use: the backend auto-increments until it finds an open port (logs show active port).
+- Database connection refused: confirm MySQL is reachable at the configured host/port (default localhost:7777) and credentials match DB_USER / DB_PASSWORD.
 
 Production Notes
 - Build frontend: npm run build:client (outputs admin/dist/).
