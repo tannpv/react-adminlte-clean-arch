@@ -5,11 +5,22 @@ import { RegisterPage } from './presentation/pages/RegisterPage'
 import { getUsersUseCase, createUserUseCase, updateUserUseCase, deleteUserUseCase, loginUseCase, registerUseCase, getRolesUseCase, createRoleUseCase, updateRoleUseCase, deleteRoleUseCase } from './composition/container'
 import { RolesPage } from './presentation/pages/RolesPage'
 import { useAuth } from './presentation/context/AuthContext'
+import { usePermissions } from './presentation/hooks/usePermissions'
+import { useQueryClient } from '@tanstack/react-query'
+import { ApiClient } from './infra/http/ApiClient'
 
 export default function App() {
   const { user: currentUser, setUser: setCurrentUser, logout } = useAuth()
+  const { me } = usePermissions()
   const [authScreen, setAuthScreen] = useState('login') // 'login' | 'register'
   const [menu, setMenu] = useState('users') // 'users' | 'roles'
+  const qc = useQueryClient()
+
+  useEffect(() => {
+    if (!currentUser) return
+    qc.prefetchQuery({ queryKey: ['me'], queryFn: async () => (await ApiClient.get('/me')).data, staleTime: 10_000 })
+    qc.prefetchQuery({ queryKey: ['roles'], queryFn: () => getRolesUseCase.execute(), staleTime: 5 * 60_000 })
+  }, [currentUser, qc])
   return (
     <div className="wrapper">
       <nav className="main-header navbar navbar-expand navbar-white navbar-light">
@@ -21,7 +32,16 @@ export default function App() {
         <ul className="navbar-nav ml-auto">
           {currentUser ? (
             <li className="nav-item d-flex align-items-center pr-2">
-              <span className="mr-3">{currentUser.name}</span>
+              <span className="mr-3 d-flex align-items-center">
+                {currentUser.name}
+                {me?.roles?.length ? (
+                  <span className="ml-2">
+                    {me.roles.map(r => (
+                      <span key={r.id} className="badge badge-info ml-1">{r.name}</span>
+                    ))}
+                  </span>
+                ) : null}
+              </span>
               <button className="btn btn-sm btn-outline-secondary" onClick={logout}>Logout</button>
             </li>
           ) : null}
@@ -62,6 +82,7 @@ export default function App() {
                   createUserUseCase={createUserUseCase}
                   updateUserUseCase={updateUserUseCase}
                   deleteUserUseCase={deleteUserUseCase}
+                  getRolesUseCase={getRolesUseCase}
                 />
               ) : (
                 <RolesPage

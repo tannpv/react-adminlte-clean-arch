@@ -28,7 +28,8 @@
   "devDependencies": {
     "vite": "^4.5.0",
     "concurrently": "^8.2.2",
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "@tanstack/react-query-devtools": "^5.52.0"
   },
   "overrides": {
     "summernote": "0.8.18"

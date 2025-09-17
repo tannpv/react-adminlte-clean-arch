@@ -28,9 +28,9 @@ ApiClient.interceptors.response.use(
     if (err?.response?.status === 401) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
-      // Force redirect to login for protected routes
+      // Notify app to transition to login without full reload
       if (typeof window !== 'undefined') {
-        window.location.reload()
+        window.dispatchEvent(new CustomEvent('auth:unauthorized'))
       }
     }
     return Promise.reject(err)

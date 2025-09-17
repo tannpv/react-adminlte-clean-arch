@@ -6,12 +6,12 @@ export class UserApiDataSource {
     const res = await this.apiClient.get('/users')
     return res.data
   }
-  async createUser({ name, email }) {
-    const res = await this.apiClient.post('/users', { name, email })
+  async createUser({ name, email, roles }) {
+    const res = await this.apiClient.post('/users', { name, email, roles })
     return res.data
   }
-  async updateUser(id, { name, email }) {
-    const res = await this.apiClient.put(`/users/${id}`, { name, email })
+  async updateUser(id, { name, email, roles }) {
+    const res = await this.apiClient.put(`/users/${id}`, { name, email, roles })
     return res.data
   }
   async deleteUser(id) {

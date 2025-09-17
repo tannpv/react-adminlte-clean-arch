@@ -5,19 +5,34 @@ import { ConfirmModal } from '../components/ConfirmModal'
 import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { usePermissions } from '../hooks/usePermissions'
 
-export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCase, deleteUserUseCase }) {
+export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCase, deleteUserUseCase, getRolesUseCase }) {
   const qc = useQueryClient()
-  const { data: users = [], isLoading: loading, isError, error } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => getUsersUseCase.execute(),
-  })
   const [editing, setEditing] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [targetUser, setTargetUser] = useState(null)
   const [formErrors, setFormErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
+  const { data: users = [], isLoading: loading, isError, error } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => getUsersUseCase.execute(),
+  })
+  const { can } = usePermissions()
+  // Prefer cached roles if present; only fetch when needed
+  const cachedRoles = qc.getQueryData(['roles'])
+  const { data: roles = [], isLoading: rolesLoading } = useQuery({
+    queryKey: ['roles'],
+    queryFn: () => getRolesUseCase.execute(),
+    // Enable fetching if the modal is open (needs options), or user can change users, or we already have cache
+    enabled: modalOpen || !!cachedRoles || can('users:create') || can('users:update'),
+    // Seed from cache to avoid empty select while query resolves
+    initialData: cachedRoles,
+    // Roles change rarely; keep fresh for longer to avoid refetches
+    staleTime: 5 * 60 * 1000,
+    refetchOnMount: false,
+  })
 
   // Configure toastr (once)
   useEffect(() => {
@@ -70,12 +85,24 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3 className="mb-0">Users</h3>
-        <button
-          className="btn btn-primary"
-          onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
-        >
-          Add User
-        </button>
+        <div>
+          <button
+            className="btn btn-outline-secondary mr-2"
+            onClick={() => qc.invalidateQueries({ queryKey: ['roles'] })}
+            disabled={rolesLoading}
+            title="Refresh role options"
+          >
+            Refresh Roles
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
+            disabled={!can('users:create')}
+            title={!can('users:create') ? 'Not allowed' : undefined}
+          >
+            Add User
+          </button>
+        </div>
       </div>
 
       {loading && <div>Loading...</div>}
@@ -83,8 +110,10 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
       {!loading && !isError && (
         <UserList
           users={users}
-          onEdit={(u) => { setEditing(u); setFormErrors({}); setModalOpen(true) }}
+          rolesById={Object.fromEntries((roles || []).map(r => [r.id, r]))}
+          onEdit={(u) => { if (!can('users:update')) return; setEditing(u); setFormErrors({}); setModalOpen(true) }}
           onDelete={(id) => {
+            if (!can('users:delete')) return
             const user = users.find(u => u.id === id)
             setTargetUser(user || { id })
             setConfirmOpen(true)
@@ -96,13 +125,13 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
           {error?.message || 'Failed to load users'}
         </div>
       )}
-
       <UserModal
         show={modalOpen}
         title={editing ? 'Edit User' : 'Add User'}
         initialUser={editing}
         errors={formErrors}
         submitting={submitting}
+        roles={roles}
         onClose={() => { setModalOpen(false); setEditing(null); setFormErrors({}) }}
         onSubmit={async (payload) => {
           setSubmitting(true)

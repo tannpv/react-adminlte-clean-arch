@@ -54,11 +54,31 @@ app.use((req, _res, next) => {
     }
     return u
   })
-  // Ensure roles collection exists
-  if (!db.roles) {
-    db.roles = [ { id: 1, name: 'Admin' }, { id: 2, name: 'User' } ]
+  // Ensure roles collection exists with permissions
+  if (!Array.isArray(db.roles) || db.roles.length === 0) {
+    db.roles = [
+      { id: 1, name: 'Admin', permissions: ['users:read','users:create','users:update','users:delete','roles:read','roles:create','roles:update','roles:delete'] },
+      { id: 2, name: 'User', permissions: ['users:read'] }
+    ]
+    changed = true
+  } else if (!db.roles.some(r => r.permissions)) {
+    // Backfill default permissions if missing
+    db.roles = db.roles.map(r => r.name === 'Admin'
+      ? { ...r, permissions: ['users:read','users:create','users:update','users:delete','roles:read','roles:create','roles:update','roles:delete'] }
+      : { ...r, permissions: r.permissions || (r.name === 'User' ? ['users:read'] : ['users:read']) }
+    )
     changed = true
   }
+  // Ensure each user has roles array
+  db.users = db.users.map(u => {
+    if (!Array.isArray(u.roles)) {
+      changed = true
+      // make first user Admin by default
+      const defaultRoles = u.id === 1 ? [1] : []
+      return { ...u, roles: defaultRoles }
+    }
+    return u
+  })
   if (changed) writeDb(db)
   next()
 })
@@ -103,6 +123,33 @@ function authRequired(req, res, next) {
   }
 }
 
+function hasPermission(userId, perm) {
+  const db = readDb()
+  const user = db.users.find(u => u.id === Number(userId))
+  if (!user) return false
+  const userRoles = (user.roles || []).map(Number)
+  const perms = new Set()
+  db.roles.filter(r => userRoles.includes(r.id)).forEach(r => (r.permissions || []).forEach(p => perms.add(p)))
+  return perms.has(perm)
+}
+
+function requirePerm(perm) {
+  return (req, res, next) => {
+    if (!req.userId) return res.status(401).json({ message: 'Unauthorized' })
+    if (!hasPermission(req.userId, perm)) return res.status(403).json({ message: 'Forbidden' })
+    return next()
+  }
+}
+
+function requireAnyPerm(perms) {
+  return (req, res, next) => {
+    if (!req.userId) return res.status(401).json({ message: 'Unauthorized' })
+    const ok = perms.some(p => hasPermission(req.userId, p))
+    if (!ok) return res.status(403).json({ message: 'Forbidden' })
+    return next()
+  }
+}
+
 // Simple health check
 app.get('/api/health', (_req, res) => res.json({ ok: true }))
 
@@ -116,7 +163,9 @@ app.post('/api/auth/register', (req, res) => {
   }
   const nextId = (db.users.reduce((m, u) => Math.max(m, u.id), 0) || 0) + 1
   const passwordHash = bcrypt.hashSync(password, 10)
-  const user = { id: nextId, name, email, passwordHash }
+  // Assign default 'User' role if present
+  const defaultUserRoleId = (db.roles || []).find(r => r.name.toLowerCase() === 'user')?.id || 2
+  const user = { id: nextId, name, email, roles: [defaultUserRoleId], passwordHash }
   db.users.push(user)
   writeDb(db)
   const token = signToken(user.id)
@@ -137,12 +186,13 @@ app.post('/api/auth/login', (req, res) => {
 })
 
 // ===== Roles CRUD (protected) =====
-app.get('/api/roles', authRequired, (_req, res) => {
+// Allow listing roles if the user can manage users or roles
+app.get('/api/roles', authRequired, requireAnyPerm(['roles:read','users:create','users:update']), (_req, res) => {
   const db = readDb()
   res.json(db.roles)
 })
 
-app.post('/api/roles', authRequired, (req, res) => {
+app.post('/api/roles', authRequired, requirePerm('roles:create'), (req, res) => {
   const { name } = req.body || {}
   const db = readDb()
   const errors = {}
@@ -159,7 +209,7 @@ app.post('/api/roles', authRequired, (req, res) => {
   res.status(201).json(role)
 })
 
-app.put('/api/roles/:id', authRequired, (req, res) => {
+app.put('/api/roles/:id', authRequired, requirePerm('roles:update'), (req, res) => {
   const id = Number(req.params.id)
   const { name } = req.body || {}
   const db = readDb()
@@ -182,7 +232,7 @@ app.put('/api/roles/:id', authRequired, (req, res) => {
   res.json(updated)
 })
 
-app.delete('/api/roles/:id', authRequired, (req, res) => {
+app.delete('/api/roles/:id', authRequired, requirePerm('roles:delete'), (req, res) => {
   const id = Number(req.params.id)
   const db = readDb()
   const idx = db.roles.findIndex(r => r.id === id)
@@ -193,13 +243,13 @@ app.delete('/api/roles/:id', authRequired, (req, res) => {
 })
 
 // List users (protected)
-app.get('/api/users', authRequired, (_req, res) => {
+app.get('/api/users', authRequired, requirePerm('users:read'), (_req, res) => {
   const db = readDb()
   res.json(db.users.map(toPublicUser))
 })
 
 // Get user by id (protected)
-app.get('/api/users/:id', authRequired, (req, res) => {
+app.get('/api/users/:id', authRequired, requirePerm('users:read'), (req, res) => {
   const id = Number(req.params.id)
   const db = readDb()
   const user = db.users.find(u => u.id === id)
@@ -208,8 +258,8 @@ app.get('/api/users/:id', authRequired, (req, res) => {
 })
 
 // Create user (protected)
-app.post('/api/users', authRequired, (req, res) => {
-  const { name, email } = req.body || {}
+app.post('/api/users', authRequired, requirePerm('users:create'), (req, res) => {
+  const { name, email, roles } = req.body || {}
   const db = readDb()
 
   const errors = {}
@@ -225,21 +275,30 @@ app.post('/api/users', authRequired, (req, res) => {
   } else if (db.users.some(u => u.email.toLowerCase() === emailStr.toLowerCase())) {
     errors.email = { code: 'EMAIL_EXISTS', message: 'Email is already in use' }
   }
+  // roles validation (optional field, must be array of valid ids if provided)
+  const roleIds = Array.isArray(roles) ? roles.map(Number).filter(n => !Number.isNaN(n)) : []
+  if (roles !== undefined) {
+    const allIds = new Set(db.roles.map(r => r.id))
+    const invalid = roleIds.filter(id => !allIds.has(id))
+    if (invalid.length) {
+      errors.roles = { code: 'ROLES_INVALID', message: 'Invalid roles selected' }
+    }
+  }
   if (Object.keys(errors).length) {
     return validationError(res, errors)
   }
 
   const nextId = (db.users.reduce((m, u) => Math.max(m, u.id), 0) || 0) + 1
-  const user = { id: nextId, name: String(name).trim(), email: emailStr, passwordHash: bcrypt.hashSync('secret', 10) }
+  const user = { id: nextId, name: String(name).trim(), email: emailStr, roles: roleIds, passwordHash: bcrypt.hashSync('secret', 10) }
   db.users.push(user)
   writeDb(db)
   res.status(201).json(toPublicUser(user))
 })
 
 // Update user (protected)
-app.put('/api/users/:id', authRequired, (req, res) => {
+app.put('/api/users/:id', authRequired, requirePerm('users:update'), (req, res) => {
   const id = Number(req.params.id)
-  const { name, email } = req.body || {}
+  const { name, email, roles } = req.body || {}
   const db = readDb()
   const idx = db.users.findIndex(u => u.id === id)
   if (idx === -1) return res.status(404).json({ message: 'Not found' })
@@ -261,6 +320,16 @@ app.put('/api/users/:id', authRequired, (req, res) => {
       errors.email = { code: 'EMAIL_EXISTS', message: 'Email is already in use' }
     }
   }
+  if (roles !== undefined) {
+    if (!Array.isArray(roles)) {
+      errors.roles = { code: 'ROLES_INVALID', message: 'Invalid roles selected' }
+    } else {
+      const roleIds = roles.map(Number).filter(n => !Number.isNaN(n))
+      const allIds = new Set(db.roles.map(r => r.id))
+      const invalid = roleIds.filter(rid => !allIds.has(rid))
+      if (invalid.length) errors.roles = { code: 'ROLES_INVALID', message: 'Invalid roles selected' }
+    }
+  }
   if (Object.keys(errors).length) {
     return validationError(res, errors)
   }
@@ -270,6 +339,7 @@ app.put('/api/users/:id', authRequired, (req, res) => {
     ...existing,
     ...(name !== undefined ? { name: String(name).trim() } : {}),
     ...(email !== undefined ? { email: String(email).trim() } : {}),
+    ...(roles !== undefined ? { roles: Array.isArray(roles) ? roles.map(Number).filter(n => !Number.isNaN(n)) : existing.roles } : {}),
   }
   db.users[idx] = updated
   writeDb(db)
@@ -277,7 +347,7 @@ app.put('/api/users/:id', authRequired, (req, res) => {
 })
 
 // Delete user (protected)
-app.delete('/api/users/:id', authRequired, (req, res) => {
+app.delete('/api/users/:id', authRequired, requirePerm('users:delete'), (req, res) => {
   const id = Number(req.params.id)
   const db = readDb()
   const idx = db.users.findIndex(u => u.id === id)
@@ -304,3 +374,12 @@ function startServer(port = DEFAULT_PORT, maxAttempts = 10) {
 }
 
 startServer()
+// Current user info
+app.get('/api/me', authRequired, (req, res) => {
+  const db = readDb()
+  const user = db.users.find(u => u.id === Number(req.userId))
+  if (!user) return res.status(404).json({ message: 'Not found' })
+  const roleObjs = db.roles.filter(r => (user.roles || []).includes(r.id))
+  const permissions = [...new Set(roleObjs.flatMap(r => r.permissions || []))]
+  res.json({ user: toPublicUser(user), roles: roleObjs.map(r => ({ id: r.id, name: r.name })), permissions })
+})

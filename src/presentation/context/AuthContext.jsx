@@ -10,6 +10,9 @@ export function AuthProvider({ children }) {
     if (raw) {
       try { setUser(JSON.parse(raw)) } catch {}
     }
+    const onUnauthorized = () => setUser(null)
+    window.addEventListener('auth:unauthorized', onUnauthorized)
+    return () => window.removeEventListener('auth:unauthorized', onUnauthorized)
   }, [])
 
   const logout = () => {
@@ -27,4 +30,3 @@ export function useAuth() {
   if (!ctx) throw new Error('useAuth must be used within AuthProvider')
   return ctx
 }
-

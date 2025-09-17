@@ -33,7 +33,7 @@ async function run() {
     const loginRes = await fetch('http://localhost:3001/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'Sincere@april.biz', password: 'secret' })
+      body: JSON.stringify({ email: 'tannpv2@gmail.com', password: '1234567890' })
     })
     if (!loginRes.ok) throw new Error(`Login failed: ${loginRes.status}`)
     const { token } = await loginRes.json()

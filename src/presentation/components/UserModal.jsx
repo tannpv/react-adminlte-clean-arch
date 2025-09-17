@@ -1,7 +1,7 @@
 import React from 'react'
 import { UserForm } from './UserForm'
 
-export function UserModal({ show, title, initialUser, onClose, onSubmit, errors, submitting }) {
+export function UserModal({ show, title, initialUser, onClose, onSubmit, errors, submitting, roles ,rolesLoading }) {
   const formId = 'user-modal-form'
   const isEditing = !!initialUser?.id
   return (
@@ -28,7 +28,9 @@ export function UserModal({ show, title, initialUser, onClose, onSubmit, errors,
                 onSubmit={onSubmit}
                 errors={errors}
                 submitting={submitting}
+                roleOptions={roles}
                 formId={formId}
+                rolesLoading={rolesLoading}
               />
             </div>
             <div className="modal-footer">

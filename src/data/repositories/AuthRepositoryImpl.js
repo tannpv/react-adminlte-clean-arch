@@ -8,11 +8,10 @@ export class AuthRepositoryImpl extends AuthRepository {
   }
   async login({ email, password }) {
     const { token, user } = await this.authApiDataSource.login({ email, password })
-    return { token, user: new User({ id: user.id, name: user.name, email: user.email }) }
+    return { token, user: new User({ id: user.id, name: user.name, email: user.email, roles: user.roles || [] }) }
   }
   async register({ name, email, password }) {
     const { token, user } = await this.authApiDataSource.register({ name, email, password })
-    return { token, user: new User({ id: user.id, name: user.name, email: user.email }) }
+    return { token, user: new User({ id: user.id, name: user.name, email: user.email, roles: user.roles || [] }) }
   }
 }
-

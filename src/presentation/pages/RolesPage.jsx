@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { RoleList } from '../components/RoleList'
 import { RoleModal } from '../components/RoleModal'
 import { ConfirmModal } from '../components/ConfirmModal'
+import { usePermissions } from '../hooks/usePermissions'
 
 export function RolesPage({ getRolesUseCase, createRoleUseCase, updateRoleUseCase, deleteRoleUseCase }) {
   const qc = useQueryClient()
@@ -13,6 +14,7 @@ export function RolesPage({ getRolesUseCase, createRoleUseCase, updateRoleUseCas
   const [targetRole, setTargetRole] = useState(null)
   const [formErrors, setFormErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
+  const { can } = usePermissions()
 
   const createMutation = useMutation({
     mutationFn: (payload) => createRoleUseCase.execute(payload),
@@ -31,15 +33,15 @@ export function RolesPage({ getRolesUseCase, createRoleUseCase, updateRoleUseCas
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3 className="mb-0">Roles</h3>
-        <button className="btn btn-primary" onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}>Add Role</button>
+        <button className="btn btn-primary" onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }} disabled={!can('roles:create')} title={!can('roles:create') ? 'Not allowed' : undefined}>Add Role</button>
       </div>
 
       {loading && <div>Loading...</div>}
       {!loading && !isError && (
         <RoleList
           roles={roles}
-          onEdit={(r) => { setEditing(r); setFormErrors({}); setModalOpen(true) }}
-          onDelete={(id) => { const r = roles.find(x => x.id === id); setTargetRole(r || { id }); setConfirmOpen(true) }}
+          onEdit={(r) => { if (!can('roles:update')) return; setEditing(r); setFormErrors({}); setModalOpen(true) }}
+          onDelete={(id) => { if (!can('roles:delete')) return; const r = roles.find(x => x.id === id); setTargetRole(r || { id }); setConfirmOpen(true) }}
         />
       )}
       {!loading && isError && (
@@ -95,4 +97,3 @@ export function RolesPage({ getRolesUseCase, createRoleUseCase, updateRoleUseCas
     </>
   )
 }
-
