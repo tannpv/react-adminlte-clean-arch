@@ -4,8 +4,10 @@
       "id": 2,
       "name": "tan nguyen",
       "email": "tannpv@gmail.com",
-      "passwordHash": "$2a$10$NmgOd1UCuViAtt3BvJBG9.fp6.sChT9cnv0fUm0OeJgA0VICBdY4W",
-      "roles": []
+      "roles": [
+        3
+      ],
+      "passwordHash": "$2a$10$NmgOd1UCuViAtt3BvJBG9.fp6.sChT9cnv0fUm0OeJgA0VICBdY4W"
     },
     {
       "id": 3,
@@ -54,6 +56,11 @@
       "permissions": [
         "users:read"
       ]
+    },
+    {
+      "id": 3,
+      "name": "test",
+      "permissions": []
     }
   ]
 }

@@ -20,8 +20,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "server": "node server/index.js",
-    "dev:server": "nodemon --watch server --ext js,json --exec \"node server/index.js\"",
+    "server": "npm --prefix server run start",
+    "dev:server": "npm --prefix server run start:dev",
+    "build:server": "npm --prefix server run build",
     "dev:client": "vite",
     "dev:all": "concurrently -k -n server,client -c green,blue \"npm:dev:server\" \"npm:dev:client\""
   },

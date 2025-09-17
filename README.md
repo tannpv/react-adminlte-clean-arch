@@ -1,29 +1,35 @@
 React AdminLTE Clean Architecture Starter
-================================================
+=========================================
 
 Overview
-This project is a minimal, production‑ready starter that combines:
-- React 18 + Vite for the frontend
-- AdminLTE 3 (Bootstrap 4 + Font Awesome) for UI
-- Clean Architecture layering (domain, data, infra, presentation, composition)
-- A local Node/Express API with JSON storage, JWT authentication, and full Users CRUD
+- React 18 + Vite frontend styled with AdminLTE 3 (Bootstrap 4 + Font Awesome)
+- Clean architecture layering across presentation, application, domain, and infrastructure
+- NestJS 10 backend with JWT authentication and file-based persistence (db.json)
+- Seamless local dev workflow with Vite proxying API requests to NestJS
 
 Architecture
-- Presentation: React pages/components (AdminLTE layout, Users, Login, Register)
-- Domain: Entities and Use Cases (Get/Create/Update/Delete User, Login, Register)
-- Data: Repositories and HTTP Data Sources (Axios)
-- Infra: Axios client with auth interceptors
-- Server: Express API, JSON persistence, JWT auth, Vite proxy for local dev
+Frontend
+- Presentation: React pages/components (layouts, login/register, users, roles)
+- Infra: Axios HTTP client with auth interceptors and React Query hooks
+- Data/Application: Query hooks and state helpers coordinating UI and API calls
+- Domain: UI-facing models and validation helpers (simple because persistence lives server-side)
+
+Backend
+- Domain: Entities (User, Role) and repository contracts
+- Application: Use-case services for authentication, users, roles, and authorization rules
+- Infrastructure: File persistence adapters, HTTP controllers/guards, Nest modules
+- Shared: Cross-cutting services (password hashing, JWT handling, validation envelope)
 
 Prerequisites
 - Node.js 18 or newer (tested with Node 24)
 - npm 8 or newer
 
 Quick Start
-1) Install dependencies
+1. Install frontend dependencies
    npm install
-
-2) Run frontend + API together (recommended)
+2. Install backend dependencies (one-time)
+   npm --prefix server install
+3. Run frontend + API together
    npm run dev:all
 
    - Frontend: http://localhost:5174
@@ -31,67 +37,90 @@ Quick Start
    - API (direct): http://localhost:3001
 
 Default Login
-- Email: Sincere@april.biz
+- Email: leanne@example.com
 - Password: secret
 
-Alternatively, open the Register page to create a new account. After registration, you are logged in automatically.
+You can also register a new account; registration returns a JWT and logs you in automatically.
 
-Available Scripts
-- dev:all: Runs API (nodemon) and Vite concurrently for local development.
-- dev:server: Runs the Express API with file‑watch reloads (http://localhost:3001).
-- dev:client (dev): Runs the Vite dev server (http://localhost:5174).
+Available Scripts (root)
+- dev:all: Runs NestJS (ts-node-dev) and Vite concurrently for local development.
+- dev:server: Starts the NestJS backend in watch mode (http://localhost:3001 by default).
+- dev:client: Runs the Vite dev server only.
+- server: Runs the compiled NestJS backend (requires npm run build:server first).
 - build: Builds the frontend for production.
-- preview: Serves the production build for local preview.
-- server: Starts the API once (no file‑watch reloads).
+- preview: Serves the production frontend bundle locally.
+- build:server: Compiles the NestJS backend to server/dist.
 
-Environment Configuration
+Backend Scripts (server/)
+- npm run start:dev: ts-node-dev watcher for rapid backend iteration.
+- npm run build: TypeScript compilation to dist/.
+- npm run start: Runs the compiled backend (dist/main.js).
+
+Environment
 Frontend (.env)
-- VITE_API_BASE_URL=/api (default). In dev, requests go to /api and are proxied to the API.
+- VITE_API_BASE_URL=/api (default). In dev, requests go to /api and Vite proxies them to NestJS.
 
-Server (env vars)
-- PORT: Defaults to 3001. The server will retry on the next port if in use.
-- JWT_SECRET: Secret key for signing JWTs (set a strong value in non‑dev environments).
+Backend (env vars)
+- PORT: Defaults to 3001. The server retries the next port if busy.
+- JWT_SECRET: Secret key for signing JWTs (defaults to dev_secret_change_me; set a strong value in non-dev environments).
 
 API Endpoints (Base: /api)
 Auth
 - POST /auth/login — Body: { email, password } → 200 { token, user }
 - POST /auth/register — Body: { name, email, password } → 201 { token, user }
 
-Users (Requires Authorization: Bearer <token>)
-- GET /users → [ { id, name, email } ]
-- GET /users/:id → { id, name, email }
-- POST /users — Body: { name, email } → 201 { id, name, email }
-- PUT /users/:id — Body: { name?, email? } → { id, name, email }
-- DELETE /users/:id → { id, name, email }
+Users (Bearer token required)
+- GET /users → [ { id, name, email, roles } ]
+- GET /users/:id → { id, name, email, roles }
+- POST /users — Body: { name, email, roles? } → 201 { id, name, email, roles }
+- PUT /users/:id — Body: { name?, email?, roles? } → { id, name, email, roles }
+- DELETE /users/:id → { id, name, email, roles }
+
+Roles (Bearer token + permissions)
+- GET /roles → [ { id, name, permissions } ]
+- POST /roles — Body: { name, permissions? }
+- PUT /roles/:id — Body: { name?, permissions? }
+- DELETE /roles/:id
+
+Profile
+- GET /me → { user, roles: [ { id, name } ], permissions: [ ... ] }
 
 Project Structure
 server/
-  index.js          Express API + JWT auth
-  db.json           JSON persistence (auto‑seeded; passwords hashed on first run)
+  package.json      NestJS project metadata + scripts
+  tsconfig*.json    TypeScript build configs
+  db.json           JSON persistence (auto-seeded; passwords hashed if missing)
+  src/
+    app.module.ts   Root module wiring feature modules
+    main.ts         Bootstrap with global validation envelope
+    domain/         Entities + repository contracts
+    application/    DTOs + use-case services (auth, users, roles, authorization)
+    infrastructure/ Controllers, guards, persistence adapters, modules
+    shared/         Password hashing, JWT service, validation helpers, constants
 src/
-  composition/      Dependency wiring (Use Cases, Repositories)
-  data/             Repositories + HTTP data sources
-  domain/           Entities + Use Cases
-  infra/http/       Axios ApiClient with auth interceptors
-  presentation/     Pages (Login, Register, Users) and UI components
-vite.config.js      Vite proxy: /api → http://localhost:3001
-.env                Default: VITE_API_BASE_URL=/api
-index.html          Vite entry
-package.json        Scripts and dependencies
+  presentation/     React UI components/pages
+  infra/http/       Axios ApiClient + React Query hooks
+  ...               Additional frontend clean architecture layers
+vite.config.js      Proxies /api → http://localhost:3001 during dev
 
 How It Works
-- The frontend uses Axios with a base URL of /api in development.
-- Vite proxies /api/* requests to the local Express server (http://localhost:3001).
-- On login or registration, the client stores the JWT and user in localStorage and attaches Authorization headers for subsequent requests.
-- Receiving a 401 response clears stored credentials and returns the app to the login screen.
+- Vite proxies /api/* requests to the NestJS backend while keeping relative URLs in the client.
+- NestJS keeps a lightweight clean architecture boundary: controllers call application services which
+  depend on repository interfaces; the file persistence adapter satisfies those interfaces via db.json.
+- Retro-compatible validation envelopes mirror the previous Express responses so the existing React UI
+  consumes errors without change.
+- JWTs are issued for one hour; client-side interceptors attach Authorization headers and clear
+  credentials when a 401 response is detected.
 
 Troubleshooting
-- Proxy error (ECONNREFUSED) from /api/*: Start the API (npm run dev:server) or use npm run dev:all.
-- After changing .env or vite.config.js: Restart the Vite dev server so the proxy picks up changes.
-- Can’t login: Use the default credentials above, or register a new account. Verify the token appears in Application Storage (localStorage).
-- Port already in use: The API will attempt the next port automatically. Watch the server log for the active port.
+- Missing backend deps: run npm --prefix server install whenever packages change.
+- Proxy ECONNREFUSED: ensure npm run dev:server (or dev:all) is running.
+- Invalid token after JWT_SECRET change: clear localStorage or re-login.
+- Port already in use: the backend auto-increments until it finds an open port (logs show active port).
 
 Production Notes
-- Build the frontend: npm run build (outputs dist/).
-- Serve dist/ behind a reverse proxy that forwards /api to your API server; or set VITE_API_BASE_URL to your full API URL at build time and enable CORS on the API.
-- Set a strong JWT_SECRET and use HTTPS in non‑dev environments.
+- Build frontend: npm run build (outputs dist/).
+- Build backend: npm run build:server (outputs server/dist/).
+- Serve dist/ behind a reverse proxy that forwards /api to the backend, or set VITE_API_BASE_URL to a
+  fully-qualified API URL and enable CORS.
+- Supply a strong JWT_SECRET and run behind HTTPS outside of local development.
