@@ -72,7 +72,7 @@ export function UsersPage({ getUsersUseCase, createUserUseCase, updateUserUseCas
         <h3 className="mb-0">Users</h3>
         <button
           className="btn btn-primary"
-          onClick={() => { setEditing(null); setFormErrors({}); setModalOpen(true) }}
+          onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
         >
           Add User
         </button>

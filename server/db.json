@@ -11,6 +11,18 @@
       "name": "tan nguyen",
       "email": "tannpv@gmail.com",
       "passwordHash": "$2a$10$NmgOd1UCuViAtt3BvJBG9.fp6.sChT9cnv0fUm0OeJgA0VICBdY4W"
+    },
+    {
+      "id": 3,
+      "name": "test",
+      "email": "test@gmail.com",
+      "passwordHash": "$2a$10$XPp0s89PMbbbbWmnsxjLJOeCgYoi6a.H8hyoD6Ca0wU/QREm0Wjzi"
+    },
+    {
+      "id": 4,
+      "name": "test",
+      "email": "test2@gmail.com",
+      "passwordHash": "$2a$10$wjO8RGgOpFNybAlHYoqC5uaUC5s/RRdMO9hLFiLKAEppAcfADsZOC"
     }
   ]
 }
