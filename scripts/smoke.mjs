@@ -5,7 +5,10 @@ const waitFor = (ms) => new Promise(r => setTimeout(r, ms))
 
 async function startServer() {
   return new Promise((resolve, reject) => {
-    const child = spawn('node', ['server/index.js'], { stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, PORT: '3001' } })
+    const child = spawn('npm', ['--prefix', 'backend', 'run', 'start:dev'], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env, PORT: '3001' },
+    })
     let ready = false
     const onData = (buf) => {
       const s = buf.toString()
@@ -33,7 +36,7 @@ async function run() {
     const loginRes = await fetch('http://localhost:3001/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'tannpv2@gmail.com', password: '1234567890' })
+      body: JSON.stringify({ email: 'leanne@example.com', password: 'secret' })
     })
     if (!loginRes.ok) throw new Error(`Login failed: ${loginRes.status}`)
     const { token } = await loginRes.json()

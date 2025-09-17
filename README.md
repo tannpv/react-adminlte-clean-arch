@@ -25,11 +25,10 @@ Prerequisites
 - npm 8 or newer
 
 Quick Start
-1. Install frontend dependencies
-   npm install
-2. Install backend dependencies (one-time)
-   npm --prefix server install
-3. Run frontend + API together
+1. Install dependencies
+   npm run install:all
+   (or run npm --prefix admin install && npm --prefix backend install)
+2. Run frontend + API together
    npm run dev:all
 
    - Frontend: http://localhost:5174
@@ -43,21 +42,22 @@ Default Login
 You can also register a new account; registration returns a JWT and logs you in automatically.
 
 Available Scripts (root)
-- dev:all: Runs NestJS (ts-node-dev) and Vite concurrently for local development.
-- dev:server: Starts the NestJS backend in watch mode (http://localhost:3001 by default).
-- dev:client: Runs the Vite dev server only.
-- server: Runs the compiled NestJS backend (requires npm run build:server first).
-- build: Builds the frontend for production.
-- preview: Serves the production frontend bundle locally.
-- build:server: Compiles the NestJS backend to server/dist.
+- dev:all: Delegates to admin/dev:all (NestJS + Vite together).
+- dev:server: Runs backend/start:dev (NestJS watch mode).
+- dev:client: Runs admin/dev:client (Vite only).
+- server: Runs backend/start (compiled NestJS backend).
+- build:client: Runs admin/build to produce admin/dist.
+- build:server: Runs backend/build to produce backend/dist.
+- preview: Runs admin/preview to serve the built frontend.
+- install:all: Installs dependencies under admin/ and backend/.
 
-Backend Scripts (server/)
+Backend Scripts (backend/)
 - npm run start:dev: ts-node-dev watcher for rapid backend iteration.
 - npm run build: TypeScript compilation to dist/.
 - npm run start: Runs the compiled backend (dist/main.js).
 
 Environment
-Frontend (.env)
+Frontend (admin/.env)
 - VITE_API_BASE_URL=/api (default). In dev, requests go to /api and Vite proxies them to NestJS.
 
 Backend (env vars)
@@ -86,7 +86,14 @@ Profile
 - GET /me → { user, roles: [ { id, name } ], permissions: [ ... ] }
 
 Project Structure
-server/
+admin/
+  package.json      Frontend package definition, scripts, and deps
+  vite.config.js    Vite config (includes proxy to http://localhost:3001)
+  src/
+    presentation/   React UI components/pages
+    infra/http/     Axios ApiClient + React Query hooks
+    ...             Additional frontend layers
+backend/
   package.json      NestJS project metadata + scripts
   tsconfig*.json    TypeScript build configs
   db.json           JSON persistence (auto-seeded; passwords hashed if missing)
@@ -97,11 +104,8 @@ server/
     application/    DTOs + use-case services (auth, users, roles, authorization)
     infrastructure/ Controllers, guards, persistence adapters, modules
     shared/         Password hashing, JWT service, validation helpers, constants
-src/
-  presentation/     React UI components/pages
-  infra/http/       Axios ApiClient + React Query hooks
-  ...               Additional frontend clean architecture layers
-vite.config.js      Proxies /api → http://localhost:3001 during dev
+scripts/
+  smoke.mjs         Simple end-to-end smoke test harness for the API
 
 How It Works
 - Vite proxies /api/* requests to the NestJS backend while keeping relative URLs in the client.
@@ -113,14 +117,14 @@ How It Works
   credentials when a 401 response is detected.
 
 Troubleshooting
-- Missing backend deps: run npm --prefix server install whenever packages change.
+- Missing backend deps: run npm --prefix backend install whenever packages change.
 - Proxy ECONNREFUSED: ensure npm run dev:server (or dev:all) is running.
 - Invalid token after JWT_SECRET change: clear localStorage or re-login.
 - Port already in use: the backend auto-increments until it finds an open port (logs show active port).
 
 Production Notes
-- Build frontend: npm run build (outputs dist/).
-- Build backend: npm run build:server (outputs server/dist/).
-- Serve dist/ behind a reverse proxy that forwards /api to the backend, or set VITE_API_BASE_URL to a
+- Build frontend: npm run build:client (outputs admin/dist/).
+- Build backend: npm run build:server (outputs backend/dist/).
+- Serve admin/dist/ behind a reverse proxy that forwards /api to the backend, or set VITE_API_BASE_URL to a
   fully-qualified API URL and enable CORS.
 - Supply a strong JWT_SECRET and run behind HTTPS outside of local development.
