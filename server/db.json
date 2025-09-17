@@ -24,5 +24,15 @@
       "email": "test2@gmail.com",
       "passwordHash": "$2a$10$wjO8RGgOpFNybAlHYoqC5uaUC5s/RRdMO9hLFiLKAEppAcfADsZOC"
     }
+  ],
+  "roles": [
+    {
+      "id": 1,
+      "name": "Admin"
+    },
+    {
+      "id": 2,
+      "name": "User"
+    }
   ]
 }

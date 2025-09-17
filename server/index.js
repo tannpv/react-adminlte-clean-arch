@@ -16,10 +16,16 @@ const dbPath = path.join(__dirname, 'db.json')
 function ensureDb() {
   if (!fs.existsSync(dbPath)) {
     const passwordHash = bcrypt.hashSync('secret', 10)
-    const seed = { users: [
-      { id: 1, name: 'Leanne Graham', email: 'leanne@example.com', passwordHash },
-      { id: 2, name: 'Ervin Howell', email: 'ervin@example.com', passwordHash },
-    ] }
+    const seed = {
+      users: [
+        { id: 1, name: 'Leanne Graham', email: 'leanne@example.com', passwordHash },
+        { id: 2, name: 'Ervin Howell', email: 'ervin@example.com', passwordHash },
+      ],
+      roles: [
+        { id: 1, name: 'Admin' },
+        { id: 2, name: 'User' }
+      ]
+    }
     fs.writeFileSync(dbPath, JSON.stringify(seed, null, 2))
   }
 }
@@ -40,6 +46,7 @@ app.use(express.json())
 app.use((req, _res, next) => {
   const db = readDb()
   let changed = false
+  // Backfill password hashes
   db.users = db.users.map(u => {
     if (!u.passwordHash) {
       changed = true
@@ -47,6 +54,11 @@ app.use((req, _res, next) => {
     }
     return u
   })
+  // Ensure roles collection exists
+  if (!db.roles) {
+    db.roles = [ { id: 1, name: 'Admin' }, { id: 2, name: 'User' } ]
+    changed = true
+  }
   if (changed) writeDb(db)
   next()
 })
@@ -122,6 +134,62 @@ app.post('/api/auth/login', (req, res) => {
   if (!ok) return res.status(401).json({ message: 'Invalid credentials' })
   const token = signToken(user.id)
   res.json({ token, user: toPublicUser(user) })
+})
+
+// ===== Roles CRUD (protected) =====
+app.get('/api/roles', authRequired, (_req, res) => {
+  const db = readDb()
+  res.json(db.roles)
+})
+
+app.post('/api/roles', authRequired, (req, res) => {
+  const { name } = req.body || {}
+  const db = readDb()
+  const errors = {}
+  if (!name || String(name).trim().length < 2) {
+    errors.name = { code: 'NAME_MIN', message: 'Name is required (min 2 characters)' }
+  } else if (db.roles.some(r => r.name.toLowerCase() === String(name).trim().toLowerCase())) {
+    errors.name = { code: 'NAME_EXISTS', message: 'Role name already exists' }
+  }
+  if (Object.keys(errors).length) return validationError(res, errors)
+  const nextId = (db.roles.reduce((m, r) => Math.max(m, r.id), 0) || 0) + 1
+  const role = { id: nextId, name: String(name).trim() }
+  db.roles.push(role)
+  writeDb(db)
+  res.status(201).json(role)
+})
+
+app.put('/api/roles/:id', authRequired, (req, res) => {
+  const id = Number(req.params.id)
+  const { name } = req.body || {}
+  const db = readDb()
+  const idx = db.roles.findIndex(r => r.id === id)
+  if (idx === -1) return res.status(404).json({ message: 'Not found' })
+  const errors = {}
+  if (name !== undefined) {
+    const nm = String(name).trim()
+    if (!nm || nm.length < 2) {
+      errors.name = { code: 'NAME_MIN', message: 'Name is required (min 2 characters)' }
+    } else if (db.roles.some(r => r.id !== id && r.name.toLowerCase() === nm.toLowerCase())) {
+      errors.name = { code: 'NAME_EXISTS', message: 'Role name already exists' }
+    }
+  }
+  if (Object.keys(errors).length) return validationError(res, errors)
+  const existing = db.roles[idx]
+  const updated = { ...existing, ...(name !== undefined ? { name: String(name).trim() } : {}) }
+  db.roles[idx] = updated
+  writeDb(db)
+  res.json(updated)
+})
+
+app.delete('/api/roles/:id', authRequired, (req, res) => {
+  const id = Number(req.params.id)
+  const db = readDb()
+  const idx = db.roles.findIndex(r => r.id === id)
+  if (idx === -1) return res.status(404).json({ message: 'Not found' })
+  const [removed] = db.roles.splice(idx, 1)
+  writeDb(db)
+  res.json(removed)
 })
 
 // List users (protected)

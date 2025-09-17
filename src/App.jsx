@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { UsersPage } from './presentation/pages/UsersPage'
 import { LoginPage } from './presentation/pages/LoginPage'
 import { RegisterPage } from './presentation/pages/RegisterPage'
-import { getUsersUseCase, createUserUseCase, updateUserUseCase, deleteUserUseCase, loginUseCase, registerUseCase } from './composition/container'
+import { getUsersUseCase, createUserUseCase, updateUserUseCase, deleteUserUseCase, loginUseCase, registerUseCase, getRolesUseCase, createRoleUseCase, updateRoleUseCase, deleteRoleUseCase } from './composition/container'
+import { RolesPage } from './presentation/pages/RolesPage'
 import { useAuth } from './presentation/context/AuthContext'
 
 export default function App() {
   const { user: currentUser, setUser: setCurrentUser, logout } = useAuth()
   const [authScreen, setAuthScreen] = useState('login') // 'login' | 'register'
+  const [menu, setMenu] = useState('users') // 'users' | 'roles'
   return (
     <div className="wrapper">
       <nav className="main-header navbar navbar-expand navbar-white navbar-light">
@@ -34,9 +36,15 @@ export default function App() {
           <nav className="mt-2">
             <ul className="nav nav-pills nav-sidebar flex-column">
               <li className="nav-item">
-                <a href="#" className="nav-link active">
-                  <i className="nav-icon fas fa-users"></i>
+                <a href="#" className={`nav-link ${menu === 'users' ? 'active' : ''}`} onClick={() => setMenu('users')}>
+                  <i className="nav-icon fas fa-users" />
                   <p>Users</p>
+                </a>
+              </li>
+              <li className="nav-item">
+                <a href="#" className={`nav-link ${menu === 'roles' ? 'active' : ''}`} onClick={() => setMenu('roles')}>
+                  <i className="nav-icon fas fa-user-shield" />
+                  <p>Roles</p>
                 </a>
               </li>
             </ul>
@@ -48,12 +56,21 @@ export default function App() {
         <section className="content">
           <div className="container-fluid p-4">
             {currentUser ? (
-              <UsersPage
-                getUsersUseCase={getUsersUseCase}
-                createUserUseCase={createUserUseCase}
-                updateUserUseCase={updateUserUseCase}
-                deleteUserUseCase={deleteUserUseCase}
-              />
+              menu === 'users' ? (
+                <UsersPage
+                  getUsersUseCase={getUsersUseCase}
+                  createUserUseCase={createUserUseCase}
+                  updateUserUseCase={updateUserUseCase}
+                  deleteUserUseCase={deleteUserUseCase}
+                />
+              ) : (
+                <RolesPage
+                  getRolesUseCase={getRolesUseCase}
+                  createRoleUseCase={createRoleUseCase}
+                  updateRoleUseCase={updateRoleUseCase}
+                  deleteRoleUseCase={deleteRoleUseCase}
+                />
+              )
             ) : authScreen === 'login' ? (
               <LoginPage
                 loginUseCase={loginUseCase}
