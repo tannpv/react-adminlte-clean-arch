@@ -1,0 +1,1 @@
+{"version":3,"file":"product-removed.event.js","sourceRoot":"","sources":["../../../src/domain/events/product-removed.event.ts"],"names":[],"mappings":";;;AACA,iDAA4C;AAE5C,MAAa,mBAAoB,SAAQ,0BAAW;IAIlD,YAAqB,OAAgB;QACnC,KAAK,EAAE,CAAA;QADY,YAAO,GAAP,OAAO,CAAS;QAF5B,SAAI,GAAG,mBAAmB,CAAC,SAAS,CAAA;IAI7C,CAAC;;AANH,kDAOC;AANiB,6BAAS,GAAG,iBAAiB,AAApB,CAAoB"}

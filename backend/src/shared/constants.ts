@@ -9,9 +9,13 @@ export const DEFAULT_ADMIN_PERMISSIONS: Permission[] = [
   'roles:create',
   'roles:update',
   'roles:delete',
+  'products:read',
+  'products:create',
+  'products:update',
+  'products:delete',
 ]
 
-export const DEFAULT_USER_PERMISSIONS: Permission[] = ['users:read']
+export const DEFAULT_USER_PERMISSIONS: Permission[] = ['users:read', 'products:read']
 
 export const DEFAULT_JWT_SECRET = 'dev_secret_change_me'
 

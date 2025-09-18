@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common'
-import { ResultSetHeader } from 'mysql2/promise'
+import { ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import { Role } from '../../../domain/entities/role.entity'
 import { RoleRepository } from '../../../domain/repositories/role.repository'
 import { MysqlDatabaseService } from './mysql-database.service'
 
-interface RoleRow {
+interface RoleRow extends RowDataPacket {
   id: number
   name: string
+}
+
+interface AutoIncrementRow extends RowDataPacket {
+  AUTO_INCREMENT: number
+}
+
+interface RolePermissionRow extends RowDataPacket {
+  permission: string
 }
 
 @Injectable()
@@ -73,7 +81,7 @@ export class MysqlRoleRepository implements RoleRepository {
 
   async nextId(): Promise<number> {
     const database = this.db.getDatabaseName()
-    const [rows] = await this.db.execute<{ AUTO_INCREMENT: number }[]>(
+    const [rows] = await this.db.execute<AutoIncrementRow[]>(
       `SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'roles'`,
       [database],
     )
@@ -82,7 +90,7 @@ export class MysqlRoleRepository implements RoleRepository {
   }
 
   private async hydrateRole(row: RoleRow): Promise<Role> {
-    const [permissionRows] = await this.db.execute<{ permission: string }[]>(
+    const [permissionRows] = await this.db.execute<RolePermissionRow[]>(
       'SELECT permission FROM role_permissions WHERE role_id = ? ORDER BY permission ASC',
       [row.id],
     )

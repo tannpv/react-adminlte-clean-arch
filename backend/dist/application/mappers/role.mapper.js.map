@@ -1,0 +1,1 @@
+{"version":3,"file":"role.mapper.js","sourceRoot":"","sources":["../../../src/application/mappers/role.mapper.ts"],"names":[],"mappings":";;AAGA,wCAMC;AAND,SAAgB,cAAc,CAAC,IAAU;IACvC,OAAO;QACL,EAAE,EAAE,IAAI,CAAC,EAAE;QACX,IAAI,EAAE,IAAI,CAAC,IAAI;QACf,WAAW,EAAE,CAAC,GAAG,IAAI,CAAC,WAAW,CAAC;KACnC,CAAA;AACH,CAAC"}

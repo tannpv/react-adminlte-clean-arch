@@ -1,14 +1,22 @@
 import { Injectable } from '@nestjs/common'
-import { ResultSetHeader } from 'mysql2/promise'
+import { ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import { User } from '../../../domain/entities/user.entity'
 import { UserRepository } from '../../../domain/repositories/user.repository'
 import { MysqlDatabaseService } from './mysql-database.service'
 
-interface UserRow {
+interface UserRow extends RowDataPacket {
   id: number
   name: string
   email: string
   password_hash: string
+}
+
+interface AutoIncrementRow extends RowDataPacket {
+  AUTO_INCREMENT: number
+}
+
+interface UserRoleRow extends RowDataPacket {
+  role_id: number
 }
 
 @Injectable()
@@ -70,7 +78,7 @@ export class MysqlUserRepository implements UserRepository {
 
   async nextId(): Promise<number> {
     const database = this.db.getDatabaseName()
-    const [rows] = await this.db.execute<{ AUTO_INCREMENT: number }[]>(
+    const [rows] = await this.db.execute<AutoIncrementRow[]>(
       `SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users'`,
       [database],
     )
@@ -79,7 +87,7 @@ export class MysqlUserRepository implements UserRepository {
   }
 
   private async hydrateUser(row: UserRow): Promise<User> {
-    const [roleRows] = await this.db.execute<{ role_id: number }[]>(
+    const [roleRows] = await this.db.execute<UserRoleRow[]>(
       'SELECT role_id FROM user_roles WHERE user_id = ?',
       [row.id],
     )
