@@ -1,5 +1,13 @@
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
-import { createConnection, createPool, Pool, ResultSetHeader } from 'mysql2/promise'
+import {
+  createConnection,
+  createPool,
+  FieldPacket,
+  OkPacket,
+  Pool,
+  ResultSetHeader,
+  RowDataPacket,
+} from 'mysql2/promise'
 import { PasswordService } from '../../../shared/password.service'
 import {
   DEFAULT_ADMIN_PERMISSIONS,
@@ -123,7 +131,7 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async seedDefaults(): Promise<void> {
-    const [roleCountRows] = await this.execute<any[]>(
+    const [roleCountRows] = await this.execute<RowDataPacket[]>(
       'SELECT COUNT(*) as count FROM roles',
     )
     const roleCount = Number(roleCountRows[0]?.count ?? 0)
@@ -134,11 +142,11 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       this.logger.log(`Seeded default roles (Admin=${adminId}, User=${userId})`)
     } else {
       // Ensure roles have default permissions if missing
-      const [roles] = await this.execute<any[]>(
+      const [roles] = await this.execute<RowDataPacket[]>(
         'SELECT id, name FROM roles',
       )
       for (const role of roles) {
-        const [existingPermissions] = await this.execute<any[]>(
+        const [existingPermissions] = await this.execute<RowDataPacket[]>(
           'SELECT permission FROM role_permissions WHERE role_id = ?',
           [role.id],
         )
@@ -153,19 +161,19 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       }
     }
 
-    const [userCountRows] = await this.execute<any[]>(
+    const [userCountRows] = await this.execute<RowDataPacket[]>(
       'SELECT COUNT(*) as count FROM users',
     )
     const userCount = Number(userCountRows[0]?.count ?? 0)
 
     if (userCount === 0) {
       const passwordHash = this.passwordService.hashSync(DEFAULT_USER_PASSWORD)
-    const [result] = await this.execute<ResultSetHeader>(
-      'INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)',
-      ['Leanne Graham', 'leanne@example.com', passwordHash],
-    )
+      const [result] = await this.execute<ResultSetHeader>(
+        'INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)',
+        ['Leanne Graham', 'leanne@example.com', passwordHash],
+      )
       const userId = result.insertId as number
-      const [adminRoles] = await this.execute<any[]>(
+      const [adminRoles] = await this.execute<RowDataPacket[]>(
         "SELECT id FROM roles WHERE LOWER(name) = 'admin' LIMIT 1",
       )
       const adminRoleId = adminRoles[0]?.id
@@ -179,7 +187,7 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async ensureUsersHavePasswords(): Promise<void> {
-    const [users] = await this.execute<any[]>(
+    const [users] = await this.execute<RowDataPacket[]>(
       'SELECT id, password_hash FROM users',
     )
     for (const user of users) {
@@ -207,7 +215,9 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
     await this.execute(`INSERT IGNORE INTO role_permissions (role_id, permission) VALUES ${placeholders}`, params)
   }
 
-  async execute<T = any>(sql: string, params?: any): Promise<[T, any]> {
+  async execute<
+    T extends RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader = RowDataPacket[],
+  >(sql: string, params?: any): Promise<[T, FieldPacket[]]> {
     const pool = this.getPool()
     return pool.query<T>(sql, params)
   }

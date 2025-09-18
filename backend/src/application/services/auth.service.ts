@@ -2,21 +2,23 @@ import { ConflictException, Inject, Injectable, UnauthorizedException } from '@n
 import { RegisterDto } from '../dto/register.dto'
 import { LoginDto } from '../dto/login.dto'
 import { USER_REPOSITORY, UserRepository } from '../../domain/repositories/user.repository'
-import { RoleRepository, ROLE_REPOSITORY } from '../../domain/repositories/role.repository'
 import { PasswordService } from '../../shared/password.service'
 import { TokenService } from '../../shared/token.service'
 import { User } from '../../domain/entities/user.entity'
+import { toUserResponse } from '../mappers/user.mapper'
+import { AuthResponseDto } from '../dto/auth-response.dto'
+import { RolesService } from './roles.service'
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(USER_REPOSITORY) private readonly users: UserRepository,
-    @Inject(ROLE_REPOSITORY) private readonly roles: RoleRepository,
+    private readonly rolesService: RolesService,
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService,
   ) {}
 
-  async register(dto: RegisterDto) {
+  async register(dto: RegisterDto): Promise<AuthResponseDto> {
     const trimmedName = dto.name.trim()
     const trimmedEmail = dto.email.trim()
     const emailLower = trimmedEmail.toLowerCase()
@@ -36,11 +38,11 @@ export class AuthService {
     const token = this.tokenService.sign(created.id)
     return {
       token,
-      user: created.toPublic(),
+      user: toUserResponse(created),
     }
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto): Promise<AuthResponseDto> {
     const emailLower = dto.email.trim().toLowerCase()
     const user = await this.users.findByEmail(emailLower)
     if (!user) {
@@ -55,14 +57,14 @@ export class AuthService {
     const token = this.tokenService.sign(user.id)
     return {
       token,
-      user: user.toPublic(),
+      user: toUserResponse(user),
     }
   }
 
   private async findDefaultUserRoleId(): Promise<number | null> {
-    const byName = await this.roles.findByName('User')
+    const byName = await this.rolesService.findByNameDomain('User')
     if (byName) return byName.id
-    const fallback = await this.roles.findById(2)
+    const fallback = await this.rolesService.findByIdDomain(2)
     return fallback ? fallback.id : null
   }
 }

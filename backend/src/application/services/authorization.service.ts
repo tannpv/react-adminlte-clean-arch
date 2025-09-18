@@ -4,6 +4,8 @@ import { USER_REPOSITORY, UserRepository } from '../../domain/repositories/user.
 
 @Injectable()
 export class AuthorizationService {
+  private readonly permissionCache = new Map<number, ReadonlySet<string>>()
+
   constructor(
     @Inject(USER_REPOSITORY) private readonly users: UserRepository,
     @Inject(ROLE_REPOSITORY) private readonly roles: RoleRepository,
@@ -21,6 +23,11 @@ export class AuthorizationService {
   }
 
   async getPermissions(userId: number): Promise<Set<string>> {
+    const cached = this.permissionCache.get(userId)
+    if (cached) {
+      return new Set(cached)
+    }
+
     const user = await this.users.findById(userId)
     if (!user) return new Set()
     const roles = await this.roles.findByIds(user.roles)
@@ -28,6 +35,15 @@ export class AuthorizationService {
     roles.forEach((role) => {
       ;(role.permissions || []).forEach((perm) => permissions.add(perm))
     })
-    return permissions
+    this.permissionCache.set(userId, permissions)
+    return new Set(permissions)
+  }
+
+  evictPermissionsForUser(userId: number): void {
+    this.permissionCache.delete(userId)
+  }
+
+  evictAllPermissions(): void {
+    this.permissionCache.clear()
   }
 }

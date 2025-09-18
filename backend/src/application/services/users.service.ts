@@ -2,29 +2,36 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateUserDto } from '../dto/create-user.dto'
 import { UpdateUserDto } from '../dto/update-user.dto'
 import { USER_REPOSITORY, UserRepository } from '../../domain/repositories/user.repository'
-import { ROLE_REPOSITORY, RoleRepository } from '../../domain/repositories/role.repository'
-import { PublicUser, User } from '../../domain/entities/user.entity'
+import { User } from '../../domain/entities/user.entity'
 import { PasswordService } from '../../shared/password.service'
 import { DEFAULT_USER_PASSWORD } from '../../shared/constants'
 import { validationException } from '../../shared/validation-error'
+import { DomainEventBus } from '../../shared/events/domain-event.bus'
+import { UserCreatedEvent } from '../../domain/events/user-created.event'
+import { UserUpdatedEvent } from '../../domain/events/user-updated.event'
+import { UserRemovedEvent } from '../../domain/events/user-removed.event'
+import { toUserResponse } from '../mappers/user.mapper'
+import { UserResponseDto } from '../dto/user-response.dto'
+import { RolesService } from './roles.service'
 
 @Injectable()
 export class UsersService {
   constructor(
     @Inject(USER_REPOSITORY) private readonly users: UserRepository,
-    @Inject(ROLE_REPOSITORY) private readonly roles: RoleRepository,
+    private readonly rolesService: RolesService,
     private readonly passwordService: PasswordService,
+    private readonly events: DomainEventBus,
   ) {}
 
-  async list(): Promise<PublicUser[]> {
+  async list(): Promise<UserResponseDto[]> {
     const users = await this.users.findAll()
-    return users.map((user) => user.toPublic())
+    return users.map((user) => toUserResponse(user))
   }
 
-  async findById(id: number): Promise<PublicUser> {
+  async findById(id: number): Promise<UserResponseDto> {
     const user = await this.users.findById(id)
     if (!user) throw new NotFoundException({ message: 'Not found' })
-    return user.toPublic()
+    return toUserResponse(user)
   }
 
   async findDomainById(id: number): Promise<User | null> {
@@ -35,7 +42,7 @@ export class UsersService {
     return this.users.findByEmail(email)
   }
 
-  async create(dto: CreateUserDto): Promise<PublicUser> {
+  async create(dto: CreateUserDto): Promise<UserResponseDto> {
     const trimmedName = dto.name.trim()
     const trimmedEmail = dto.email.trim()
     const emailLower = trimmedEmail.toLowerCase()
@@ -72,10 +79,11 @@ export class UsersService {
     const passwordHash = this.passwordService.hashSync(DEFAULT_USER_PASSWORD)
     const user = new User(id, trimmedName, trimmedEmail, roleIds, passwordHash)
     const created = await this.users.create(user)
-    return created.toPublic()
+    this.events.publish(new UserCreatedEvent(created))
+    return toUserResponse(created)
   }
 
-  async update(id: number, dto: UpdateUserDto): Promise<PublicUser> {
+  async update(id: number, dto: UpdateUserDto): Promise<UserResponseDto> {
     const existing = await this.users.findById(id)
     if (!existing) throw new NotFoundException({ message: 'Not found' })
 
@@ -125,13 +133,15 @@ export class UsersService {
     updated.roles = updates.roles ?? updated.roles
 
     const saved = await this.users.update(updated)
-    return saved.toPublic()
+    this.events.publish(new UserUpdatedEvent(saved))
+    return toUserResponse(saved)
   }
 
-  async remove(id: number): Promise<PublicUser> {
+  async remove(id: number): Promise<UserResponseDto> {
     const removed = await this.users.remove(id)
     if (!removed) throw new NotFoundException({ message: 'Not found' })
-    return removed.toPublic()
+    this.events.publish(new UserRemovedEvent(removed))
+    return toUserResponse(removed)
   }
 
   private async validateRoles(roles?: number[]): Promise<number[]> {
@@ -145,7 +155,7 @@ export class UsersService {
     const cleaned = roles.filter((roleId) => Number.isInteger(roleId))
     if (!cleaned.length) return []
 
-    const found = await this.roles.findByIds(cleaned)
+    const found = await this.rolesService.findMany(cleaned)
     const foundIds = new Set(found.map((role) => role.id))
     const missing = cleaned.filter((roleId) => !foundIds.has(roleId))
     if (missing.length) {
