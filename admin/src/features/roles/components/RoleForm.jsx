@@ -100,21 +100,27 @@ export function RoleForm({ onSubmit, initialRole, errors = {}, submitting = fals
                 const groupSelectedCount = group.actions.filter((action) => action.selected).length
                 const allSelected = groupSelectedCount === group.actions.length && group.actions.length > 0
                 const someSelected = groupSelectedCount > 0 && !allSelected
+                const groupSelectId = `perm-${group.entity}-all`
                 return (
                   <tr key={group.entity}>
                     <td className="align-middle">{group.label}</td>
                     <td className="text-center align-middle">
-                      <input
-                        type="checkbox"
-                        className="form-check-input position-static"
-                        checked={allSelected}
-                        ref={(input) => {
-                          if (input) input.indeterminate = someSelected
-                        }}
-                        onChange={(e) => toggleGroup(group, e.target.checked)}
-                        aria-label={`Toggle all ${group.label} permissions`}
-                        disabled={submitting}
-                      />
+                      <div className="custom-control custom-checkbox d-inline-flex align-items-center justify-content-center">
+                        <input
+                          type="checkbox"
+                          className="custom-control-input"
+                          id={groupSelectId}
+                          checked={allSelected}
+                          ref={(input) => {
+                            if (input) input.indeterminate = someSelected
+                          }}
+                          onChange={(e) => toggleGroup(group, e.target.checked)}
+                          disabled={submitting}
+                        />
+                        <label className="custom-control-label" htmlFor={groupSelectId}>
+                          <span className="sr-only">Toggle all {group.label} permissions</span>
+                        </label>
+                      </div>
                     </td>
                     {group.actions.map((action) => {
                       const inputId = `perm-${group.entity}-${action.key.replace(/[:]/g, '-')}`
