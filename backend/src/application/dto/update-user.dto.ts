@@ -1,12 +1,28 @@
 import { Transform } from 'class-transformer'
-import { IsArray, IsEmail, IsOptional, IsString, MinLength } from 'class-validator'
+import { IsArray, IsDateString, IsEmail, IsOptional, IsString, MaxLength, MinLength } from 'class-validator'
 
 export class UpdateUserDto {
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsOptional()
-  @IsString({ message: 'Name is required (min 2 characters)' })
-  @MinLength(2, { message: 'Name is required (min 2 characters)' })
-  name?: string
+  @IsString({ message: 'First name must be text' })
+  @MinLength(2, { message: 'First name must be at least 2 characters' })
+  firstName?: string
+
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @IsOptional()
+  @IsString({ message: 'Last name must be text' })
+  @MinLength(2, { message: 'Last name must be at least 2 characters' })
+  lastName?: string
+
+  @IsOptional()
+  @IsDateString({}, { message: 'Date of birth must be a valid date' })
+  dateOfBirth?: string
+
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @IsOptional()
+  @IsString({ message: 'Picture URL must be text' })
+  @MaxLength(1024, { message: 'Picture URL is too long' })
+  pictureUrl?: string
 
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsOptional()
@@ -25,4 +41,14 @@ export class UpdateUserDto {
       .filter((item): item is number => item !== null)
   })
   roles?: number[]
+
+  @Transform(({ value }) => {
+    if (typeof value !== 'string') return value
+    const trimmed = value.trim()
+    return trimmed.length ? trimmed : undefined
+  })
+  @IsOptional()
+  @IsString({ message: 'Password must be at least 6 characters' })
+  @MinLength(6, { message: 'Password must be at least 6 characters' })
+  password?: string
 }

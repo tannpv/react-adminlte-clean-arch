@@ -6,6 +6,7 @@ import { RoleRepository, ROLE_REPOSITORY } from '../../domain/repositories/role.
 import { PasswordService } from '../../shared/password.service'
 import { TokenService } from '../../shared/token.service'
 import { User } from '../../domain/entities/user.entity'
+import { UserProfile } from '../../domain/entities/user-profile.entity'
 
 @Injectable()
 export class AuthService {
@@ -17,20 +18,45 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    const trimmedName = dto.name.trim()
+    const trimmedFirstName = dto.firstName.trim()
+    const trimmedLastName = dto.lastName.trim()
     const trimmedEmail = dto.email.trim()
     const emailLower = trimmedEmail.toLowerCase()
+
+    if (!trimmedFirstName || trimmedFirstName.length < 2) {
+      throw new ConflictException({ message: 'First name is too short' })
+    }
+
+    if (!trimmedLastName || trimmedLastName.length < 2) {
+      throw new ConflictException({ message: 'Last name is too short' })
+    }
 
     const existing = await this.users.findByEmail(emailLower)
     if (existing) {
       throw new ConflictException({ message: 'Email already in use' })
     }
 
+    let dateOfBirth: Date | null = null
+    if (dto.dateOfBirth) {
+      const dob = new Date(dto.dateOfBirth)
+      if (Number.isNaN(dob.getTime())) {
+        throw new ConflictException({ message: 'Date of birth is invalid' })
+      }
+      dateOfBirth = dob
+    }
+
     const passwordHash = await this.passwordService.hash(dto.password)
     const id = await this.users.nextId()
 
     const defaultRole = await this.findDefaultUserRoleId()
-    const user = new User(id, trimmedName, trimmedEmail, defaultRole ? [defaultRole] : [], passwordHash)
+    const user = new User(id, trimmedEmail, defaultRole ? [defaultRole] : [], passwordHash)
+    user.profile = new UserProfile({
+      userId: id,
+      firstName: trimmedFirstName,
+      lastName: trimmedLastName,
+      dateOfBirth,
+      pictureUrl: dto.pictureUrl ? dto.pictureUrl.trim() || null : null,
+    })
     const created = await this.users.create(user)
 
     const token = this.tokenService.sign(created.id)

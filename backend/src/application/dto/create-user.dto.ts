@@ -1,12 +1,28 @@
 import { Transform } from 'class-transformer'
-import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator'
+import { IsArray, IsDateString, IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator'
 
 export class CreateUserDto {
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  @IsString({ message: 'Name is required (min 2 characters)' })
-  @IsNotEmpty({ message: 'Name is required (min 2 characters)' })
-  @MinLength(2, { message: 'Name is required (min 2 characters)' })
-  name!: string
+  @IsString({ message: 'First name is required (min 2 characters)' })
+  @IsNotEmpty({ message: 'First name is required (min 2 characters)' })
+  @MinLength(2, { message: 'First name is required (min 2 characters)' })
+  firstName!: string
+
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @IsString({ message: 'Last name is required (min 2 characters)' })
+  @IsNotEmpty({ message: 'Last name is required (min 2 characters)' })
+  @MinLength(2, { message: 'Last name is required (min 2 characters)' })
+  lastName!: string
+
+  @IsOptional()
+  @IsDateString({}, { message: 'Date of birth must be a valid date' })
+  dateOfBirth?: string
+
+  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @IsString({ message: 'Picture URL must be text' })
+  @MaxLength(1024, { message: 'Picture URL is too long' })
+  pictureUrl?: string
 
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsNotEmpty({ message: 'Email is required' })

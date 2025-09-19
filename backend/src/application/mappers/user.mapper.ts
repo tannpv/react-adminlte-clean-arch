@@ -5,8 +5,8 @@ export function toUserResponse(user: User): UserResponseDto {
   const publicUser = user.toPublic()
   return {
     id: publicUser.id,
-    name: publicUser.name,
     email: publicUser.email,
     roles: [...publicUser.roles],
+    profile: publicUser.profile ? { ...publicUser.profile } : null,
   }
 }

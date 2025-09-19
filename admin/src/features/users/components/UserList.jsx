@@ -1,4 +1,5 @@
 import React from 'react'
+import { getUserDisplayName } from '../../../shared/lib/userDisplayName'
 
 export function UserList({ users, onEdit, onDelete, rolesById }) {
   return (
@@ -16,7 +17,7 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
         {users.map(u => (
           <tr key={u.id}>
             <td>{u.id}</td>
-            <td>{u.name}</td>
+            <td>{getUserDisplayName(u)}</td>
             <td>{u.email}</td>
             <td>{Array.isArray(u.roles) && rolesById ? u.roles.map(id => rolesById[id]?.name || id).join(', ') : ''}</td>
             <td>

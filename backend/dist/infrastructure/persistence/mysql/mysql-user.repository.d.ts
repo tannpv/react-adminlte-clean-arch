@@ -13,4 +13,6 @@ export declare class MysqlUserRepository implements UserRepository {
     nextId(): Promise<number>;
     private hydrateUser;
     private saveRoles;
+    private saveProfile;
+    private loadProfile;
 }

@@ -1,11 +1,26 @@
 import { ApiClient } from '../../../shared/lib/apiClient'
+import { computeDisplayName } from '../../../shared/lib/userDisplayName'
 
-const normalizeUser = (user) => ({
-  id: user.id,
-  name: user.name,
-  email: user.email,
-  roles: Array.isArray(user.roles) ? user.roles : [],
-})
+const normalizeProfile = (profile) => {
+  if (!profile) return null
+  return {
+    firstName: profile.firstName || '',
+    lastName: profile.lastName || '',
+    dateOfBirth: profile.dateOfBirth || null,
+    pictureUrl: profile.pictureUrl || null,
+  }
+}
+
+const normalizeUser = (user) => {
+  const profile = normalizeProfile(user.profile)
+  return {
+    id: user.id,
+    email: user.email,
+    roles: Array.isArray(user.roles) ? user.roles : [],
+    profile,
+    displayName: computeDisplayName(profile, user.email),
+  }
+}
 
 export async function fetchUsers() {
   const res = await ApiClient.get('/users')

@@ -19,6 +19,7 @@ const role_repository_1 = require("../../domain/repositories/role.repository");
 const password_service_1 = require("../../shared/password.service");
 const token_service_1 = require("../../shared/token.service");
 const user_entity_1 = require("../../domain/entities/user.entity");
+const user_profile_entity_1 = require("../../domain/entities/user-profile.entity");
 let AuthService = class AuthService {
     constructor(users, roles, passwordService, tokenService) {
         this.users = users;
@@ -27,17 +28,39 @@ let AuthService = class AuthService {
         this.tokenService = tokenService;
     }
     async register(dto) {
-        const trimmedName = dto.name.trim();
+        const trimmedFirstName = dto.firstName.trim();
+        const trimmedLastName = dto.lastName.trim();
         const trimmedEmail = dto.email.trim();
         const emailLower = trimmedEmail.toLowerCase();
+        if (!trimmedFirstName || trimmedFirstName.length < 2) {
+            throw new common_1.ConflictException({ message: 'First name is too short' });
+        }
+        if (!trimmedLastName || trimmedLastName.length < 2) {
+            throw new common_1.ConflictException({ message: 'Last name is too short' });
+        }
         const existing = await this.users.findByEmail(emailLower);
         if (existing) {
             throw new common_1.ConflictException({ message: 'Email already in use' });
         }
+        let dateOfBirth = null;
+        if (dto.dateOfBirth) {
+            const dob = new Date(dto.dateOfBirth);
+            if (Number.isNaN(dob.getTime())) {
+                throw new common_1.ConflictException({ message: 'Date of birth is invalid' });
+            }
+            dateOfBirth = dob;
+        }
         const passwordHash = await this.passwordService.hash(dto.password);
         const id = await this.users.nextId();
         const defaultRole = await this.findDefaultUserRoleId();
-        const user = new user_entity_1.User(id, trimmedName, trimmedEmail, defaultRole ? [defaultRole] : [], passwordHash);
+        const user = new user_entity_1.User(id, trimmedEmail, defaultRole ? [defaultRole] : [], passwordHash);
+        user.profile = new user_profile_entity_1.UserProfile({
+            userId: id,
+            firstName: trimmedFirstName,
+            lastName: trimmedLastName,
+            dateOfBirth,
+            pictureUrl: dto.pictureUrl ? dto.pictureUrl.trim() || null : null,
+        });
         const created = await this.users.create(user);
         const token = this.tokenService.sign(created.id);
         return {

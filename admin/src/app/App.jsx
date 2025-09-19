@@ -11,6 +11,7 @@ import { usePermissions } from '../shared/hooks/usePermissions'
 import { ApiClient } from '../shared/lib/apiClient'
 import { fetchRoles } from '../features/roles/api/rolesApi'
 import { fetchProducts } from '../features/products/api/productsApi'
+import { getUserDisplayName } from '../shared/lib/userDisplayName'
 
 export default function App() {
   const { user: currentUser, setUser: setCurrentUser, logout } = useAuth()
@@ -37,7 +38,7 @@ export default function App() {
           {currentUser ? (
             <li className="nav-item d-flex align-items-center pr-2">
               <span className="mr-3 d-flex align-items-center">
-                {currentUser.name}
+                {getUserDisplayName(currentUser)}
                 {me?.roles?.length ? (
                   <span className="ml-2">
                     {me.roles.map(r => (

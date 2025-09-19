@@ -18,10 +18,29 @@ exports.UpdateUserDto = UpdateUserDto;
 __decorate([
     (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.trim() : value)),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)({ message: 'Name is required (min 2 characters)' }),
-    (0, class_validator_1.MinLength)(2, { message: 'Name is required (min 2 characters)' }),
+    (0, class_validator_1.IsString)({ message: 'First name must be text' }),
+    (0, class_validator_1.MinLength)(2, { message: 'First name must be at least 2 characters' }),
     __metadata("design:type", String)
-], UpdateUserDto.prototype, "name", void 0);
+], UpdateUserDto.prototype, "firstName", void 0);
+__decorate([
+    (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.trim() : value)),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)({ message: 'Last name must be text' }),
+    (0, class_validator_1.MinLength)(2, { message: 'Last name must be at least 2 characters' }),
+    __metadata("design:type", String)
+], UpdateUserDto.prototype, "lastName", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsDateString)({}, { message: 'Date of birth must be a valid date' }),
+    __metadata("design:type", String)
+], UpdateUserDto.prototype, "dateOfBirth", void 0);
+__decorate([
+    (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.trim() : value)),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)({ message: 'Picture URL must be text' }),
+    (0, class_validator_1.MaxLength)(1024, { message: 'Picture URL is too long' }),
+    __metadata("design:type", String)
+], UpdateUserDto.prototype, "pictureUrl", void 0);
 __decorate([
     (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.trim() : value)),
     (0, class_validator_1.IsOptional)(),
@@ -43,4 +62,16 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], UpdateUserDto.prototype, "roles", void 0);
+__decorate([
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (typeof value !== 'string')
+            return value;
+        const trimmed = value.trim();
+        return trimmed.length ? trimmed : undefined;
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)({ message: 'Password must be at least 6 characters' }),
+    (0, class_validator_1.MinLength)(6, { message: 'Password must be at least 6 characters' }),
+    __metadata("design:type", String)
+], UpdateUserDto.prototype, "password", void 0);
 //# sourceMappingURL=update-user.dto.js.map

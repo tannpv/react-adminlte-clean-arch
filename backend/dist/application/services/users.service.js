@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const user_repository_1 = require("../../domain/repositories/user.repository");
 const role_repository_1 = require("../../domain/repositories/role.repository");
 const user_entity_1 = require("../../domain/entities/user.entity");
+const user_profile_entity_1 = require("../../domain/entities/user-profile.entity");
 const password_service_1 = require("../../shared/password.service");
 const constants_1 = require("../../shared/constants");
 const validation_error_1 = require("../../shared/validation-error");
@@ -43,12 +44,18 @@ let UsersService = class UsersService {
         return this.users.findByEmail(email);
     }
     async create(dto) {
-        const trimmedName = dto.name.trim();
+        const trimmedFirstName = dto.firstName.trim();
+        const trimmedLastName = dto.lastName.trim();
         const trimmedEmail = dto.email.trim();
         const emailLower = trimmedEmail.toLowerCase();
-        if (!trimmedName || trimmedName.length < 2) {
+        if (!trimmedFirstName || trimmedFirstName.length < 2) {
             throw (0, validation_error_1.validationException)({
-                name: { code: 'NAME_MIN', message: 'Name is required (min 2 characters)' },
+                firstName: { code: 'FIRST_NAME_MIN', message: 'First name is required (min 2 characters)' },
+            });
+        }
+        if (!trimmedLastName || trimmedLastName.length < 2) {
+            throw (0, validation_error_1.validationException)({
+                lastName: { code: 'LAST_NAME_MIN', message: 'Last name is required (min 2 characters)' },
             });
         }
         if (!trimmedEmail) {
@@ -71,7 +78,24 @@ let UsersService = class UsersService {
         const roleIds = await this.validateRoles(dto.roles);
         const id = await this.users.nextId();
         const passwordHash = this.passwordService.hashSync(constants_1.DEFAULT_USER_PASSWORD);
-        const user = new user_entity_1.User(id, trimmedName, trimmedEmail, roleIds, passwordHash);
+        let dateOfBirth = null;
+        if (dto.dateOfBirth) {
+            const dob = new Date(dto.dateOfBirth);
+            if (Number.isNaN(dob.getTime())) {
+                throw (0, validation_error_1.validationException)({
+                    dateOfBirth: { code: 'DOB_INVALID', message: 'Date of birth must be a valid date' },
+                });
+            }
+            dateOfBirth = dob;
+        }
+        const user = new user_entity_1.User(id, trimmedEmail, roleIds, passwordHash);
+        user.profile = new user_profile_entity_1.UserProfile({
+            userId: id,
+            firstName: trimmedFirstName,
+            lastName: trimmedLastName,
+            dateOfBirth,
+            pictureUrl: dto.pictureUrl ? dto.pictureUrl.trim() || null : null,
+        });
         const created = await this.users.create(user);
         return created.toPublic();
     }
@@ -79,16 +103,14 @@ let UsersService = class UsersService {
         const existing = await this.users.findById(id);
         if (!existing)
             throw new common_1.NotFoundException({ message: 'Not found' });
-        const updates = {};
-        if (dto.name !== undefined) {
-            const trimmed = dto.name.trim();
-            if (!trimmed || trimmed.length < 2) {
-                throw (0, validation_error_1.validationException)({
-                    name: { code: 'NAME_MIN', message: 'Name is required (min 2 characters)' },
-                });
-            }
-            updates.name = trimmed;
-        }
+        const updated = existing.clone();
+        const profile = updated.profile ?? new user_profile_entity_1.UserProfile({
+            userId: updated.id,
+            firstName: '',
+            lastName: null,
+            dateOfBirth: null,
+            pictureUrl: null,
+        });
         if (dto.email !== undefined) {
             const trimmedEmail = dto.email.trim();
             if (!trimmedEmail) {
@@ -109,16 +131,62 @@ let UsersService = class UsersService {
                     email: { code: 'EMAIL_EXISTS', message: 'Email is already in use' },
                 });
             }
-            updates.email = trimmedEmail;
+            updated.email = trimmedEmail;
         }
         if (dto.roles !== undefined) {
             const roleIds = await this.validateRoles(dto.roles);
-            updates.roles = roleIds;
+            updated.roles = roleIds;
         }
-        const updated = existing.clone();
-        updated.name = updates.name ?? updated.name;
-        updated.email = updates.email ?? updated.email;
-        updated.roles = updates.roles ?? updated.roles;
+        if (dto.password !== undefined) {
+            if (!dto.password.trim()) {
+                throw (0, validation_error_1.validationException)({
+                    password: { code: 'PASSWORD_REQUIRED', message: 'Password must be at least 6 characters' },
+                });
+            }
+            if (dto.password.length < 6) {
+                throw (0, validation_error_1.validationException)({
+                    password: { code: 'PASSWORD_MIN', message: 'Password must be at least 6 characters' },
+                });
+            }
+            updated.passwordHash = this.passwordService.hashSync(dto.password);
+        }
+        if (dto.firstName !== undefined) {
+            const trimmed = dto.firstName.trim();
+            if (!trimmed || trimmed.length < 2) {
+                throw (0, validation_error_1.validationException)({
+                    firstName: { code: 'FIRST_NAME_MIN', message: 'First name must be at least 2 characters' },
+                });
+            }
+            profile.firstName = trimmed;
+        }
+        if (dto.lastName !== undefined) {
+            const trimmed = dto.lastName.trim();
+            if (!trimmed || trimmed.length < 2) {
+                throw (0, validation_error_1.validationException)({
+                    lastName: { code: 'LAST_NAME_MIN', message: 'Last name must be at least 2 characters' },
+                });
+            }
+            profile.lastName = trimmed;
+        }
+        if (dto.dateOfBirth !== undefined) {
+            if (!dto.dateOfBirth) {
+                profile.dateOfBirth = null;
+            }
+            else {
+                const dob = new Date(dto.dateOfBirth);
+                if (Number.isNaN(dob.getTime())) {
+                    throw (0, validation_error_1.validationException)({
+                        dateOfBirth: { code: 'DOB_INVALID', message: 'Date of birth must be a valid date' },
+                    });
+                }
+                profile.dateOfBirth = dob;
+            }
+        }
+        if (dto.pictureUrl !== undefined) {
+            const trimmed = dto.pictureUrl?.trim() || '';
+            profile.pictureUrl = trimmed.length ? trimmed : null;
+        }
+        updated.profile = profile;
         const saved = await this.users.update(updated);
         return saved.toPublic();
     }

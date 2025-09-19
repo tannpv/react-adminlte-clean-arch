@@ -12,38 +12,41 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MysqlUserRepository = void 0;
 const common_1 = require("@nestjs/common");
 const user_entity_1 = require("../../../domain/entities/user.entity");
+const user_profile_entity_1 = require("../../../domain/entities/user-profile.entity");
 const mysql_database_service_1 = require("./mysql-database.service");
 let MysqlUserRepository = class MysqlUserRepository {
     constructor(db) {
         this.db = db;
     }
     async findAll() {
-        const [rows] = await this.db.execute('SELECT id, name, email, password_hash FROM users ORDER BY id ASC');
+        const [rows] = await this.db.execute('SELECT id, email, password_hash FROM users ORDER BY id ASC');
         const users = await Promise.all(rows.map((row) => this.hydrateUser(row)));
         return users;
     }
     async findById(id) {
-        const [rows] = await this.db.execute('SELECT id, name, email, password_hash FROM users WHERE id = ? LIMIT 1', [id]);
+        const [rows] = await this.db.execute('SELECT id, email, password_hash FROM users WHERE id = ? LIMIT 1', [id]);
         if (!rows.length)
             return null;
         return this.hydrateUser(rows[0]);
     }
     async findByEmail(email) {
-        const [rows] = await this.db.execute('SELECT id, name, email, password_hash FROM users WHERE LOWER(email) = LOWER(?) LIMIT 1', [email]);
+        const [rows] = await this.db.execute('SELECT id, email, password_hash FROM users WHERE LOWER(email) = LOWER(?) LIMIT 1', [email]);
         if (!rows.length)
             return null;
         return this.hydrateUser(rows[0]);
     }
     async create(user) {
-        const [result] = await this.db.execute('INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)', [user.name, user.email, user.passwordHash]);
+        const [result] = await this.db.execute('INSERT INTO users (email, password_hash) VALUES (?, ?)', [user.email, user.passwordHash]);
         const id = result.insertId;
         await this.saveRoles(id, user.roles);
-        return new user_entity_1.User(id, user.name, user.email, [...user.roles], user.passwordHash);
+        await this.saveProfile(id, user.profile);
+        return (await this.findById(id)) ?? user.clone();
     }
     async update(user) {
-        await this.db.execute('UPDATE users SET name = ?, email = ? WHERE id = ?', [user.name, user.email, user.id]);
+        await this.db.execute('UPDATE users SET email = ?, password_hash = ? WHERE id = ?', [user.email, user.passwordHash, user.id]);
         await this.db.execute('DELETE FROM user_roles WHERE user_id = ?', [user.id]);
         await this.saveRoles(user.id, user.roles);
+        await this.saveProfile(user.id, user.profile);
         return user.clone();
     }
     async remove(id) {
@@ -62,7 +65,18 @@ let MysqlUserRepository = class MysqlUserRepository {
     async hydrateUser(row) {
         const [roleRows] = await this.db.execute('SELECT role_id FROM user_roles WHERE user_id = ?', [row.id]);
         const roleIds = roleRows.map((r) => Number(r.role_id));
-        return new user_entity_1.User(row.id, row.name, row.email, roleIds, row.password_hash);
+        const profileRow = await this.loadProfile(row.id);
+        const user = new user_entity_1.User(row.id, row.email, roleIds, row.password_hash);
+        if (profileRow) {
+            user.profile = new user_profile_entity_1.UserProfile({
+                userId: row.id,
+                firstName: profileRow.first_name,
+                lastName: profileRow.last_name,
+                dateOfBirth: profileRow.date_of_birth ? new Date(profileRow.date_of_birth) : null,
+                pictureUrl: profileRow.picture_url,
+            });
+        }
+        return user;
     }
     async saveRoles(userId, roles) {
         if (!roles || !roles.length)
@@ -70,6 +84,29 @@ let MysqlUserRepository = class MysqlUserRepository {
         const placeholders = roles.map(() => '(?, ?)').join(', ');
         const params = roles.flatMap((roleId) => [userId, roleId]);
         await this.db.execute(`INSERT IGNORE INTO user_roles (user_id, role_id) VALUES ${placeholders}`, params);
+    }
+    async saveProfile(userId, profile) {
+        if (!profile) {
+            await this.db.execute('DELETE FROM user_profiles WHERE user_id = ?', [userId]);
+            return;
+        }
+        await this.db.execute(`INSERT INTO user_profiles (user_id, first_name, last_name, date_of_birth, picture_url)
+       VALUES (?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE
+         first_name = VALUES(first_name),
+         last_name = VALUES(last_name),
+         date_of_birth = VALUES(date_of_birth),
+         picture_url = VALUES(picture_url)`, [
+            userId,
+            profile.firstName,
+            profile.lastName,
+            profile.dateOfBirth ? profile.dateOfBirth.toISOString().split('T')[0] : null,
+            profile.pictureUrl,
+        ]);
+    }
+    async loadProfile(userId) {
+        const [rows] = await this.db.execute('SELECT user_id, first_name, last_name, date_of_birth, picture_url FROM user_profiles WHERE user_id = ? LIMIT 1', [userId]);
+        return rows[0] ?? null;
     }
 };
 exports.MysqlUserRepository = MysqlUserRepository;

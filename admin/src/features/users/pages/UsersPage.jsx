@@ -8,6 +8,7 @@ import { fetchUsers, createUser, updateUser, deleteUser } from '../api/usersApi'
 import { fetchRoles } from '../../roles/api/rolesApi'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
+import { getUserDisplayName } from '../../../shared/lib/userDisplayName'
 
 export function UsersPage() {
   const qc = useQueryClient()
@@ -166,7 +167,7 @@ export function UsersPage() {
       <ConfirmModal
         show={confirmOpen}
         title="Delete User"
-        message={`Are you sure you want to delete ${targetUser?.name || 'this user'}?`}
+        message={`Are you sure you want to delete ${getUserDisplayName(targetUser) || 'this user'}?`}
         confirmText="Delete"
         cancelText="Cancel"
         onCancel={() => { setConfirmOpen(false); setTargetUser(null) }}

@@ -121,11 +121,38 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         await this.execute(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL UNIQUE,
         password_hash VARCHAR(255) NOT NULL
       ) ENGINE=InnoDB;
     `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS user_profiles (
+        user_id INT NOT NULL PRIMARY KEY,
+        first_name VARCHAR(255) NOT NULL,
+        last_name VARCHAR(255) NULL,
+        date_of_birth DATE NULL,
+        picture_url VARCHAR(1024) NULL,
+        CONSTRAINT fk_user_profiles_user FOREIGN KEY (user_id)
+          REFERENCES users(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `);
+        const [nameColumnRows] = await this.execute(`SELECT COLUMN_NAME FROM information_schema.COLUMNS
+       WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'name'`, [this.config.database]);
+        if (nameColumnRows.length) {
+            await this.execute(`INSERT INTO user_profiles (user_id, first_name, last_name)
+         SELECT u.id,
+                COALESCE(NULLIF(TRIM(SUBSTRING_INDEX(u.name, ' ', 1)), ''), 'User'),
+                COALESCE(NULLIF(TRIM(SUBSTRING_INDEX(u.name, ' ', -1)), ''), 'User')
+         FROM users u
+         WHERE NOT EXISTS (
+           SELECT 1 FROM user_profiles p WHERE p.user_id = u.id
+         );`);
+            try {
+                await this.execute('ALTER TABLE users DROP COLUMN name');
+            }
+            catch (e) {
+            }
+        }
         await this.execute(`
       CREATE TABLE IF NOT EXISTS user_roles (
         user_id INT NOT NULL,
@@ -167,8 +194,9 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         const userCount = Number(userCountRows[0]?.count ?? 0);
         if (userCount === 0) {
             const passwordHash = this.passwordService.hashSync(constants_1.DEFAULT_USER_PASSWORD);
-            const [result] = await this.execute('INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)', ['Leanne Graham', 'leanne@example.com', passwordHash]);
+            const [result] = await this.execute('INSERT INTO users (email, password_hash) VALUES (?, ?)', ['leanne@example.com', passwordHash]);
             const userId = result.insertId;
+            await this.execute('INSERT INTO user_profiles (user_id, first_name, last_name, picture_url) VALUES (?, ?, ?, ?)', [userId, 'Leanne', 'Graham', null]);
             const [adminRoles] = await this.execute("SELECT id FROM roles WHERE LOWER(name) = 'admin' LIMIT 1");
             const adminRoleId = adminRoles[0]?.id;
             if (adminRoleId) {

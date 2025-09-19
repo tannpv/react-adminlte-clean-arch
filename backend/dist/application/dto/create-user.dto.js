@@ -17,11 +17,30 @@ class CreateUserDto {
 exports.CreateUserDto = CreateUserDto;
 __decorate([
     (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.trim() : value)),
-    (0, class_validator_1.IsString)({ message: 'Name is required (min 2 characters)' }),
-    (0, class_validator_1.IsNotEmpty)({ message: 'Name is required (min 2 characters)' }),
-    (0, class_validator_1.MinLength)(2, { message: 'Name is required (min 2 characters)' }),
+    (0, class_validator_1.IsString)({ message: 'First name is required (min 2 characters)' }),
+    (0, class_validator_1.IsNotEmpty)({ message: 'First name is required (min 2 characters)' }),
+    (0, class_validator_1.MinLength)(2, { message: 'First name is required (min 2 characters)' }),
     __metadata("design:type", String)
-], CreateUserDto.prototype, "name", void 0);
+], CreateUserDto.prototype, "firstName", void 0);
+__decorate([
+    (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.trim() : value)),
+    (0, class_validator_1.IsString)({ message: 'Last name is required (min 2 characters)' }),
+    (0, class_validator_1.IsNotEmpty)({ message: 'Last name is required (min 2 characters)' }),
+    (0, class_validator_1.MinLength)(2, { message: 'Last name is required (min 2 characters)' }),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "lastName", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsDateString)({}, { message: 'Date of birth must be a valid date' }),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "dateOfBirth", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.trim() : value)),
+    (0, class_validator_1.IsString)({ message: 'Picture URL must be text' }),
+    (0, class_validator_1.MaxLength)(1024, { message: 'Picture URL is too long' }),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "pictureUrl", void 0);
 __decorate([
     (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.trim() : value)),
     (0, class_validator_1.IsNotEmpty)({ message: 'Email is required' }),

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import { User } from '../../../domain/entities/user.entity'
+import { UserProfile } from '../../../domain/entities/user-profile.entity'
 import { UserRepository } from '../../../domain/repositories/user.repository'
 import { MysqlDatabaseService } from './mysql-database.service'
 
 interface UserRow extends RowDataPacket {
   id: number
-  name: string
   email: string
   password_hash: string
 }
@@ -19,13 +19,21 @@ interface UserRoleRow extends RowDataPacket {
   role_id: number
 }
 
+interface UserProfileRow extends RowDataPacket {
+  user_id: number
+  first_name: string
+  last_name: string | null
+  date_of_birth: Date | null
+  picture_url: string | null
+}
+
 @Injectable()
 export class MysqlUserRepository implements UserRepository {
   constructor(private readonly db: MysqlDatabaseService) {}
 
   async findAll(): Promise<User[]> {
     const [rows] = await this.db.execute<UserRow[]>(
-      'SELECT id, name, email, password_hash FROM users ORDER BY id ASC',
+      'SELECT id, email, password_hash FROM users ORDER BY id ASC',
     )
     const users = await Promise.all(rows.map((row) => this.hydrateUser(row)))
     return users
@@ -33,7 +41,7 @@ export class MysqlUserRepository implements UserRepository {
 
   async findById(id: number): Promise<User | null> {
     const [rows] = await this.db.execute<UserRow[]>(
-      'SELECT id, name, email, password_hash FROM users WHERE id = ? LIMIT 1',
+      'SELECT id, email, password_hash FROM users WHERE id = ? LIMIT 1',
       [id],
     )
     if (!rows.length) return null
@@ -42,7 +50,7 @@ export class MysqlUserRepository implements UserRepository {
 
   async findByEmail(email: string): Promise<User | null> {
     const [rows] = await this.db.execute<UserRow[]>(
-      'SELECT id, name, email, password_hash FROM users WHERE LOWER(email) = LOWER(?) LIMIT 1',
+      'SELECT id, email, password_hash FROM users WHERE LOWER(email) = LOWER(?) LIMIT 1',
       [email],
     )
     if (!rows.length) return null
@@ -51,21 +59,23 @@ export class MysqlUserRepository implements UserRepository {
 
   async create(user: User): Promise<User> {
     const [result] = await this.db.execute<ResultSetHeader>(
-      'INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)',
-      [user.name, user.email, user.passwordHash],
+      'INSERT INTO users (email, password_hash) VALUES (?, ?)',
+      [user.email, user.passwordHash],
     )
     const id = result.insertId as number
     await this.saveRoles(id, user.roles)
-    return new User(id, user.name, user.email, [...user.roles], user.passwordHash)
+    await this.saveProfile(id, user.profile)
+    return (await this.findById(id)) ?? user.clone()
   }
 
   async update(user: User): Promise<User> {
     await this.db.execute<ResultSetHeader>(
-      'UPDATE users SET name = ?, email = ? WHERE id = ?',
-      [user.name, user.email, user.id],
+      'UPDATE users SET email = ?, password_hash = ? WHERE id = ?',
+      [user.email, user.passwordHash, user.id],
     )
     await this.db.execute('DELETE FROM user_roles WHERE user_id = ?', [user.id])
     await this.saveRoles(user.id, user.roles)
+    await this.saveProfile(user.id, user.profile)
     return user.clone()
   }
 
@@ -92,7 +102,18 @@ export class MysqlUserRepository implements UserRepository {
       [row.id],
     )
     const roleIds = roleRows.map((r) => Number(r.role_id))
-    return new User(row.id, row.name, row.email, roleIds, row.password_hash)
+    const profileRow = await this.loadProfile(row.id)
+    const user = new User(row.id, row.email, roleIds, row.password_hash)
+    if (profileRow) {
+      user.profile = new UserProfile({
+        userId: row.id,
+        firstName: profileRow.first_name,
+        lastName: profileRow.last_name,
+        dateOfBirth: profileRow.date_of_birth ? new Date(profileRow.date_of_birth) : null,
+        pictureUrl: profileRow.picture_url,
+      })
+    }
+    return user
   }
 
   private async saveRoles(userId: number, roles: number[]): Promise<void> {
@@ -103,5 +124,37 @@ export class MysqlUserRepository implements UserRepository {
       `INSERT IGNORE INTO user_roles (user_id, role_id) VALUES ${placeholders}`,
       params,
     )
+  }
+
+  private async saveProfile(userId: number, profile: UserProfile | null): Promise<void> {
+    if (!profile) {
+      await this.db.execute('DELETE FROM user_profiles WHERE user_id = ?', [userId])
+      return
+    }
+
+    await this.db.execute(
+      `INSERT INTO user_profiles (user_id, first_name, last_name, date_of_birth, picture_url)
+       VALUES (?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE
+         first_name = VALUES(first_name),
+         last_name = VALUES(last_name),
+         date_of_birth = VALUES(date_of_birth),
+         picture_url = VALUES(picture_url)`,
+      [
+        userId,
+        profile.firstName,
+        profile.lastName,
+        profile.dateOfBirth ? profile.dateOfBirth.toISOString().split('T')[0] : null,
+        profile.pictureUrl,
+      ],
+    )
+  }
+
+  private async loadProfile(userId: number): Promise<UserProfileRow | null> {
+    const [rows] = await this.db.execute<UserProfileRow[]>(
+      'SELECT user_id, first_name, last_name, date_of_birth, picture_url FROM user_profiles WHERE user_id = ? LIMIT 1',
+      [userId],
+    )
+    return rows[0] ?? null
   }
 }

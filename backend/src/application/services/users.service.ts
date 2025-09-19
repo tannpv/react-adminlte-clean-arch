@@ -4,6 +4,7 @@ import { UpdateUserDto } from '../dto/update-user.dto'
 import { USER_REPOSITORY, UserRepository } from '../../domain/repositories/user.repository'
 import { ROLE_REPOSITORY, RoleRepository } from '../../domain/repositories/role.repository'
 import { PublicUser, User } from '../../domain/entities/user.entity'
+import { UserProfile } from '../../domain/entities/user-profile.entity'
 import { PasswordService } from '../../shared/password.service'
 import { DEFAULT_USER_PASSWORD } from '../../shared/constants'
 import { validationException } from '../../shared/validation-error'
@@ -36,13 +37,20 @@ export class UsersService {
   }
 
   async create(dto: CreateUserDto): Promise<PublicUser> {
-    const trimmedName = dto.name.trim()
+    const trimmedFirstName = dto.firstName.trim()
+    const trimmedLastName = dto.lastName.trim()
     const trimmedEmail = dto.email.trim()
     const emailLower = trimmedEmail.toLowerCase()
 
-    if (!trimmedName || trimmedName.length < 2) {
+    if (!trimmedFirstName || trimmedFirstName.length < 2) {
       throw validationException({
-        name: { code: 'NAME_MIN', message: 'Name is required (min 2 characters)' },
+        firstName: { code: 'FIRST_NAME_MIN', message: 'First name is required (min 2 characters)' },
+      })
+    }
+
+    if (!trimmedLastName || trimmedLastName.length < 2) {
+      throw validationException({
+        lastName: { code: 'LAST_NAME_MIN', message: 'Last name is required (min 2 characters)' },
       })
     }
 
@@ -70,7 +78,25 @@ export class UsersService {
 
     const id = await this.users.nextId()
     const passwordHash = this.passwordService.hashSync(DEFAULT_USER_PASSWORD)
-    const user = new User(id, trimmedName, trimmedEmail, roleIds, passwordHash)
+    let dateOfBirth: Date | null = null
+    if (dto.dateOfBirth) {
+      const dob = new Date(dto.dateOfBirth)
+      if (Number.isNaN(dob.getTime())) {
+        throw validationException({
+          dateOfBirth: { code: 'DOB_INVALID', message: 'Date of birth must be a valid date' },
+        })
+      }
+      dateOfBirth = dob
+    }
+
+    const user = new User(id, trimmedEmail, roleIds, passwordHash)
+    user.profile = new UserProfile({
+      userId: id,
+      firstName: trimmedFirstName,
+      lastName: trimmedLastName,
+      dateOfBirth,
+      pictureUrl: dto.pictureUrl ? dto.pictureUrl.trim() || null : null,
+    })
     const created = await this.users.create(user)
     return created.toPublic()
   }
@@ -79,17 +105,14 @@ export class UsersService {
     const existing = await this.users.findById(id)
     if (!existing) throw new NotFoundException({ message: 'Not found' })
 
-    const updates: Partial<User> = {}
-
-    if (dto.name !== undefined) {
-      const trimmed = dto.name.trim()
-      if (!trimmed || trimmed.length < 2) {
-        throw validationException({
-          name: { code: 'NAME_MIN', message: 'Name is required (min 2 characters)' },
-        })
-      }
-      updates.name = trimmed
-    }
+    const updated = existing.clone()
+    const profile = updated.profile ?? new UserProfile({
+      userId: updated.id,
+      firstName: '',
+      lastName: null,
+      dateOfBirth: null,
+      pictureUrl: null,
+    })
 
     if (dto.email !== undefined) {
       const trimmedEmail = dto.email.trim()
@@ -111,18 +134,68 @@ export class UsersService {
           email: { code: 'EMAIL_EXISTS', message: 'Email is already in use' },
         })
       }
-      updates.email = trimmedEmail
+      updated.email = trimmedEmail
     }
 
     if (dto.roles !== undefined) {
       const roleIds = await this.validateRoles(dto.roles)
-      updates.roles = roleIds
+      updated.roles = roleIds
     }
 
-    const updated = existing.clone()
-    updated.name = updates.name ?? updated.name
-    updated.email = updates.email ?? updated.email
-    updated.roles = updates.roles ?? updated.roles
+    if (dto.password !== undefined) {
+      if (!dto.password.trim()) {
+        throw validationException({
+          password: { code: 'PASSWORD_REQUIRED', message: 'Password must be at least 6 characters' },
+        })
+      }
+      if (dto.password.length < 6) {
+        throw validationException({
+          password: { code: 'PASSWORD_MIN', message: 'Password must be at least 6 characters' },
+        })
+      }
+      updated.passwordHash = this.passwordService.hashSync(dto.password)
+    }
+
+    if (dto.firstName !== undefined) {
+      const trimmed = dto.firstName.trim()
+      if (!trimmed || trimmed.length < 2) {
+        throw validationException({
+          firstName: { code: 'FIRST_NAME_MIN', message: 'First name must be at least 2 characters' },
+        })
+      }
+      profile.firstName = trimmed
+    }
+
+    if (dto.lastName !== undefined) {
+      const trimmed = dto.lastName.trim()
+      if (!trimmed || trimmed.length < 2) {
+        throw validationException({
+          lastName: { code: 'LAST_NAME_MIN', message: 'Last name must be at least 2 characters' },
+        })
+      }
+      profile.lastName = trimmed
+    }
+
+    if (dto.dateOfBirth !== undefined) {
+      if (!dto.dateOfBirth) {
+        profile.dateOfBirth = null
+      } else {
+        const dob = new Date(dto.dateOfBirth)
+        if (Number.isNaN(dob.getTime())) {
+          throw validationException({
+            dateOfBirth: { code: 'DOB_INVALID', message: 'Date of birth must be a valid date' },
+          })
+        }
+        profile.dateOfBirth = dob
+      }
+    }
+
+    if (dto.pictureUrl !== undefined) {
+      const trimmed = dto.pictureUrl?.trim() || ''
+      profile.pictureUrl = trimmed.length ? trimmed : null
+    }
+
+    updated.profile = profile
 
     const saved = await this.users.update(updated)
     return saved.toPublic()
