@@ -41,7 +41,7 @@ let MysqlUserRepository = class MysqlUserRepository {
         return new user_entity_1.User(id, user.name, user.email, [...user.roles], user.passwordHash);
     }
     async update(user) {
-        await this.db.execute('UPDATE users SET name = ?, email = ? WHERE id = ?', [user.name, user.email, user.id]);
+        await this.db.execute('UPDATE users SET name = ?, email = ?, password_hash = ? WHERE id = ?', [user.name, user.email, user.passwordHash, user.id]);
         await this.db.execute('DELETE FROM user_roles WHERE user_id = ?', [user.id]);
         await this.saveRoles(user.id, user.roles);
         return user.clone();

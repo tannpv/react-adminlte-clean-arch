@@ -5,6 +5,9 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
   const [email, setEmail] = useState('')
   // store role ids as strings to match <option value> type
   const [roles, setRoles] = useState([])
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [localPasswordError, setLocalPasswordError] = useState(null)
   // If you want client-side UX, you can reintroduce touched state, but
   // we now rely solely on server validation for messages and borders.
 
@@ -12,19 +15,38 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
     setName(initialUser?.name || '')
     setEmail(initialUser?.email || '')
     setRoles(Array.isArray(initialUser?.roles) ? initialUser.roles.map(String) : [])
+    setPassword('')
+    setConfirmPassword('')
+    setLocalPasswordError(null)
     // reset any client-only flags if they existed
   }, [initialUser])
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    setLocalPasswordError(null)
     const roleIds = roles.map((v) => Number(v)).filter((n) => !Number.isNaN(n))
-    onSubmit({ name: name.trim(), email: email.trim(), roles: roleIds })
+    const payload = { name: name.trim(), email: email.trim(), roles: roleIds }
+    const isEditing = !!initialUser?.id
+    if (isEditing && (password || confirmPassword)) {
+      if (password !== confirmPassword) {
+        setLocalPasswordError('Password confirmation does not match')
+        return
+      }
+      if (password.length < 6) {
+        setLocalPasswordError('Password must be at least 6 characters')
+        return
+      }
+      payload.password = password
+    }
+    onSubmit(payload)
   }
 
   const isEditing = !!initialUser?.id
 
   const nameError = typeof errors.name === 'string' ? errors.name : errors.name?.message
   const emailError = typeof errors.email === 'string' ? errors.email : errors.email?.message
+  const passwordServerError = typeof errors.password === 'string' ? errors.password : errors.password?.message
+  const passwordError = localPasswordError || passwordServerError
 
   // Server-driven validation only
   const showNameInvalid = !!nameError
@@ -86,6 +108,39 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
         )}
         {rolesError && <div className="invalid-feedback">{rolesError}</div>}
       </div>
+      {isEditing && (
+        <div className="form-row">
+          <div className="form-group col-md-6">
+            <label>New Password</label>
+            <input
+              type="password"
+              className={`form-control ${passwordError ? 'is-invalid' : ''}`}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value)
+                if (localPasswordError) setLocalPasswordError(null)
+              }}
+              placeholder="Leave blank to keep current password"
+              disabled={submitting}
+            />
+            {passwordError && <div className="invalid-feedback">{passwordError}</div>}
+          </div>
+          <div className="form-group col-md-6">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              className={`form-control ${passwordError ? 'is-invalid' : ''}`}
+              value={confirmPassword}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value)
+                if (localPasswordError) setLocalPasswordError(null)
+              }}
+              placeholder="Re-enter new password"
+              disabled={submitting}
+            />
+          </div>
+        </div>
+      )}
     </form>
   )
 }

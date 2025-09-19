@@ -13,6 +13,16 @@ export class UpdateUserDto {
   @IsEmail({}, { message: 'Email is invalid' })
   email?: string
 
+  @Transform(({ value }) => {
+    if (typeof value !== 'string') return value
+    const trimmed = value.trim()
+    return trimmed.length ? trimmed : undefined
+  })
+  @IsOptional()
+  @IsString({ message: 'Password must be at least 6 characters' })
+  @MinLength(6, { message: 'Password must be at least 6 characters' })
+  password?: string
+
   @IsOptional()
   @IsArray()
   @Transform(({ value }) => {

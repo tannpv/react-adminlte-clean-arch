@@ -61,8 +61,8 @@ export class MysqlUserRepository implements UserRepository {
 
   async update(user: User): Promise<User> {
     await this.db.execute<ResultSetHeader>(
-      'UPDATE users SET name = ?, email = ? WHERE id = ?',
-      [user.name, user.email, user.id],
+      'UPDATE users SET name = ?, email = ?, password_hash = ? WHERE id = ?',
+      [user.name, user.email, user.passwordHash, user.id],
     )
     await this.db.execute('DELETE FROM user_roles WHERE user_id = ?', [user.id])
     await this.saveRoles(user.id, user.roles)

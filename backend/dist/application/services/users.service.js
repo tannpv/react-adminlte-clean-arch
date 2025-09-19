@@ -115,10 +115,26 @@ let UsersService = class UsersService {
             const roleIds = await this.validateRoles(dto.roles);
             updates.roles = roleIds;
         }
+        if (dto.password !== undefined) {
+            if (!dto.password.trim()) {
+                throw (0, validation_error_1.validationException)({
+                    password: { code: 'PASSWORD_REQUIRED', message: 'Password must be at least 6 characters' },
+                });
+            }
+            if (dto.password.length < 6) {
+                throw (0, validation_error_1.validationException)({
+                    password: { code: 'PASSWORD_MIN', message: 'Password must be at least 6 characters' },
+                });
+            }
+            updates.passwordHash = this.passwordService.hashSync(dto.password);
+        }
         const updated = existing.clone();
         updated.name = updates.name ?? updated.name;
         updated.email = updates.email ?? updated.email;
         updated.roles = updates.roles ?? updated.roles;
+        if (updates.passwordHash) {
+            updated.passwordHash = updates.passwordHash;
+        }
         const saved = await this.users.update(updated);
         return saved.toPublic();
     }

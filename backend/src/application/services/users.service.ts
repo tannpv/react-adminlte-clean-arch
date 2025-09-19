@@ -79,7 +79,7 @@ export class UsersService {
     const existing = await this.users.findById(id)
     if (!existing) throw new NotFoundException({ message: 'Not found' })
 
-    const updates: Partial<User> = {}
+    const updates: Partial<User> & { passwordHash?: string } = {}
 
     if (dto.name !== undefined) {
       const trimmed = dto.name.trim()
@@ -119,10 +119,27 @@ export class UsersService {
       updates.roles = roleIds
     }
 
+    if (dto.password !== undefined) {
+      if (!dto.password.trim()) {
+        throw validationException({
+          password: { code: 'PASSWORD_REQUIRED', message: 'Password must be at least 6 characters' },
+        })
+      }
+      if (dto.password.length < 6) {
+        throw validationException({
+          password: { code: 'PASSWORD_MIN', message: 'Password must be at least 6 characters' },
+        })
+      }
+      updates.passwordHash = this.passwordService.hashSync(dto.password)
+    }
+
     const updated = existing.clone()
     updated.name = updates.name ?? updated.name
     updated.email = updates.email ?? updated.email
     updated.roles = updates.roles ?? updated.roles
+    if (updates.passwordHash) {
+      updated.passwordHash = updates.passwordHash
+    }
 
     const saved = await this.users.update(updated)
     return saved.toPublic()
