@@ -1,0 +1,44 @@
+import React from 'react'
+
+const formatPrice = (priceCents, currency = 'USD') => {
+  const value = Number(priceCents || 0) / 100
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(value)
+}
+
+export function ProductList({ products, onEdit, onDelete }) {
+  return (
+    <table className="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>SKU</th>
+          <th>Name</th>
+          <th>Status</th>
+          <th className="text-right">Price</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {products.map((product) => (
+          <tr key={product.id}>
+            <td>{product.id}</td>
+            <td>{product.sku}</td>
+            <td>{product.name}</td>
+            <td>
+              <span className="badge badge-pill badge-secondary text-uppercase">{product.status}</span>
+            </td>
+            <td className="text-right">{formatPrice(product.priceCents, product.currency)}</td>
+            <td>
+              <button className="btn btn-sm btn-outline-primary mr-2" onClick={() => onEdit(product)}>
+                Edit
+              </button>
+              <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(product)}>
+                Delete
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}

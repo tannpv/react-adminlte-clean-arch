@@ -2,24 +2,27 @@ import React, { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { UsersPage } from '../features/users/pages/UsersPage'
 import { RolesPage } from '../features/roles/pages/RolesPage'
+import { ProductsPage } from '../features/products/pages/ProductsPage'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
 import { useAuth } from '../features/auth/context/AuthProvider'
 import { usePermissions } from '../shared/hooks/usePermissions'
 import { ApiClient } from '../shared/lib/apiClient'
 import { fetchRoles } from '../features/roles/api/rolesApi'
+import { fetchProducts } from '../features/products/api/productsApi'
 
 export default function App() {
   const { user: currentUser, setUser: setCurrentUser, logout } = useAuth()
   const { me } = usePermissions()
   const [authScreen, setAuthScreen] = useState('login') // 'login' | 'register'
-  const [menu, setMenu] = useState('users') // 'users' | 'roles'
+  const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'products'
   const qc = useQueryClient()
 
   useEffect(() => {
     if (!currentUser) return
     qc.prefetchQuery({ queryKey: ['me'], queryFn: async () => (await ApiClient.get('/me')).data, staleTime: 10_000 })
     qc.prefetchQuery({ queryKey: ['roles'], queryFn: fetchRoles, staleTime: 5 * 60_000 })
+    qc.prefetchQuery({ queryKey: ['products'], queryFn: fetchProducts, staleTime: 60_000 })
   }, [currentUser, qc])
   return (
     <div className="wrapper">
@@ -67,6 +70,12 @@ export default function App() {
                   <p>Roles</p>
                 </a>
               </li>
+              <li className="nav-item">
+                <a href="#" className={`nav-link ${menu === 'products' ? 'active' : ''}`} onClick={() => setMenu('products')}>
+                  <i className="nav-icon fas fa-box" />
+                  <p>Products</p>
+                </a>
+              </li>
             </ul>
           </nav>
         </div>
@@ -78,8 +87,10 @@ export default function App() {
             {currentUser ? (
               menu === 'users' ? (
                 <UsersPage />
-              ) : (
+              ) : menu === 'roles' ? (
                 <RolesPage />
+              ) : (
+                <ProductsPage />
               )
             ) : authScreen === 'login' ? (
               <LoginPage
