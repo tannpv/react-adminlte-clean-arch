@@ -9,6 +9,8 @@ const normalizeProduct = (product) => ({
   currency: product.currency,
   status: product.status,
   metadata: product.metadata || null,
+  categories: Array.isArray(product.categories) ? product.categories.map((c) => ({ id: c.id, name: c.name })) : [],
+  categoryIds: Array.isArray(product.categories) ? product.categories.map((c) => c.id) : [],
   createdAt: product.createdAt,
   updatedAt: product.updatedAt,
 })

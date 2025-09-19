@@ -11,6 +11,7 @@ export function toProductResponse(product: Product): ProductResponseDto {
     currency: product.currency,
     status: product.status,
     metadata: product.metadata ? { ...product.metadata } : null,
+    categories: product.categories.map((category) => ({ id: category.id, name: category.name })),
     createdAt: product.createdAt.toISOString(),
     updatedAt: product.updatedAt.toISOString(),
   }

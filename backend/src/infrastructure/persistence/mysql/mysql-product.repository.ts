@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import { Product, ProductStatus } from '../../../domain/entities/product.entity'
+import { Category } from '../../../domain/entities/category.entity'
 import { ProductRepository } from '../../../domain/repositories/product.repository'
 import { MysqlDatabaseService } from './mysql-database.service'
 
@@ -17,6 +18,11 @@ interface ProductRow extends RowDataPacket {
   updated_at: Date
 }
 
+interface ProductCategoryRow extends RowDataPacket {
+  category_id: number
+  name: string
+}
+
 @Injectable()
 export class MysqlProductRepository implements ProductRepository {
   constructor(private readonly db: MysqlDatabaseService) {}
@@ -25,7 +31,7 @@ export class MysqlProductRepository implements ProductRepository {
     const [rows] = await this.db.execute<ProductRow[]>(
       'SELECT * FROM products ORDER BY updated_at DESC',
     )
-    return rows.map((row) => this.hydrate(row))
+    return Promise.all(rows.map((row) => this.hydrate(row)))
   }
 
   async findById(id: number): Promise<Product | null> {
@@ -64,6 +70,7 @@ export class MysqlProductRepository implements ProductRepository {
       ],
     )
     const id = result.insertId as number
+    await this.replaceCategories(id, product.categoryIds)
     const created = await this.findById(id)
     // findById should not return null immediately after insert, but fallback for safety
     return created ?? product.clone()
@@ -87,6 +94,7 @@ export class MysqlProductRepository implements ProductRepository {
         product.id,
       ],
     )
+    await this.replaceCategories(product.id, product.categoryIds)
     const updated = await this.findById(product.id)
     return updated ?? product
   }
@@ -108,7 +116,7 @@ export class MysqlProductRepository implements ProductRepository {
     return nextId ? Number(nextId) : 1
   }
 
-  private hydrate(row: ProductRow): Product {
+  private async hydrate(row: ProductRow): Promise<Product> {
     let metadata: Record<string, unknown> | null = null
     if (row.metadata) {
       try {
@@ -117,6 +125,8 @@ export class MysqlProductRepository implements ProductRepository {
         metadata = null
       }
     }
+
+    const categories = await this.loadCategories(row.id)
 
     return new Product({
       id: row.id,
@@ -127,8 +137,33 @@ export class MysqlProductRepository implements ProductRepository {
       currency: row.currency,
       status: row.status as ProductStatus,
       metadata,
+      categories,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
     })
+  }
+
+  private async loadCategories(productId: number): Promise<Category[]> {
+    const [rows] = await this.db.execute<ProductCategoryRow[]>(
+      `SELECT pc.category_id, c.name
+       FROM product_categories pc
+       INNER JOIN categories c ON c.id = pc.category_id
+       WHERE pc.product_id = ?
+       ORDER BY c.name ASC`,
+      [productId],
+    )
+    return rows.map((row) => new Category(row.category_id, row.name))
+  }
+
+  private async replaceCategories(productId: number, categoryIds: number[]): Promise<void> {
+    await this.db.execute('DELETE FROM product_categories WHERE product_id = ?', [productId])
+    if (!categoryIds || !categoryIds.length) return
+    const uniqueIds = Array.from(new Set(categoryIds))
+    const placeholders = uniqueIds.map(() => '(?, ?)').join(', ')
+    const params = uniqueIds.flatMap((categoryId) => [productId, categoryId])
+    await this.db.execute(
+      `INSERT IGNORE INTO product_categories (product_id, category_id) VALUES ${placeholders}`,
+      params,
+    )
   }
 }

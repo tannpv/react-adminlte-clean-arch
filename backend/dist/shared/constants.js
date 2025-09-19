@@ -14,8 +14,12 @@ exports.DEFAULT_ADMIN_PERMISSIONS = [
     'products:create',
     'products:update',
     'products:delete',
+    'categories:read',
+    'categories:create',
+    'categories:update',
+    'categories:delete',
 ];
-exports.DEFAULT_USER_PERMISSIONS = ['users:read', 'products:read'];
+exports.DEFAULT_USER_PERMISSIONS = ['users:read', 'products:read', 'categories:read'];
 exports.DEFAULT_JWT_SECRET = 'dev_secret_change_me';
 exports.DEFAULT_USER_PASSWORD = 'secret';
 //# sourceMappingURL=constants.js.map

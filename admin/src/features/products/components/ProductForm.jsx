@@ -12,13 +12,14 @@ const getError = (errors, key) => {
   return typeof raw === 'string' ? raw : raw?.message || 'Invalid'
 }
 
-export function ProductForm({ initialProduct, onSubmit, onCancel, errors = {}, submitting = false, formId = 'product-form' }) {
+export function ProductForm({ initialProduct, onSubmit, onCancel, errors = {}, submitting = false, formId = 'product-form', categoryOptions = [] }) {
   const [sku, setSku] = useState('')
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
   const [currency, setCurrency] = useState('USD')
   const [status, setStatus] = useState('draft')
+  const [categories, setCategories] = useState([])
 
   useEffect(() => {
     if (!initialProduct) {
@@ -28,6 +29,7 @@ export function ProductForm({ initialProduct, onSubmit, onCancel, errors = {}, s
       setPrice('')
       setCurrency('USD')
       setStatus('draft')
+      setCategories([])
       return
     }
     setSku(initialProduct.sku || '')
@@ -37,6 +39,7 @@ export function ProductForm({ initialProduct, onSubmit, onCancel, errors = {}, s
     setPrice(priceValue)
     setCurrency(initialProduct.currency || 'USD')
     setStatus(initialProduct.status || 'draft')
+    setCategories(Array.isArray(initialProduct.categoryIds) ? initialProduct.categoryIds.map(String) : [])
   }, [initialProduct])
 
   const normalizedErrors = useMemo(() => ({
@@ -46,6 +49,7 @@ export function ProductForm({ initialProduct, onSubmit, onCancel, errors = {}, s
     price: getError(errors, 'price'),
     currency: getError(errors, 'currency'),
     status: getError(errors, 'status'),
+    categories: getError(errors, 'categories'),
   }), [errors])
 
   const handleSubmit = (e) => {
@@ -57,6 +61,7 @@ export function ProductForm({ initialProduct, onSubmit, onCancel, errors = {}, s
       price: Number(price),
       currency: currency.trim().toUpperCase(),
       status,
+      categories: categories.map((v) => Number(v)).filter((n) => Number.isInteger(n)),
     }
     if (!payload.description) delete payload.description
     if (!Number.isFinite(payload.price)) delete payload.price
@@ -136,6 +141,29 @@ export function ProductForm({ initialProduct, onSubmit, onCancel, errors = {}, s
           </select>
           {normalizedErrors.status && <div className="invalid-feedback">{normalizedErrors.status}</div>}
         </div>
+      </div>
+
+      <div className="form-group">
+        <label>Categories</label>
+        <select
+          multiple
+          className={`form-control ${normalizedErrors.categories ? 'is-invalid' : ''}`}
+          value={categories}
+          onChange={(e) => {
+            const values = Array.from(e.target.selectedOptions).map((opt) => opt.value)
+            setCategories(values)
+          }}
+          size={Math.min(8, Math.max(3, categoryOptions.length || 3))}
+          disabled={submitting || !categoryOptions.length}
+        >
+          {categoryOptions.map((category) => (
+            <option key={category.id} value={String(category.id)}>{category.name}</option>
+          ))}
+        </select>
+        {!categoryOptions.length && (
+          <small className="form-text text-muted">No categories available. Create categories first.</small>
+        )}
+        {normalizedErrors.categories && <div className="invalid-feedback">{normalizedErrors.categories}</div>}
       </div>
 
       <div className="d-flex justify-content-end">

@@ -93,6 +93,23 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
       ) ENGINE=InnoDB;
     `);
         await this.execute(`
+      CREATE TABLE IF NOT EXISTS categories (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL UNIQUE
+      ) ENGINE=InnoDB;
+    `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_categories (
+        product_id INT NOT NULL,
+        category_id INT NOT NULL,
+        PRIMARY KEY (product_id, category_id),
+        CONSTRAINT fk_product_categories_product FOREIGN KEY (product_id)
+          REFERENCES products(id) ON DELETE CASCADE,
+        CONSTRAINT fk_product_categories_category FOREIGN KEY (category_id)
+          REFERENCES categories(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `);
+        await this.execute(`
       CREATE TABLE IF NOT EXISTS role_permissions (
         role_id INT NOT NULL,
         permission VARCHAR(255) NOT NULL,
@@ -162,6 +179,7 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         else {
             await this.ensureUsersHavePasswords();
         }
+        await this.ensureDefaultCategories();
         await this.ensureSampleProduct();
     }
     async ensureUsersHavePasswords() {
@@ -185,7 +203,7 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         if (count > 0)
             return;
         const now = new Date();
-        await this.execute(`INSERT INTO products (sku, name, description, price_cents, currency, status, metadata, created_at, updated_at)
+        const [result] = await this.execute(`INSERT INTO products (sku, name, description, price_cents, currency, status, metadata, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
             'SKU-001',
             'Sample Product',
@@ -197,7 +215,23 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
             now,
             now,
         ]);
+        const productId = result.insertId;
+        const [category] = await this.execute('SELECT id FROM categories ORDER BY id ASC LIMIT 1');
+        const categoryId = category[0]?.id;
+        if (categoryId) {
+            await this.execute('INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)', [productId, categoryId]);
+        }
         this.logger.log('Seeded sample product (SKU=SKU-001)');
+    }
+    async ensureDefaultCategories() {
+        const [countRows] = await this.execute('SELECT COUNT(*) as count FROM categories');
+        const count = Number(countRows[0]?.count ?? 0);
+        if (count > 0)
+            return;
+        const defaults = ['Electronics', 'Apparel', 'Books'];
+        const placeholders = defaults.map(() => '(?)').join(', ');
+        await this.execute(`INSERT INTO categories (name) VALUES ${placeholders}`, defaults);
+        this.logger.log('Seeded default categories');
     }
     async insertPermissions(roleId, permissions) {
         if (!permissions.length)

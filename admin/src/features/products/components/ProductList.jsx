@@ -14,6 +14,7 @@ export function ProductList({ products, onEdit, onDelete }) {
           <th>SKU</th>
           <th>Name</th>
           <th>Status</th>
+          <th>Categories</th>
           <th className="text-right">Price</th>
           <th>Actions</th>
         </tr>
@@ -26,6 +27,17 @@ export function ProductList({ products, onEdit, onDelete }) {
             <td>{product.name}</td>
             <td>
               <span className="badge badge-pill badge-secondary text-uppercase">{product.status}</span>
+            </td>
+            <td>
+              {Array.isArray(product.categories) && product.categories.length ? (
+                <ul className="list-unstyled mb-0">
+                  {product.categories.map((category) => (
+                    <li key={`${product.id}-${category.id}`}>{category.name}</li>
+                  ))}
+                </ul>
+              ) : (
+                <span className="text-muted">None</span>
+              )}
             </td>
             <td className="text-right">{formatPrice(product.priceCents, product.currency)}</td>
             <td>

@@ -12,4 +12,6 @@ export declare class MysqlProductRepository implements ProductRepository {
     remove(id: number): Promise<Product | null>;
     nextId(): Promise<number>;
     private hydrate;
+    private loadCategories;
+    private replaceCategories;
 }

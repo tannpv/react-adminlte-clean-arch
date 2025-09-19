@@ -1,3 +1,4 @@
+import { Category } from './category.entity';
 export type ProductStatus = 'draft' | 'published' | 'archived';
 export interface ProductProps {
     id: number;
@@ -8,6 +9,7 @@ export interface ProductProps {
     currency: string;
     status: ProductStatus;
     metadata?: Record<string, unknown> | null;
+    categories: Category[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -29,6 +31,9 @@ export declare class Product {
     set status(value: ProductStatus);
     get metadata(): Record<string, unknown> | null | undefined;
     set metadata(value: Record<string, unknown> | null | undefined);
+    get categories(): Category[];
+    set categories(categories: Category[]);
+    get categoryIds(): number[];
     get createdAt(): Date;
     set createdAt(value: Date);
     get updatedAt(): Date;

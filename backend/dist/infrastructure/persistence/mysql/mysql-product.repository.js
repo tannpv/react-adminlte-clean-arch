@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MysqlProductRepository = void 0;
 const common_1 = require("@nestjs/common");
 const product_entity_1 = require("../../../domain/entities/product.entity");
+const category_entity_1 = require("../../../domain/entities/category.entity");
 const mysql_database_service_1 = require("./mysql-database.service");
 let MysqlProductRepository = class MysqlProductRepository {
     constructor(db) {
@@ -19,7 +20,7 @@ let MysqlProductRepository = class MysqlProductRepository {
     }
     async findAll() {
         const [rows] = await this.db.execute('SELECT * FROM products ORDER BY updated_at DESC');
-        return rows.map((row) => this.hydrate(row));
+        return Promise.all(rows.map((row) => this.hydrate(row)));
     }
     async findById(id) {
         const [rows] = await this.db.execute('SELECT * FROM products WHERE id = ? LIMIT 1', [id]);
@@ -48,6 +49,7 @@ let MysqlProductRepository = class MysqlProductRepository {
             now,
         ]);
         const id = result.insertId;
+        await this.replaceCategories(id, product.categoryIds);
         const created = await this.findById(id);
         return created ?? product.clone();
     }
@@ -66,6 +68,7 @@ let MysqlProductRepository = class MysqlProductRepository {
             now,
             product.id,
         ]);
+        await this.replaceCategories(product.id, product.categoryIds);
         const updated = await this.findById(product.id);
         return updated ?? product;
     }
@@ -82,7 +85,7 @@ let MysqlProductRepository = class MysqlProductRepository {
         const nextId = rows[0]?.AUTO_INCREMENT;
         return nextId ? Number(nextId) : 1;
     }
-    hydrate(row) {
+    async hydrate(row) {
         let metadata = null;
         if (row.metadata) {
             try {
@@ -92,6 +95,7 @@ let MysqlProductRepository = class MysqlProductRepository {
                 metadata = null;
             }
         }
+        const categories = await this.loadCategories(row.id);
         return new product_entity_1.Product({
             id: row.id,
             sku: row.sku,
@@ -101,9 +105,27 @@ let MysqlProductRepository = class MysqlProductRepository {
             currency: row.currency,
             status: row.status,
             metadata,
+            categories,
             createdAt: new Date(row.created_at),
             updatedAt: new Date(row.updated_at),
         });
+    }
+    async loadCategories(productId) {
+        const [rows] = await this.db.execute(`SELECT pc.category_id, c.name
+       FROM product_categories pc
+       INNER JOIN categories c ON c.id = pc.category_id
+       WHERE pc.product_id = ?
+       ORDER BY c.name ASC`, [productId]);
+        return rows.map((row) => new category_entity_1.Category(row.category_id, row.name));
+    }
+    async replaceCategories(productId, categoryIds) {
+        await this.db.execute('DELETE FROM product_categories WHERE product_id = ?', [productId]);
+        if (!categoryIds || !categoryIds.length)
+            return;
+        const uniqueIds = Array.from(new Set(categoryIds));
+        const placeholders = uniqueIds.map(() => '(?, ?)').join(', ');
+        const params = uniqueIds.flatMap((categoryId) => [productId, categoryId]);
+        await this.db.execute(`INSERT IGNORE INTO product_categories (product_id, category_id) VALUES ${placeholders}`, params);
     }
 };
 exports.MysqlProductRepository = MysqlProductRepository;

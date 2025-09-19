@@ -10,11 +10,14 @@ import { ProductUpdatedEvent } from '../../domain/events/product-updated.event'
 import { ProductRemovedEvent } from '../../domain/events/product-removed.event'
 import { toProductResponse } from '../mappers/product.mapper'
 import { ProductResponseDto } from '../dto/product-response.dto'
+import { CATEGORY_REPOSITORY, CategoryRepository } from '../../domain/repositories/category.repository'
+import { Category } from '../../domain/entities/category.entity'
 
 @Injectable()
 export class ProductsService {
   constructor(
     @Inject(PRODUCT_REPOSITORY) private readonly products: ProductRepository,
+    @Inject(CATEGORY_REPOSITORY) private readonly categories: CategoryRepository,
     private readonly events: DomainEventBus,
   ) {}
 
@@ -40,6 +43,8 @@ export class ProductsService {
     const now = new Date()
     const id = await this.products.nextId()
 
+    const categories = await this.resolveCategories(dto.categories)
+
     const product = new Product({
       id,
       sku,
@@ -49,6 +54,7 @@ export class ProductsService {
       currency: dto.currency.trim().toUpperCase(),
       status,
       metadata: dto.metadata ?? null,
+      categories,
       createdAt: now,
       updatedAt: now,
     })
@@ -105,6 +111,11 @@ export class ProductsService {
       product.metadata = dto.metadata ?? null
     }
 
+    if (dto.categories !== undefined) {
+      const categories = await this.resolveCategories(dto.categories)
+      product.categories = categories
+    }
+
     product.updatedAt = new Date()
 
     const updated = await this.products.update(product)
@@ -135,5 +146,25 @@ export class ProductsService {
       throw validationException({ price: { code: 'PRICE_INVALID', message: 'Price must be greater than zero' } })
     }
     return cents
+  }
+
+  private async resolveCategories(categoryIds?: number[]): Promise<Category[]> {
+    if (!categoryIds || !categoryIds.length) return []
+
+    const uniqueIds = Array.from(new Set(categoryIds.filter((id) => Number.isInteger(id))))
+    if (!uniqueIds.length) return []
+
+    const categories = await this.categories.findByIds(uniqueIds)
+    const foundIds = new Set(categories.map((category) => category.id))
+    const missing = uniqueIds.filter((id) => !foundIds.has(id))
+    if (missing.length) {
+      throw validationException({
+        categories: {
+          code: 'CATEGORIES_INVALID',
+          message: 'One or more categories are invalid',
+        },
+      })
+    }
+    return categories
   }
 }

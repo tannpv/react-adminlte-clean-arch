@@ -1,7 +1,7 @@
 import React from 'react'
 import { ProductForm } from './ProductForm'
 
-export function ProductModal({ show, title, initialProduct, errors, submitting, onClose, onSubmit }) {
+export function ProductModal({ show, title, initialProduct, errors, submitting, onClose, onSubmit, categoryOptions = [] }) {
   const formId = 'product-modal-form'
   return (
     <>
@@ -28,6 +28,7 @@ export function ProductModal({ show, title, initialProduct, errors, submitting, 
                 submitting={submitting}
                 onCancel={onClose}
                 onSubmit={onSubmit}
+                categoryOptions={categoryOptions}
               />
             </div>
           </div>

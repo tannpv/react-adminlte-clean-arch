@@ -3,9 +3,11 @@ import { MysqlDatabaseService } from './mysql/mysql-database.service'
 import { MysqlUserRepository } from './mysql/mysql-user.repository'
 import { MysqlRoleRepository } from './mysql/mysql-role.repository'
 import { MysqlProductRepository } from './mysql/mysql-product.repository'
+import { MysqlCategoryRepository } from './mysql/mysql-category.repository'
 import { USER_REPOSITORY } from '../../domain/repositories/user.repository'
 import { ROLE_REPOSITORY } from '../../domain/repositories/role.repository'
 import { PRODUCT_REPOSITORY } from '../../domain/repositories/product.repository'
+import { CATEGORY_REPOSITORY } from '../../domain/repositories/category.repository'
 import { SharedModule } from '../../shared/shared.module'
 
 @Module({
@@ -15,7 +17,8 @@ import { SharedModule } from '../../shared/shared.module'
     { provide: USER_REPOSITORY, useClass: MysqlUserRepository },
     { provide: ROLE_REPOSITORY, useClass: MysqlRoleRepository },
     { provide: PRODUCT_REPOSITORY, useClass: MysqlProductRepository },
+    { provide: CATEGORY_REPOSITORY, useClass: MysqlCategoryRepository },
   ],
-  exports: [USER_REPOSITORY, ROLE_REPOSITORY, PRODUCT_REPOSITORY],
+  exports: [USER_REPOSITORY, ROLE_REPOSITORY, PRODUCT_REPOSITORY, CATEGORY_REPOSITORY],
 })
 export class PersistenceModule {}

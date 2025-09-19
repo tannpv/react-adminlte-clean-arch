@@ -114,6 +114,25 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
     `)
 
     await this.execute(`
+      CREATE TABLE IF NOT EXISTS categories (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL UNIQUE
+      ) ENGINE=InnoDB;
+    `)
+
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_categories (
+        product_id INT NOT NULL,
+        category_id INT NOT NULL,
+        PRIMARY KEY (product_id, category_id),
+        CONSTRAINT fk_product_categories_product FOREIGN KEY (product_id)
+          REFERENCES products(id) ON DELETE CASCADE,
+        CONSTRAINT fk_product_categories_category FOREIGN KEY (category_id)
+          REFERENCES categories(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `)
+
+    await this.execute(`
       CREATE TABLE IF NOT EXISTS role_permissions (
         role_id INT NOT NULL,
         permission VARCHAR(255) NOT NULL,
@@ -204,6 +223,7 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       await this.ensureUsersHavePasswords()
     }
 
+    await this.ensureDefaultCategories()
     await this.ensureSampleProduct()
   }
 
@@ -237,7 +257,7 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
     if (count > 0) return
 
     const now = new Date()
-    await this.execute<ResultSetHeader>(
+    const [result] = await this.execute<ResultSetHeader>(
       `INSERT INTO products (sku, name, description, price_cents, currency, status, metadata, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
@@ -252,7 +272,32 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         now,
       ],
     )
+    const productId = result.insertId as number
+
+    const [category] = await this.execute<RowDataPacket[]>(
+      'SELECT id FROM categories ORDER BY id ASC LIMIT 1',
+    )
+    const categoryId = category[0]?.id
+    if (categoryId) {
+      await this.execute(
+        'INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)',
+        [productId, categoryId],
+      )
+    }
     this.logger.log('Seeded sample product (SKU=SKU-001)')
+  }
+
+  private async ensureDefaultCategories(): Promise<void> {
+    const [countRows] = await this.execute<RowDataPacket[]>(
+      'SELECT COUNT(*) as count FROM categories',
+    )
+    const count = Number(countRows[0]?.count ?? 0)
+    if (count > 0) return
+
+    const defaults = ['Electronics', 'Apparel', 'Books']
+    const placeholders = defaults.map(() => '(?)').join(', ')
+    await this.execute(`INSERT INTO categories (name) VALUES ${placeholders}`, defaults)
+    this.logger.log('Seeded default categories')
   }
 
   private async insertPermissions(roleId: number, permissions: string[]): Promise<void> {

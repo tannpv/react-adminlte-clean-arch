@@ -7,4 +7,5 @@ export declare class UpdateProductDto {
     currency?: string;
     status?: ProductStatus;
     metadata?: Record<string, unknown>;
+    categories?: number[];
 }

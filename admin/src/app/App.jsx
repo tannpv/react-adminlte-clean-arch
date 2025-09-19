@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { UsersPage } from '../features/users/pages/UsersPage'
 import { RolesPage } from '../features/roles/pages/RolesPage'
 import { ProductsPage } from '../features/products/pages/ProductsPage'
+import { CategoriesPage } from '../features/categories/pages/CategoriesPage'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
 import { useAuth } from '../features/auth/context/AuthProvider'
@@ -15,7 +16,7 @@ export default function App() {
   const { user: currentUser, setUser: setCurrentUser, logout } = useAuth()
   const { me } = usePermissions()
   const [authScreen, setAuthScreen] = useState('login') // 'login' | 'register'
-  const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'products'
+  const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'categories' | 'products'
   const qc = useQueryClient()
 
   useEffect(() => {
@@ -71,6 +72,12 @@ export default function App() {
                 </a>
               </li>
               <li className="nav-item">
+                <a href="#" className={`nav-link ${menu === 'categories' ? 'active' : ''}`} onClick={() => setMenu('categories')}>
+                  <i className="nav-icon fas fa-tags" />
+                  <p>Categories</p>
+                </a>
+              </li>
+              <li className="nav-item">
                 <a href="#" className={`nav-link ${menu === 'products' ? 'active' : ''}`} onClick={() => setMenu('products')}>
                   <i className="nav-icon fas fa-box" />
                   <p>Products</p>
@@ -89,6 +96,8 @@ export default function App() {
                 <UsersPage />
               ) : menu === 'roles' ? (
                 <RolesPage />
+              ) : menu === 'categories' ? (
+                <CategoriesPage />
               ) : (
                 <ProductsPage />
               )

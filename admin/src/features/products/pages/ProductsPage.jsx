@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
 import { fetchProducts, createProduct, updateProduct, deleteProduct } from '../api/productsApi'
+import { fetchCategories } from '../../categories/api/categoriesApi'
 import { ProductList } from '../components/ProductList'
 import { ProductModal } from '../components/ProductModal'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
@@ -22,6 +23,20 @@ export function ProductsPage() {
   const [submitting, setSubmitting] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [targetProduct, setTargetProduct] = useState(null)
+  const cachedCategories = qc.getQueryData(['categories'])
+  const canViewCategories = can('categories:read')
+  const {
+    data: categories = [],
+    isLoading: categoriesLoading,
+  } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+    enabled: modalOpen || !!cachedCategories || can('products:create') || can('products:update') || canViewCategories,
+    initialData: cachedCategories,
+    staleTime: 5 * 60 * 1000,
+    refetchOnMount: false,
+  })
+  const categoryOptions = Array.isArray(categories) ? categories : []
 
   useEffect(() => {
     toastr.options = {
@@ -82,14 +97,24 @@ export function ProductsPage() {
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3 className="mb-0">Products</h3>
-        <button
-          className="btn btn-primary"
-          onClick={() => openModal({})}
-          disabled={!can('products:create')}
-          title={!can('products:create') ? 'Not allowed' : undefined}
-        >
-          Add Product
-        </button>
+        <div>
+          <button
+            className="btn btn-outline-secondary mr-2"
+            onClick={() => qc.invalidateQueries({ queryKey: ['categories'] })}
+            disabled={categoriesLoading}
+            title={categoriesLoading ? 'Refreshing…' : 'Refresh categories'}
+          >
+            Refresh Categories
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={() => openModal({})}
+            disabled={!can('products:create')}
+            title={!can('products:create') ? 'Not allowed' : undefined}
+          >
+            Add Product
+          </button>
+        </div>
       </div>
 
       {isLoading && <div>Loading...</div>}
@@ -140,6 +165,7 @@ export function ProductsPage() {
             setSubmitting(false)
           }
         }}
+        categoryOptions={categoryOptions}
       />
 
       <ConfirmModal

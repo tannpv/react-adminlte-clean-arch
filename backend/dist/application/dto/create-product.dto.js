@@ -57,4 +57,22 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Object)
 ], CreateProductDto.prototype, "metadata", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)({ message: 'Categories must be an array' }),
+    (0, class_validator_1.ArrayUnique)({ message: 'Categories must be unique' }),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (value === undefined || value === null)
+            return undefined;
+        const array = Array.isArray(value) ? value : [value];
+        const numbers = array
+            .map((entry) => {
+            const num = Number(entry);
+            return Number.isFinite(num) ? num : null;
+        })
+            .filter((num) => num !== null);
+        return numbers;
+    }),
+    __metadata("design:type", Array)
+], CreateProductDto.prototype, "categories", void 0);
 //# sourceMappingURL=create-product.dto.js.map

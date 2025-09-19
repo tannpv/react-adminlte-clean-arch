@@ -20,12 +20,19 @@ class Product {
     set status(value) { this.props.status = value; }
     get metadata() { return this.props.metadata ?? null; }
     set metadata(value) { this.props.metadata = value ?? null; }
+    get categories() { return this.props.categories.map((category) => category.clone()); }
+    set categories(categories) { this.props.categories = categories.map((category) => category.clone()); }
+    get categoryIds() { return this.props.categories.map((category) => category.id); }
     get createdAt() { return this.props.createdAt; }
     set createdAt(value) { this.props.createdAt = value; }
     get updatedAt() { return this.props.updatedAt; }
     set updatedAt(value) { this.props.updatedAt = value; }
     clone() {
-        return new Product({ ...this.props, metadata: this.props.metadata ? { ...this.props.metadata } : null });
+        return new Product({
+            ...this.props,
+            metadata: this.props.metadata ? { ...this.props.metadata } : null,
+            categories: this.props.categories.map((category) => category.clone()),
+        });
     }
 }
 exports.Product = Product;

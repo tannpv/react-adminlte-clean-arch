@@ -8,6 +8,10 @@ export interface ProductResponseDto {
     currency: string;
     status: ProductStatus;
     metadata: Record<string, unknown> | null;
+    categories: {
+        id: number;
+        name: string;
+    }[];
     createdAt: string;
     updatedAt: string;
 }

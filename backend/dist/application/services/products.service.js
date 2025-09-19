@@ -22,9 +22,11 @@ const product_created_event_1 = require("../../domain/events/product-created.eve
 const product_updated_event_1 = require("../../domain/events/product-updated.event");
 const product_removed_event_1 = require("../../domain/events/product-removed.event");
 const product_mapper_1 = require("../mappers/product.mapper");
+const category_repository_1 = require("../../domain/repositories/category.repository");
 let ProductsService = class ProductsService {
-    constructor(products, events) {
+    constructor(products, categories, events) {
         this.products = products;
+        this.categories = categories;
         this.events = events;
     }
     async list() {
@@ -45,6 +47,7 @@ let ProductsService = class ProductsService {
         const status = dto.status ?? 'draft';
         const now = new Date();
         const id = await this.products.nextId();
+        const categories = await this.resolveCategories(dto.categories);
         const product = new product_entity_1.Product({
             id,
             sku,
@@ -54,6 +57,7 @@ let ProductsService = class ProductsService {
             currency: dto.currency.trim().toUpperCase(),
             status,
             metadata: dto.metadata ?? null,
+            categories,
             createdAt: now,
             updatedAt: now,
         });
@@ -101,6 +105,10 @@ let ProductsService = class ProductsService {
         if (dto.metadata !== undefined) {
             product.metadata = dto.metadata ?? null;
         }
+        if (dto.categories !== undefined) {
+            const categories = await this.resolveCategories(dto.categories);
+            product.categories = categories;
+        }
         product.updatedAt = new Date();
         const updated = await this.products.update(product);
         this.events.publish(new product_updated_event_1.ProductUpdatedEvent(updated));
@@ -129,11 +137,31 @@ let ProductsService = class ProductsService {
         }
         return cents;
     }
+    async resolveCategories(categoryIds) {
+        if (!categoryIds || !categoryIds.length)
+            return [];
+        const uniqueIds = Array.from(new Set(categoryIds.filter((id) => Number.isInteger(id))));
+        if (!uniqueIds.length)
+            return [];
+        const categories = await this.categories.findByIds(uniqueIds);
+        const foundIds = new Set(categories.map((category) => category.id));
+        const missing = uniqueIds.filter((id) => !foundIds.has(id));
+        if (missing.length) {
+            throw (0, validation_error_1.validationException)({
+                categories: {
+                    code: 'CATEGORIES_INVALID',
+                    message: 'One or more categories are invalid',
+                },
+            });
+        }
+        return categories;
+    }
 };
 exports.ProductsService = ProductsService;
 exports.ProductsService = ProductsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(product_repository_1.PRODUCT_REPOSITORY)),
-    __metadata("design:paramtypes", [Object, domain_event_bus_1.DomainEventBus])
+    __param(1, (0, common_1.Inject)(category_repository_1.CATEGORY_REPOSITORY)),
+    __metadata("design:paramtypes", [Object, Object, domain_event_bus_1.DomainEventBus])
 ], ProductsService);
 //# sourceMappingURL=products.service.js.map

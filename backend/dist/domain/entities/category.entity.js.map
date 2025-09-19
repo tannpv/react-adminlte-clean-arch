@@ -1,0 +1,1 @@
+{"version":3,"file":"category.entity.js","sourceRoot":"","sources":["../../../src/domain/entities/category.entity.ts"],"names":[],"mappings":";;;AAAA,MAAa,QAAQ;IACnB,YACkB,EAAU,EACnB,IAAY;QADH,OAAE,GAAF,EAAE,CAAQ;QACnB,SAAI,GAAJ,IAAI,CAAQ;IAClB,CAAC;IAEJ,KAAK;QACH,OAAO,IAAI,QAAQ,CAAC,IAAI,CAAC,EAAE,EAAE,IAAI,CAAC,IAAI,CAAC,CAAA;IACzC,CAAC;CACF;AATD,4BASC"}

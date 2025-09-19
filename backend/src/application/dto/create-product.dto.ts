@@ -1,5 +1,16 @@
 import { Transform } from 'class-transformer'
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength } from 'class-validator'
+import {
+  IsArray,
+  ArrayUnique,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator'
 import { ProductStatus } from '../../domain/entities/product.entity'
 
 const statuses: ProductStatus[] = ['draft', 'published', 'archived']
@@ -38,4 +49,20 @@ export class CreateProductDto {
 
   @IsOptional()
   metadata?: Record<string, unknown>
+
+  @IsOptional()
+  @IsArray({ message: 'Categories must be an array' })
+  @ArrayUnique({ message: 'Categories must be unique' })
+  @Transform(({ value }) => {
+    if (value === undefined || value === null) return undefined
+    const array = Array.isArray(value) ? value : [value]
+    const numbers = array
+      .map((entry) => {
+        const num = Number(entry)
+        return Number.isFinite(num) ? num : null
+      })
+      .filter((num): num is number => num !== null)
+    return numbers
+  })
+  categories?: number[]
 }
