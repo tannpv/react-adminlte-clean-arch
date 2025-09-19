@@ -5,9 +5,10 @@ import { UsersModule } from './modules/users/users.module'
 import { RolesModule } from './modules/roles/roles.module'
 import { ProductsModule } from './modules/products/products.module'
 import { CategoriesModule } from './modules/categories/categories.module'
+import { StorageModule } from './modules/storage/storage.module'
 import { HealthModule } from './modules/health/health.module'
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env', '../.env'] }), HealthModule, AuthModule, UsersModule, RolesModule, CategoriesModule, ProductsModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env', '../.env'] }), HealthModule, AuthModule, UsersModule, RolesModule, CategoriesModule, ProductsModule, StorageModule],
 })
 export class AppModule {}

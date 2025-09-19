@@ -205,6 +205,58 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       ) ENGINE=InnoDB;
     `)
 
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS file_directories (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        owner_id INT NOT NULL,
+        parent_id INT NULL,
+        name VARCHAR(255) NOT NULL,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL,
+        CONSTRAINT fk_file_directories_owner FOREIGN KEY (owner_id)
+          REFERENCES users(id) ON DELETE CASCADE,
+        CONSTRAINT fk_file_directories_parent FOREIGN KEY (parent_id)
+          REFERENCES file_directories(id) ON DELETE CASCADE,
+        UNIQUE KEY uniq_directory_name (owner_id, parent_id, name)
+      ) ENGINE=InnoDB;
+    `)
+
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS files (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        directory_id INT NULL,
+        owner_id INT NOT NULL,
+        original_name VARCHAR(512) NOT NULL,
+        display_name VARCHAR(512) NOT NULL,
+        storage_key VARCHAR(512) NOT NULL,
+        mime_type VARCHAR(255) NULL,
+        size_bytes BIGINT NULL,
+        visibility VARCHAR(32) NOT NULL DEFAULT 'private',
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL,
+        CONSTRAINT fk_files_owner FOREIGN KEY (owner_id)
+          REFERENCES users(id) ON DELETE CASCADE,
+        CONSTRAINT fk_files_directory FOREIGN KEY (directory_id)
+          REFERENCES file_directories(id) ON DELETE SET NULL,
+        INDEX idx_files_directory (directory_id),
+        INDEX idx_files_owner (owner_id)
+      ) ENGINE=InnoDB;
+    `)
+
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS file_grants (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        entity_type ENUM('file','directory') NOT NULL,
+        entity_id INT NOT NULL,
+        role_id INT NOT NULL,
+        access ENUM('read','write') NOT NULL DEFAULT 'read',
+        UNIQUE KEY uniq_entity_role (entity_type, entity_id, role_id, access),
+        INDEX idx_grants_role (role_id),
+        CONSTRAINT fk_file_grants_role FOREIGN KEY (role_id)
+          REFERENCES roles(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `)
+
     await this.seedDefaults()
   }
 

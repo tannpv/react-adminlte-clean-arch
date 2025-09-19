@@ -36,14 +36,21 @@ This reference tracks Nest modules, their responsibilities, and cross-module dep
 - **Depends on**: `PersistenceModule` (user/role repositories), `SharedModule` (`TokenService`).
 
 ## SharedModule
-- **Purpose**: Cross-cutting services (configurable password hashing, JWT signing, domain events).
-- **Providers**: `PasswordService`, `TokenService`, `DomainEventBus` (configured via `BCRYPT_SALT_ROUNDS`, `JWT_SECRET`, `JWT_EXPIRES_IN`).
+- **Purpose**: Cross-cutting services (configurable password hashing, JWT signing, domain events, storage utilities).
+- **Providers**: `PasswordService`, `TokenService`, `DomainEventBus`, `StorageService` (configured via `BCRYPT_SALT_ROUNDS`, `JWT_SECRET`, `JWT_EXPIRES_IN`, file-storage env vars).
 - **Depends on**: `ConfigModule`.
 
 ## PersistenceModule
 - **Purpose**: Wire MySQL infrastructure to domain repository interfaces.
-- **Providers**: `MysqlDatabaseService`, repository bindings (`USER_REPOSITORY`, `ROLE_REPOSITORY`, `PRODUCT_REPOSITORY`).
+- **Providers**: `MysqlDatabaseService`, repository bindings (`USER_REPOSITORY`, `ROLE_REPOSITORY`, `PRODUCT_REPOSITORY`, `CATEGORY_REPOSITORY`, `FILE_DIRECTORY_REPOSITORY`, `FILE_REPOSITORY`, `FILE_GRANT_REPOSITORY`).
 - **Depends on**: `SharedModule`.
+
+## StorageModule
+- **Purpose**: File and directory management (uploads, listing, sharing grants).
+- **HTTP controllers**: `FileManagerController` (`/storage`).
+- **Providers**: `FileManagerService` (wraps directory/file repositories, storage, grants).
+- **Depends on**: `PersistenceModule`, `SharedModule` (StorageService, DomainEventBus), `AccessControlModule`, `UsersModule` (for role/User context).
+- **Outbound calls**: Uses `StorageService` for blob persistence, directory/file repositories for metadata, and role grants for sharing logic.
 
 ## HealthModule
 - **Purpose**: Liveness probe.

@@ -1,23 +1,24 @@
-import React, { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { UsersPage } from '../features/users/pages/UsersPage'
-import { RolesPage } from '../features/roles/pages/RolesPage'
-import { ProductsPage } from '../features/products/pages/ProductsPage'
-import { CategoriesPage } from '../features/categories/pages/CategoriesPage'
+import React, { useEffect, useState } from 'react'
+import { useAuth } from '../features/auth/context/AuthProvider'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
-import { useAuth } from '../features/auth/context/AuthProvider'
+import { CategoriesPage } from '../features/categories/pages/CategoriesPage'
+import { fetchProducts } from '../features/products/api/productsApi'
+import { ProductsPage } from '../features/products/pages/ProductsPage'
+import { fetchRoles } from '../features/roles/api/rolesApi'
+import { RolesPage } from '../features/roles/pages/RolesPage'
+import StoragePage from '../features/storage/pages/StoragePage'
+import { UsersPage } from '../features/users/pages/UsersPage'
 import { usePermissions } from '../shared/hooks/usePermissions'
 import { ApiClient } from '../shared/lib/apiClient'
-import { fetchRoles } from '../features/roles/api/rolesApi'
-import { fetchProducts } from '../features/products/api/productsApi'
 import { getUserDisplayName } from '../shared/lib/userDisplayName'
 
 export default function App() {
   const { user: currentUser, setUser: setCurrentUser, logout } = useAuth()
   const { me } = usePermissions()
   const [authScreen, setAuthScreen] = useState('login') // 'login' | 'register'
-  const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'categories' | 'products'
+  const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'categories' | 'products' | 'storage'
   const qc = useQueryClient()
 
   useEffect(() => {
@@ -73,6 +74,12 @@ export default function App() {
                   <p>Roles</p>
                 </a>
               </li>
+              <li className="nav-item">
+                <a href="#" className={`nav-link ${menu === 'storage' ? 'active' : ''}`} onClick={() => setMenu('storage')}>
+                  <i className="nav-icon fas fa-hdd" />
+                  <p>Storage</p>
+                </a>
+              </li>
               <li className="nav-header">E-Commerce</li>
               <li className="nav-item">
                 <a href="#" className={`nav-link ${menu === 'categories' ? 'active' : ''}`} onClick={() => setMenu('categories')}>
@@ -101,6 +108,8 @@ export default function App() {
                 <RolesPage />
               ) : menu === 'categories' ? (
                 <CategoriesPage />
+              ) : menu === 'storage' ? (
+                <StoragePage />
               ) : (
                 <ProductsPage />
               )

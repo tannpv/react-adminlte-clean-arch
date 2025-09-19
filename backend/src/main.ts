@@ -2,6 +2,8 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { ValidationError } from 'class-validator'
 import * as bodyParser from 'body-parser'
+import * as express from 'express'
+import * as path from 'path'
 import { AppModule } from './app.module'
 import { validationException } from './shared/validation-error'
 
@@ -9,6 +11,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   app.use(bodyParser.json({ limit: '10mb' }))
   app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
+  const uploadRoot = process.env.FILE_STORAGE_ROOT
+    ? path.resolve(process.env.FILE_STORAGE_ROOT)
+    : path.resolve(process.cwd(), 'uploads')
+  app.use('/uploads', express.static(uploadRoot))
   app.setGlobalPrefix('api')
   app.useGlobalPipes(
     new ValidationPipe({
