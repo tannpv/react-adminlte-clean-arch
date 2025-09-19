@@ -59,6 +59,7 @@ export default function App() {
         <div className="sidebar">
           <nav className="mt-2">
             <ul className="nav nav-pills nav-sidebar flex-column">
+              <li className="nav-header">System</li>
               <li className="nav-item">
                 <a href="#" className={`nav-link ${menu === 'users' ? 'active' : ''}`} onClick={() => setMenu('users')}>
                   <i className="nav-icon fas fa-users" />
@@ -71,6 +72,7 @@ export default function App() {
                   <p>Roles</p>
                 </a>
               </li>
+              <li className="nav-header">E-Commerce</li>
               <li className="nav-item">
                 <a href="#" className={`nav-link ${menu === 'categories' ? 'active' : ''}`} onClick={() => setMenu('categories')}>
                   <i className="nav-icon fas fa-tags" />
