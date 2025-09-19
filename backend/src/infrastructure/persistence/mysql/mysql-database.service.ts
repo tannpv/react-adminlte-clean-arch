@@ -156,11 +156,17 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         first_name VARCHAR(255) NOT NULL,
         last_name VARCHAR(255) NULL,
         date_of_birth DATE NULL,
-        picture_url VARCHAR(1024) NULL,
+        picture_url LONGTEXT NULL,
         CONSTRAINT fk_user_profiles_user FOREIGN KEY (user_id)
           REFERENCES users(id) ON DELETE CASCADE
       ) ENGINE=InnoDB;
     `)
+
+    try {
+      await this.execute('ALTER TABLE user_profiles MODIFY COLUMN picture_url LONGTEXT NULL')
+    } catch (e) {
+      // ignore if already applied
+    }
 
     const [nameColumnRows] = await this.execute<RowDataPacket[]>(
       `SELECT COLUMN_NAME FROM information_schema.COLUMNS

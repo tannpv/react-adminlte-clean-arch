@@ -7,7 +7,10 @@ export function RegisterPage({ onRegistered, onSwitchToLogin }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [dateOfBirth, setDateOfBirth] = useState('')
-  const [pictureUrl, setPictureUrl] = useState('')
+  const [pictureData, setPictureData] = useState('')
+  const [picturePreview, setPicturePreview] = useState('')
+  const [pictureError, setPictureError] = useState(null)
+  const [pictureLoading, setPictureLoading] = useState(false)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
 
@@ -15,6 +18,7 @@ export function RegisterPage({ onRegistered, onSwitchToLogin }) {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setPictureError(null)
     try {
       const { token, user } = await register({
         firstName,
@@ -22,7 +26,7 @@ export function RegisterPage({ onRegistered, onSwitchToLogin }) {
         email,
         password,
         dateOfBirth: dateOfBirth || undefined,
-        pictureUrl: pictureUrl.trim() || undefined,
+        pictureUrl: pictureData || undefined,
       })
       localStorage.setItem('token', token)
       localStorage.setItem('user', JSON.stringify(user))
@@ -59,8 +63,75 @@ export function RegisterPage({ onRegistered, onSwitchToLogin }) {
             <input type="date" className="form-control" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
           </div>
           <div className="form-group col-md-6">
-            <label>Picture URL</label>
-            <input className="form-control" value={pictureUrl} onChange={(e) => setPictureUrl(e.target.value)} placeholder="https://example.com/avatar.jpg" />
+            <label>Profile Picture</label>
+            <div className="d-flex align-items-start">
+              <div className="mr-3" style={{ width: 96 }}>
+                {picturePreview ? (
+                  <img src={picturePreview} alt="Profile preview" className="img-thumbnail" style={{ maxWidth: '96px', maxHeight: '96px' }} />
+                ) : (
+                  <div className="border rounded d-flex align-items-center justify-content-center bg-light" style={{ width: 96, height: 96 }}>
+                    <span className="text-muted small">No Image</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex-grow-1">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className={`form-control-file ${pictureError ? 'is-invalid' : ''}`}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (!file) {
+                      setPictureData('')
+                      setPicturePreview('')
+                      setPictureError(null)
+                      return
+                    }
+                    if (!file.type.startsWith('image/')) {
+                      setPictureError('Please select an image file')
+                      return
+                    }
+                    if (file.size > 5 * 1024 * 1024) {
+                      setPictureError('Image must be 5MB or smaller')
+                      return
+                    }
+                    setPictureError(null)
+                    setPictureLoading(true)
+                    const reader = new FileReader()
+                    reader.onload = () => {
+                      const result = reader.result
+                      if (typeof result === 'string') {
+                        setPictureData(result)
+                        setPicturePreview(result)
+                      }
+                      setPictureLoading(false)
+                    }
+                    reader.onerror = () => {
+                      setPictureError('Failed to read image file')
+                      setPictureLoading(false)
+                    }
+                    reader.readAsDataURL(file)
+                  }}
+                  disabled={loading}
+                />
+                <div className="mt-2 d-flex align-items-center">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary btn-sm mr-2"
+                    onClick={() => {
+                      setPictureData('')
+                      setPicturePreview('')
+                      setPictureError(null)
+                    }}
+                    disabled={loading || (!pictureData && !picturePreview)}
+                  >
+                    Remove
+                  </button>
+                  {pictureLoading && <span className="text-muted small">Uploading...</span>}
+                </div>
+                {pictureError && <div className="invalid-feedback d-block">{pictureError}</div>}
+              </div>
+            </div>
           </div>
         </div>
         <div className="form-group">

@@ -17,7 +17,10 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [dateOfBirth, setDateOfBirth] = useState('')
-  const [pictureUrl, setPictureUrl] = useState('')
+  const [pictureData, setPictureData] = useState('')
+  const [picturePreview, setPicturePreview] = useState('')
+  const [pictureLoading, setPictureLoading] = useState(false)
+  const [pictureLocalError, setPictureLocalError] = useState(null)
   const [roles, setRoles] = useState([])
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -29,7 +32,9 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
     setLastName(profile.lastName)
     setEmail(initialUser?.email || '')
     setDateOfBirth(profile.dateOfBirth || '')
-    setPictureUrl(profile.pictureUrl || '')
+    setPictureData(profile.pictureUrl || '')
+    setPicturePreview(profile.pictureUrl || '')
+    setPictureLocalError(null)
     setRoles(Array.isArray(initialUser?.roles) ? initialUser.roles.map(String) : [])
     setPassword('')
     setConfirmPassword('')
@@ -40,12 +45,14 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
     e.preventDefault()
     setLocalPasswordError(null)
     const roleIds = roles.map((v) => Number(v)).filter((n) => !Number.isNaN(n))
+    if (pictureLoading) return
+
     const payload = {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       email: email.trim(),
       roles: roleIds,
-      pictureUrl: pictureUrl.trim() || undefined,
+      pictureUrl: pictureData || undefined,
       dateOfBirth: dateOfBirth || undefined,
     }
     const isEditing = !!initialUser?.id
@@ -69,7 +76,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
   const lastNameError = typeof errors.lastName === 'string' ? errors.lastName : errors.lastName?.message
   const emailError = typeof errors.email === 'string' ? errors.email : errors.email?.message
   const dobError = typeof errors.dateOfBirth === 'string' ? errors.dateOfBirth : errors.dateOfBirth?.message
-  const pictureError = typeof errors.pictureUrl === 'string' ? errors.pictureUrl : errors.pictureUrl?.message
+  const pictureError = pictureLocalError || (typeof errors.pictureUrl === 'string' ? errors.pictureUrl : errors.pictureUrl?.message)
   const rolesError = typeof errors.roles === 'string' ? errors.roles : errors.roles?.message
   const passwordServerError = typeof errors.password === 'string' ? errors.password : errors.password?.message
   const passwordError = localPasswordError || passwordServerError
@@ -124,14 +131,88 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
       </div>
 
       <div className="form-group">
-        <label>Picture URL</label>
-        <input
-          className={`form-control ${pictureError ? 'is-invalid' : ''}`}
-          value={pictureUrl}
-          onChange={(e) => setPictureUrl(e.target.value)}
-          placeholder="https://example.com/avatar.jpg"
-        />
-        {pictureError && <div className="invalid-feedback">{pictureError}</div>}
+        <label>Profile Picture</label>
+        <div className="d-flex align-items-start">
+          <div className="mr-3" style={{ width: 96 }}>
+            {picturePreview ? (
+              <img
+                src={picturePreview}
+                alt="Profile preview"
+                className="img-thumbnail"
+                style={{ maxWidth: '96px', maxHeight: '96px' }}
+              />
+            ) : (
+              <div className="border rounded d-flex align-items-center justify-content-center bg-light" style={{ width: 96, height: 96 }}>
+                <span className="text-muted small">No Image</span>
+              </div>
+            )}
+          </div>
+          <div className="flex-grow-1">
+            <input
+              type="file"
+              accept="image/*"
+              className={`form-control-file ${pictureError ? 'is-invalid' : ''}`}
+              onChange={async (e) => {
+                const file = e.target.files?.[0]
+                if (!file) {
+                  setPictureData('')
+                  setPicturePreview('')
+                  setPictureLocalError(null)
+                  return
+                }
+                if (!file.type.startsWith('image/')) {
+                  setPictureLocalError('Please select an image file')
+                  return
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                  setPictureLocalError('Image must be 5MB or smaller')
+                  return
+                }
+                setPictureLocalError(null)
+                setPictureLoading(true)
+                try {
+                  const reader = new FileReader()
+                  reader.onload = () => {
+                    const result = reader.result
+                    if (typeof result === 'string') {
+                      setPictureData(result)
+                      setPicturePreview(result)
+                    }
+                    setPictureLoading(false)
+                  }
+                  reader.onerror = () => {
+                    setPictureLocalError('Failed to read image file')
+                    setPictureLoading(false)
+                  }
+                  reader.readAsDataURL(file)
+                } catch (err) {
+                  console.error(err)
+                  setPictureLocalError('Failed to process image')
+                  setPictureLoading(false)
+                }
+              }}
+              disabled={submitting}
+            />
+            <div className="mt-2 d-flex align-items-center">
+              <button
+                type="button"
+                className="btn btn-outline-secondary btn-sm mr-2"
+                onClick={() => {
+                  setPictureData('')
+                  setPicturePreview('')
+                  setPictureLocalError(null)
+                }}
+                disabled={submitting || (!pictureData && !picturePreview)}
+              >
+                Remove
+              </button>
+              {pictureLoading && (
+                <span className="text-muted small">Uploading...</span>
+              )}
+            </div>
+            {pictureError && <div className="invalid-feedback d-block">{pictureError}</div>}
+          </div>
+        </div>
       </div>
 
       <div className="form-group">

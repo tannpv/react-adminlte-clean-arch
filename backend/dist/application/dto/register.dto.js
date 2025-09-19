@@ -37,8 +37,7 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.trim() : value)),
-    (0, class_validator_1.IsString)({ message: 'Picture URL must be text' }),
-    (0, class_validator_1.MaxLength)(1024, { message: 'Picture URL is too long' }),
+    (0, class_validator_1.IsString)({ message: 'Picture data must be text' }),
     __metadata("design:type", String)
 ], RegisterDto.prototype, "pictureUrl", void 0);
 __decorate([

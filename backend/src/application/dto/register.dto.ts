@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer'
-import { IsDateString, IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator'
+import { IsDateString, IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator'
 
 export class RegisterDto {
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
@@ -20,8 +20,7 @@ export class RegisterDto {
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  @IsString({ message: 'Picture URL must be text' })
-  @MaxLength(1024, { message: 'Picture URL is too long' })
+  @IsString({ message: 'Picture data must be text' })
   pictureUrl?: string
 
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))

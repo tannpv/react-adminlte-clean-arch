@@ -1,11 +1,14 @@
 import { BadRequestException, ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { ValidationError } from 'class-validator'
+import * as bodyParser from 'body-parser'
 import { AppModule } from './app.module'
 import { validationException } from './shared/validation-error'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+  app.use(bodyParser.json({ limit: '10mb' }))
+  app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
   app.setGlobalPrefix('api')
   app.useGlobalPipes(
     new ValidationPipe({
