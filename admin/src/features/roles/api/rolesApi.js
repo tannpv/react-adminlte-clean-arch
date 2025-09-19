@@ -3,6 +3,7 @@ import { ApiClient } from '../../../shared/lib/apiClient'
 const normalizeRole = (role) => ({
   id: role.id,
   name: role.name,
+  permissions: Array.isArray(role.permissions) ? [...role.permissions] : [],
 })
 
 export async function fetchRoles() {

@@ -8,14 +8,30 @@ import { usePermissions } from '../../../shared/hooks/usePermissions'
 
 export function RolesPage() {
   const qc = useQueryClient()
-  const { data: roles = [], isLoading: loading, isError, error } = useQuery({ queryKey: ['roles'], queryFn: fetchRoles })
-  const [editing, setEditing] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [targetRole, setTargetRole] = useState(null)
   const [formErrors, setFormErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const { can } = usePermissions()
+  const [editing, setEditing] = useState(null)
+
+  const canViewRoles = can('roles:read')
+  const canCreateRole = can('roles:create')
+  const canUpdateRole = can('roles:update')
+  const canDeleteRole = can('roles:delete')
+
+  const {
+    data: rolesData,
+    isLoading: loading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ['roles'],
+    queryFn: fetchRoles,
+    enabled: canViewRoles,
+  })
+  const roles = Array.isArray(rolesData) ? rolesData : []
 
   const createMutation = useMutation({
     mutationFn: (payload) => createRole(payload),
@@ -34,18 +50,41 @@ export function RolesPage() {
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3 className="mb-0">Roles</h3>
-        <button className="btn btn-primary" onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }} disabled={!can('roles:create')} title={!can('roles:create') ? 'Not allowed' : undefined}>Add Role</button>
+        <button
+          className="btn btn-primary"
+          onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
+          disabled={!canCreateRole}
+          title={!canCreateRole ? 'Not allowed' : undefined}
+        >
+          Add Role
+        </button>
       </div>
 
-      {loading && <div>Loading...</div>}
-      {!loading && !isError && (
+      {!canViewRoles && (
+        <div className="alert alert-warning" role="alert">
+          You do not have permission to view roles.
+        </div>
+      )}
+
+      {canViewRoles && loading && <div>Loading...</div>}
+      {canViewRoles && !loading && !isError && (
         <RoleList
           roles={roles}
-          onEdit={(r) => { if (!can('roles:update')) return; setEditing(r); setFormErrors({}); setModalOpen(true) }}
-          onDelete={(id) => { if (!can('roles:delete')) return; const r = roles.find(x => x.id === id); setTargetRole(r || { id }); setConfirmOpen(true) }}
+          canEdit={canUpdateRole}
+          canDelete={canDeleteRole}
+          onEdit={(role) => {
+            setEditing(role)
+            setFormErrors({})
+            setModalOpen(true)
+          }}
+          onDelete={(id) => {
+            const role = roles.find(x => x.id === id)
+            setTargetRole(role || { id })
+            setConfirmOpen(true)
+          }}
         />
       )}
-      {!loading && isError && (
+      {canViewRoles && !loading && isError && (
         <div className="alert alert-danger" role="alert">{error?.message || 'Failed to load roles'}</div>
       )}
 

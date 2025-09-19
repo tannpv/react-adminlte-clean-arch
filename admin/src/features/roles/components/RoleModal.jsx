@@ -16,7 +16,7 @@ export function RoleModal({ show, title, initialRole, onClose, onSubmit, errors,
               </button>
             </div>
             <div className="modal-body">
-              <RoleForm initialRole={initialRole} onCancel={onClose} onSubmit={onSubmit} errors={errors} submitting={submitting} formId={formId} />
+              <RoleForm initialRole={initialRole} onSubmit={onSubmit} errors={errors} submitting={submitting} formId={formId} />
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" onClick={onClose} disabled={submitting}>Cancel</button>
@@ -31,4 +31,3 @@ export function RoleModal({ show, title, initialRole, onClose, onSubmit, errors,
     </>
   )
 }
-
