@@ -2,17 +2,35 @@ import React, { useState } from 'react'
 import { formatFileSize, getFileDisplayType, getFileIcon, getFullFileUrl, isImageFile } from '../../../shared/lib/fileUtils'
 import { ImagePreviewModal } from './ImagePreviewModal'
 
-export function StorageList({ items, onEnterDirectory, onDelete, onToggleVisibility, onUpdateDisplayName, loading, error }) {
+export function StorageList({
+    items,
+    onEnterDirectory,
+    onDelete,
+    onToggleVisibility,
+    onUpdateDisplayName,
+    loading,
+    error,
+    canUpdate = true,
+    canDelete = true,
+}) {
     const [editingId, setEditingId] = useState(null)
     const [editValue, setEditValue] = useState('')
     const [previewImage, setPreviewImage] = useState(null)
 
     const handleStartEdit = (item) => {
+        if (!canUpdate || !onUpdateDisplayName || item.type !== 'file') {
+            return
+        }
         setEditingId(item.id)
         setEditValue(item.displayName || item.originalName || '')
     }
 
     const handleSaveEdit = async (item) => {
+        if (!canUpdate || !onUpdateDisplayName) {
+            setEditingId(null)
+            setEditValue('')
+            return
+        }
         const trimmedValue = editValue.trim()
         if (trimmedValue && trimmedValue !== (item.displayName || item.originalName)) {
             await onUpdateDisplayName(item.id, trimmedValue)
@@ -135,7 +153,7 @@ export function StorageList({ items, onEnterDirectory, onDelete, onToggleVisibil
                                         <a href="#" onClick={(e) => { e.preventDefault(); onEnterDirectory(item.id) }}>
                                             {item.name}
                                         </a>
-                                    ) : editingId === item.id ? (
+                                    ) : (canUpdate && onUpdateDisplayName && editingId === item.id) ? (
                                         <div className="d-flex align-items-center">
                                             <input
                                                 type="text"
@@ -166,19 +184,21 @@ export function StorageList({ items, onEnterDirectory, onDelete, onToggleVisibil
                                         <div className="d-flex align-items-center">
                                             <span
                                                 className="flex-grow-1"
-                                                style={{ cursor: 'pointer' }}
+                                                style={{ cursor: canUpdate && onUpdateDisplayName ? 'pointer' : 'default' }}
                                                 onClick={() => handleStartEdit(item)}
-                                                title="Click to edit display name"
+                                                title={canUpdate && onUpdateDisplayName ? 'Click to edit display name' : undefined}
                                             >
                                                 {item.displayName || item.originalName}
                                             </span>
-                                            <button
-                                                className="btn btn-sm btn-outline-primary ml-2"
-                                                onClick={() => handleStartEdit(item)}
-                                                title="Edit display name"
-                                            >
-                                                <i className="fas fa-edit" />
-                                            </button>
+                                            {canUpdate && onUpdateDisplayName && (
+                                                <button
+                                                    className="btn btn-sm btn-outline-primary ml-2"
+                                                    onClick={() => handleStartEdit(item)}
+                                                    title="Edit display name"
+                                                >
+                                                    <i className="fas fa-edit" />
+                                                </button>
+                                            )}
                                         </div>
                                     )}
                                 </td>
@@ -190,7 +210,7 @@ export function StorageList({ items, onEnterDirectory, onDelete, onToggleVisibil
                                 </td>
                                 <td className="align-middle text-capitalize">{item.visibility || '-'}</td>
                                 <td className="align-middle text-right">
-                                    {item.type === 'file' ? (
+                                    {item.type === 'file' && canUpdate && onToggleVisibility ? (
                                         <button
                                             className="btn btn-sm btn-outline-secondary mr-2"
                                             title="Toggle visibility"
@@ -199,12 +219,14 @@ export function StorageList({ items, onEnterDirectory, onDelete, onToggleVisibil
                                             <i className={`fas ${item.visibility === 'public' ? 'fa-lock-open' : 'fa-lock'}`} />
                                         </button>
                                     ) : null}
-                                    <button
-                                        className="btn btn-sm btn-outline-danger"
-                                        onClick={() => onDelete(item)}
-                                    >
-                                        <i className="fas fa-trash" />
-                                    </button>
+                                    {canDelete && onDelete && (
+                                        <button
+                                            className="btn btn-sm btn-outline-danger"
+                                            onClick={() => onDelete(item)}
+                                        >
+                                            <i className="fas fa-trash" />
+                                        </button>
+                                    )}
                                 </td>
                             </tr>
                         )

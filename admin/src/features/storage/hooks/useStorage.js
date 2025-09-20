@@ -4,7 +4,7 @@ import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
 import { createDirectory, deleteDirectory, deleteFile, listStorage, updateFile, uploadFile } from '../api/storageApi'
 
-export function useStorage(currentDirectoryId) {
+export function useStorage(currentDirectoryId, { enabled = true } = {}) {
     const qc = useQueryClient()
 
     // Configure toastr
@@ -22,6 +22,7 @@ export function useStorage(currentDirectoryId) {
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ['storage', { directoryId: currentDirectoryId }],
         queryFn: () => listStorage({ directoryId: currentDirectoryId }),
+        enabled,
     })
 
     // Mutations
