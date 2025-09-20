@@ -25,6 +25,7 @@ export function CategoriesPage() {
 
   const {
     categories = [],
+    hierarchy = [],
     isLoading,
     isError,
     error,
@@ -113,6 +114,7 @@ export function CategoriesPage() {
         errors={formErrors}
         submitting={submitting}
         categories={categories}
+        hierarchy={hierarchy}
       />
 
       <ConfirmModal

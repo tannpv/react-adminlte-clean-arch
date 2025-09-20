@@ -27,12 +27,15 @@ export function useCategories({ enabled = true } = {}) {
     }
   }, [])
 
-  const { data: categories = [], isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['categories'],
     queryFn: fetchCategories,
     enabled,
     staleTime: 5 * 60 * 1000,
   })
+
+  const categories = data?.categories ?? []
+  const hierarchy = data?.hierarchy ?? []
 
   const createCategoryMutation = useMutation({
     mutationFn: (payload) => createCategory(payload),
@@ -93,6 +96,7 @@ export function useCategories({ enabled = true } = {}) {
 
   return {
     categories,
+    hierarchy,
     isLoading,
     isError,
     error,

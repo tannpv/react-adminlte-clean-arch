@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {}, submitting = false, formId = 'category-form', categories = [], isOpen = false }) {
+export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {}, submitting = false, formId = 'category-form', categories = [], hierarchy = [], isOpen = false }) {
   const [name, setName] = useState('')
   const [parentId, setParentId] = useState('')
 
@@ -42,9 +42,9 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
           disabled={submitting}
         >
           <option value="">None</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
+          {hierarchy.map((option) => (
+            <option key={option.id} value={String(option.id)} disabled={option.disabled}>
+              {option.label}
             </option>
           ))}
         </select>

@@ -4,19 +4,22 @@ import { Category } from '../../domain/entities/category.entity'
 import { CreateCategoryDto } from '../dto/create-category.dto'
 import { UpdateCategoryDto } from '../dto/update-category.dto'
 import { validationException } from '../../shared/validation-error'
-import { CategoryResponseDto } from '../dto/category-response.dto'
+import { CategoryHierarchyOptionDto, CategoryResponseDto } from '../dto/category-response.dto'
 
 @Injectable()
 export class CategoriesService {
   constructor(@Inject(CATEGORY_REPOSITORY) private readonly categories: CategoryRepository) {}
 
-  async list(): Promise<CategoryResponseDto[]> {
+  async list(): Promise<{ categories: CategoryResponseDto[]; hierarchy: CategoryHierarchyOptionDto[] }> {
     const categories = await this.categories.findAll()
     const byId = new Map(categories.map((category) => [category.id, category]))
-    return categories.map((category) => {
+    const responses = categories.map((category) => {
       const parent = category.parentId ? byId.get(category.parentId) ?? null : null
       return this.toResponse(category, parent)
     })
+
+    const hierarchy = this.buildHierarchyOptions(categories)
+    return { categories: responses, hierarchy }
   }
 
   async create(dto: CreateCategoryDto): Promise<CategoryResponseDto> {
@@ -111,5 +114,59 @@ export class CategoriesService {
     }
 
     return parent
+  }
+
+  private buildHierarchyOptions(categories: Category[]): CategoryHierarchyOptionDto[] {
+    if (!categories.length) return []
+
+    const byId = new Map(categories.map((category) => [category.id, category]))
+    const childrenMap = new Map<number | null, Category[]>()
+
+    categories.forEach((category) => {
+      const key = category.parentId ?? null
+      if (!childrenMap.has(key)) {
+        childrenMap.set(key, [])
+      }
+      childrenMap.get(key)!.push(category)
+    })
+
+    childrenMap.forEach((list) => list.sort((a, b) => a.name.localeCompare(b.name)))
+
+    const visited = new Set<number>()
+    const options: CategoryHierarchyOptionDto[] = []
+
+    const traverse = (node: Category, depth: number, ancestry: Set<number>) => {
+      if (ancestry.has(node.id) || visited.has(node.id)) {
+        return
+      }
+
+      const nextAncestry = new Set(ancestry)
+      nextAncestry.add(node.id)
+      visited.add(node.id)
+
+      const prefix = depth ? `${'--'.repeat(depth)} ` : ''
+      options.push({
+        id: node.id,
+        label: `${prefix}${node.name}`,
+        disabled: false,
+      })
+
+      const children = childrenMap.get(node.id) ?? []
+      children.forEach((child) => traverse(child, depth + 1, nextAncestry))
+    }
+
+    const roots = categories
+      .filter((category) => category.parentId == null || !byId.has(category.parentId))
+      .sort((a, b) => a.name.localeCompare(b.name))
+
+    roots.forEach((root) => traverse(root, 0, new Set()))
+
+    categories.forEach((category) => {
+      if (!visited.has(category.id)) {
+        traverse(category, 0, new Set())
+      }
+    })
+
+    return options
   }
 }
