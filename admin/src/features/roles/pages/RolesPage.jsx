@@ -1,18 +1,20 @@
 import React, { useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { RoleList } from '../components/RoleList'
 import { RoleModal } from '../components/RoleModal'
-import { fetchRoles, createRole, updateRole, deleteRole } from '../api/rolesApi'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
+import { useRoles } from '../hooks/useRoles'
+
+const isValidationErrorMap = (err) => {
+  if (!err || typeof err !== 'object' || Array.isArray(err)) return false
+  return Object.values(err).every((value) => typeof value === 'string')
+}
 
 export function RolesPage() {
-  const qc = useQueryClient()
   const [modalOpen, setModalOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [targetRole, setTargetRole] = useState(null)
   const [formErrors, setFormErrors] = useState({})
-  const [submitting, setSubmitting] = useState(false)
   const { can } = usePermissions()
   const [editing, setEditing] = useState(null)
 
@@ -22,29 +24,19 @@ export function RolesPage() {
   const canDeleteRole = can('roles:delete')
 
   const {
-    data: rolesData,
+    roles = [],
     isLoading: loading,
     isError,
     error,
-  } = useQuery({
-    queryKey: ['roles'],
-    queryFn: fetchRoles,
-    enabled: canViewRoles,
-  })
-  const roles = Array.isArray(rolesData) ? rolesData : []
+    createRoleMutation,
+    updateRoleMutation,
+    deleteRoleMutation,
+    handleCreateRole,
+    handleUpdateRole,
+    handleDeleteRole,
+  } = useRoles({ enabled: canViewRoles })
 
-  const createMutation = useMutation({
-    mutationFn: (payload) => createRole(payload),
-    onSuccess: async () => { await qc.invalidateQueries({ queryKey: ['roles'] }) },
-  })
-  const updateMutation = useMutation({
-    mutationFn: ({ id, payload }) => updateRole(id, payload),
-    onSuccess: async () => { await qc.invalidateQueries({ queryKey: ['roles'] }) },
-  })
-  const deleteMutation = useMutation({
-    mutationFn: (id) => deleteRole(id),
-    onSuccess: async () => { await qc.invalidateQueries({ queryKey: ['roles'] }) },
-  })
+  const submitting = createRoleMutation.isPending || updateRoleMutation.isPending
 
   return (
     <>
@@ -96,25 +88,19 @@ export function RolesPage() {
         submitting={submitting}
         onClose={() => { setModalOpen(false); setEditing(null); setFormErrors({}) }}
         onSubmit={async (payload) => {
-          setSubmitting(true)
           setFormErrors({})
           try {
             if (editing?.id) {
-              await updateMutation.mutateAsync({ id: editing.id, payload })
+              await handleUpdateRole(editing.id, payload)
             } else {
-              await createMutation.mutateAsync(payload)
+              await handleCreateRole(payload)
             }
             setModalOpen(false)
             setEditing(null)
           } catch (e) {
-            const status = e?.response?.status
-            const vErrors = e?.response?.data?.errors || e?.response?.data?.error?.details?.fieldErrors
-            if (status === 400 && vErrors && typeof vErrors === 'object') {
-              const norm = Object.fromEntries(Object.entries(vErrors).map(([k, v]) => [k, typeof v === 'string' ? v : v?.message || 'Invalid']))
-              setFormErrors(norm)
+            if (isValidationErrorMap(e)) {
+              setFormErrors(e)
             }
-          } finally {
-            setSubmitting(false)
           }
         }}
       />
@@ -128,7 +114,7 @@ export function RolesPage() {
         onCancel={() => { setConfirmOpen(false); setTargetRole(null) }}
         onConfirm={async () => {
           const id = targetRole?.id
-          await deleteMutation.mutateAsync(id)
+          await handleDeleteRole(id)
           if (editing?.id === id) setEditing(null)
           setConfirmOpen(false)
           setTargetRole(null)
