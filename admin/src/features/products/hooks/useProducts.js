@@ -3,6 +3,7 @@ import React from 'react'
 import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
 import { fetchProducts, createProduct, updateProduct, deleteProduct } from '../api/productsApi'
+import { serializeProductPayload, deserializeProduct } from '../utils/productTransforms'
 
 const extractValidationErrors = (error) => {
   const status = error?.response?.status
@@ -27,10 +28,12 @@ export function useProducts() {
     }
   }, [])
 
-  const { data: products = [], isLoading, isError, error } = useQuery({
+  const { data: rawProducts = [], isLoading, isError, error } = useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts,
   })
+
+  const products = React.useMemo(() => rawProducts.map((product) => deserializeProduct(product)), [rawProducts])
 
   const createProductMutation = useMutation({
     mutationFn: (payload) => createProduct(payload),
@@ -67,7 +70,8 @@ export function useProducts() {
 
   const handleCreateProduct = async (payload) => {
     try {
-      await createProductMutation.mutateAsync(payload)
+      const prepared = serializeProductPayload(payload)
+      await createProductMutation.mutateAsync(prepared)
     } catch (error) {
       const validationErrors = extractValidationErrors(error)
       if (validationErrors) throw validationErrors
@@ -77,7 +81,8 @@ export function useProducts() {
 
   const handleUpdateProduct = async (id, payload) => {
     try {
-      await updateProductMutation.mutateAsync({ id, payload })
+      const prepared = serializeProductPayload(payload)
+      await updateProductMutation.mutateAsync({ id, payload: prepared })
     } catch (error) {
       const validationErrors = extractValidationErrors(error)
       if (validationErrors) throw validationErrors
