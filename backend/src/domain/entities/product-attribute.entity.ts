@@ -7,6 +7,8 @@ export interface ProductAttributeTermProps {
   slug: string
   order: number
   metadata?: Record<string, unknown> | null
+  createdAt: Date
+  updatedAt: Date
 }
 
 export class ProductAttributeTerm {
@@ -22,6 +24,10 @@ export class ProductAttributeTerm {
   set order(value: number) { this.props.order = value }
   get metadata() { return this.props.metadata ?? null }
   set metadata(value: Record<string, unknown> | null | undefined) { this.props.metadata = value ?? null }
+  get createdAt() { return this.props.createdAt }
+  set createdAt(value: Date) { this.props.createdAt = value }
+  get updatedAt() { return this.props.updatedAt }
+  set updatedAt(value: Date) { this.props.updatedAt = value }
 
   clone(): ProductAttributeTerm {
     return new ProductAttributeTerm({

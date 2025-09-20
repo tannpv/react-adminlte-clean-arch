@@ -13,6 +13,10 @@ export const DEFAULT_ADMIN_PERMISSIONS: Permission[] = [
   'products:create',
   'products:update',
   'products:delete',
+  'product-attributes:read',
+  'product-attributes:create',
+  'product-attributes:update',
+  'product-attributes:delete',
   'categories:read',
   'categories:create',
   'categories:update',
@@ -23,7 +27,7 @@ export const DEFAULT_ADMIN_PERMISSIONS: Permission[] = [
   'storage:delete',
 ]
 
-export const DEFAULT_USER_PERMISSIONS: Permission[] = ['users:read', 'products:read', 'categories:read', 'storage:read']
+export const DEFAULT_USER_PERMISSIONS: Permission[] = ['users:read', 'products:read', 'product-attributes:read', 'categories:read', 'storage:read']
 
 export const DEFAULT_JWT_SECRET = 'dev_secret_change_me'
 

@@ -13,6 +13,7 @@ export function ProductList({ products, onEdit, onDelete }) {
           <th>#</th>
           <th>SKU</th>
           <th>Name</th>
+          <th>Type</th>
           <th>Status</th>
           <th>Categories</th>
           <th className="text-right">Price</th>
@@ -25,6 +26,14 @@ export function ProductList({ products, onEdit, onDelete }) {
             <td>{product.id}</td>
             <td>{product.sku}</td>
             <td>{product.name}</td>
+            <td>
+              <span className="badge badge-pill badge-info text-uppercase">
+                {product.type || 'simple'}
+              </span>
+              {product.type === 'variable' && Array.isArray(product.variants) && (
+                <small className="d-block text-muted">{product.variants.length} variant{product.variants.length === 1 ? '' : 's'}</small>
+              )}
+            </td>
             <td>
               <span className="badge badge-pill badge-secondary text-uppercase">{product.status}</span>
             </td>
