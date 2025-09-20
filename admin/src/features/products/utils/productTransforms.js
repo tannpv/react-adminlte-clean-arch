@@ -11,6 +11,7 @@ export function deserializeProduct(product) {
   return {
     ...product,
     price: centsToPrice(product.priceCents),
+    attributeSetId: product.attributeSetId ?? null,
     attributes: Array.isArray(product.attributes)
       ? product.attributes.map((attribute) => ({
           ...attribute,
@@ -124,6 +125,10 @@ export function serializeProductPayload(values) {
       ? values.categoryIds.map((id) => Number(id)).filter((id) => Number.isFinite(id))
       : [],
     type,
+    attributeSetId:
+      values.attributeSetId === null || values.attributeSetId === undefined || values.attributeSetId === ''
+        ? undefined
+        : Number(values.attributeSetId),
   }
 
   if (values.attributes) {

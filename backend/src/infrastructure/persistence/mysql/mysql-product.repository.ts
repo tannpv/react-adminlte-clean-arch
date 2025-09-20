@@ -21,6 +21,7 @@ interface ProductRow extends RowDataPacket {
   currency: string
   status: string
   type: string
+  attribute_set_id: number | null
   metadata: string | null
   created_at: Date
   updated_at: Date
@@ -106,8 +107,8 @@ export class MysqlProductRepository implements ProductRepository {
   async create(product: Product): Promise<Product> {
     const now = product.updatedAt ?? new Date()
     const [result] = await this.db.execute<ResultSetHeader>(
-      `INSERT INTO products (sku, name, description, price_cents, currency, status, type, metadata, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO products (sku, name, description, price_cents, currency, status, type, attribute_set_id, metadata, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         product.sku,
         product.name,
@@ -117,6 +118,7 @@ export class MysqlProductRepository implements ProductRepository {
         product.status,
         product.type,
         product.metadata ? JSON.stringify(product.metadata) : null,
+        product.attributeSetId,
         product.createdAt,
         now,
       ],
@@ -134,7 +136,7 @@ export class MysqlProductRepository implements ProductRepository {
     const now = new Date()
     await this.db.execute(
       `UPDATE products
-       SET sku = ?, name = ?, description = ?, price_cents = ?, currency = ?, status = ?, type = ?, metadata = ?, updated_at = ?
+       SET sku = ?, name = ?, description = ?, price_cents = ?, currency = ?, status = ?, type = ?, attribute_set_id = ?, metadata = ?, updated_at = ?
        WHERE id = ?`,
       [
         product.sku,
@@ -144,6 +146,7 @@ export class MysqlProductRepository implements ProductRepository {
         product.currency,
         product.status,
         product.type,
+        product.attributeSetId,
         product.metadata ? JSON.stringify(product.metadata) : null,
         now,
         product.id,
@@ -198,6 +201,7 @@ export class MysqlProductRepository implements ProductRepository {
       metadata,
       categories,
       type: (row.type as ProductType) ?? 'simple',
+      attributeSetId: row.attribute_set_id ?? 1,
       attributes,
       variants,
       createdAt: new Date(row.created_at),

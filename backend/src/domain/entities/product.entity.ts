@@ -85,6 +85,7 @@ export interface ProductProps {
   status: ProductStatus
   metadata?: Record<string, unknown> | null
   categories: Category[]
+  attributeSetId: number
   type: ProductType
   attributes: ProductAttributeSelection[]
   variants: ProductVariant[]
@@ -113,6 +114,8 @@ export class Product {
   get categories() { return this.props.categories.map((category) => category.clone()) }
   set categories(categories: Category[]) { this.props.categories = categories.map((category) => category.clone()) }
   get categoryIds() { return this.props.categories.map((category) => category.id) }
+  get attributeSetId() { return this.props.attributeSetId }
+  set attributeSetId(value: number) { this.props.attributeSetId = value }
   get type() { return this.props.type }
   set type(value: ProductType) { this.props.type = value }
   get attributes() { return this.props.attributes.map(cloneAttributeSelection) }
@@ -129,6 +132,7 @@ export class Product {
       ...this.props,
       metadata: this.props.metadata ? { ...this.props.metadata } : null,
       categories: this.props.categories.map((category) => category.clone()),
+      attributeSetId: this.props.attributeSetId,
       attributes: this.props.attributes.map(cloneAttributeSelection),
       variants: this.props.variants.map((variant) => variant.clone()),
     })

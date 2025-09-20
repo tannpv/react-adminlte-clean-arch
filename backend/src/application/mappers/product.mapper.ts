@@ -12,6 +12,7 @@ export function toProductResponse(product: Product): ProductResponseDto {
     status: product.status,
     metadata: product.metadata ? { ...product.metadata } : null,
     categories: product.categories.map((category) => ({ id: category.id, name: category.name })),
+    attributeSetId: product.attributeSetId,
     type: product.type,
     attributes: product.attributes.map((attribute) => ({
       attributeId: attribute.attributeId,
