@@ -1,7 +1,18 @@
 import React from 'react'
 import { ProductForm } from './ProductForm'
 
-export function ProductModal({ show, title, initialProduct, errors, submitting, onClose, onSubmit, categoryOptions = [] }) {
+export function ProductModal({
+  show,
+  title,
+  initialProduct,
+  errors,
+  submitting,
+  onClose,
+  onSubmit,
+  categoryOptions = [],
+  attributeOptions = [],
+  attributeLoading = false,
+}) {
   const formId = 'product-modal-form'
   return (
     <>
@@ -12,7 +23,7 @@ export function ProductModal({ show, title, initialProduct, errors, submitting, 
         role="dialog"
         aria-modal={show ? 'true' : undefined}
       >
-        <div className="modal-dialog" role="document">
+        <div className="modal-dialog modal-xl" role="document">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">{title}</h5>
@@ -29,6 +40,8 @@ export function ProductModal({ show, title, initialProduct, errors, submitting, 
                 onCancel={onClose}
                 onSubmit={onSubmit}
                 categoryOptions={categoryOptions}
+                attributeOptions={attributeOptions}
+                attributeLoading={attributeLoading}
               />
             </div>
           </div>

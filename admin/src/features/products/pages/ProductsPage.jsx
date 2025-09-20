@@ -6,6 +6,7 @@ import { ProductModal } from '../components/ProductModal'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
 import { useProducts } from '../hooks/useProducts'
+import { useProductAttributes } from '../hooks/useProductAttributes'
 
 const isValidationErrorMap = (err) => {
   if (!err || typeof err !== 'object' || Array.isArray(err)) return false
@@ -46,6 +47,11 @@ export function ProductsPage() {
     refetchOnMount: false,
   })
   const categoryOptions = Array.isArray(categories) ? categories : []
+
+  const {
+    attributes: attributeOptions,
+    isLoading: attributeLoading,
+  } = useProductAttributes({ enabled: modalOpen })
 
   const submitting = createProductMutation.isPending || updateProductMutation.isPending
 
@@ -133,6 +139,8 @@ export function ProductsPage() {
           }
         }}
         categoryOptions={categoryOptions}
+        attributeOptions={attributeOptions}
+        attributeLoading={attributeLoading}
       />
 
       <ConfirmModal
