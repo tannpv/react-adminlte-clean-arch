@@ -554,7 +554,7 @@ export function ProductForm({
             setCategories(values)
           }}
           size={Math.min(8, Math.max(3, categoryOptions.length || 3))}
-          disabled={submitting || !categoryOptions.length}
+          disabled={submitting}
         >
           {categoryOptions.map((category) => (
             <option key={category.id} value={String(category.id)}>{category.name}</option>
