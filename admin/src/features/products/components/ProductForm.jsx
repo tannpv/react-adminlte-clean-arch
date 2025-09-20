@@ -362,7 +362,7 @@ export function ProductForm({
 
     if (!combinations.length) return
 
-    const existingMap = new Map<string, any>()
+    const existingMap = new Map()
     variants.forEach((variant) => {
       existingMap.set(buildVariantKey(variant.attributes), variant)
     })
