@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import toastr from 'toastr'
-import 'toastr/build/toastr.min.css'
+import React, { useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { UserList } from '../components/UserList'
 import { UserModal } from '../components/UserModal'
-import { fetchUsers, createUser, updateUser, deleteUser } from '../api/usersApi'
 import { fetchRoles } from '../../roles/api/rolesApi'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
 import { getUserDisplayName } from '../../../shared/lib/userDisplayName'
+import { useUsers } from '../hooks/useUsers'
+
+const isValidationErrorMap = (err) => {
+  if (!err || typeof err !== 'object' || Array.isArray(err)) return false
+  return Object.values(err).every((value) => typeof value === 'string')
+}
 
 export function UsersPage() {
   const qc = useQueryClient()
@@ -17,12 +20,23 @@ export function UsersPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [targetUser, setTargetUser] = useState(null)
   const [formErrors, setFormErrors] = useState({})
-  const [submitting, setSubmitting] = useState(false)
-  const { data: users = [], isLoading: loading, isError, error } = useQuery({
-    queryKey: ['users'],
-    queryFn: fetchUsers,
-  })
+
+  const {
+    users = [],
+    isLoading: loading,
+    isError,
+    error,
+    createUserMutation,
+    updateUserMutation,
+    deleteUserMutation,
+    handleCreateUser,
+    handleUpdateUser,
+    handleDeleteUser,
+  } = useUsers()
+
+  const submitting = createUserMutation.isPending || updateUserMutation.isPending
   const { can } = usePermissions()
+
   // Prefer cached roles if present; only fetch when needed
   const cachedRoles = qc.getQueryData(['roles'])
   const { data: roles = [], isLoading: rolesLoading } = useQuery({
@@ -36,53 +50,6 @@ export function UsersPage() {
     staleTime: 5 * 60 * 1000,
     refetchOnMount: false,
   })
-
-  // Configure toastr (once)
-  useEffect(() => {
-    toastr.options = {
-      positionClass: 'toast-top-right',
-      timeOut: 3000,
-      closeButton: true,
-      progressBar: true,
-      newestOnTop: true,
-    }
-  }, [])
-
-  // Mutations for CRUD
-  const createMutation = useMutation({
-    mutationFn: (payload) => createUser(payload),
-    onSuccess: async () => {
-      await qc.invalidateQueries({ queryKey: ['users'] })
-      toastr.success('User created successfully')
-    },
-    onError: (e) => {
-      const status = e?.response?.status
-      if (status !== 400) toastr.error(e?.message || 'Failed to create user')
-    },
-  })
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, payload }) => updateUser(id, payload),
-    onSuccess: async () => {
-      await qc.invalidateQueries({ queryKey: ['users'] })
-      toastr.success('User updated successfully')
-    },
-    onError: (e) => {
-      const status = e?.response?.status
-      if (status !== 400) toastr.error(e?.message || 'Failed to update user')
-    },
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: (id) => deleteUser(id),
-    onSuccess: async () => {
-      await qc.invalidateQueries({ queryKey: ['users'] })
-      toastr.success('User deleted successfully')
-    },
-    onError: (e) => toastr.error(e?.message || 'Failed to delete user'),
-  })
-
-  // no local success banner; we use toasts instead
 
   return (
     <>
@@ -138,28 +105,19 @@ export function UsersPage() {
         rolesLoading={rolesLoading}
         onClose={() => { setModalOpen(false); setEditing(null); setFormErrors({}) }}
         onSubmit={async (payload) => {
-          setSubmitting(true)
           setFormErrors({})
           try {
             if (editing?.id) {
-              await updateMutation.mutateAsync({ id: editing.id, payload })
+              await handleUpdateUser(editing.id, payload)
             } else {
-              await createMutation.mutateAsync(payload)
+              await handleCreateUser(payload)
             }
             setModalOpen(false)
             setEditing(null)
           } catch (e) {
-            const status = e?.response?.status
-            const vErrors = e?.response?.data?.errors || e?.response?.data?.error?.details?.fieldErrors
-            if (status === 400 && vErrors && typeof vErrors === 'object') {
-              // Normalize values to strings
-              const norm = Object.fromEntries(
-                Object.entries(vErrors).map(([k, v]) => [k, typeof v === 'string' ? v : v?.message || 'Invalid'])
-              )
-              setFormErrors(norm)
+            if (isValidationErrorMap(e)) {
+              setFormErrors(e)
             }
-          } finally {
-            setSubmitting(false)
           }
         }}
       />
@@ -173,7 +131,7 @@ export function UsersPage() {
         onCancel={() => { setConfirmOpen(false); setTargetUser(null) }}
         onConfirm={async () => {
           const id = targetUser?.id
-          await deleteMutation.mutateAsync(id)
+          await handleDeleteUser(id)
           if (editing?.id === id) setEditing(null)
           setConfirmOpen(false)
           setTargetUser(null)
