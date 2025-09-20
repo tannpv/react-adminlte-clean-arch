@@ -51,6 +51,7 @@ export function ProductAttributesPage() {
   }
 
   const handleManageTerms = (attribute) => {
+    if (!canUpdate) return
     setTermsModal({ show: true, attribute })
   }
 
@@ -135,6 +136,8 @@ export function ProductAttributesPage() {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onManageTerms={handleManageTerms}
+                canUpdate={canUpdate}
+                canDelete={canDelete}
               />
             )}
           </>
@@ -156,15 +159,17 @@ export function ProductAttributesPage() {
         attribute={termsModal.attribute}
         submitting={submitting}
         onClose={closeTermsModal}
+        canManageTerms={canUpdate}
         onCreateTerm={async (attributeId, payload) => {
+          if (!canUpdate) return
           try {
             await createTerm(attributeId, payload)
           } catch (err) {
-            // TODO: surface error to UI if needed
             console.error(err)
           }
         }}
         onUpdateTerm={async (attributeId, termId, payload) => {
+          if (!canUpdate) return
           try {
             await updateTerm(attributeId, termId, payload)
           } catch (err) {
@@ -172,6 +177,7 @@ export function ProductAttributesPage() {
           }
         }}
         onDeleteTerm={async (attributeId, termId) => {
+          if (!canUpdate) return
           try {
             await deleteTerm(attributeId, termId)
           } catch (err) {

@@ -16,6 +16,7 @@ export function ProductAttributeTermsModal({
   onCreateTerm,
   onUpdateTerm,
   onDeleteTerm,
+  canManageTerms = true,
 }) {
   const [draftTerms, setDraftTerms] = useState([])
   const [dirtyMap, setDirtyMap] = useState(new Set())
@@ -32,6 +33,7 @@ export function ProductAttributeTermsModal({
   }
 
   const handleSaveTerm = async (index) => {
+    if (!canManageTerms) return
     const term = draftTerms[index]
     if (!term.name.trim() || !term.slug.trim()) return
     const payload = {
@@ -53,6 +55,7 @@ export function ProductAttributeTermsModal({
   }
 
   const handleDeleteTerm = async (index) => {
+    if (!canManageTerms) return
     const term = draftTerms[index]
     if (term.id) {
       await onDeleteTerm(attribute.id, term.id)
@@ -61,6 +64,7 @@ export function ProductAttributeTermsModal({
   }
 
   const handleAddTerm = () => {
+    if (!canManageTerms) return
     setDraftTerms((prev) => [...prev, buildEmptyTerm()])
   }
 
@@ -80,7 +84,7 @@ export function ProductAttributeTermsModal({
             <div className="modal-body">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h6 className="mb-0">Terms</h6>
-                <button type="button" className="btn btn-outline-primary btn-sm" onClick={handleAddTerm} disabled={submitting}>
+                <button type="button" className="btn btn-outline-primary btn-sm" onClick={handleAddTerm} disabled={submitting || !canManageTerms}>
                   Add Term
                 </button>
               </div>
@@ -107,7 +111,7 @@ export function ProductAttributeTermsModal({
                                 className="form-control form-control-sm"
                                 value={term.name}
                                 onChange={(e) => updateTermField(index, { name: e.target.value })}
-                                disabled={submitting}
+                                disabled={submitting || !canManageTerms}
                               />
                             </td>
                             <td>
@@ -115,7 +119,7 @@ export function ProductAttributeTermsModal({
                                 className="form-control form-control-sm"
                                 value={term.slug}
                                 onChange={(e) => updateTermField(index, { slug: e.target.value })}
-                                disabled={submitting}
+                                disabled={submitting || !canManageTerms}
                               />
                             </td>
                             <td>
@@ -124,7 +128,7 @@ export function ProductAttributeTermsModal({
                                 className="form-control form-control-sm"
                                 value={term.order ?? 0}
                                 onChange={(e) => updateTermField(index, { order: Number(e.target.value) })}
-                                disabled={submitting}
+                                disabled={submitting || !canManageTerms}
                               />
                             </td>
                             <td className="text-nowrap">
@@ -132,7 +136,7 @@ export function ProductAttributeTermsModal({
                                 type="button"
                                 className="btn btn-sm btn-outline-primary mr-2"
                                 onClick={() => handleSaveTerm(index)}
-                                disabled={submitting || !isDirty}
+                                disabled={submitting || !isDirty || !canManageTerms}
                               >
                                 Save
                               </button>
@@ -140,7 +144,7 @@ export function ProductAttributeTermsModal({
                                 type="button"
                                 className="btn btn-sm btn-outline-danger"
                                 onClick={() => handleDeleteTerm(index)}
-                                disabled={submitting}
+                                disabled={submitting || !canManageTerms}
                               >
                                 Delete
                               </button>

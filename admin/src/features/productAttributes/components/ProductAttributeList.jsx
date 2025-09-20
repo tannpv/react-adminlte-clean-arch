@@ -1,6 +1,6 @@
 import React from 'react'
 
-export function ProductAttributeList({ attributes, onEdit, onDelete, onManageTerms }) {
+export function ProductAttributeList({ attributes, onEdit, onDelete, onManageTerms, canUpdate = true, canDelete = true }) {
   return (
     <table className="table table-hover align-middle mb-0">
       <thead>
@@ -35,6 +35,8 @@ export function ProductAttributeList({ attributes, onEdit, onDelete, onManageTer
                   type="button"
                   className="btn btn-sm btn-outline-secondary mr-2"
                   onClick={() => onManageTerms(attribute)}
+                  disabled={!canUpdate}
+                  title={!canUpdate ? 'Not allowed' : undefined}
                 >
                   Terms
                 </button>
@@ -42,6 +44,8 @@ export function ProductAttributeList({ attributes, onEdit, onDelete, onManageTer
                   type="button"
                   className="btn btn-sm btn-outline-primary mr-2"
                   onClick={() => onEdit(attribute)}
+                  disabled={!canUpdate}
+                  title={!canUpdate ? 'Not allowed' : undefined}
                 >
                   Edit
                 </button>
@@ -49,6 +53,8 @@ export function ProductAttributeList({ attributes, onEdit, onDelete, onManageTer
                   type="button"
                   className="btn btn-sm btn-outline-danger"
                   onClick={() => onDelete(attribute)}
+                  disabled={!canDelete}
+                  title={!canDelete ? 'Not allowed' : undefined}
                 >
                   Delete
                 </button>

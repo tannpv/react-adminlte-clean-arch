@@ -48,10 +48,13 @@ export function ProductsPage() {
   })
   const categoryOptions = Array.isArray(categories) ? categories : []
 
+  const canReadAttributes = can('product-attributes:read') || can('product-attributes:create') || can('product-attributes:update') || can('product-attributes:delete')
+  const canManageAttributes = can('product-attributes:update') || can('product-attributes:create')
   const {
-    attributes: attributeOptions,
+    attributes: fetchedAttributes,
     isLoading: attributeLoading,
-  } = useProductAttributes({ enabled: modalOpen })
+  } = useProductAttributes({ enabled: modalOpen && canReadAttributes })
+  const attributeOptions = canReadAttributes ? fetchedAttributes : []
 
   const submitting = createProductMutation.isPending || updateProductMutation.isPending
 
@@ -141,6 +144,7 @@ export function ProductsPage() {
         categoryOptions={categoryOptions}
         attributeOptions={attributeOptions}
         attributeLoading={attributeLoading}
+        canManageAttributes={canManageAttributes}
       />
 
       <ConfirmModal

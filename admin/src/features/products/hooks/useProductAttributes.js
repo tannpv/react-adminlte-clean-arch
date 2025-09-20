@@ -1,4 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import React from 'react'
+import toastr from 'toastr'
+import 'toastr/build/toastr.min.css'
 import {
   fetchProductAttributes,
   createProductAttribute,
@@ -22,6 +25,16 @@ const extractValidationErrors = (error) => {
 export function useProductAttributes({ enabled = true, staleTime = 5 * 60 * 1000 } = {}) {
   const qc = useQueryClient()
 
+  React.useEffect(() => {
+    toastr.options = {
+      positionClass: 'toast-top-right',
+      timeOut: 3000,
+      closeButton: true,
+      progressBar: true,
+      newestOnTop: true,
+    }
+  }, [])
+
   const query = useQuery({
     queryKey: ['product-attributes'],
     queryFn: fetchProductAttributes,
@@ -35,32 +48,50 @@ export function useProductAttributes({ enabled = true, staleTime = 5 * 60 * 1000
 
   const createMutation = useMutation({
     mutationFn: createProductAttribute,
-    onSuccess: invalidate,
+    onSuccess: async () => {
+      await invalidate()
+      toastr.success('Attribute created')
+    },
   })
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }) => updateProductAttribute(id, payload),
-    onSuccess: invalidate,
+    onSuccess: async () => {
+      await invalidate()
+      toastr.success('Attribute updated')
+    },
   })
 
   const deleteMutation = useMutation({
     mutationFn: deleteProductAttribute,
-    onSuccess: invalidate,
+    onSuccess: async () => {
+      await invalidate()
+      toastr.success('Attribute deleted')
+    },
   })
 
   const createTermMutation = useMutation({
     mutationFn: ({ attributeId, payload }) => createAttributeTerm(attributeId, payload),
-    onSuccess: invalidate,
+    onSuccess: async () => {
+      await invalidate()
+      toastr.success('Term added')
+    },
   })
 
   const updateTermMutation = useMutation({
     mutationFn: ({ attributeId, termId, payload }) => updateAttributeTerm(attributeId, termId, payload),
-    onSuccess: invalidate,
+    onSuccess: async () => {
+      await invalidate()
+      toastr.success('Term updated')
+    },
   })
 
   const deleteTermMutation = useMutation({
     mutationFn: ({ attributeId, termId }) => deleteAttributeTerm(attributeId, termId),
-    onSuccess: invalidate,
+    onSuccess: async () => {
+      await invalidate()
+      toastr.success('Term deleted')
+    },
   })
 
   const wrap = async (fn) => {
