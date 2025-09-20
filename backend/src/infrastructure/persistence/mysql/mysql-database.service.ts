@@ -116,9 +116,39 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
     await this.execute(`
       CREATE TABLE IF NOT EXISTS categories (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL UNIQUE
+        name VARCHAR(255) NOT NULL UNIQUE,
+        parent_id INT NULL,
+        CONSTRAINT fk_categories_parent FOREIGN KEY (parent_id)
+          REFERENCES categories(id) ON DELETE SET NULL,
+        INDEX idx_categories_parent (parent_id)
       ) ENGINE=InnoDB;
     `)
+
+    const [categoryParentColumn] = await this.execute<RowDataPacket[]>(
+      `SELECT COLUMN_NAME FROM information_schema.COLUMNS
+       WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'categories' AND COLUMN_NAME = 'parent_id'`,
+      [this.config.database],
+    )
+
+    if (!categoryParentColumn.length) {
+      await this.execute('ALTER TABLE categories ADD COLUMN parent_id INT NULL')
+    }
+
+    try {
+      await this.execute('CREATE INDEX idx_categories_parent ON categories(parent_id)')
+    } catch (e) {
+      // ignore if index already exists
+    }
+
+    try {
+      await this.execute(`
+        ALTER TABLE categories
+        ADD CONSTRAINT fk_categories_parent FOREIGN KEY (parent_id)
+          REFERENCES categories(id) ON DELETE SET NULL
+      `)
+    } catch (e) {
+      // ignore if already applied
+    }
 
     await this.execute(`
       CREATE TABLE IF NOT EXISTS product_categories (

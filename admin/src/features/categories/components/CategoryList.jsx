@@ -7,6 +7,7 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
         <tr>
           <th>#</th>
           <th>Name</th>
+          <th>Parent</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -15,6 +16,7 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
           <tr key={category.id}>
             <td>{category.id}</td>
             <td>{category.name}</td>
+            <td>{category.parentName ?? '—'}</td>
             <td>
               <button
                 className="btn btn-sm btn-outline-primary mr-2"

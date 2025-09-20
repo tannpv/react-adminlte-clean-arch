@@ -21,6 +21,7 @@ interface ProductRow extends RowDataPacket {
 interface ProductCategoryRow extends RowDataPacket {
   category_id: number
   name: string
+  parent_id: number | null
 }
 
 @Injectable()
@@ -145,14 +146,14 @@ export class MysqlProductRepository implements ProductRepository {
 
   private async loadCategories(productId: number): Promise<Category[]> {
     const [rows] = await this.db.execute<ProductCategoryRow[]>(
-      `SELECT pc.category_id, c.name
+      `SELECT pc.category_id, c.name, c.parent_id
        FROM product_categories pc
        INNER JOIN categories c ON c.id = pc.category_id
        WHERE pc.product_id = ?
        ORDER BY c.name ASC`,
       [productId],
     )
-    return rows.map((row) => new Category(row.category_id, row.name))
+    return rows.map((row) => new Category(row.category_id, row.name, row.parent_id ?? null))
   }
 
   private async replaceCategories(productId: number, categoryIds: number[]): Promise<void> {

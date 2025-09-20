@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from 'react'
 
-export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {}, submitting = false, formId = 'category-form' }) {
+export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {}, submitting = false, formId = 'category-form', categories = [], isOpen = false }) {
   const [name, setName] = useState('')
+  const [parentId, setParentId] = useState('')
 
   useEffect(() => {
+    if (!isOpen) return
     setName(initialCategory?.name || '')
-  }, [initialCategory])
+    setParentId(initialCategory?.parentId != null ? String(initialCategory.parentId) : '')
+  }, [initialCategory, isOpen])
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    onSubmit({ name: name.trim() })
+    onSubmit({
+      name: name.trim(),
+      parentId: parentId ? Number(parentId) : null,
+    })
   }
 
   const nameError = typeof errors.name === 'string' ? errors.name : errors.name?.message
-
+  const parentError = typeof errors.parentId === 'string' ? errors.parentId : errors.parentId?.message
   return (
     <form id={formId} onSubmit={handleSubmit} noValidate className="mb-3">
       <div className="form-group">
@@ -26,6 +32,23 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
           disabled={submitting}
         />
         {nameError && <div className="invalid-feedback">{nameError}</div>}
+      </div>
+      <div className="form-group">
+        <label>Parent Category</label>
+        <select
+          className={`form-control ${parentError ? 'is-invalid' : ''}`}
+          value={parentId}
+          onChange={(e) => setParentId(e.target.value)}
+          disabled={submitting}
+        >
+          <option value="">None</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+        {parentError && <div className="invalid-feedback">{parentError}</div>}
       </div>
       <div className="d-flex justify-content-end">
         <button type="button" className="btn btn-secondary mr-2" onClick={onCancel} disabled={submitting}>

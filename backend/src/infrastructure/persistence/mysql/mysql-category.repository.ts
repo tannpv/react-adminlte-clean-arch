@@ -7,6 +7,7 @@ import { MysqlDatabaseService } from './mysql-database.service'
 interface CategoryRow extends RowDataPacket {
   id: number
   name: string
+  parent_id: number | null
 }
 
 interface AutoIncrementRow extends RowDataPacket {
@@ -19,51 +20,51 @@ export class MysqlCategoryRepository implements CategoryRepository {
 
   async findAll(): Promise<Category[]> {
     const [rows] = await this.db.execute<CategoryRow[]>(
-      'SELECT id, name FROM categories ORDER BY name ASC',
+      'SELECT id, name, parent_id FROM categories ORDER BY name ASC',
     )
-    return rows.map((row) => new Category(row.id, row.name))
+    return rows.map((row) => new Category(row.id, row.name, row.parent_id ?? null))
   }
 
   async findById(id: number): Promise<Category | null> {
     const [rows] = await this.db.execute<CategoryRow[]>(
-      'SELECT id, name FROM categories WHERE id = ? LIMIT 1',
+      'SELECT id, name, parent_id FROM categories WHERE id = ? LIMIT 1',
       [id],
     )
     if (!rows.length) return null
-    return new Category(rows[0].id, rows[0].name)
+    return new Category(rows[0].id, rows[0].name, rows[0].parent_id ?? null)
   }
 
   async findByIds(ids: number[]): Promise<Category[]> {
     if (!ids.length) return []
     const placeholders = ids.map(() => '?').join(', ')
     const [rows] = await this.db.execute<CategoryRow[]>(
-      `SELECT id, name FROM categories WHERE id IN (${placeholders})`,
+      `SELECT id, name, parent_id FROM categories WHERE id IN (${placeholders})`,
       ids,
     )
-    return rows.map((row) => new Category(row.id, row.name))
+    return rows.map((row) => new Category(row.id, row.name, row.parent_id ?? null))
   }
 
   async findByName(name: string): Promise<Category | null> {
     const [rows] = await this.db.execute<CategoryRow[]>(
-      'SELECT id, name FROM categories WHERE LOWER(name) = LOWER(?) LIMIT 1',
+      'SELECT id, name, parent_id FROM categories WHERE LOWER(name) = LOWER(?) LIMIT 1',
       [name],
     )
     if (!rows.length) return null
     const row = rows[0]
-    return new Category(row.id, row.name)
+    return new Category(row.id, row.name, row.parent_id ?? null)
   }
 
   async create(category: Category): Promise<Category> {
     const [result] = await this.db.execute<ResultSetHeader>(
-      'INSERT INTO categories (name) VALUES (?)',
-      [category.name],
+      'INSERT INTO categories (name, parent_id) VALUES (?, ?)',
+      [category.name, category.parentId ?? null],
     )
     const id = result.insertId as number
-    return new Category(id, category.name)
+    return new Category(id, category.name, category.parentId ?? null)
   }
 
   async update(category: Category): Promise<Category> {
-    await this.db.execute('UPDATE categories SET name = ? WHERE id = ?', [category.name, category.id])
+    await this.db.execute('UPDATE categories SET name = ?, parent_id = ? WHERE id = ?', [category.name, category.parentId ?? null, category.id])
     return category.clone()
   }
 
@@ -84,4 +85,3 @@ export class MysqlCategoryRepository implements CategoryRepository {
     return nextId ? Number(nextId) : 1
   }
 }
-

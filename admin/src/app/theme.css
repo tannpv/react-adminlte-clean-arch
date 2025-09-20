@@ -368,6 +368,14 @@ body {
   padding: 0.6rem 0.85rem;
 }
 
+select.form-control:not([size]):not([multiple]) {
+  height: calc(2.25rem + 2px);
+  min-height: calc(2.25rem + 2px);
+  line-height: 1.5;
+  padding-top: 0.55rem;
+  padding-bottom: 0.55rem;
+}
+
 .form-control:focus {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
   border-color: var(--admin-primary);

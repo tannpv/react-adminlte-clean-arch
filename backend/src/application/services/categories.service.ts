@@ -12,7 +12,11 @@ export class CategoriesService {
 
   async list(): Promise<CategoryResponseDto[]> {
     const categories = await this.categories.findAll()
-    return categories.map((category) => this.toResponse(category))
+    const byId = new Map(categories.map((category) => [category.id, category]))
+    return categories.map((category) => {
+      const parent = category.parentId ? byId.get(category.parentId) ?? null : null
+      return this.toResponse(category, parent)
+    })
   }
 
   async create(dto: CreateCategoryDto): Promise<CategoryResponseDto> {
@@ -26,10 +30,12 @@ export class CategoriesService {
       throw validationException({ name: { code: 'NAME_EXISTS', message: 'Category name already exists' } })
     }
 
+    const parent = await this.validateParent(dto.parentId ?? null)
+    const parentId = parent?.id ?? null
     const id = await this.categories.nextId()
-    const category = new Category(id, name)
+    const category = new Category(id, name, parentId)
     const created = await this.categories.create(category)
-    return this.toResponse(created)
+    return this.toResponse(created, parent)
   }
 
   async update(id: number, dto: UpdateCategoryDto): Promise<CategoryResponseDto> {
@@ -48,18 +54,62 @@ export class CategoriesService {
       category.name = name
     }
 
+    let parent: Category | null = null
+    if (dto.parentId !== undefined) {
+      parent = await this.validateParent(dto.parentId ?? null, id)
+      category.parentId = parent?.id ?? null
+    } else {
+      parent = category.parentId ? await this.categories.findById(category.parentId) : null
+    }
+
     const updated = await this.categories.update(category)
-    return this.toResponse(updated)
+    return this.toResponse(updated, parent)
   }
 
   async remove(id: number): Promise<CategoryResponseDto> {
     const removed = await this.categories.remove(id)
     if (!removed) throw new NotFoundException({ message: 'Category not found' })
-    return this.toResponse(removed)
+    const parent = removed.parentId ? await this.categories.findById(removed.parentId) : null
+    return this.toResponse(removed, parent)
   }
 
-  private toResponse(category: Category): CategoryResponseDto {
-    return { id: category.id, name: category.name }
+  private toResponse(category: Category, parent: Category | null): CategoryResponseDto {
+    return {
+      id: category.id,
+      name: category.name,
+      parentId: category.parentId ?? null,
+      parentName: parent?.name ?? null,
+    }
+  }
+
+  private async validateParent(parentId: number | null, currentId?: number): Promise<Category | null> {
+    if (parentId === null || parentId === undefined) {
+      return null
+    }
+
+    if (currentId !== undefined && parentId === currentId) {
+      throw validationException({ parentId: { code: 'INVALID_PARENT', message: 'Category cannot be its own parent' } })
+    }
+
+    const parent = await this.categories.findById(parentId)
+    if (!parent) {
+      throw validationException({ parentId: { code: 'PARENT_NOT_FOUND', message: 'Parent category not found' } })
+    }
+
+    if (currentId !== undefined) {
+      const visited = new Set<number>()
+      let cursor: Category | null = parent
+      while (cursor) {
+        if (visited.has(cursor.id)) break
+        visited.add(cursor.id)
+        if (cursor.parentId === null || cursor.parentId === undefined) break
+        if (cursor.parentId === currentId) {
+          throw validationException({ parentId: { code: 'INVALID_PARENT', message: 'Cannot set a descendant as parent' } })
+        }
+        cursor = await this.categories.findById(cursor.parentId)
+      }
+    }
+
+    return parent
   }
 }
-

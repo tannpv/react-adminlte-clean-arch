@@ -3,6 +3,8 @@ import { ApiClient } from '../../../shared/lib/apiClient'
 const normalizeCategory = (category) => ({
   id: category.id,
   name: category.name,
+  parentId: category.parentId ?? null,
+  parentName: category.parentName ?? null,
 })
 
 export async function fetchCategories() {
@@ -24,4 +26,3 @@ export async function deleteCategory(id) {
   const res = await ApiClient.delete(`/categories/${id}`)
   return normalizeCategory(res.data)
 }
-

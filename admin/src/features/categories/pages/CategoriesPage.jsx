@@ -112,6 +112,7 @@ export function CategoriesPage() {
         }}
         errors={formErrors}
         submitting={submitting}
+        categories={categories}
       />
 
       <ConfirmModal
