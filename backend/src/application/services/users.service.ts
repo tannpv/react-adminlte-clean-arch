@@ -17,8 +17,8 @@ export class UsersService {
     private readonly passwordService: PasswordService,
   ) {}
 
-  async list(): Promise<PublicUser[]> {
-    const users = await this.users.findAll()
+  async list({ search }: { search?: string } = {}): Promise<PublicUser[]> {
+    const users = await this.users.findAll({ search })
     return users.map((user) => user.toPublic())
   }
 
