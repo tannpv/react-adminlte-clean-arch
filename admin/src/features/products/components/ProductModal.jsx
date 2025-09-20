@@ -12,6 +12,7 @@ export function ProductModal({
   categoryOptions = [],
   attributeOptions = [],
   attributeLoading = false,
+  canManageAttributes = true,
 }) {
   const formId = 'product-modal-form'
   return (
@@ -42,6 +43,7 @@ export function ProductModal({
                 categoryOptions={categoryOptions}
                 attributeOptions={attributeOptions}
                 attributeLoading={attributeLoading}
+                canManageAttributes={canManageAttributes}
               />
             </div>
           </div>

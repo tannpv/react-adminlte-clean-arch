@@ -18,7 +18,7 @@ import { getUserDisplayName } from '../shared/lib/userDisplayName'
 
 export default function App() {
   const { user: currentUser, setUser: setCurrentUser, logout } = useAuth()
-  const { me } = usePermissions()
+  const { can, me } = usePermissions()
   const [authScreen, setAuthScreen] = useState('login') // 'login' | 'register'
   const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'categories' | 'product-attributes' | 'products' | 'storage'
   const qc = useQueryClient()
@@ -28,8 +28,10 @@ export default function App() {
     qc.prefetchQuery({ queryKey: ['me'], queryFn: async () => (await ApiClient.get('/me')).data, staleTime: 10_000 })
     qc.prefetchQuery({ queryKey: ['roles'], queryFn: fetchRoles, staleTime: 5 * 60_000 })
     qc.prefetchQuery({ queryKey: ['products'], queryFn: fetchProducts, staleTime: 60_000 })
-    qc.prefetchQuery({ queryKey: ['product-attributes'], queryFn: fetchProductAttributes, staleTime: 60_000 })
-  }, [currentUser, qc])
+    if (can('product-attributes:read') || can('product-attributes:create') || can('product-attributes:update') || can('product-attributes:delete')) {
+      qc.prefetchQuery({ queryKey: ['product-attributes'], queryFn: fetchProductAttributes, staleTime: 60_000 })
+    }
+  }, [currentUser, qc, can])
   return (
     <div className="wrapper">
       <nav className="main-header navbar navbar-expand navbar-white navbar-light">
@@ -91,12 +93,14 @@ export default function App() {
                   <p>Categories</p>
                 </a>
               </li>
-              <li className="nav-item">
-                <a href="#" className={`nav-link ${menu === 'product-attributes' ? 'active' : ''}`} onClick={() => setMenu('product-attributes')}>
-                  <i className="nav-icon fas fa-sliders-h" />
-                  <p>Attributes</p>
-                </a>
-              </li>
+              {(can('product-attributes:read') || can('product-attributes:create') || can('product-attributes:update') || can('product-attributes:delete')) && (
+                <li className="nav-item">
+                  <a href="#" className={`nav-link ${menu === 'product-attributes' ? 'active' : ''}`} onClick={() => setMenu('product-attributes')}>
+                    <i className="nav-icon fas fa-sliders-h" />
+                    <p>Attributes</p>
+                  </a>
+                </li>
+              )}
               <li className="nav-item">
                 <a href="#" className={`nav-link ${menu === 'products' ? 'active' : ''}`} onClick={() => setMenu('products')}>
                   <i className="nav-icon fas fa-box" />
