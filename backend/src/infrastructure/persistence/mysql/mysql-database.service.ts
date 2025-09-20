@@ -105,13 +105,26 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         price_cents INT NOT NULL,
         currency VARCHAR(8) NOT NULL,
         status VARCHAR(32) NOT NULL DEFAULT 'draft',
+        type VARCHAR(32) NOT NULL DEFAULT 'simple',
         metadata JSON NULL,
         created_at DATETIME NOT NULL,
         updated_at DATETIME NOT NULL,
         INDEX idx_products_status (status),
+        INDEX idx_products_type (type),
         INDEX idx_products_updated_at (updated_at)
       ) ENGINE=InnoDB;
     `)
+
+    const [productTypeColumn] = await this.execute<RowDataPacket[]>(
+      `SELECT COLUMN_NAME FROM information_schema.COLUMNS
+       WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'products' AND COLUMN_NAME = 'type'`,
+      [this.config.database],
+    )
+
+    if (!productTypeColumn.length) {
+      await this.execute("ALTER TABLE products ADD COLUMN type VARCHAR(32) NOT NULL DEFAULT 'simple' AFTER status")
+      await this.execute("UPDATE products SET type = 'simple' WHERE type IS NULL OR type = ''")
+    }
 
     await this.execute(`
       CREATE TABLE IF NOT EXISTS categories (
@@ -159,6 +172,99 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
           REFERENCES products(id) ON DELETE CASCADE,
         CONSTRAINT fk_product_categories_category FOREIGN KEY (category_id)
           REFERENCES categories(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `)
+
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_attributes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        slug VARCHAR(255) NOT NULL UNIQUE,
+        description TEXT NULL,
+        input_type VARCHAR(32) NOT NULL DEFAULT 'select',
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL
+      ) ENGINE=InnoDB;
+    `)
+
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_attribute_terms (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        attribute_id INT NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        slug VARCHAR(255) NOT NULL,
+        sort_order INT NOT NULL DEFAULT 0,
+        metadata JSON NULL,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL,
+        UNIQUE KEY uniq_attribute_term_slug (attribute_id, slug),
+        CONSTRAINT fk_attribute_terms_attribute FOREIGN KEY (attribute_id)
+          REFERENCES product_attributes(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `)
+
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_attribute_assignments (
+        product_id INT NOT NULL,
+        attribute_id INT NOT NULL,
+        is_visible TINYINT(1) NOT NULL DEFAULT 1,
+        is_variation TINYINT(1) NOT NULL DEFAULT 0,
+        sort_order INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (product_id, attribute_id),
+        CONSTRAINT fk_attribute_assignments_product FOREIGN KEY (product_id)
+          REFERENCES products(id) ON DELETE CASCADE,
+        CONSTRAINT fk_attribute_assignments_attribute FOREIGN KEY (attribute_id)
+          REFERENCES product_attributes(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `)
+
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_attribute_assignment_terms (
+        product_id INT NOT NULL,
+        attribute_id INT NOT NULL,
+        term_id INT NOT NULL,
+        PRIMARY KEY (product_id, attribute_id, term_id),
+        CONSTRAINT fk_assignment_terms_product FOREIGN KEY (product_id)
+          REFERENCES products(id) ON DELETE CASCADE,
+        CONSTRAINT fk_assignment_terms_attribute FOREIGN KEY (attribute_id)
+          REFERENCES product_attributes(id) ON DELETE CASCADE,
+        CONSTRAINT fk_assignment_terms_term FOREIGN KEY (term_id)
+          REFERENCES product_attribute_terms(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `)
+
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_variants (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        product_id INT NOT NULL,
+        sku VARCHAR(64) NOT NULL,
+        price_cents INT NOT NULL,
+        sale_price_cents INT NULL,
+        currency VARCHAR(8) NOT NULL,
+        status VARCHAR(32) NOT NULL DEFAULT 'draft',
+        stock_quantity INT NULL,
+        metadata JSON NULL,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL,
+        UNIQUE KEY uniq_product_variant_sku (sku),
+        INDEX idx_product_variants_product (product_id),
+        CONSTRAINT fk_product_variants_product FOREIGN KEY (product_id)
+          REFERENCES products(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `)
+
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_variant_attribute_values (
+        variant_id INT NOT NULL,
+        attribute_id INT NOT NULL,
+        term_id INT NOT NULL,
+        PRIMARY KEY (variant_id, attribute_id),
+        CONSTRAINT fk_variant_values_variant FOREIGN KEY (variant_id)
+          REFERENCES product_variants(id) ON DELETE CASCADE,
+        CONSTRAINT fk_variant_values_attribute FOREIGN KEY (attribute_id)
+          REFERENCES product_attributes(id) ON DELETE CASCADE,
+        CONSTRAINT fk_variant_values_term FOREIGN KEY (term_id)
+          REFERENCES product_attribute_terms(id) ON DELETE CASCADE
       ) ENGINE=InnoDB;
     `)
 

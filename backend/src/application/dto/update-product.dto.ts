@@ -1,8 +1,21 @@
-import { Transform } from 'class-transformer'
-import { IsEnum, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength, IsArray, ArrayUnique } from 'class-validator'
-import { ProductStatus } from '../../domain/entities/product.entity'
+import { Transform, Type } from 'class-transformer'
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  MaxLength,
+  MinLength,
+  IsArray,
+  ArrayUnique,
+  ValidateNested,
+} from 'class-validator'
+import { ProductStatus, ProductType } from '../../domain/entities/product.entity'
+import { ProductAttributeDto, ProductVariantDto } from './create-product.dto'
 
 const statuses: ProductStatus[] = ['draft', 'published', 'archived']
+const productTypes: ProductType[] = ['simple', 'variable']
 
 export class UpdateProductDto {
   @IsOptional()
@@ -58,4 +71,20 @@ export class UpdateProductDto {
     return numbers
   })
   categories?: number[]
+
+  @IsOptional()
+  @IsEnum(productTypes, { message: 'Invalid product type provided' })
+  type?: ProductType
+
+  @IsOptional()
+  @IsArray({ message: 'Attributes must be an array' })
+  @ValidateNested({ each: true })
+  @Type(() => ProductAttributeDto)
+  attributes?: ProductAttributeDto[]
+
+  @IsOptional()
+  @IsArray({ message: 'Variants must be an array' })
+  @ValidateNested({ each: true })
+  @Type(() => ProductVariantDto)
+  variants?: ProductVariantDto[]
 }

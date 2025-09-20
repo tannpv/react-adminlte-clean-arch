@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise'
-import { Product, ProductStatus } from '../../../domain/entities/product.entity'
+import { Product, ProductStatus, ProductType } from '../../../domain/entities/product.entity'
 import { Category } from '../../../domain/entities/category.entity'
 import { ProductRepository } from '../../../domain/repositories/product.repository'
 import { MysqlDatabaseService } from './mysql-database.service'
@@ -13,6 +13,7 @@ interface ProductRow extends RowDataPacket {
   price_cents: number
   currency: string
   status: string
+  type: string
   metadata: string | null
   created_at: Date
   updated_at: Date
@@ -56,8 +57,8 @@ export class MysqlProductRepository implements ProductRepository {
   async create(product: Product): Promise<Product> {
     const now = product.updatedAt ?? new Date()
     const [result] = await this.db.execute<ResultSetHeader>(
-      `INSERT INTO products (sku, name, description, price_cents, currency, status, metadata, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO products (sku, name, description, price_cents, currency, status, type, metadata, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         product.sku,
         product.name,
@@ -65,6 +66,7 @@ export class MysqlProductRepository implements ProductRepository {
         product.priceCents,
         product.currency,
         product.status,
+        product.type,
         product.metadata ? JSON.stringify(product.metadata) : null,
         product.createdAt,
         now,
@@ -81,7 +83,7 @@ export class MysqlProductRepository implements ProductRepository {
     const now = new Date()
     await this.db.execute(
       `UPDATE products
-       SET sku = ?, name = ?, description = ?, price_cents = ?, currency = ?, status = ?, metadata = ?, updated_at = ?
+       SET sku = ?, name = ?, description = ?, price_cents = ?, currency = ?, status = ?, type = ?, metadata = ?, updated_at = ?
        WHERE id = ?`,
       [
         product.sku,
@@ -90,6 +92,7 @@ export class MysqlProductRepository implements ProductRepository {
         product.priceCents,
         product.currency,
         product.status,
+        product.type,
         product.metadata ? JSON.stringify(product.metadata) : null,
         now,
         product.id,
@@ -139,6 +142,9 @@ export class MysqlProductRepository implements ProductRepository {
       status: row.status as ProductStatus,
       metadata,
       categories,
+      type: (row.type as ProductType) ?? 'simple',
+      attributes: [],
+      variants: [],
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
     })
