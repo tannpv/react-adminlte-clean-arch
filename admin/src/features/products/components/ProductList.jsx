@@ -7,7 +7,7 @@ const formatPrice = (priceCents, currency = 'USD') => {
 
 export function ProductList({ products, onEdit, onDelete }) {
   return (
-    <table className="table table-striped">
+    <table className="table table-hover align-middle mb-0">
       <thead>
         <tr>
           <th>#</th>

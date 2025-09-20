@@ -40,45 +40,54 @@ export function RolesPage() {
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3 className="mb-0">Roles</h3>
-        <button
-          className="btn btn-primary"
-          onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
-          disabled={!canCreateRole}
-          title={!canCreateRole ? 'Not allowed' : undefined}
-        >
-          Add Role
-        </button>
-      </div>
-
-      {!canViewRoles && (
-        <div className="alert alert-warning" role="alert">
-          You do not have permission to view roles.
+      <div className="page-card">
+        <div className="page-header">
+          <div>
+            <h2 className="page-title">Roles</h2>
+            <p className="page-subtitle">Define permission sets and control what teams can access.</p>
+          </div>
+          <div className="page-actions">
+            <button
+              className="btn btn-primary"
+              onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
+              disabled={!canCreateRole}
+              title={!canCreateRole ? 'Not allowed' : undefined}
+            >
+              Add Role
+            </button>
+          </div>
         </div>
-      )}
 
-      {canViewRoles && loading && <div>Loading...</div>}
-      {canViewRoles && !loading && !isError && (
-        <RoleList
-          roles={roles}
-          canEdit={canUpdateRole}
-          canDelete={canDeleteRole}
-          onEdit={(role) => {
-            setEditing(role)
-            setFormErrors({})
-            setModalOpen(true)
-          }}
-          onDelete={(id) => {
-            const role = roles.find(x => x.id === id)
-            setTargetRole(role || { id })
-            setConfirmOpen(true)
-          }}
-        />
-      )}
-      {canViewRoles && !loading && isError && (
-        <div className="alert alert-danger" role="alert">{error?.message || 'Failed to load roles'}</div>
-      )}
+        <div className="page-body">
+          {!canViewRoles && (
+            <div className="alert alert-warning" role="alert">
+              You do not have permission to view roles.
+            </div>
+          )}
+
+          {canViewRoles && loading && <div>Loading...</div>}
+          {canViewRoles && !loading && !isError && (
+            <RoleList
+              roles={roles}
+              canEdit={canUpdateRole}
+              canDelete={canDeleteRole}
+              onEdit={(role) => {
+                setEditing(role)
+                setFormErrors({})
+                setModalOpen(true)
+              }}
+              onDelete={(id) => {
+                const role = roles.find(x => x.id === id)
+                setTargetRole(role || { id })
+                setConfirmOpen(true)
+              }}
+            />
+          )}
+          {canViewRoles && !loading && isError && (
+            <div className="alert alert-danger" role="alert">{error?.message || 'Failed to load roles'}</div>
+          )}
+        </div>
+      </div>
 
       <RoleModal
         show={modalOpen}

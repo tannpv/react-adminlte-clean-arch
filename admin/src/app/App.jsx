@@ -38,16 +38,16 @@ export default function App() {
         <ul className="navbar-nav ml-auto">
           {currentUser ? (
             <li className="nav-item d-flex align-items-center pr-2">
-              <span className="mr-3 d-flex align-items-center">
-                {getUserDisplayName(currentUser)}
+              <div className="user-chip mr-3">
+                <span>{getUserDisplayName(currentUser)}</span>
                 {me?.roles?.length ? (
-                  <span className="ml-2">
+                  <span>
                     {me.roles.map(r => (
-                      <span key={r.id} className="badge badge-info ml-1">{r.name}</span>
+                      <span key={r.id} className="badge badge-info">{r.name}</span>
                     ))}
                   </span>
                 ) : null}
-              </span>
+              </div>
               <button className="btn btn-sm btn-outline-secondary" onClick={logout}>Logout</button>
             </li>
           ) : null}
@@ -56,7 +56,8 @@ export default function App() {
 
       <aside className="main-sidebar sidebar-dark-primary elevation-4">
         <a href="#" className="brand-link">
-          <span className="brand-text font-weight-light">My Admin</span>
+          <span className="brand-logo">AA</span>
+          <span className="brand-text">Aurora Admin</span>
         </a>
         <div className="sidebar">
           <nav className="mt-2">
