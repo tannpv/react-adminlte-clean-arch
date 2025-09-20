@@ -195,6 +195,41 @@ body {
   border-width: 1px;
 }
 
+.search-control {
+  min-width: 220px;
+}
+
+.search-control .input-group {
+  border-radius: 12px;
+  background: var(--admin-surface);
+  box-shadow: var(--admin-shadow-soft);
+  border: 1px solid var(--admin-border);
+  overflow: hidden;
+}
+
+.search-control .input-group-text {
+  background: transparent;
+  border: none;
+  color: var(--admin-muted);
+}
+
+.search-control .form-control {
+  border: none;
+  box-shadow: none;
+}
+
+.search-control .form-control:focus {
+  box-shadow: none;
+}
+
+.empty-state {
+  border: 1px dashed var(--admin-border-strong);
+  border-radius: 16px;
+  padding: 48px 24px;
+  text-align: center;
+  background: #f8fafc;
+}
+
 .page-body {
   display: flex;
   flex-direction: column;

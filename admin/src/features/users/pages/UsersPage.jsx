@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { UserList } from '../components/UserList'
 import { UserModal } from '../components/UserModal'
@@ -20,6 +20,7 @@ export function UsersPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [targetUser, setTargetUser] = useState(null)
   const [formErrors, setFormErrors] = useState({})
+  const [searchTerm, setSearchTerm] = useState('')
 
   const {
     users = [],
@@ -51,6 +52,24 @@ export function UsersPage() {
     refetchOnMount: false,
   })
 
+  const rolesById = useMemo(
+    () => Object.fromEntries((roles || []).map(role => [role.id, role])),
+    [roles]
+  )
+
+  const filteredUsers = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase()
+    if (!term) return users
+    return users.filter((user) => {
+      const displayName = getUserDisplayName(user)?.toLowerCase() || ''
+      const email = user.email?.toLowerCase() || ''
+      const roleNames = Array.isArray(user.roles)
+        ? user.roles.map((id) => rolesById[id]?.name || '').join(' ').toLowerCase()
+        : ''
+      return displayName.includes(term) || email.includes(term) || roleNames.includes(term)
+    })
+  }, [rolesById, searchTerm, users])
+
   return (
     <>
       <div className="page-card">
@@ -60,6 +79,20 @@ export function UsersPage() {
             <p className="page-subtitle">Manage workspace members, permissions, and access.</p>
           </div>
           <div className="page-actions">
+            <div className="search-control">
+              <div className="input-group">
+                <div className="input-group-prepend">
+                  <span className="input-group-text"><i className="fas fa-search" /></span>
+                </div>
+                <input
+                  type="search"
+                  className="form-control"
+                  placeholder="Search users..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
             <button
               className="btn btn-outline-secondary"
               onClick={() => qc.invalidateQueries({ queryKey: ['roles'] })}
@@ -82,10 +115,10 @@ export function UsersPage() {
         <div className="page-body">
           {loading && <div>Loading...</div>}
           {/* Errors and successes are reported via toasts; show initial load error inline */}
-          {!loading && !isError && (
+          {!loading && !isError && filteredUsers.length > 0 && (
             <UserList
-              users={users}
-              rolesById={Object.fromEntries((roles || []).map(r => [r.id, r]))}
+              users={filteredUsers}
+              rolesById={rolesById}
               onEdit={(u) => { if (!can('users:update')) return; setEditing(u); setFormErrors({}); setModalOpen(true) }}
               onDelete={(id) => {
                 if (!can('users:delete')) return
@@ -94,6 +127,12 @@ export function UsersPage() {
                 setConfirmOpen(true)
               }}
             />
+          )}
+          {!loading && !isError && filteredUsers.length === 0 && (
+            <div className="empty-state">
+              <h5>No users found</h5>
+              <p className="mb-0 text-muted">Try adjusting your search to find people in your workspace.</p>
+            </div>
           )}
           {!loading && isError && (
             <div className="alert alert-danger" role="alert">
