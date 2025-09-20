@@ -48,6 +48,7 @@ export interface ProductResponseDto {
   status: ProductStatus
   metadata: Record<string, unknown> | null
   categories: { id: number; name: string }[]
+  attributeSetId: number
   type: ProductType
   attributes: ProductAttributeResponseDto[]
   variants: ProductVariantResponseDto[]

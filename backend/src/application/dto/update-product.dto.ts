@@ -10,6 +10,7 @@ import {
   IsArray,
   ArrayUnique,
   ValidateNested,
+  IsInt,
 } from 'class-validator'
 import { ProductStatus, ProductType } from '../../domain/entities/product.entity'
 import { ProductAttributeDto, ProductVariantDto } from './create-product.dto'
@@ -75,6 +76,15 @@ export class UpdateProductDto {
   @IsOptional()
   @IsEnum(productTypes, { message: 'Invalid product type provided' })
   type?: ProductType
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') return undefined
+    const num = Number(value)
+    return Number.isFinite(num) ? num : undefined
+  })
+  @IsInt({ message: 'Attribute set must be numeric' })
+  attributeSetId?: number
 
   @IsOptional()
   @IsArray({ message: 'Attributes must be an array' })

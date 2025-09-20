@@ -276,6 +276,72 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
     `)
 
     await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_attribute_sets (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        slug VARCHAR(255) NOT NULL UNIQUE,
+        description TEXT NULL,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL
+      ) ENGINE=InnoDB;
+    `)
+
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_attribute_set_attributes (
+        set_id INT NOT NULL,
+        attribute_id INT NOT NULL,
+        sort_order INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (set_id, attribute_id),
+        CONSTRAINT fk_set_attributes_set FOREIGN KEY (set_id)
+          REFERENCES product_attribute_sets(id) ON DELETE CASCADE,
+        CONSTRAINT fk_set_attributes_attribute FOREIGN KEY (attribute_id)
+          REFERENCES product_attributes(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `)
+
+    try {
+      await this.execute("ALTER TABLE products ADD COLUMN attribute_set_id INT NULL AFTER metadata")
+    } catch (e) {
+      // ignore if column already exists
+    }
+
+    try {
+      await this.execute('CREATE INDEX idx_products_attribute_set ON products(attribute_set_id)')
+    } catch (e) {
+      // ignore if index already exists
+    }
+
+    try {
+      await this.execute(`
+        ALTER TABLE products
+        ADD CONSTRAINT fk_products_attribute_set FOREIGN KEY (attribute_set_id)
+          REFERENCES product_attribute_sets(id) ON DELETE SET NULL
+      `)
+    } catch (e) {
+      // ignore if already applied
+    }
+
+    const now = new Date()
+    const [defaultSetRows] = await this.execute<RowDataPacket[]>(
+      'SELECT id FROM product_attribute_sets WHERE slug = ? LIMIT 1',
+      ['default'],
+    )
+
+    let defaultSetId = defaultSetRows[0]?.id as number | undefined
+    if (!defaultSetId) {
+      const [insertResult] = await this.execute<ResultSetHeader>(
+        'INSERT INTO product_attribute_sets (name, slug, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+        ['Default', 'default', null, now, now],
+      )
+      defaultSetId = insertResult.insertId as number
+    }
+
+    await this.execute(
+      'UPDATE products SET attribute_set_id = ? WHERE attribute_set_id IS NULL',
+      [defaultSetId ?? 1],
+    )
+
+    await this.execute(`
       CREATE TABLE IF NOT EXISTS role_permissions (
         role_id INT NOT NULL,
         permission VARCHAR(255) NOT NULL,

@@ -47,6 +47,7 @@ export class ProductsService {
     const priceCents = this.toPriceCents(dto.price)
     const status: ProductStatus = dto.status ?? 'draft'
     const type: ProductType = dto.type ?? 'simple'
+    const attributeSetId = dto.attributeSetId ?? 1
     const now = new Date()
     const id = await this.products.nextId()
 
@@ -82,6 +83,7 @@ export class ProductsService {
       status,
       metadata: dto.metadata ?? null,
       categories,
+      attributeSetId,
       type,
       attributes,
       variants,
@@ -148,6 +150,10 @@ export class ProductsService {
 
     if (dto.type !== undefined) {
       product.type = dto.type
+    }
+
+    if (dto.attributeSetId !== undefined) {
+      product.attributeSetId = dto.attributeSetId
     }
 
     if (dto.attributes !== undefined) {

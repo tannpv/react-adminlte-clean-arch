@@ -432,6 +432,7 @@ export function ProductForm({
       status,
       categoryIds: categories,
       type,
+      attributeSetId: initialProduct?.attributeSetId ?? undefined,
       attributes: preparedAttributes,
       variants: preparedVariants,
     }

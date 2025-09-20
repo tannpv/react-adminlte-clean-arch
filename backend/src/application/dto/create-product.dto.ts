@@ -176,6 +176,15 @@ export class CreateProductDto {
   type?: ProductType
 
   @IsOptional()
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') return undefined
+    const num = Number(value)
+    return Number.isFinite(num) ? num : undefined
+  })
+  @IsInt({ message: 'Attribute set must be numeric' })
+  attributeSetId?: number
+
+  @IsOptional()
   @IsArray({ message: 'Attributes must be an array' })
   @ValidateNested({ each: true })
   @Type(() => ProductAttributeDto)

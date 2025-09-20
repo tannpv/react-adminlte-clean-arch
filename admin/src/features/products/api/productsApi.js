@@ -11,6 +11,7 @@ const normalizeProduct = (product) => ({
   metadata: product.metadata || null,
   categories: Array.isArray(product.categories) ? product.categories.map((c) => ({ id: c.id, name: c.name })) : [],
   categoryIds: Array.isArray(product.categories) ? product.categories.map((c) => c.id) : [],
+  attributeSetId: product.attributeSetId ?? null,
   type: product.type || 'simple',
   attributes: Array.isArray(product.attributes) ? product.attributes.map((attr) => ({
     attributeId: attr.attributeId,
