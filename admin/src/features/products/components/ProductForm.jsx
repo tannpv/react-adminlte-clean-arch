@@ -36,6 +36,7 @@ export function ProductForm({
   initialProduct,
   attributeOptions = [],
   attributeLoading = false,
+  categoriesLoading = false,
   onSubmit,
   onCancel,
   errors = {},
@@ -554,13 +555,16 @@ export function ProductForm({
             setCategories(values)
           }}
           size={Math.min(8, Math.max(3, categoryOptions.length || 3))}
-          disabled={submitting}
+          disabled={submitting || categoriesLoading}
         >
           {categoryOptions.map((category) => (
             <option key={category.id} value={String(category.id)}>{category.name}</option>
           ))}
         </select>
-        {!categoryOptions.length && (
+        {categoriesLoading && (
+          <small className="form-text text-muted">Loading categories…</small>
+        )}
+        {!categoriesLoading && !categoryOptions.length && (
           <small className="form-text text-muted">No categories available. Create categories first.</small>
         )}
         {normalizedErrors.categories && <div className="invalid-feedback">{normalizedErrors.categories}</div>}
