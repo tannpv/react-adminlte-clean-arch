@@ -144,6 +144,7 @@ export function ProductsPage() {
         categoryOptions={categoryOptions}
         attributeOptions={attributeOptions}
         attributeLoading={attributeLoading}
+        categoriesLoading={categoriesLoading}
         canManageAttributes={canManageAttributes}
       />
 
