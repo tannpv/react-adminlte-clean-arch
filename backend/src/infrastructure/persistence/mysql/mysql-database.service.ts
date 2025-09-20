@@ -223,6 +223,7 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         product_id INT NOT NULL,
         attribute_id INT NOT NULL,
         term_id INT NOT NULL,
+        sort_order INT NOT NULL DEFAULT 0,
         PRIMARY KEY (product_id, attribute_id, term_id),
         CONSTRAINT fk_assignment_terms_product FOREIGN KEY (product_id)
           REFERENCES products(id) ON DELETE CASCADE,
@@ -232,6 +233,12 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
           REFERENCES product_attribute_terms(id) ON DELETE CASCADE
       ) ENGINE=InnoDB;
     `)
+
+    try {
+      await this.execute('ALTER TABLE product_attribute_assignment_terms ADD COLUMN sort_order INT NOT NULL DEFAULT 0')
+    } catch (e) {
+      // ignore if already applied
+    }
 
     await this.execute(`
       CREATE TABLE IF NOT EXISTS product_variants (

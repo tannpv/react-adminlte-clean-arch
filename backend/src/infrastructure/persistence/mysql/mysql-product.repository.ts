@@ -123,6 +123,8 @@ export class MysqlProductRepository implements ProductRepository {
     )
     const id = result.insertId as number
     await this.replaceCategories(id, product.categoryIds)
+    await this.replaceAttributes(id, product.attributes)
+    await this.replaceVariants(id, product.variants)
     const created = await this.findById(id)
     // findById should not return null immediately after insert, but fallback for safety
     return created ?? product.clone()
@@ -148,6 +150,8 @@ export class MysqlProductRepository implements ProductRepository {
       ],
     )
     await this.replaceCategories(product.id, product.categoryIds)
+    await this.replaceAttributes(product.id, product.attributes)
+    await this.replaceVariants(product.id, product.variants)
     const updated = await this.findById(product.id)
     return updated ?? product
   }
@@ -368,14 +372,15 @@ export class MysqlProductRepository implements ProductRepository {
       )
 
       if (attribute.terms && attribute.terms.length) {
-        const placeholders = attribute.terms.map(() => '(?, ?, ?)').join(', ')
+        const placeholders = attribute.terms.map(() => '(?, ?, ?, ?)').join(', ')
         const params = attribute.terms.flatMap((term, order) => [
           productId,
           attribute.attributeId,
           term.termId,
+          order,
         ])
         await this.db.execute(
-          `INSERT INTO product_attribute_assignment_terms (product_id, attribute_id, term_id)
+          `INSERT INTO product_attribute_assignment_terms (product_id, attribute_id, term_id, sort_order)
            VALUES ${placeholders}`,
           params,
         )

@@ -11,6 +11,43 @@ const normalizeProduct = (product) => ({
   metadata: product.metadata || null,
   categories: Array.isArray(product.categories) ? product.categories.map((c) => ({ id: c.id, name: c.name })) : [],
   categoryIds: Array.isArray(product.categories) ? product.categories.map((c) => c.id) : [],
+  type: product.type || 'simple',
+  attributes: Array.isArray(product.attributes) ? product.attributes.map((attr) => ({
+    attributeId: attr.attributeId,
+    attributeName: attr.attributeName,
+    attributeSlug: attr.attributeSlug,
+    visible: !!attr.visible,
+    variation: !!attr.variation,
+    terms: Array.isArray(attr.terms)
+      ? attr.terms.map((term) => ({
+          termId: term.termId,
+          termName: term.termName,
+          termSlug: term.termSlug,
+        }))
+      : [],
+  })) : [],
+  variants: Array.isArray(product.variants) ? product.variants.map((variant) => ({
+    id: variant.id,
+    sku: variant.sku,
+    priceCents: variant.priceCents,
+    salePriceCents: variant.salePriceCents,
+    currency: variant.currency,
+    status: variant.status,
+    stockQuantity: variant.stockQuantity,
+    metadata: variant.metadata || null,
+    attributes: Array.isArray(variant.attributes)
+      ? variant.attributes.map((value) => ({
+          attributeId: value.attributeId,
+          attributeName: value.attributeName,
+          attributeSlug: value.attributeSlug,
+          termId: value.termId,
+          termName: value.termName,
+          termSlug: value.termSlug,
+        }))
+      : [],
+    createdAt: variant.createdAt,
+    updatedAt: variant.updatedAt,
+  })) : [],
   createdAt: product.createdAt,
   updatedAt: product.updatedAt,
 })

@@ -52,7 +52,25 @@ export class ProductsService {
 
     const categories = await this.resolveCategories(dto.categories)
     const attributes = this.mapAttributeDtos(dto.attributes)
-    const variants = this.mapVariantDtos(dto.variants, status)
+    const variants = type === 'variable' ? this.mapVariantDtos(dto.variants, status) : []
+
+    if (type === 'variable' && !variants.length) {
+      throw validationException({
+        variants: {
+          code: 'VARIANTS_REQUIRED',
+          message: 'Variable products require at least one variant',
+        },
+      })
+    }
+
+    if (type === 'simple' && Array.isArray(dto.variants) && dto.variants.length) {
+      throw validationException({
+        variants: {
+          code: 'VARIANTS_NOT_ALLOWED',
+          message: 'Simple products cannot include variants',
+        },
+      })
+    }
 
     const product = new Product({
       id,
@@ -134,10 +152,35 @@ export class ProductsService {
 
     if (dto.attributes !== undefined) {
       product.attributes = this.mapAttributeDtos(dto.attributes)
+    } else if (dto.type !== undefined && dto.type === 'simple') {
+      product.attributes = []
     }
 
     if (dto.variants !== undefined) {
-      product.variants = this.mapVariantDtos(dto.variants, product.status)
+      if (product.type === 'simple') {
+        if (dto.variants.length) {
+          throw validationException({
+            variants: {
+              code: 'VARIANTS_NOT_ALLOWED',
+              message: 'Simple products cannot include variants',
+            },
+          })
+        }
+        product.variants = []
+      } else {
+        const mappedVariants = this.mapVariantDtos(dto.variants, product.status)
+        if (!mappedVariants.length) {
+          throw validationException({
+            variants: {
+              code: 'VARIANTS_REQUIRED',
+              message: 'Variable products require at least one variant',
+            },
+          })
+        }
+        product.variants = mappedVariants
+      }
+    } else if (dto.type !== undefined && dto.type === 'simple') {
+      product.variants = []
     }
 
     product.updatedAt = new Date()
@@ -200,7 +243,27 @@ export class ProductsService {
   private mapVariantDtos(variants: ProductVariantDto[] | undefined, defaultStatus: ProductStatus): ProductVariant[] {
     if (!Array.isArray(variants)) return []
     const now = new Date()
+    const seenSkus = new Set<string>()
     return variants.map((variant, index) => {
+      const sku = (variant.sku ?? '').trim()
+      if (!sku) {
+        throw validationException({
+          variants: {
+            code: 'VARIANT_SKU_REQUIRED',
+            message: 'Each variant requires a SKU',
+          },
+        })
+      }
+      if (seenSkus.has(sku)) {
+        throw validationException({
+          variants: {
+            code: 'VARIANT_SKU_DUPLICATE',
+            message: 'Variant SKUs must be unique',
+          },
+        })
+      }
+      seenSkus.add(sku)
+
       const attributes = Array.isArray(variant.attributes)
         ? variant.attributes.map((attr) => ({
             attributeId: attr.attributeId,
@@ -214,7 +277,7 @@ export class ProductsService {
 
       return new ProductVariant({
         id: variant.id ?? -(index + 1),
-        sku: variant.sku.trim(),
+        sku,
         priceCents: this.toPriceCents(variant.price),
         salePriceCents: this.toOptionalPriceCents(variant.salePrice ?? null),
         currency: variant.currency.trim().toUpperCase(),
