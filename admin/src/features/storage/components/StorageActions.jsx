@@ -1,40 +1,47 @@
 import React from 'react'
 
 export function StorageActions({ onCreateDirectory, onUpload, onCreateDirectoryClick }) {
+    const inputRef = React.useRef(null)
+
+    const handleCreate = () => {
+        if (!inputRef.current) {
+            return
+        }
+
+        const name = inputRef.current.value.trim()
+        if (!name) {
+            return
+        }
+
+        onCreateDirectory(name)
+        inputRef.current.value = ''
+    }
+
     return (
-        <div className="d-flex align-items-center flex-column flex-md-row w-100" style={{ gap: '12px' }}>
-            <div className="input-group" style={{ maxWidth: 360 }}>
+        <div className="d-flex flex-column flex-md-row align-items-stretch w-100" style={{ gap: '12px' }}>
+            <div className="d-flex align-items-stretch w-100" style={{ maxWidth: 360 }}>
                 <input
-                    className="form-control"
+                    ref={inputRef}
+                    className="form-control mr-2"
+                    style={{ flex: 1 }}
                     placeholder="New folder name"
                     onKeyPress={(e) => {
                         if (e.key === 'Enter') {
-                            const name = e.target.value.trim()
-                            if (name) {
-                                onCreateDirectory(name)
-                                e.target.value = ''
-                            }
+                            e.preventDefault()
+                            handleCreate()
                         }
                     }}
                 />
-                <div className="input-group-append">
-                    <button
-                        className="btn btn-primary"
-                        onClick={(e) => {
-                            const input = e.target.closest('.input-group').querySelector('input')
-                            const name = input.value.trim()
-                            if (name) {
-                                onCreateDirectory(name)
-                                input.value = ''
-                            }
-                        }}
-                    >
-                        Create
-                    </button>
-                </div>
+                <button
+                    className="btn btn-primary h-100"
+                    style={{ whiteSpace: 'nowrap' }}
+                    onClick={handleCreate}
+                >
+                    Create
+                </button>
             </div>
-            <div className="ml-md-3 mt-2 mt-md-0">
-                <label className="btn btn-success mb-0">
+            <div className="ml-md-3 mt-2 mt-md-0 d-flex align-items-stretch">
+                <label className="btn btn-success d-flex align-items-center justify-content-center h-100 mb-0" style={{ whiteSpace: 'nowrap' }}>
                     <i className="fas fa-upload mr-1" /> Upload
                     <input type="file" className="d-none" onChange={onUpload} />
                 </label>
