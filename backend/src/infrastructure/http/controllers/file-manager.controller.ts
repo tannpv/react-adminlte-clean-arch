@@ -24,13 +24,16 @@ import { CreateDirectoryDto } from '../../../application/dto/create-directory.dt
 import { UpdateDirectoryDto } from '../../../application/dto/update-directory.dto'
 import { UpdateFileDto } from '../../../application/dto/update-file.dto'
 import { UpdateFileGrantsDto } from '../../../application/dto/update-file-grants.dto'
+import { PermissionsGuard } from '../guards/permissions.guard'
+import { RequireAnyPermission, RequirePermissions } from '../decorators/permissions.decorator'
 
 @Controller('storage')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class FileManagerController {
   constructor(private readonly fileManager: FileManagerService) {}
 
   @Get()
+  @RequireAnyPermission('storage:read', 'storage:create', 'storage:update', 'storage:delete')
   async list(@Req() req: AuthenticatedRequest, @Query('directoryId') directoryId?: string) {
     const userId = req.userId!
     const dirId = directoryId === undefined ? null : directoryId === '' ? null : Number(directoryId)
@@ -41,12 +44,14 @@ export class FileManagerController {
   }
 
   @Post('directories')
+  @RequirePermissions('storage:create')
   async createDirectory(@Req() req: AuthenticatedRequest, @Body() dto: CreateDirectoryDto) {
     const userId = req.userId!
     return this.fileManager.createDirectory(userId, dto)
   }
 
   @Patch('directories/:id')
+  @RequirePermissions('storage:update')
   async updateDirectory(
     @Req() req: AuthenticatedRequest,
     @Param('id', ParseIntPipe) id: number,
@@ -57,6 +62,7 @@ export class FileManagerController {
   }
 
   @Delete('directories/:id')
+  @RequirePermissions('storage:delete')
   async deleteDirectory(@Req() req: AuthenticatedRequest, @Param('id', ParseIntPipe) id: number) {
     const userId = req.userId!
     await this.fileManager.deleteDirectory(userId, id)
@@ -64,6 +70,7 @@ export class FileManagerController {
   }
 
   @Put('directories/:id/grants')
+  @RequirePermissions('storage:update')
   async setDirectoryGrants(
     @Req() req: AuthenticatedRequest,
     @Param('id', ParseIntPipe) id: number,
@@ -79,6 +86,7 @@ export class FileManagerController {
     storage: multer.memoryStorage(),
     limits: { fileSize: 20 * 1024 * 1024 },
   }))
+  @RequirePermissions('storage:create')
   async uploadFile(
     @Req() req: AuthenticatedRequest,
     @UploadedFile() file: Express.Multer.File,
@@ -102,6 +110,7 @@ export class FileManagerController {
   }
 
   @Patch('files/:id')
+  @RequirePermissions('storage:update')
   async updateFile(
     @Req() req: AuthenticatedRequest,
     @Param('id', ParseIntPipe) id: number,
@@ -112,6 +121,7 @@ export class FileManagerController {
   }
 
   @Delete('files/:id')
+  @RequirePermissions('storage:delete')
   async deleteFile(@Req() req: AuthenticatedRequest, @Param('id', ParseIntPipe) id: number) {
     const userId = req.userId!
     await this.fileManager.deleteFile(userId, id)
@@ -119,6 +129,7 @@ export class FileManagerController {
   }
 
   @Put('files/:id/grants')
+  @RequirePermissions('storage:update')
   async setFileGrants(
     @Req() req: AuthenticatedRequest,
     @Param('id', ParseIntPipe) id: number,

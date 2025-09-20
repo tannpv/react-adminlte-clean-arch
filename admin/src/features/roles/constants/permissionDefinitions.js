@@ -39,6 +39,16 @@ export const PERMISSION_GROUPS = [
       { key: 'categories:delete', label: 'Delete' },
     ],
   },
+  {
+    entity: 'storage',
+    label: 'Storage',
+    actions: [
+      { key: 'storage:read', label: 'View' },
+      { key: 'storage:create', label: 'Upload/Create' },
+      { key: 'storage:update', label: 'Edit' },
+      { key: 'storage:delete', label: 'Delete' },
+    ],
+  },
 ]
 
 export const ALL_PERMISSIONS = PERMISSION_GROUPS.flatMap((group) => group.actions.map((action) => action.key))
