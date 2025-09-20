@@ -3,7 +3,7 @@ import { formatPermissionsForDisplay } from '../constants/permissionDefinitions'
 
 export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = true }) {
   return (
-    <table className="table table-striped">
+    <table className="table table-hover align-middle mb-0">
       <thead>
         <tr>
           <th>#</th>

@@ -40,45 +40,54 @@ export function CategoriesPage() {
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3 className="mb-0">Categories</h3>
-        <button
-          className="btn btn-primary"
-          onClick={() => { setEditing(null); setFormErrors({}); setModalOpen(true) }}
-          disabled={!canCreate}
-          title={!canCreate ? 'Not allowed' : undefined}
-        >
-          Add Category
-        </button>
-      </div>
-
-      {!canView && (
-        <div className="alert alert-warning" role="alert">
-          You do not have permission to view categories.
+      <div className="page-card">
+        <div className="page-header">
+          <div>
+            <h2 className="page-title">Categories</h2>
+            <p className="page-subtitle">Organize products into clear, navigable groups.</p>
+          </div>
+          <div className="page-actions">
+            <button
+              className="btn btn-primary"
+              onClick={() => { setEditing(null); setFormErrors({}); setModalOpen(true) }}
+              disabled={!canCreate}
+              title={!canCreate ? 'Not allowed' : undefined}
+            >
+              Add Category
+            </button>
+          </div>
         </div>
-      )}
 
-      {canView && isLoading && <div>Loading...</div>}
-      {canView && !isLoading && isError && (
-        <div className="alert alert-danger" role="alert">{error?.message || 'Failed to load categories'}</div>
-      )}
-      {canView && !isLoading && !isError && (
-        <CategoryList
-          categories={categories}
-          canEdit={canUpdate}
-          canDelete={canDelete}
-          onEdit={(category) => {
-            setEditing(category)
-            setFormErrors({})
-            setModalOpen(true)
-          }}
-          onDelete={(id) => {
-            const category = categories.find((c) => c.id === id)
-            setTargetCategory(category || { id })
-            setConfirmOpen(true)
-          }}
-        />
-      )}
+        <div className="page-body">
+          {!canView && (
+            <div className="alert alert-warning" role="alert">
+              You do not have permission to view categories.
+            </div>
+          )}
+
+          {canView && isLoading && <div>Loading...</div>}
+          {canView && !isLoading && isError && (
+            <div className="alert alert-danger" role="alert">{error?.message || 'Failed to load categories'}</div>
+          )}
+          {canView && !isLoading && !isError && (
+            <CategoryList
+              categories={categories}
+              canEdit={canUpdate}
+              canDelete={canDelete}
+              onEdit={(category) => {
+                setEditing(category)
+                setFormErrors({})
+                setModalOpen(true)
+              }}
+              onDelete={(id) => {
+                const category = categories.find((c) => c.id === id)
+                setTargetCategory(category || { id })
+                setConfirmOpen(true)
+              }}
+            />
+          )}
+        </div>
+      </div>
 
       <CategoryModal
         show={modalOpen}

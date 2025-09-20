@@ -3,7 +3,7 @@ import { getUserDisplayName } from '../../../shared/lib/userDisplayName'
 
 export function UserList({ users, onEdit, onDelete, rolesById }) {
   return (
-    <table className="table table-striped">
+    <table className="table table-hover align-middle mb-0">
       <thead>
         <tr>
           <th>#</th>

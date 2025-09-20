@@ -63,45 +63,52 @@ export function ProductsPage() {
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3 className="mb-0">Products</h3>
-        <div>
-          <button
-            className="btn btn-outline-secondary mr-2"
-            onClick={() => qc.invalidateQueries({ queryKey: ['categories'] })}
-            disabled={categoriesLoading}
-            title={categoriesLoading ? 'Refreshing…' : 'Refresh categories'}
-          >
-            Refresh Categories
-          </button>
-          <button
-            className="btn btn-primary"
-            onClick={() => openModal({})}
-            disabled={!can('products:create')}
-            title={!can('products:create') ? 'Not allowed' : undefined}
-          >
-            Add Product
-          </button>
+      <div className="page-card">
+        <div className="page-header">
+          <div>
+            <h2 className="page-title">Products</h2>
+            <p className="page-subtitle">Keep your catalog up to date and aligned with inventory.</p>
+          </div>
+          <div className="page-actions">
+            <button
+              className="btn btn-outline-secondary"
+              onClick={() => qc.invalidateQueries({ queryKey: ['categories'] })}
+              disabled={categoriesLoading}
+              title={categoriesLoading ? 'Refreshing…' : 'Refresh categories'}
+            >
+              Refresh Categories
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => openModal({})}
+              disabled={!can('products:create')}
+              title={!can('products:create') ? 'Not allowed' : undefined}
+            >
+              Add Product
+            </button>
+          </div>
+        </div>
+
+        <div className="page-body">
+          {isLoading && <div>Loading...</div>}
+          {!isLoading && isError && (
+            <div className="alert alert-danger" role="alert">
+              {error?.message || 'Failed to load products'}
+            </div>
+          )}
+          {!isLoading && !isError && (
+            <ProductList
+              products={products}
+              onEdit={(product) => { if (!can('products:update')) return; openModal(product) }}
+              onDelete={(product) => {
+                if (!can('products:delete')) return
+                setTargetProduct(product)
+                setConfirmOpen(true)
+              }}
+            />
+          )}
         </div>
       </div>
-
-      {isLoading && <div>Loading...</div>}
-      {!isLoading && isError && (
-        <div className="alert alert-danger" role="alert">
-          {error?.message || 'Failed to load products'}
-        </div>
-      )}
-      {!isLoading && !isError && (
-        <ProductList
-          products={products}
-          onEdit={(product) => { if (!can('products:update')) return; openModal(product) }}
-          onDelete={(product) => {
-            if (!can('products:delete')) return
-            setTargetProduct(product)
-            setConfirmOpen(true)
-          }}
-        />
-      )}
 
       <ProductModal
         show={modalOpen}

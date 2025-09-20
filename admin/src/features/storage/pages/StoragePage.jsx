@@ -69,34 +69,39 @@ export default function StoragePage() {
 
     return (
         <>
-            <div className="d-flex align-items-center mb-3">
-                <h4 className="mb-0 mr-3">Storage</h4>
-                <StorageBreadcrumb
-                    currentDirectoryId={currentDirectoryId}
-                    breadcrumb={breadcrumb}
-                    onNavigate={handleNavigate}
-                />
-            </div>
-
-            <div className="card">
-                <div className="card-header">
-                    <StorageActions
-                        onCreateDirectory={handleCreateDir}
-                        onUpload={handleUpload}
-                        onCreateDirectoryClick={() => setModalOpen(true)}
-                    />
+            <div className="page-card">
+                <div className="page-header">
+                    <div>
+                        <h2 className="page-title">Storage</h2>
+                        <div className="page-subtitle storage-breadcrumb">
+                            <StorageBreadcrumb
+                                currentDirectoryId={currentDirectoryId}
+                                breadcrumb={breadcrumb}
+                                onNavigate={handleNavigate}
+                            />
+                        </div>
+                    </div>
+                    <div className="page-actions storage-actions">
+                        <StorageActions
+                            onCreateDirectory={handleCreateDir}
+                            onUpload={handleUpload}
+                            onCreateDirectoryClick={() => setModalOpen(true)}
+                        />
+                    </div>
                 </div>
 
-                <div className="card-body p-0">
-                    <StorageList
-                        items={items}
-                        loading={isLoading}
-                        error={isError ? error : null}
-                        onEnterDirectory={handleEnterDir}
-                        onDelete={handleDelete}
-                        onToggleVisibility={handleToggleVisibility}
-                        onUpdateDisplayName={handleUpdateDisplayName}
-                    />
+                <div className="page-body">
+                    <div className="storage-surface">
+                        <StorageList
+                            items={items}
+                            loading={isLoading}
+                            error={isError ? error : null}
+                            onEnterDirectory={handleEnterDir}
+                            onDelete={handleDelete}
+                            onToggleVisibility={handleToggleVisibility}
+                            onUpdateDisplayName={handleUpdateDisplayName}
+                        />
+                    </div>
                 </div>
             </div>
 

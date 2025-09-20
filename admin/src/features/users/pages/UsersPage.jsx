@@ -53,48 +53,55 @@ export function UsersPage() {
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3 className="mb-0">Users</h3>
-        <div>
-          <button
-            className="btn btn-outline-secondary mr-2"
-            onClick={() => qc.invalidateQueries({ queryKey: ['roles'] })}
-            disabled={rolesLoading}
-            title="Refresh role options"
-          >
-            Refresh Roles
-          </button>
-          <button
-            className="btn btn-primary"
-            onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
-            disabled={!can('users:create')}
-            title={!can('users:create') ? 'Not allowed' : undefined}
-          >
-            Add User
-          </button>
+      <div className="page-card">
+        <div className="page-header">
+          <div>
+            <h2 className="page-title">Users</h2>
+            <p className="page-subtitle">Manage workspace members, permissions, and access.</p>
+          </div>
+          <div className="page-actions">
+            <button
+              className="btn btn-outline-secondary"
+              onClick={() => qc.invalidateQueries({ queryKey: ['roles'] })}
+              disabled={rolesLoading}
+              title="Refresh role options"
+            >
+              Refresh Roles
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
+              disabled={!can('users:create')}
+              title={!can('users:create') ? 'Not allowed' : undefined}
+            >
+              Add User
+            </button>
+          </div>
+        </div>
+
+        <div className="page-body">
+          {loading && <div>Loading...</div>}
+          {/* Errors and successes are reported via toasts; show initial load error inline */}
+          {!loading && !isError && (
+            <UserList
+              users={users}
+              rolesById={Object.fromEntries((roles || []).map(r => [r.id, r]))}
+              onEdit={(u) => { if (!can('users:update')) return; setEditing(u); setFormErrors({}); setModalOpen(true) }}
+              onDelete={(id) => {
+                if (!can('users:delete')) return
+                const user = users.find(u => u.id === id)
+                setTargetUser(user || { id })
+                setConfirmOpen(true)
+              }}
+            />
+          )}
+          {!loading && isError && (
+            <div className="alert alert-danger" role="alert">
+              {error?.message || 'Failed to load users'}
+            </div>
+          )}
         </div>
       </div>
-
-      {loading && <div>Loading...</div>}
-      {/* Errors and successes are reported via toasts; show initial load error inline */}
-      {!loading && !isError && (
-        <UserList
-          users={users}
-          rolesById={Object.fromEntries((roles || []).map(r => [r.id, r]))}
-          onEdit={(u) => { if (!can('users:update')) return; setEditing(u); setFormErrors({}); setModalOpen(true) }}
-          onDelete={(id) => {
-            if (!can('users:delete')) return
-            const user = users.find(u => u.id === id)
-            setTargetUser(user || { id })
-            setConfirmOpen(true)
-          }}
-        />
-      )}
-      {!loading && isError && (
-        <div className="alert alert-danger" role="alert">
-          {error?.message || 'Failed to load users'}
-        </div>
-      )}
       <UserModal
         show={modalOpen}
         title={editing ? 'Edit User' : 'Add User'}
