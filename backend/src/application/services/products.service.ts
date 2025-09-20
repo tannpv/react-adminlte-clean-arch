@@ -1,8 +1,14 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { PRODUCT_REPOSITORY, ProductRepository } from '../../domain/repositories/product.repository'
-import { CreateProductDto } from '../dto/create-product.dto'
+import { CreateProductDto, ProductAttributeDto, ProductVariantDto } from '../dto/create-product.dto'
 import { UpdateProductDto } from '../dto/update-product.dto'
-import { Product, ProductStatus } from '../../domain/entities/product.entity'
+import {
+  Product,
+  ProductStatus,
+  ProductType,
+  ProductAttributeSelection,
+  ProductVariant,
+} from '../../domain/entities/product.entity'
 import { validationException } from '../../shared/validation-error'
 import { DomainEventBus } from '../../shared/events/domain-event.bus'
 import { ProductCreatedEvent } from '../../domain/events/product-created.event'
@@ -40,10 +46,13 @@ export class ProductsService {
 
     const priceCents = this.toPriceCents(dto.price)
     const status: ProductStatus = dto.status ?? 'draft'
+    const type: ProductType = dto.type ?? 'simple'
     const now = new Date()
     const id = await this.products.nextId()
 
     const categories = await this.resolveCategories(dto.categories)
+    const attributes = this.mapAttributeDtos(dto.attributes)
+    const variants = this.mapVariantDtos(dto.variants, status)
 
     const product = new Product({
       id,
@@ -55,6 +64,9 @@ export class ProductsService {
       status,
       metadata: dto.metadata ?? null,
       categories,
+      type,
+      attributes,
+      variants,
       createdAt: now,
       updatedAt: now,
     })
@@ -116,6 +128,18 @@ export class ProductsService {
       product.categories = categories
     }
 
+    if (dto.type !== undefined) {
+      product.type = dto.type
+    }
+
+    if (dto.attributes !== undefined) {
+      product.attributes = this.mapAttributeDtos(dto.attributes)
+    }
+
+    if (dto.variants !== undefined) {
+      product.variants = this.mapVariantDtos(dto.variants, product.status)
+    }
+
     product.updatedAt = new Date()
 
     const updated = await this.products.update(product)
@@ -146,6 +170,62 @@ export class ProductsService {
       throw validationException({ price: { code: 'PRICE_INVALID', message: 'Price must be greater than zero' } })
     }
     return cents
+  }
+
+  private toOptionalPriceCents(price?: number | null): number | null {
+    if (price === undefined || price === null) {
+      return null
+    }
+    return this.toPriceCents(price)
+  }
+
+  private mapAttributeDtos(attributes?: ProductAttributeDto[]): ProductAttributeSelection[] {
+    if (!Array.isArray(attributes)) return []
+    return attributes.map((attribute) => ({
+      attributeId: attribute.attributeId,
+      attributeName: attribute.attributeName,
+      attributeSlug: attribute.attributeSlug,
+      visible: attribute.visible,
+      variation: attribute.variation,
+      terms: Array.isArray(attribute.terms)
+        ? attribute.terms.map((term) => ({
+            termId: term.termId,
+            termName: term.termName,
+            termSlug: term.termSlug,
+          }))
+        : [],
+    }))
+  }
+
+  private mapVariantDtos(variants: ProductVariantDto[] | undefined, defaultStatus: ProductStatus): ProductVariant[] {
+    if (!Array.isArray(variants)) return []
+    const now = new Date()
+    return variants.map((variant, index) => {
+      const attributes = Array.isArray(variant.attributes)
+        ? variant.attributes.map((attr) => ({
+            attributeId: attr.attributeId,
+            attributeName: attr.attributeName,
+            attributeSlug: attr.attributeSlug,
+            termId: attr.termId,
+            termName: attr.termName,
+            termSlug: attr.termSlug,
+          }))
+        : []
+
+      return new ProductVariant({
+        id: variant.id ?? -(index + 1),
+        sku: variant.sku.trim(),
+        priceCents: this.toPriceCents(variant.price),
+        salePriceCents: this.toOptionalPriceCents(variant.salePrice ?? null),
+        currency: variant.currency.trim().toUpperCase(),
+        status: variant.status ?? defaultStatus,
+        stockQuantity: variant.stockQuantity ?? null,
+        metadata: variant.metadata ?? null,
+        attributes,
+        createdAt: now,
+        updatedAt: now,
+      })
+    })
   }
 
   private async resolveCategories(categoryIds?: number[]): Promise<Category[]> {
