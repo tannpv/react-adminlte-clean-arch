@@ -22,8 +22,12 @@ const normalizeUser = (user) => {
   }
 }
 
-export async function fetchUsers() {
-  const res = await ApiClient.get('/users')
+export async function fetchUsers({ search } = {}) {
+  const params = {}
+  const trimmed = search?.trim()
+  if (trimmed) params.search = trimmed
+
+  const res = await ApiClient.get('/users', { params })
   return Array.isArray(res.data) ? res.data.map(normalizeUser) : []
 }
 

@@ -7,6 +7,7 @@ import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
 import { getUserDisplayName } from '../../../shared/lib/userDisplayName'
 import { useUsers } from '../hooks/useUsers'
+import { useUserSearch } from '../hooks/useUserSearch'
 
 const isValidationErrorMap = (err) => {
   if (!err || typeof err !== 'object' || Array.isArray(err)) return false
@@ -20,7 +21,12 @@ export function UsersPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [targetUser, setTargetUser] = useState(null)
   const [formErrors, setFormErrors] = useState({})
-  const [searchTerm, setSearchTerm] = useState('')
+
+  const {
+    searchTerm,
+    setSearchTerm,
+    debouncedTerm,
+  } = useUserSearch()
 
   const {
     users = [],
@@ -33,7 +39,7 @@ export function UsersPage() {
     handleCreateUser,
     handleUpdateUser,
     handleDeleteUser,
-  } = useUsers()
+  } = useUsers({ search: debouncedTerm })
 
   const submitting = createUserMutation.isPending || updateUserMutation.isPending
   const { can } = usePermissions()
@@ -56,19 +62,6 @@ export function UsersPage() {
     () => Object.fromEntries((roles || []).map(role => [role.id, role])),
     [roles]
   )
-
-  const filteredUsers = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase()
-    if (!term) return users
-    return users.filter((user) => {
-      const displayName = getUserDisplayName(user)?.toLowerCase() || ''
-      const email = user.email?.toLowerCase() || ''
-      const roleNames = Array.isArray(user.roles)
-        ? user.roles.map((id) => rolesById[id]?.name || '').join(' ').toLowerCase()
-        : ''
-      return displayName.includes(term) || email.includes(term) || roleNames.includes(term)
-    })
-  }, [rolesById, searchTerm, users])
 
   return (
     <>
@@ -115,9 +108,9 @@ export function UsersPage() {
         <div className="page-body">
           {loading && <div>Loading...</div>}
           {/* Errors and successes are reported via toasts; show initial load error inline */}
-          {!loading && !isError && filteredUsers.length > 0 && (
+          {!loading && !isError && users.length > 0 && (
             <UserList
-              users={filteredUsers}
+              users={users}
               rolesById={rolesById}
               onEdit={(u) => { if (!can('users:update')) return; setEditing(u); setFormErrors({}); setModalOpen(true) }}
               onDelete={(id) => {
@@ -128,7 +121,7 @@ export function UsersPage() {
               }}
             />
           )}
-          {!loading && !isError && filteredUsers.length === 0 && (
+          {!loading && !isError && users.length === 0 && (
             <div className="empty-state">
               <h5>No users found</h5>
               <p className="mb-0 text-muted">Try adjusting your search to find people in your workspace.</p>

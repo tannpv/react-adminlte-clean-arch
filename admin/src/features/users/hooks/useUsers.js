@@ -14,7 +14,7 @@ const extractValidationErrors = (error) => {
   )
 }
 
-export function useUsers() {
+export function useUsers({ search } = {}) {
   const qc = useQueryClient()
 
   React.useEffect(() => {
@@ -27,9 +27,12 @@ export function useUsers() {
     }
   }, [])
 
+  const searchValue = search?.trim() || ''
+
   const { data: users = [], isLoading, isError, error } = useQuery({
-    queryKey: ['users'],
-    queryFn: fetchUsers,
+    queryKey: ['users', { search: searchValue }],
+    queryFn: () => fetchUsers({ search: searchValue }),
+    keepPreviousData: true,
   })
 
   const createUserMutation = useMutation({
