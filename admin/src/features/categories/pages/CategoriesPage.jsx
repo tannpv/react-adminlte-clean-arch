@@ -1,20 +1,22 @@
 import React, { useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { fetchCategories, createCategory, updateCategory, deleteCategory } from '../api/categoriesApi'
 import { CategoryList } from '../components/CategoryList'
 import { CategoryModal } from '../components/CategoryModal'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
+import { useCategories } from '../hooks/useCategories'
+
+const isValidationErrorMap = (err) => {
+  if (!err || typeof err !== 'object' || Array.isArray(err)) return false
+  return Object.values(err).every((value) => typeof value === 'string')
+}
 
 export function CategoriesPage() {
-  const qc = useQueryClient()
   const { can } = usePermissions()
   const [modalOpen, setModalOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [editing, setEditing] = useState(null)
   const [targetCategory, setTargetCategory] = useState(null)
   const [formErrors, setFormErrors] = useState({})
-  const [submitting, setSubmitting] = useState(false)
 
   const canView = can('categories:read')
   const canCreate = can('categories:create')
@@ -22,32 +24,19 @@ export function CategoriesPage() {
   const canDelete = can('categories:delete')
 
   const {
-    data: categoriesData,
+    categories = [],
     isLoading,
     isError,
     error,
-  } = useQuery({
-    queryKey: ['categories'],
-    queryFn: fetchCategories,
-    enabled: canView,
-  })
+    createCategoryMutation,
+    updateCategoryMutation,
+    deleteCategoryMutation,
+    handleCreateCategory,
+    handleUpdateCategory,
+    handleDeleteCategory,
+  } = useCategories({ enabled: canView })
 
-  const categories = Array.isArray(categoriesData) ? categoriesData : []
-
-  const createMutation = useMutation({
-    mutationFn: (payload) => createCategory(payload),
-    onSuccess: async () => { await qc.invalidateQueries({ queryKey: ['categories'] }) },
-  })
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, payload }) => updateCategory(id, payload),
-    onSuccess: async () => { await qc.invalidateQueries({ queryKey: ['categories'] }) },
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: (id) => deleteCategory(id),
-    onSuccess: async () => { await qc.invalidateQueries({ queryKey: ['categories'] }) },
-  })
+  const submitting = createCategoryMutation.isPending || updateCategoryMutation.isPending
 
   return (
     <>
@@ -97,27 +86,19 @@ export function CategoriesPage() {
         initialCategory={editing}
         onClose={() => { setModalOpen(false); setEditing(null); setFormErrors({}) }}
         onSubmit={async (payload) => {
-          setSubmitting(true)
           setFormErrors({})
           try {
             if (editing?.id) {
-              await updateMutation.mutateAsync({ id: editing.id, payload })
+              await handleUpdateCategory(editing.id, payload)
             } else {
-              await createMutation.mutateAsync(payload)
+              await handleCreateCategory(payload)
             }
             setModalOpen(false)
             setEditing(null)
           } catch (e) {
-            const status = e?.response?.status
-            const vErrors = e?.response?.data?.errors || e?.response?.data?.error?.details?.fieldErrors
-            if (status === 400 && vErrors && typeof vErrors === 'object') {
-              const normalized = Object.fromEntries(
-                Object.entries(vErrors).map(([k, v]) => [k, typeof v === 'string' ? v : v?.message || 'Invalid'])
-              )
-              setFormErrors(normalized)
+            if (isValidationErrorMap(e)) {
+              setFormErrors(e)
             }
-          } finally {
-            setSubmitting(false)
           }
         }}
         errors={formErrors}
@@ -134,7 +115,7 @@ export function CategoriesPage() {
         onConfirm={async () => {
           const id = targetCategory?.id
           if (!id) return
-          await deleteMutation.mutateAsync(id)
+          await handleDeleteCategory(id)
           setConfirmOpen(false)
           setTargetCategory(null)
           if (editing?.id === id) setEditing(null)
