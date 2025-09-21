@@ -1,6 +1,6 @@
-import { Category } from './category.entity';
-export type ProductStatus = 'draft' | 'published' | 'archived';
-export type ProductType = 'simple' | 'variable';
+import { Category } from "./category.entity";
+export type ProductStatus = "draft" | "published" | "archived";
+export type ProductType = "simple" | "variable";
 export interface ProductProps {
     id: number;
     sku: string;

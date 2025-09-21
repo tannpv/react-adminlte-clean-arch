@@ -29,7 +29,8 @@ let CategoriesService = class CategoriesService {
             return this.toResponse(category, parent);
         });
         const hierarchy = this.buildHierarchyOptions(categories);
-        return { categories: responses, hierarchy };
+        const tree = this.buildCategoryTree(categories);
+        return { categories: responses, tree, hierarchy };
     }
     async create(dto) {
         const name = dto.name.trim();
@@ -157,6 +158,49 @@ let CategoriesService = class CategoriesService {
             }
         });
         return options;
+    }
+    buildCategoryTree(categories) {
+        if (!categories.length)
+            return [];
+        const byId = new Map(categories.map((category) => [category.id, category]));
+        const childrenMap = new Map();
+        categories.forEach((category) => {
+            const key = category.parentId ?? null;
+            if (!childrenMap.has(key)) {
+                childrenMap.set(key, []);
+            }
+            childrenMap.get(key).push(category);
+        });
+        childrenMap.forEach((list) => list.sort((a, b) => a.name.localeCompare(b.name)));
+        const visited = new Set();
+        const tree = [];
+        const buildNode = (category, depth) => {
+            const children = childrenMap.get(category.id) ?? [];
+            return {
+                id: category.id,
+                name: category.name,
+                parentId: category.parentId,
+                depth,
+                disabled: false,
+                children: children.map(child => buildNode(child, depth + 1))
+            };
+        };
+        const roots = categories
+            .filter((category) => category.parentId == null || !byId.has(category.parentId))
+            .sort((a, b) => a.name.localeCompare(b.name));
+        roots.forEach((root) => {
+            if (!visited.has(root.id)) {
+                tree.push(buildNode(root, 0));
+                visited.add(root.id);
+            }
+        });
+        categories.forEach((category) => {
+            if (!visited.has(category.id)) {
+                tree.push(buildNode(category, 0));
+                visited.add(category.id);
+            }
+        });
+        return tree;
     }
 };
 exports.CategoriesService = CategoriesService;

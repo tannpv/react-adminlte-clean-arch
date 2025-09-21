@@ -1,4 +1,4 @@
-import { ProductStatus, ProductType } from '../../domain/entities/product.entity';
+import { ProductStatus, ProductType } from "../../domain/entities/product.entity";
 export declare class UpdateProductDto {
     sku?: string;
     name?: string;

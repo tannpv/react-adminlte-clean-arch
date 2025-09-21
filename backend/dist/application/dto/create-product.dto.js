@@ -12,46 +12,46 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateProductDto = void 0;
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
-const statuses = ['draft', 'published', 'archived'];
-const productTypes = ['simple', 'variable'];
+const statuses = ["draft", "published", "archived"];
+const productTypes = ["simple", "variable"];
 class CreateProductDto {
 }
 exports.CreateProductDto = CreateProductDto;
 __decorate([
-    (0, class_validator_1.IsString)({ message: 'SKU is required' }),
-    (0, class_validator_1.MinLength)(2, { message: 'SKU must be at least 2 characters' }),
-    (0, class_validator_1.MaxLength)(64, { message: 'SKU must be at most 64 characters' }),
-    (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.trim() : value)),
+    (0, class_validator_1.IsString)({ message: "SKU is required" }),
+    (0, class_validator_1.MinLength)(2, { message: "SKU must be at least 2 characters" }),
+    (0, class_validator_1.MaxLength)(64, { message: "SKU must be at most 64 characters" }),
+    (0, class_transformer_1.Transform)(({ value }) => (typeof value === "string" ? value.trim() : value)),
     __metadata("design:type", String)
 ], CreateProductDto.prototype, "sku", void 0);
 __decorate([
-    (0, class_validator_1.IsString)({ message: 'Name is required' }),
-    (0, class_validator_1.MinLength)(2, { message: 'Name must be at least 2 characters' }),
-    (0, class_validator_1.MaxLength)(255, { message: 'Name must be at most 255 characters' }),
-    (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.trim() : value)),
+    (0, class_validator_1.IsString)({ message: "Name is required" }),
+    (0, class_validator_1.MinLength)(2, { message: "Name must be at least 2 characters" }),
+    (0, class_validator_1.MaxLength)(255, { message: "Name must be at most 255 characters" }),
+    (0, class_transformer_1.Transform)(({ value }) => (typeof value === "string" ? value.trim() : value)),
     __metadata("design:type", String)
 ], CreateProductDto.prototype, "name", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)({ message: 'Description must be text' }),
+    (0, class_validator_1.IsString)({ message: "Description must be text" }),
     __metadata("design:type", String)
 ], CreateProductDto.prototype, "description", void 0);
 __decorate([
-    (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? Number(value) : value)),
-    (0, class_validator_1.IsNumber)({ allowNaN: false, allowInfinity: false }, { message: 'Price must be a number' }),
-    (0, class_validator_1.IsPositive)({ message: 'Price must be positive' }),
+    (0, class_transformer_1.Transform)(({ value }) => (typeof value === "string" ? Number(value) : value)),
+    (0, class_validator_1.IsNumber)({ allowNaN: false, allowInfinity: false }, { message: "Price must be a number" }),
+    (0, class_validator_1.IsPositive)({ message: "Price must be positive" }),
     __metadata("design:type", Number)
 ], CreateProductDto.prototype, "price", void 0);
 __decorate([
-    (0, class_validator_1.IsString)({ message: 'Currency is required' }),
-    (0, class_validator_1.MinLength)(3, { message: 'Currency must be 3 characters' }),
-    (0, class_validator_1.MaxLength)(8, { message: 'Currency must be at most 8 characters' }),
-    (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.trim().toUpperCase() : value)),
+    (0, class_validator_1.IsString)({ message: "Currency is required" }),
+    (0, class_validator_1.MinLength)(3, { message: "Currency must be 3 characters" }),
+    (0, class_validator_1.MaxLength)(8, { message: "Currency must be at most 8 characters" }),
+    (0, class_transformer_1.Transform)(({ value }) => typeof value === "string" ? value.trim().toUpperCase() : value),
     __metadata("design:type", String)
 ], CreateProductDto.prototype, "currency", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEnum)(statuses, { message: 'Invalid status provided' }),
+    (0, class_validator_1.IsEnum)(statuses, { message: "Invalid status provided" }),
     __metadata("design:type", String)
 ], CreateProductDto.prototype, "status", void 0);
 __decorate([
@@ -60,8 +60,8 @@ __decorate([
 ], CreateProductDto.prototype, "metadata", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsArray)({ message: 'Categories must be an array' }),
-    (0, class_validator_1.ArrayUnique)({ message: 'Categories must be unique' }),
+    (0, class_validator_1.IsArray)({ message: "Categories must be an array" }),
+    (0, class_validator_1.ArrayUnique)({ message: "Categories must be unique" }),
     (0, class_transformer_1.Transform)(({ value }) => {
         if (value === undefined || value === null)
             return undefined;
@@ -78,7 +78,7 @@ __decorate([
 ], CreateProductDto.prototype, "categories", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEnum)(productTypes, { message: 'Invalid product type provided' }),
+    (0, class_validator_1.IsEnum)(productTypes, { message: "Invalid product type provided" }),
     __metadata("design:type", String)
 ], CreateProductDto.prototype, "type", void 0);
 //# sourceMappingURL=create-product.dto.js.map

@@ -14,15 +14,15 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsService = void 0;
 const common_1 = require("@nestjs/common");
-const product_repository_1 = require("../../domain/repositories/product.repository");
 const product_entity_1 = require("../../domain/entities/product.entity");
-const validation_error_1 = require("../../shared/validation-error");
-const domain_event_bus_1 = require("../../shared/events/domain-event.bus");
 const product_created_event_1 = require("../../domain/events/product-created.event");
-const product_updated_event_1 = require("../../domain/events/product-updated.event");
 const product_removed_event_1 = require("../../domain/events/product-removed.event");
-const product_mapper_1 = require("../mappers/product.mapper");
+const product_updated_event_1 = require("../../domain/events/product-updated.event");
 const category_repository_1 = require("../../domain/repositories/category.repository");
+const product_repository_1 = require("../../domain/repositories/product.repository");
+const domain_event_bus_1 = require("../../shared/events/domain-event.bus");
+const validation_error_1 = require("../../shared/validation-error");
+const product_mapper_1 = require("../mappers/product.mapper");
 let ProductsService = class ProductsService {
     constructor(products, categories, events) {
         this.products = products;
@@ -36,7 +36,7 @@ let ProductsService = class ProductsService {
     async findById(id) {
         const product = await this.products.findById(id);
         if (!product)
-            throw new common_1.NotFoundException({ message: 'Product not found' });
+            throw new common_1.NotFoundException({ message: "Product not found" });
         return (0, product_mapper_1.toProductResponse)(product);
     }
     async create(dto) {
@@ -44,8 +44,8 @@ let ProductsService = class ProductsService {
         const name = dto.name.trim();
         await this.ensureSkuUnique(sku);
         const priceCents = this.toPriceCents(dto.price);
-        const status = dto.status ?? 'draft';
-        const type = dto.type ?? 'simple';
+        const status = dto.status ?? "draft";
+        const type = dto.type ?? "simple";
         const now = new Date();
         const id = await this.products.nextId();
         const categories = await this.resolveCategories(dto.categories);
@@ -70,17 +70,21 @@ let ProductsService = class ProductsService {
     async update(id, dto) {
         const product = await this.products.findById(id);
         if (!product)
-            throw new common_1.NotFoundException({ message: 'Product not found' });
+            throw new common_1.NotFoundException({ message: "Product not found" });
         const sku = dto.sku?.trim() ?? product.sku;
         const name = dto.name?.trim() ?? product.name;
         if (sku !== product.sku) {
             await this.ensureSkuUnique(sku);
         }
-        const priceCents = dto.price !== undefined ? this.toPriceCents(dto.price) : product.priceCents;
+        const priceCents = dto.price !== undefined
+            ? this.toPriceCents(dto.price)
+            : product.priceCents;
         const status = dto.status ?? product.status;
         const type = dto.type ?? product.type;
         const now = new Date();
-        const categories = dto.categories !== undefined ? await this.resolveCategories(dto.categories) : product.categories;
+        const categories = dto.categories !== undefined
+            ? await this.resolveCategories(dto.categories)
+            : product.categories;
         const updatedProduct = new product_entity_1.Product({
             id: product.id,
             sku,
@@ -102,8 +106,10 @@ let ProductsService = class ProductsService {
     async remove(id) {
         const product = await this.products.findById(id);
         if (!product)
-            throw new common_1.NotFoundException({ message: 'Product not found' });
+            throw new common_1.NotFoundException({ message: "Product not found" });
         const removed = await this.products.remove(id);
+        if (!removed)
+            throw new common_1.NotFoundException({ message: "Product not found" });
         this.events.publish(new product_removed_event_1.ProductRemovedEvent(removed));
         return (0, product_mapper_1.toProductResponse)(removed);
     }
@@ -112,8 +118,8 @@ let ProductsService = class ProductsService {
         if (existing) {
             throw (0, validation_error_1.validationException)({
                 sku: {
-                    code: 'SKU_EXISTS',
-                    message: 'A product with this SKU already exists',
+                    code: "SKU_EXISTS",
+                    message: "A product with this SKU already exists",
                 },
             });
         }
@@ -126,7 +132,7 @@ let ProductsService = class ProductsService {
             if (!category) {
                 throw (0, validation_error_1.validationException)({
                     categories: {
-                        code: 'CATEGORY_NOT_FOUND',
+                        code: "CATEGORY_NOT_FOUND",
                         message: `Category with ID ${id} not found`,
                     },
                 });

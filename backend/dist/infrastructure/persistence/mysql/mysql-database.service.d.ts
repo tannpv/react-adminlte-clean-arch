@@ -1,6 +1,6 @@
-import { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { FieldPacket, OkPacket, Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
-import { PasswordService } from '../../../shared/password.service';
+import { OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import { FieldPacket, OkPacket, Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import { PasswordService } from "../../../shared/password.service";
 export interface MysqlConfig {
     host: string;
     port: number;

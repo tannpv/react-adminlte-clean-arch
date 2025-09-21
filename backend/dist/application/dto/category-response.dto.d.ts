@@ -9,3 +9,16 @@ export interface CategoryHierarchyOptionDto {
     label: string;
     disabled: boolean;
 }
+export interface CategoryTreeNodeDto {
+    id: number;
+    name: string;
+    parentId: number | null;
+    depth: number;
+    disabled: boolean;
+    children: CategoryTreeNodeDto[];
+}
+export interface CategoryTreeResponseDto {
+    categories: CategoryResponseDto[];
+    tree: CategoryTreeNodeDto[];
+    hierarchy: CategoryHierarchyOptionDto[];
+}

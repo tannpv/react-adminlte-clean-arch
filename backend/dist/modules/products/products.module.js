@@ -8,11 +8,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsModule = void 0;
 const common_1 = require("@nestjs/common");
-const products_controller_1 = require("../../infrastructure/http/controllers/products.controller");
 const products_service_1 = require("../../application/services/products.service");
+const access_control_module_1 = require("../../infrastructure/http/access-control.module");
+const products_controller_1 = require("../../infrastructure/http/controllers/products.controller");
 const persistence_module_1 = require("../../infrastructure/persistence/persistence.module");
 const shared_module_1 = require("../../shared/shared.module");
-const access_control_module_1 = require("../../infrastructure/http/access-control.module");
 let ProductsModule = class ProductsModule {
 };
 exports.ProductsModule = ProductsModule;

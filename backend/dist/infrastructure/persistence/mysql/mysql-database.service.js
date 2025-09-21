@@ -13,18 +13,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MysqlDatabaseService = void 0;
 const common_1 = require("@nestjs/common");
 const promise_1 = require("mysql2/promise");
-const password_service_1 = require("../../../shared/password.service");
 const constants_1 = require("../../../shared/constants");
+const password_service_1 = require("../../../shared/password.service");
 let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
     constructor(passwordService) {
         this.passwordService = passwordService;
         this.logger = new common_1.Logger(MysqlDatabaseService_1.name);
         this.pool = null;
-        const host = process.env.DB_HOST !== undefined ? process.env.DB_HOST : 'localhost';
-        const portRaw = process.env.DB_PORT !== undefined ? process.env.DB_PORT : '7777';
-        const user = process.env.DB_USER !== undefined ? process.env.DB_USER : 'root';
-        const password = process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : 'password';
-        const database = process.env.DB_NAME !== undefined ? process.env.DB_NAME : 'adminlte';
+        const host = process.env.DB_HOST !== undefined ? process.env.DB_HOST : "localhost";
+        const portRaw = process.env.DB_PORT !== undefined ? process.env.DB_PORT : "7777";
+        const user = process.env.DB_USER !== undefined ? process.env.DB_USER : "root";
+        const password = process.env.DB_PASSWORD !== undefined
+            ? process.env.DB_PASSWORD
+            : "password";
+        const database = process.env.DB_NAME !== undefined ? process.env.DB_NAME : "adminlte";
         this.config = {
             host,
             port: Number(portRaw) || 7777,
@@ -44,7 +46,7 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
     }
     getPool() {
         if (!this.pool) {
-            throw new Error('MySQL pool not initialised');
+            throw new Error("MySQL pool not initialised");
         }
         return this.pool;
     }
@@ -113,10 +115,10 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         const [categoryParentColumn] = await this.execute(`SELECT COLUMN_NAME FROM information_schema.COLUMNS
        WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'categories' AND COLUMN_NAME = 'parent_id'`, [this.config.database]);
         if (!categoryParentColumn.length) {
-            await this.execute('ALTER TABLE categories ADD COLUMN parent_id INT NULL');
+            await this.execute("ALTER TABLE categories ADD COLUMN parent_id INT NULL");
         }
         try {
-            await this.execute('CREATE INDEX idx_categories_parent ON categories(parent_id)');
+            await this.execute("CREATE INDEX idx_categories_parent ON categories(parent_id)");
         }
         catch (e) {
         }
@@ -168,7 +170,7 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
       ) ENGINE=InnoDB;
     `);
         try {
-            await this.execute('ALTER TABLE user_profiles MODIFY COLUMN picture_url LONGTEXT NULL');
+            await this.execute("ALTER TABLE user_profiles MODIFY COLUMN picture_url LONGTEXT NULL");
         }
         catch (e) {
         }
@@ -184,7 +186,7 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
            SELECT 1 FROM user_profiles p WHERE p.user_id = u.id
          );`);
             try {
-                await this.execute('ALTER TABLE users DROP COLUMN name');
+                await this.execute("ALTER TABLE users DROP COLUMN name");
             }
             catch (e) {
             }
@@ -252,40 +254,40 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         await this.seedDefaults();
     }
     async seedDefaults() {
-        const [roleCountRows] = await this.execute('SELECT COUNT(*) as count FROM roles');
+        const [roleCountRows] = await this.execute("SELECT COUNT(*) as count FROM roles");
         const roleCount = Number(roleCountRows[0]?.count ?? 0);
         if (roleCount === 0) {
-            const adminId = await this.insertRole('Admin', constants_1.DEFAULT_ADMIN_PERMISSIONS);
-            const userId = await this.insertRole('User', constants_1.DEFAULT_USER_PERMISSIONS);
+            const adminId = await this.insertRole("Admin", constants_1.DEFAULT_ADMIN_PERMISSIONS);
+            const userId = await this.insertRole("User", constants_1.DEFAULT_USER_PERMISSIONS);
             this.logger.log(`Seeded default roles (Admin=${adminId}, User=${userId})`);
         }
         else {
-            const [roles] = await this.execute('SELECT id, name FROM roles');
+            const [roles] = await this.execute("SELECT id, name FROM roles");
             for (const role of roles) {
-                const [existingPermissions] = await this.execute('SELECT permission FROM role_permissions WHERE role_id = ?', [role.id]);
+                const [existingPermissions] = await this.execute("SELECT permission FROM role_permissions WHERE role_id = ?", [role.id]);
                 const existingSet = new Set(existingPermissions.map((row) => row.permission));
-                const desired = role.name.toLowerCase() === 'admin'
+                const desired = role.name.toLowerCase() === "admin"
                     ? constants_1.DEFAULT_ADMIN_PERMISSIONS
-                    : role.name.toLowerCase() === 'user'
+                    : role.name.toLowerCase() === "user"
                         ? constants_1.DEFAULT_USER_PERMISSIONS
-                        : ['users:read'];
+                        : ["users:read"];
                 const missing = desired.filter((perm) => !existingSet.has(perm));
                 if (missing.length) {
                     await this.insertPermissions(role.id, missing);
                 }
             }
         }
-        const [userCountRows] = await this.execute('SELECT COUNT(*) as count FROM users');
+        const [userCountRows] = await this.execute("SELECT COUNT(*) as count FROM users");
         const userCount = Number(userCountRows[0]?.count ?? 0);
         if (userCount === 0) {
             const passwordHash = this.passwordService.hashSync(constants_1.DEFAULT_USER_PASSWORD);
-            const [result] = await this.execute('INSERT INTO users (email, password_hash) VALUES (?, ?)', ['leanne@example.com', passwordHash]);
+            const [result] = await this.execute("INSERT INTO users (email, password_hash) VALUES (?, ?)", ["leanne@example.com", passwordHash]);
             const userId = result.insertId;
-            await this.execute('INSERT INTO user_profiles (user_id, first_name, last_name, picture_url) VALUES (?, ?, ?, ?)', [userId, 'Leanne', 'Graham', null]);
+            await this.execute("INSERT INTO user_profiles (user_id, first_name, last_name, picture_url) VALUES (?, ?, ?, ?)", [userId, "Leanne", "Graham", null]);
             const [adminRoles] = await this.execute("SELECT id FROM roles WHERE LOWER(name) = 'admin' LIMIT 1");
             const adminRoleId = adminRoles[0]?.id;
             if (adminRoleId) {
-                await this.execute('INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)', [userId, adminRoleId]);
+                await this.execute("INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)", [userId, adminRoleId]);
             }
             this.logger.log(`Seeded default admin user (ID=${userId})`);
         }
@@ -296,60 +298,63 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         await this.ensureSampleProduct();
     }
     async ensureUsersHavePasswords() {
-        const [users] = await this.execute('SELECT id, password_hash FROM users');
+        const [users] = await this.execute("SELECT id, password_hash FROM users");
         for (const user of users) {
             if (!user.password_hash) {
                 const hash = this.passwordService.hashSync(constants_1.DEFAULT_USER_PASSWORD);
-                await this.execute('UPDATE users SET password_hash = ? WHERE id = ?', [hash, user.id]);
+                await this.execute("UPDATE users SET password_hash = ? WHERE id = ?", [
+                    hash,
+                    user.id,
+                ]);
             }
         }
     }
     async insertRole(name, permissions) {
-        const [result] = await this.execute('INSERT INTO roles (name) VALUES (?)', [name]);
+        const [result] = await this.execute("INSERT INTO roles (name) VALUES (?)", [name]);
         const roleId = result.insertId;
         await this.insertPermissions(roleId, permissions);
         return roleId;
     }
     async ensureSampleProduct() {
-        const [countRows] = await this.execute('SELECT COUNT(*) as count FROM products');
+        const [countRows] = await this.execute("SELECT COUNT(*) as count FROM products");
         const count = Number(countRows[0]?.count ?? 0);
         if (count > 0)
             return;
         const now = new Date();
         const [result] = await this.execute(`INSERT INTO products (sku, name, description, price_cents, currency, status, metadata, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
-            'SKU-001',
-            'Sample Product',
-            'This is a placeholder product seeded for local development.',
+            "SKU-001",
+            "Sample Product",
+            "This is a placeholder product seeded for local development.",
             1999,
-            'USD',
-            'published',
-            JSON.stringify({ tags: ['sample'] }),
+            "USD",
+            "published",
+            JSON.stringify({ tags: ["sample"] }),
             now,
             now,
         ]);
         const productId = result.insertId;
-        const [category] = await this.execute('SELECT id FROM categories ORDER BY id ASC LIMIT 1');
+        const [category] = await this.execute("SELECT id FROM categories ORDER BY id ASC LIMIT 1");
         const categoryId = category[0]?.id;
         if (categoryId) {
-            await this.execute('INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)', [productId, categoryId]);
+            await this.execute("INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)", [productId, categoryId]);
         }
-        this.logger.log('Seeded sample product (SKU=SKU-001)');
+        this.logger.log("Seeded sample product (SKU=SKU-001)");
     }
     async ensureDefaultCategories() {
-        const [countRows] = await this.execute('SELECT COUNT(*) as count FROM categories');
+        const [countRows] = await this.execute("SELECT COUNT(*) as count FROM categories");
         const count = Number(countRows[0]?.count ?? 0);
         if (count > 0)
             return;
-        const defaults = ['Electronics', 'Apparel', 'Books'];
-        const placeholders = defaults.map(() => '(?)').join(', ');
+        const defaults = ["Electronics", "Apparel", "Books"];
+        const placeholders = defaults.map(() => "(?)").join(", ");
         await this.execute(`INSERT INTO categories (name) VALUES ${placeholders}`, defaults);
-        this.logger.log('Seeded default categories');
+        this.logger.log("Seeded default categories");
     }
     async insertPermissions(roleId, permissions) {
         if (!permissions.length)
             return;
-        const placeholders = permissions.map(() => '(?, ?)').join(', ');
+        const placeholders = permissions.map(() => "(?, ?)").join(", ");
         const params = permissions.flatMap((perm) => [roleId, perm]);
         await this.execute(`INSERT IGNORE INTO role_permissions (role_id, permission) VALUES ${placeholders}`, params);
     }
