@@ -1,0 +1,551 @@
+{
+  "info": {
+    "_postman_id": "jwt-token-sharing-collection",
+    "name": "JWT Token Sharing - Multi-Service",
+    "description": "Collection for testing JWT token sharing across multiple microservices. Demonstrates how a single token can be used across different services.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Setup",
+      "item": [
+        {
+          "name": "Clear Environment",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Clear all authentication data",
+                  "pm.environment.unset('jwt_token');",
+                  "pm.environment.unset('user_id');",
+                  "pm.environment.unset('user_email');",
+                  "pm.environment.unset('user_name');",
+                  "",
+                  "console.log('Environment cleared for fresh test');"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Environment cleared\", function () {",
+                  "    pm.expect(pm.environment.get('jwt_token')).to.be.undefined;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Clear environment and verify service is running."
+          },
+          "response": []
+        }
+      ],
+      "description": "Setup and preparation for JWT token sharing tests."
+    },
+    {
+      "name": "Authentication Service",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User registration successful\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"User data received\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('email');",
+                  "    ",
+                  "    // Store user data",
+                  "    pm.environment.set('user_id', jsonData.id);",
+                  "    pm.environment.set('user_email', jsonData.email);",
+                  "    ",
+                  "    console.log('User registered:', jsonData.email);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{user_email}}\",\n    \"name\": \"{{user_name}}\",\n    \"password\": \"{{user_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{auth_service_url}}/api/v1/auth/register",
+              "host": ["{{auth_service_url}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "description": "Register a new user in the authentication service."
+          },
+          "response": []
+        },
+        {
+          "name": "Login and Get Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login successful\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"JWT token received\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "    pm.expect(jsonData.token).to.not.be.empty;",
+                  "    ",
+                  "    // Store token for sharing",
+                  "    pm.environment.set('jwt_token', jsonData.token);",
+                  "    ",
+                  "    console.log('JWT Token received:', jsonData.token.substring(0, 50) + '...');",
+                  "    console.log('Token ready for sharing across services');",
+                  "});",
+                  "",
+                  "pm.test(\"User data in response\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('user');",
+                  "    pm.expect(jsonData.user).to.have.property('id');",
+                  "    pm.expect(jsonData.user).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{auth_service_url}}/api/v1/auth/login",
+              "host": ["{{auth_service_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Login to get JWT token that can be shared across all microservices."
+          },
+          "response": []
+        }
+      ],
+      "description": "Authentication service endpoints for user registration and login."
+    },
+    {
+      "name": "User Service Tests",
+      "item": [
+        {
+          "name": "List Users with Shared Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Token works with User Service\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"User data retrieved successfully\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('users');",
+                  "    pm.expect(jsonData.users).to.be.an('array');",
+                  "    ",
+                  "    console.log('✅ Token successfully used with User Service');",
+                  "    console.log('Users found:', jsonData.total);",
+                  "});",
+                  "",
+                  "pm.test(\"Response structure is correct\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('total');",
+                  "    pm.expect(jsonData).to.have.property('page');",
+                  "    pm.expect(jsonData).to.have.property('limit');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{user_service_url}}/api/v1/users",
+              "host": ["{{user_service_url}}"],
+              "path": ["api", "v1", "users"]
+            },
+            "description": "Test the shared JWT token with User Service to list users."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Profile with Shared Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Token works for user profile\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"User profile retrieved\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('email');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    ",
+                  "    console.log('✅ User profile retrieved with shared token');",
+                  "    console.log('User:', jsonData.name, '(' + jsonData.email + ')');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{user_service_url}}/api/v1/users/{{user_id}}",
+              "host": ["{{user_service_url}}"],
+              "path": ["api", "v1", "users", "{{user_id}}"]
+            },
+            "description": "Test the shared JWT token to get user profile from User Service."
+          },
+          "response": []
+        }
+      ],
+      "description": "Test JWT token sharing with User Service endpoints."
+    },
+    {
+      "name": "Product Service Tests",
+      "item": [
+        {
+          "name": "List Products with Shared Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Token works with Product Service\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Product data retrieved successfully\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('products');",
+                  "    pm.expect(jsonData.products).to.be.an('array');",
+                  "    ",
+                  "    console.log('✅ Token successfully used with Product Service');",
+                  "    console.log('Products found:', jsonData.total);",
+                  "});",
+                  "",
+                  "pm.test(\"Response structure is correct\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('total');",
+                  "    pm.expect(jsonData).to.have.property('page');",
+                  "    pm.expect(jsonData).to.have.property('limit');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{product_service_url}}/api/v1/products",
+              "host": ["{{product_service_url}}"],
+              "path": ["api", "v1", "products"]
+            },
+            "description": "Test the shared JWT token with Product Service to list products."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Product with Shared Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Token works for product creation\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Product created successfully\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData).to.have.property('sku');",
+                  "    ",
+                  "    // Store product ID for later use",
+                  "    pm.environment.set('product_id', jsonData.id);",
+                  "    ",
+                  "    console.log('✅ Product created with shared token');",
+                  "    console.log('Product:', jsonData.name, '(' + jsonData.sku + ')');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{product_name}}\",\n    \"sku\": \"{{product_sku}}\",\n    \"description\": \"{{product_description}}\",\n    \"price\": {{product_price}},\n    \"stock_quantity\": {{product_stock}},\n    \"category_id\": \"{{category_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{product_service_url}}/api/v1/products",
+              "host": ["{{product_service_url}}"],
+              "path": ["api", "v1", "products"]
+            },
+            "description": "Test the shared JWT token to create a product in Product Service."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product with Shared Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Token works for product retrieval\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Product retrieved successfully\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData).to.have.property('sku');",
+                  "    ",
+                  "    console.log('✅ Product retrieved with shared token');",
+                  "    console.log('Product details:', jsonData.name, '- $' + jsonData.price);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{product_service_url}}/api/v1/products/{{product_id}}",
+              "host": ["{{product_service_url}}"],
+              "path": ["api", "v1", "products", "{{product_id}}"]
+            },
+            "description": "Test the shared JWT token to get product details from Product Service."
+          },
+          "response": []
+        }
+      ],
+      "description": "Test JWT token sharing with Product Service endpoints."
+    },
+    {
+      "name": "Token Validation Tests",
+      "item": [
+        {
+          "name": "Test Token Expiration",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Token is still valid\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Token structure is correct\", function () {",
+                  "    const token = pm.environment.get('jwt_token');",
+                  "    pm.expect(token).to.not.be.empty;",
+                  "    ",
+                  "    // Basic JWT structure check (header.payload.signature)",
+                  "    const parts = token.split('.');",
+                  "    pm.expect(parts).to.have.lengthOf(3);",
+                  "    ",
+                  "    console.log('✅ Token structure is valid');",
+                  "    console.log('Token parts:', parts.length);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "{{user_id}}"]
+            },
+            "description": "Test if the JWT token is still valid and properly structured."
+          },
+          "response": []
+        },
+        {
+          "name": "Test Invalid Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Invalid token is rejected\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test(\"Error message is provided\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "    ",
+                  "    console.log('✅ Invalid token properly rejected');",
+                  "    console.log('Error:', jsonData.error);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid-token-here"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users"]
+            },
+            "description": "Test that invalid tokens are properly rejected by the service."
+          },
+          "response": []
+        }
+      ],
+      "description": "Test JWT token validation and security features."
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global pre-request script for JWT Token Sharing tests",
+          "console.log('=== JWT Token Sharing Test ===');",
+          "console.log('Request URL:', pm.request.url.toString());",
+          "",
+          "// Check if JWT token is available for protected routes",
+          "const token = pm.environment.get('jwt_token');",
+          "if (!token && pm.request.url.path.includes('/api/v1/') && !pm.request.url.path.includes('/auth/')) {",
+          "    console.warn('⚠️  No JWT token found. Please login first.');",
+          "} else if (token) {",
+          "    console.log('🔑 Using JWT token:', token.substring(0, 50) + '...');",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script for JWT Token Sharing tests",
+          "pm.test(\"Response time is acceptable\", function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});",
+          "",
+          "pm.test(\"Response has proper content type\", function () {",
+          "    if (pm.response.headers.get('Content-Type')) {",
+          "        pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "    }",
+          "});",
+          "",
+          "// Log response status for debugging",
+          "console.log('Response Status:', pm.response.status, pm.response.statusText);"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ]
+}
