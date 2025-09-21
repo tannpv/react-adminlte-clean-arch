@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { CategoryList } from '../components/CategoryList'
-import { CategoryModal } from '../components/CategoryModal'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
+import { CategoryList } from '../components/CategoryList'
+import { CategoryModal } from '../components/CategoryModal'
 import { useCategories } from '../hooks/useCategories'
 
 const isValidationErrorMap = (err) => {
@@ -25,6 +25,7 @@ export function CategoriesPage() {
 
   const {
     categories = [],
+    tree = [],
     hierarchy = [],
     isLoading,
     isError,
@@ -114,6 +115,7 @@ export function CategoriesPage() {
         errors={formErrors}
         submitting={submitting}
         categories={categories}
+        tree={tree}
         hierarchy={hierarchy}
       />
 

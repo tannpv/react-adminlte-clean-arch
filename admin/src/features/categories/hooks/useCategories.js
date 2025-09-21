@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import React from 'react'
 import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
-import { fetchCategories, createCategory, updateCategory, deleteCategory } from '../api/categoriesApi'
+import { createCategory, deleteCategory, fetchCategories, updateCategory } from '../api/categoriesApi'
 
 const extractValidationErrors = (error) => {
   const status = error?.response?.status
@@ -35,6 +35,7 @@ export function useCategories({ enabled = true } = {}) {
   })
 
   const categories = data?.categories ?? []
+  const tree = data?.tree ?? []
   const hierarchy = data?.hierarchy ?? []
 
   const createCategoryMutation = useMutation({
@@ -96,6 +97,7 @@ export function useCategories({ enabled = true } = {}) {
 
   return {
     categories,
+    tree,
     hierarchy,
     isLoading,
     isError,

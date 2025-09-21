@@ -35,7 +35,7 @@ export function ProductsPage() {
   const cachedCategories = qc.getQueryData(['categories'])
   const canViewCategories = can('categories:read')
   const {
-    data: categories = [],
+    data: categoriesData = { categories: [], tree: [], hierarchy: [] },
     isLoading: categoriesLoading,
   } = useQuery({
     queryKey: ['categories'],
@@ -45,7 +45,9 @@ export function ProductsPage() {
     staleTime: 5 * 60 * 1000,
     refetchOnMount: false,
   })
-  const categoryOptions = Array.isArray(categories) ? categories : []
+
+  // Extract categories from the new response structure
+  const categoryOptions = Array.isArray(categoriesData.categories) ? categoriesData.categories : []
 
 
   const submitting = createProductMutation.isPending || updateProductMutation.isPending

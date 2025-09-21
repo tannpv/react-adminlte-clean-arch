@@ -9,15 +9,16 @@ const normalizeCategory = (category) => ({
 
 export async function fetchCategories() {
   const res = await ApiClient.get('/categories')
-  if (!res?.data) return { categories: [], hierarchy: [] }
+  if (!res?.data) return { categories: [], tree: [], hierarchy: [] }
 
   if (Array.isArray(res.data)) {
-    return { categories: res.data.map(normalizeCategory), hierarchy: [] }
+    return { categories: res.data.map(normalizeCategory), tree: [], hierarchy: [] }
   }
 
   const categories = Array.isArray(res.data.categories) ? res.data.categories.map(normalizeCategory) : []
+  const tree = Array.isArray(res.data.tree) ? res.data.tree : []
   const hierarchy = Array.isArray(res.data.hierarchy) ? res.data.hierarchy : []
-  return { categories, hierarchy }
+  return { categories, tree, hierarchy }
 }
 
 export async function createCategory(payload) {

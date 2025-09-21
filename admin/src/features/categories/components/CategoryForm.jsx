@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
+import { CategoryTreeSelector } from './CategoryTreeSelector'
 
-export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {}, submitting = false, formId = 'category-form', categories = [], hierarchy = [], isOpen = false }) {
+export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {}, submitting = false, formId = 'category-form', categories = [], tree = [], hierarchy = [], isOpen = false }) {
   const [name, setName] = useState('')
   const [parentId, setParentId] = useState('')
 
@@ -35,20 +36,16 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
       </div>
       <div className="form-group">
         <label>Parent Category</label>
-        <select
-          className={`form-control ${parentError ? 'is-invalid' : ''}`}
+        <CategoryTreeSelector
+          categories={categories}
+          tree={tree}
+          hierarchy={hierarchy}
           value={parentId}
-          onChange={(e) => setParentId(e.target.value)}
+          onChange={setParentId}
           disabled={submitting}
-        >
-          <option value="">None</option>
-          {hierarchy.map((option) => (
-            <option key={option.id} value={String(option.id)} disabled={option.disabled}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        {parentError && <div className="invalid-feedback">{parentError}</div>}
+          error={parentError}
+          editingCategoryId={initialCategory?.id}
+        />
       </div>
       <div className="d-flex justify-content-end">
         <button type="button" className="btn btn-secondary mr-2" onClick={onCancel} disabled={submitting}>

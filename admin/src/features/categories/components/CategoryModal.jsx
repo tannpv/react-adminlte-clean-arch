@@ -1,7 +1,7 @@
 import React from 'react'
 import { CategoryForm } from './CategoryForm'
 
-export function CategoryModal({ show, title, initialCategory, onClose, onSubmit, errors, submitting, categories = [], hierarchy = [] }) {
+export function CategoryModal({ show, title, initialCategory, onClose, onSubmit, errors, submitting, categories = [], tree = [], hierarchy = [] }) {
   const formId = 'category-modal-form'
   const isEditing = !!initialCategory?.id
   return (
@@ -24,6 +24,7 @@ export function CategoryModal({ show, title, initialCategory, onClose, onSubmit,
                 errors={errors}
                 submitting={submitting}
                 categories={categories}
+                tree={tree}
                 hierarchy={hierarchy}
                 isOpen={show}
               />
