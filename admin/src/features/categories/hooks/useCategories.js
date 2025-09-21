@@ -14,7 +14,7 @@ const extractValidationErrors = (error) => {
   )
 }
 
-export function useCategories({ enabled = true } = {}) {
+export function useCategories({ enabled = true, search } = {}) {
   const qc = useQueryClient()
 
   React.useEffect(() => {
@@ -27,11 +27,14 @@ export function useCategories({ enabled = true } = {}) {
     }
   }, [])
 
+  const searchValue = search?.trim() || ''
+
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['categories'],
-    queryFn: fetchCategories,
+    queryKey: ['categories', { search: searchValue }],
+    queryFn: () => fetchCategories({ search: searchValue }),
     enabled,
     staleTime: 5 * 60 * 1000,
+    keepPreviousData: true,
   })
 
   const categories = data?.categories ?? []
