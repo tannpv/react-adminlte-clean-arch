@@ -4,6 +4,7 @@ import { usePermissions } from '../../../shared/hooks/usePermissions'
 import { CategoryList } from '../components/CategoryList'
 import { CategoryModal } from '../components/CategoryModal'
 import { useCategories } from '../hooks/useCategories'
+import { useCategorySearch } from '../hooks/useCategorySearch'
 
 const isValidationErrorMap = (err) => {
   if (!err || typeof err !== 'object' || Array.isArray(err)) return false
@@ -17,6 +18,12 @@ export function CategoriesPage() {
   const [editing, setEditing] = useState(null)
   const [targetCategory, setTargetCategory] = useState(null)
   const [formErrors, setFormErrors] = useState({})
+
+  const {
+    searchTerm,
+    setSearchTerm,
+    debouncedTerm,
+  } = useCategorySearch()
 
   const canView = can('categories:read')
   const canCreate = can('categories:create')
@@ -36,7 +43,7 @@ export function CategoriesPage() {
     handleCreateCategory,
     handleUpdateCategory,
     handleDeleteCategory,
-  } = useCategories({ enabled: canView })
+  } = useCategories({ enabled: canView, search: debouncedTerm })
 
   const submitting = createCategoryMutation.isPending || updateCategoryMutation.isPending
 
@@ -49,6 +56,20 @@ export function CategoriesPage() {
             <p className="page-subtitle">Organize products into clear, navigable groups.</p>
           </div>
           <div className="page-actions">
+            <div className="search-control">
+              <div className="input-group">
+                <div className="input-group-prepend">
+                  <span className="input-group-text"><i className="fas fa-search" /></span>
+                </div>
+                <input
+                  type="search"
+                  className="form-control"
+                  placeholder="Search categories..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
             <button
               className="btn btn-primary"
               onClick={() => { setEditing(null); setFormErrors({}); setModalOpen(true) }}

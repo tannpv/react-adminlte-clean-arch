@@ -7,8 +7,12 @@ const normalizeCategory = (category) => ({
   parentName: category.parentName ?? null,
 })
 
-export async function fetchCategories() {
-  const res = await ApiClient.get('/categories')
+export async function fetchCategories({ search } = {}) {
+  const params = {}
+  const trimmed = search?.trim()
+  if (trimmed) params.search = trimmed
+
+  const res = await ApiClient.get('/categories', { params })
   if (!res?.data) return { categories: [], tree: [], hierarchy: [] }
 
   if (Array.isArray(res.data)) {
