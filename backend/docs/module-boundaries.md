@@ -23,6 +23,13 @@ This reference tracks Nest modules, their responsibilities, and cross-module dep
 - **Depends on**: `PersistenceModule` (role repository), `SharedModule`, `AccessControlModule`.
 - **Outbound calls**: Provides `RolesService` for other modules (e.g., Auth/Users) and emits role domain events.
 
+## CategoriesModule
+- **Purpose**: Manage product categories with hierarchical tree structure and search functionality.
+- **HTTP controllers**: `CategoriesController` (`/categories` with search support).
+- **Providers**: `CategoriesService` (returns `CategoryTreeResponseDto` with categories, tree, and hierarchy).
+- **Depends on**: `PersistenceModule` (category repository), `SharedModule` (DomainEventBus), `AccessControlModule` (permission guards).
+- **Outbound calls**: Publishes category lifecycle events; consumers should subscribe via `DomainEventBus`.
+
 ## ProductsModule
 - **Purpose**: Manage catalog products (SKU, pricing, metadata).
 - **HTTP controllers**: `ProductsController` (`/products`).

@@ -78,11 +78,24 @@ Auth
 - POST /auth/register — Body: { name, email, password } → 201 { token, user }
 
 Users (Bearer token required)
-- GET /users → [ { id, name, email, roles } ]
+- GET /users?search=term → [ { id, name, email, roles } ] (supports search)
 - GET /users/:id → { id, name, email, roles }
 - POST /users — Body: { name, email, roles? } → 201 { id, name, email, roles }
 - PUT /users/:id — Body: { name?, email?, roles? } → { id, name, email, roles }
 - DELETE /users/:id → { id, name, email, roles }
+
+Categories (Bearer token required)
+- GET /categories?search=term → { categories: [...], tree: [...], hierarchy: [...] } (supports search)
+- POST /categories — Body: { name, parentId? } → 201 { id, name, parentId, parentName }
+- PUT /categories/:id — Body: { name?, parentId? } → { id, name, parentId, parentName }
+- DELETE /categories/:id → { id, name, parentId, parentName }
+
+Products (Bearer token required)
+- GET /products → [ { id, name, description, price, categoryId, categoryName, ... } ]
+- GET /products/:id → { id, name, description, price, categoryId, categoryName, ... }
+- POST /products — Body: { name, description, price, categoryId, ... } → 201 { ... }
+- PUT /products/:id — Body: { name?, description?, price?, categoryId?, ... } → { ... }
+- DELETE /products/:id → { ... }
 
 Roles (Bearer token + permissions)
 - GET /roles → [ { id, name, permissions } ]
@@ -98,19 +111,28 @@ admin/
   package.json      Frontend package definition, scripts, and deps
   vite.config.js    Vite config (includes proxy to http://localhost:3001)
   src/
-    presentation/   React UI components/pages
-    infra/http/     Axios ApiClient + React Query hooks
-    ...             Additional frontend layers
+    features/       Feature-based organization (auth, users, roles, categories, products, storage)
+      auth/         Authentication components and logic
+      users/        User management with search functionality
+      roles/        Role and permission management
+      categories/   Category management with hierarchical tree and search
+      products/     Product catalog management
+      storage/      File and directory management
+    shared/         Shared components, hooks, and utilities
 backend/
   package.json      NestJS project metadata + scripts
   tsconfig*.json    TypeScript build configs
+  docs/             Backend-specific documentation
   src/
     app.module.ts   Root module wiring feature modules
     main.ts         Bootstrap with global validation envelope
     domain/         Entities + repository contracts
-    application/    DTOs + use-case services (auth, users, roles, authorization)
+    application/    DTOs + use-case services (auth, users, roles, categories, products)
     infrastructure/ Controllers, guards, MySQL persistence adapters, modules
     shared/         Password hashing, JWT service, validation helpers, constants
+docs/
+  category-search-feature.md    Detailed category search documentation
+  search-features-overview.md   Overview of all search functionality
 scripts/
   smoke.mjs         Simple end-to-end smoke test harness for the API
 
@@ -123,6 +145,12 @@ How It Works
   consumes errors without change.
 - JWTs are issued for one hour; client-side interceptors attach Authorization headers and clear
   credentials when a 401 response is detected.
+
+Documentation
+- [Backend Configuration](backend/docs/configuration.md) - Environment variables and configuration options
+- [Module Boundaries](backend/docs/module-boundaries.md) - Backend module architecture and dependencies
+- [Search Features Overview](docs/search-features-overview.md) - Overview of all search functionality
+- [Category Search Feature](docs/category-search-feature.md) - Detailed documentation for the category search functionality
 
 Troubleshooting
 - Missing backend deps: run npm --prefix backend install whenever packages change.
