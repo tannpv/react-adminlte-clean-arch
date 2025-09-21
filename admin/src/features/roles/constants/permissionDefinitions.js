@@ -30,16 +30,6 @@ export const PERMISSION_GROUPS = [
     ],
   },
   {
-    entity: 'product-attributes',
-    label: 'Product Attributes',
-    actions: [
-      { key: 'product-attributes:read', label: 'View' },
-      { key: 'product-attributes:create', label: 'Add' },
-      { key: 'product-attributes:update', label: 'Edit' },
-      { key: 'product-attributes:delete', label: 'Delete' },
-    ],
-  },
-  {
     entity: 'categories',
     label: 'Categories',
     actions: [

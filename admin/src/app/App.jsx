@@ -6,9 +6,7 @@ import { RegisterPage } from '../features/auth/pages/RegisterPage'
 import { CategoriesPage } from '../features/categories/pages/CategoriesPage'
 import { fetchProducts } from '../features/products/api/productsApi'
 import { ProductsPage } from '../features/products/pages/ProductsPage'
-import { ProductAttributesPage } from '../features/productAttributes/pages/ProductAttributesPage'
 import { fetchRoles } from '../features/roles/api/rolesApi'
-import { fetchProductAttributes } from '../features/products/api/productAttributesApi'
 import { RolesPage } from '../features/roles/pages/RolesPage'
 import StoragePage from '../features/storage/pages/StoragePage'
 import { UsersPage } from '../features/users/pages/UsersPage'
@@ -20,7 +18,7 @@ export default function App() {
   const { user: currentUser, setUser: setCurrentUser, logout } = useAuth()
   const { can, me } = usePermissions()
   const [authScreen, setAuthScreen] = useState('login') // 'login' | 'register'
-  const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'categories' | 'product-attributes' | 'products' | 'storage'
+  const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'categories' | 'products' | 'storage'
   const qc = useQueryClient()
 
   useEffect(() => {
@@ -28,9 +26,6 @@ export default function App() {
     qc.prefetchQuery({ queryKey: ['me'], queryFn: async () => (await ApiClient.get('/me')).data, staleTime: 10_000 })
     qc.prefetchQuery({ queryKey: ['roles'], queryFn: fetchRoles, staleTime: 5 * 60_000 })
     qc.prefetchQuery({ queryKey: ['products'], queryFn: fetchProducts, staleTime: 60_000 })
-    if (can('product-attributes:read') || can('product-attributes:create') || can('product-attributes:update') || can('product-attributes:delete')) {
-      qc.prefetchQuery({ queryKey: ['product-attributes'], queryFn: fetchProductAttributes, staleTime: 60_000 })
-    }
   }, [currentUser, qc, can])
   return (
     <div className="wrapper">
@@ -93,14 +88,6 @@ export default function App() {
                   <p>Categories</p>
                 </a>
               </li>
-              {(can('product-attributes:read') || can('product-attributes:create') || can('product-attributes:update') || can('product-attributes:delete')) && (
-                <li className="nav-item">
-                  <a href="#" className={`nav-link ${menu === 'product-attributes' ? 'active' : ''}`} onClick={() => setMenu('product-attributes')}>
-                    <i className="nav-icon fas fa-sliders-h" />
-                    <p>Attributes</p>
-                  </a>
-                </li>
-              )}
               <li className="nav-item">
                 <a href="#" className={`nav-link ${menu === 'products' ? 'active' : ''}`} onClick={() => setMenu('products')}>
                   <i className="nav-icon fas fa-box" />
@@ -122,8 +109,6 @@ export default function App() {
                 <RolesPage />
               ) : menu === 'categories' ? (
                 <CategoriesPage />
-              ) : menu === 'product-attributes' ? (
-                <ProductAttributesPage />
               ) : menu === 'storage' ? (
                 <StoragePage />
               ) : (

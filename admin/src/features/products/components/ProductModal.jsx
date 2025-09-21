@@ -10,10 +10,7 @@ export function ProductModal({
   onClose,
   onSubmit,
   categoryOptions = [],
-  attributeOptions = [],
-  attributeLoading = false,
   categoriesLoading = false,
-  canManageAttributes = true,
 }) {
   const formId = 'product-modal-form'
   return (
@@ -42,10 +39,7 @@ export function ProductModal({
                 onCancel={onClose}
                 onSubmit={onSubmit}
                 categoryOptions={categoryOptions}
-                attributeOptions={attributeOptions}
-                attributeLoading={attributeLoading}
                 categoriesLoading={categoriesLoading}
-                canManageAttributes={canManageAttributes}
               />
             </div>
           </div>

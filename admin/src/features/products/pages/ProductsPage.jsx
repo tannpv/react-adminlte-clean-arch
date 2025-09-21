@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import React, { useState } from 'react'
+import { ConfirmModal } from '../../../shared/components/ConfirmModal'
+import { usePermissions } from '../../../shared/hooks/usePermissions'
 import { fetchCategories } from '../../categories/api/categoriesApi'
 import { ProductList } from '../components/ProductList'
 import { ProductModal } from '../components/ProductModal'
-import { ConfirmModal } from '../../../shared/components/ConfirmModal'
-import { usePermissions } from '../../../shared/hooks/usePermissions'
 import { useProducts } from '../hooks/useProducts'
-import { useProductAttributes } from '../hooks/useProductAttributes'
 
 const isValidationErrorMap = (err) => {
   if (!err || typeof err !== 'object' || Array.isArray(err)) return false
@@ -48,13 +47,6 @@ export function ProductsPage() {
   })
   const categoryOptions = Array.isArray(categories) ? categories : []
 
-  const canReadAttributes = can('product-attributes:read') || can('product-attributes:create') || can('product-attributes:update') || can('product-attributes:delete')
-  const canManageAttributes = can('product-attributes:update') || can('product-attributes:create')
-  const {
-    attributes: fetchedAttributes,
-    isLoading: attributeLoading,
-  } = useProductAttributes({ enabled: modalOpen && canReadAttributes })
-  const attributeOptions = canReadAttributes ? fetchedAttributes : []
 
   const submitting = createProductMutation.isPending || updateProductMutation.isPending
 
@@ -142,10 +134,7 @@ export function ProductsPage() {
           }
         }}
         categoryOptions={categoryOptions}
-        attributeOptions={attributeOptions}
-        attributeLoading={attributeLoading}
         categoriesLoading={categoriesLoading}
-        canManageAttributes={canManageAttributes}
       />
 
       <ConfirmModal
