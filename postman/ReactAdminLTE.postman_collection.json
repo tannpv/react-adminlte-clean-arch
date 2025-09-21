@@ -12,13 +12,8 @@
         "header": [],
         "url": {
           "raw": "{{baseUrl}}/api/health",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "api",
-            "health"
-          ]
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "health"]
         }
       }
     },
@@ -41,14 +36,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
             }
           },
           "event": [
@@ -100,14 +89,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "auth",
-                "register"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
             }
           },
           "event": [
@@ -150,13 +133,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "me"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "me"]
             }
           }
         }
@@ -172,13 +150,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/users",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "users"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
             }
           }
         },
@@ -189,13 +162,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/users?search=admin",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "users"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"],
               "query": [
                 {
                   "key": "search",
@@ -222,13 +190,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/users",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "users"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
             }
           },
           "event": [
@@ -251,14 +214,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/users/{{lastUserId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "users",
-                "{{lastUserId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{lastUserId}}"]
             }
           }
         },
@@ -278,14 +235,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/users/{{lastUserId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "users",
-                "{{lastUserId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{lastUserId}}"]
             }
           }
         },
@@ -296,14 +247,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/users/{{lastUserId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "users",
-                "{{lastUserId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{lastUserId}}"]
             }
           }
         }
@@ -319,13 +264,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/roles",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "roles"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles"]
             }
           }
         },
@@ -345,13 +285,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/roles",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "roles"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles"]
             }
           },
           "event": [
@@ -383,14 +318,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/roles/{{lastRoleId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "roles",
-                "{{lastRoleId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles", "{{lastRoleId}}"]
             }
           }
         },
@@ -401,14 +330,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/roles/{{lastRoleId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "roles",
-                "{{lastRoleId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles", "{{lastRoleId}}"]
             }
           }
         }
@@ -424,13 +347,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/categories",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "categories"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories"]
             }
           }
         },
@@ -441,13 +359,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/categories?search=electronics",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "categories"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories"],
               "query": [
                 {
                   "key": "search",
@@ -474,13 +387,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/categories",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "categories"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories"]
             }
           },
           "event": [
@@ -512,13 +420,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/categories",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "categories"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories"]
             }
           },
           "event": [
@@ -550,14 +453,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/categories/{{lastCategoryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "categories",
-                "{{lastCategoryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories", "{{lastCategoryId}}"]
             }
           }
         },
@@ -568,14 +465,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/categories/{{lastSubcategoryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "categories",
-                "{{lastSubcategoryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories", "{{lastSubcategoryId}}"]
             }
           }
         }
@@ -591,12 +482,26 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/products",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "products"
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"]
+            }
+          }
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products?search=iPhone",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "iPhone",
+                  "description": "Search term for product name, SKU, or description"
+                }
               ]
             }
           }
@@ -608,14 +513,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/products/{{lastProductId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "products",
-                "{{lastProductId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{lastProductId}}"]
             }
           }
         },
@@ -635,13 +534,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/products",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "products"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"]
             }
           },
           "event": [
@@ -673,14 +567,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/products/{{lastProductId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "products",
-                "{{lastProductId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{lastProductId}}"]
             }
           }
         },
@@ -691,14 +579,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/products/{{lastProductId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "products",
-                "{{lastProductId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{lastProductId}}"]
             }
           }
         }
@@ -714,13 +596,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/storage",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "storage"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage"]
             }
           }
         },
@@ -740,14 +617,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/storage/directories",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "storage",
-                "directories"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "directories"]
             }
           },
           "event": [
@@ -770,13 +641,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/storage?directoryId={{lastDirectoryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "storage"
-              ],
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage"],
               "query": [
                 {
                   "key": "directoryId",
@@ -802,15 +668,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/storage/directories/{{lastDirectoryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "storage",
-                "directories",
-                "{{lastDirectoryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "directories", "{{lastDirectoryId}}"]
             }
           }
         },
@@ -830,9 +689,7 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/storage/directories/{{lastDirectoryId}}/grants",
-              "host": [
-                "{{baseUrl}}"
-              ],
+              "host": ["{{baseUrl}}"],
               "path": [
                 "api",
                 "storage",
@@ -875,14 +732,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/storage/files",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "storage",
-                "files"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "files"]
             }
           },
           "event": [
@@ -914,15 +765,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/storage/files/{{lastFileId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "storage",
-                "files",
-                "{{lastFileId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "files", "{{lastFileId}}"]
             }
           }
         },
@@ -942,16 +786,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/storage/files/{{lastFileId}}/grants",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "storage",
-                "files",
-                "{{lastFileId}}",
-                "grants"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "files", "{{lastFileId}}", "grants"]
             }
           }
         },
@@ -962,15 +798,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/storage/files/{{lastFileId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "storage",
-                "files",
-                "{{lastFileId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "files", "{{lastFileId}}"]
             }
           }
         },
@@ -981,15 +810,8 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/storage/directories/{{lastDirectoryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "storage",
-                "directories",
-                "{{lastDirectoryId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "directories", "{{lastDirectoryId}}"]
             }
           }
         }

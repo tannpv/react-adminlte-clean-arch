@@ -91,7 +91,7 @@ Categories (Bearer token required)
 - DELETE /categories/:id → { id, name, parentId, parentName }
 
 Products (Bearer token required)
-- GET /products → [ { id, name, description, price, categoryId, categoryName, ... } ]
+- GET /products?search=term → [ { id, name, description, price, categoryId, categoryName, ... } ] (supports search)
 - GET /products/:id → { id, name, description, price, categoryId, categoryName, ... }
 - POST /products — Body: { name, description, price, categoryId, ... } → 201 { ... }
 - PUT /products/:id — Body: { name?, description?, price?, categoryId?, ... } → { ... }

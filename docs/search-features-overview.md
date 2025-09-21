@@ -29,9 +29,22 @@ This document provides a quick overview of all search functionality implemented 
 - Maintains hierarchical tree structure
 - Smooth UX with `keepPreviousData`
 
+### 3. Product Search
+**Location**: Products page (`/products`)
+**Implementation**: Real-time search with debouncing
+**Search Field**: Product name, SKU, and description
+**API Endpoint**: `GET /api/products?search=term`
+
+**Features**:
+- Debounced search (300ms delay)
+- Case-insensitive matching
+- Partial matching on name, SKU, and description
+- Multi-field search capability
+- Smooth UX with `keepPreviousData`
+
 ## Common Implementation Pattern
 
-Both search features follow the same implementation pattern:
+All search features follow the same implementation pattern:
 
 ### Frontend Pattern
 1. **Search Hook**: Custom hook with debouncing logic
@@ -128,11 +141,10 @@ async findAll(search?: string): Promise<Entity[]> {
 
 Potential areas for additional search functionality:
 
-1. **Product Search**: Search products by name, description, or category
-2. **Role Search**: Search roles by name or permissions
-3. **File Search**: Search uploaded files by name or metadata
-4. **Global Search**: Cross-entity search functionality
-5. **Advanced Search**: Multiple field search with filters
+1. **Role Search**: Search roles by name or permissions
+2. **File Search**: Search uploaded files by name or metadata
+3. **Global Search**: Cross-entity search functionality
+4. **Advanced Search**: Multiple field search with filters
 
 ## Testing Search Features
 
@@ -160,5 +172,6 @@ curl -H "Authorization: Bearer <token>" \
 ## Related Documentation
 
 - [Category Search Feature](category-search-feature.md) - Detailed category search documentation
+- [Product Search Feature](product-search-feature.md) - Detailed product search documentation
 - [Backend Module Boundaries](../backend/docs/module-boundaries.md) - Backend architecture
 - [API Endpoints](../README.md#api-endpoints-base-api) - Complete API reference

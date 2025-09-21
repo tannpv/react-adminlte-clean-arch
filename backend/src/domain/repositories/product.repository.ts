@@ -1,13 +1,13 @@
-import { Product } from '../entities/product.entity'
+import { Product } from "../entities/product.entity";
 
 export interface ProductRepository {
-  findAll(): Promise<Product[]>
-  findById(id: number): Promise<Product | null>
-  findBySku(sku: string): Promise<Product | null>
-  create(product: Product): Promise<Product>
-  update(product: Product): Promise<Product>
-  remove(id: number): Promise<Product | null>
-  nextId(): Promise<number>
+  findAll(search?: string): Promise<Product[]>;
+  findById(id: number): Promise<Product | null>;
+  findBySku(sku: string): Promise<Product | null>;
+  create(product: Product): Promise<Product>;
+  update(product: Product): Promise<Product>;
+  remove(id: number): Promise<Product | null>;
+  nextId(): Promise<number>;
 }
 
-export const PRODUCT_REPOSITORY = 'PRODUCT_REPOSITORY'
+export const PRODUCT_REPOSITORY = "PRODUCT_REPOSITORY";

@@ -31,8 +31,8 @@ This reference tracks Nest modules, their responsibilities, and cross-module dep
 - **Outbound calls**: Publishes category lifecycle events; consumers should subscribe via `DomainEventBus`.
 
 ## ProductsModule
-- **Purpose**: Manage catalog products (SKU, pricing, metadata).
-- **HTTP controllers**: `ProductsController` (`/products`).
+- **Purpose**: Manage catalog products (SKU, pricing, metadata) with search functionality.
+- **HTTP controllers**: `ProductsController` (`/products` with search support).
 - **Providers**: `ProductsService` (returns `ProductResponseDto`).
 - **Depends on**: `PersistenceModule` (product repository), `SharedModule` (DomainEventBus), `AccessControlModule` (permission guards).
 - **Outbound calls**: Publishes product lifecycle events; consumers should subscribe via `DomainEventBus`.

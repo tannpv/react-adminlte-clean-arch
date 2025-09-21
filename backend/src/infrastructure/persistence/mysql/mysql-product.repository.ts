@@ -33,10 +33,20 @@ interface ProductCategoryRow extends RowDataPacket {
 export class MysqlProductRepository implements ProductRepository {
   constructor(private readonly db: MysqlDatabaseService) {}
 
-  async findAll(): Promise<Product[]> {
-    const [rows] = await this.db.execute<ProductRow[]>(
-      "SELECT * FROM products ORDER BY updated_at DESC"
-    );
+  async findAll(search?: string): Promise<Product[]> {
+    let query = "SELECT * FROM products";
+    const params: any[] = [];
+
+    if (search?.trim()) {
+      query +=
+        " WHERE LOWER(name) LIKE LOWER(?) OR LOWER(sku) LIKE LOWER(?) OR LOWER(description) LIKE LOWER(?)";
+      const searchTerm = `%${search.trim()}%`;
+      params.push(searchTerm, searchTerm, searchTerm);
+    }
+
+    query += " ORDER BY updated_at DESC";
+
+    const [rows] = await this.db.execute<ProductRow[]>(query, params);
     return Promise.all(rows.map((row) => this.hydrate(row)));
   }
 
