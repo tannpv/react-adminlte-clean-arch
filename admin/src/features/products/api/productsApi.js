@@ -16,8 +16,12 @@ const normalizeProduct = (product) => ({
   updatedAt: product.updatedAt,
 })
 
-export async function fetchProducts() {
-  const res = await ApiClient.get('/products')
+export async function fetchProducts({ search } = {}) {
+  const params = {}
+  const trimmed = search?.trim()
+  if (trimmed) params.search = trimmed
+
+  const res = await ApiClient.get('/products', { params })
   if (!Array.isArray(res.data)) return []
   return res.data.map(normalizeProduct)
 }

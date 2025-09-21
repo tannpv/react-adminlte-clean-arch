@@ -32,8 +32,8 @@ export class ProductsService {
     private readonly events: DomainEventBus
   ) {}
 
-  async list(): Promise<ProductResponseDto[]> {
-    const all = await this.products.findAll();
+  async list(search?: string): Promise<ProductResponseDto[]> {
+    const all = await this.products.findAll(search);
     return all.map((product) => toProductResponse(product));
   }
 

@@ -2,8 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import React from 'react'
 import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
-import { fetchProducts, createProduct, updateProduct, deleteProduct } from '../api/productsApi'
-import { serializeProductPayload, deserializeProduct } from '../utils/productTransforms'
+import { createProduct, deleteProduct, fetchProducts, updateProduct } from '../api/productsApi'
+import { deserializeProduct, serializeProductPayload } from '../utils/productTransforms'
 
 const extractValidationErrors = (error) => {
   const status = error?.response?.status
@@ -15,7 +15,7 @@ const extractValidationErrors = (error) => {
   )
 }
 
-export function useProducts() {
+export function useProducts({ search } = {}) {
   const qc = useQueryClient()
 
   React.useEffect(() => {
@@ -28,9 +28,12 @@ export function useProducts() {
     }
   }, [])
 
+  const searchValue = search?.trim() || ''
+
   const { data: rawProducts = [], isLoading, isError, error } = useQuery({
-    queryKey: ['products'],
-    queryFn: fetchProducts,
+    queryKey: ['products', { search: searchValue }],
+    queryFn: () => fetchProducts({ search: searchValue }),
+    keepPreviousData: true,
   })
 
   const products = React.useMemo(() => rawProducts.map((product) => deserializeProduct(product)), [rawProducts])

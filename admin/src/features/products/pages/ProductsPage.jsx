@@ -6,6 +6,7 @@ import { fetchCategories } from '../../categories/api/categoriesApi'
 import { ProductList } from '../components/ProductList'
 import { ProductModal } from '../components/ProductModal'
 import { useProducts } from '../hooks/useProducts'
+import { useProductSearch } from '../hooks/useProductSearch'
 
 const isValidationErrorMap = (err) => {
   if (!err || typeof err !== 'object' || Array.isArray(err)) return false
@@ -15,6 +16,13 @@ const isValidationErrorMap = (err) => {
 export function ProductsPage() {
   const qc = useQueryClient()
   const { can } = usePermissions()
+
+  const {
+    searchTerm,
+    setSearchTerm,
+    debouncedTerm,
+  } = useProductSearch()
+
   const {
     products = [],
     isLoading,
@@ -26,7 +34,7 @@ export function ProductsPage() {
     handleCreateProduct,
     handleUpdateProduct,
     handleDeleteProduct,
-  } = useProducts()
+  } = useProducts({ search: debouncedTerm })
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
   const [formErrors, setFormErrors] = useState({})
@@ -73,6 +81,20 @@ export function ProductsPage() {
             <p className="page-subtitle">Keep your catalog up to date and aligned with inventory.</p>
           </div>
           <div className="page-actions">
+            <div className="search-control">
+              <div className="input-group">
+                <div className="input-group-prepend">
+                  <span className="input-group-text"><i className="fas fa-search" /></span>
+                </div>
+                <input
+                  type="search"
+                  className="form-control"
+                  placeholder="Search products..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
             <button
               className="btn btn-outline-secondary"
               onClick={() => qc.invalidateQueries({ queryKey: ['categories'] })}
