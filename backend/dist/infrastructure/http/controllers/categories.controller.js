@@ -24,8 +24,8 @@ let CategoriesController = class CategoriesController {
     constructor(categoriesService) {
         this.categoriesService = categoriesService;
     }
-    list() {
-        return this.categoriesService.list();
+    list(search) {
+        return this.categoriesService.list(search);
     }
     create(dto) {
         return this.categoriesService.create(dto);
@@ -41,8 +41,9 @@ exports.CategoriesController = CategoriesController;
 __decorate([
     (0, common_1.Get)(),
     (0, permissions_decorator_1.RequireAnyPermission)('categories:read', 'products:read', 'users:read'),
+    __param(0, (0, common_1.Query)('search')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], CategoriesController.prototype, "list", null);
 __decorate([

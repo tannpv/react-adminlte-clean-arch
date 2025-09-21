@@ -20,8 +20,8 @@ export class CategoriesService {
     @Inject(CATEGORY_REPOSITORY) private readonly categories: CategoryRepository
   ) {}
 
-  async list(): Promise<CategoryTreeResponseDto> {
-    const categories = await this.categories.findAll();
+  async list(search?: string): Promise<CategoryTreeResponseDto> {
+    const categories = await this.categories.findAll(search);
     const byId = new Map(categories.map((category) => [category.id, category]));
     const responses = categories.map((category) => {
       const parent = category.parentId

@@ -4,7 +4,7 @@ import { MysqlDatabaseService } from './mysql-database.service';
 export declare class MysqlCategoryRepository implements CategoryRepository {
     private readonly db;
     constructor(db: MysqlDatabaseService);
-    findAll(): Promise<Category[]>;
+    findAll(search?: string): Promise<Category[]>;
     findById(id: number): Promise<Category | null>;
     findByIds(ids: number[]): Promise<Category[]>;
     findByName(name: string): Promise<Category | null>;

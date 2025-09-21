@@ -17,8 +17,15 @@ let MysqlCategoryRepository = class MysqlCategoryRepository {
     constructor(db) {
         this.db = db;
     }
-    async findAll() {
-        const [rows] = await this.db.execute('SELECT id, name, parent_id FROM categories ORDER BY name ASC');
+    async findAll(search) {
+        let query = 'SELECT id, name, parent_id FROM categories';
+        const params = [];
+        if (search?.trim()) {
+            query += ' WHERE LOWER(name) LIKE LOWER(?)';
+            params.push(`%${search.trim()}%`);
+        }
+        query += ' ORDER BY name ASC';
+        const [rows] = await this.db.execute(query, params);
         return rows.map((row) => new category_entity_1.Category(row.id, row.name, row.parent_id ?? null));
     }
     async findById(id) {

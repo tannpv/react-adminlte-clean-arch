@@ -1,6 +1,6 @@
 import { Category } from '../entities/category.entity';
 export interface CategoryRepository {
-    findAll(): Promise<Category[]>;
+    findAll(search?: string): Promise<Category[]>;
     findById(id: number): Promise<Category | null>;
     findByIds(ids: number[]): Promise<Category[]>;
     findByName(name: string): Promise<Category | null>;

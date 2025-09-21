@@ -1,15 +1,14 @@
-import { Category } from '../entities/category.entity'
+import { Category } from "../entities/category.entity";
 
 export interface CategoryRepository {
-  findAll(): Promise<Category[]>
-  findById(id: number): Promise<Category | null>
-  findByIds(ids: number[]): Promise<Category[]>
-  findByName(name: string): Promise<Category | null>
-  create(category: Category): Promise<Category>
-  update(category: Category): Promise<Category>
-  remove(id: number): Promise<Category | null>
-  nextId(): Promise<number>
+  findAll(search?: string): Promise<Category[]>;
+  findById(id: number): Promise<Category | null>;
+  findByIds(ids: number[]): Promise<Category[]>;
+  findByName(name: string): Promise<Category | null>;
+  create(category: Category): Promise<Category>;
+  update(category: Category): Promise<Category>;
+  remove(id: number): Promise<Category | null>;
+  nextId(): Promise<number>;
 }
 
-export const CATEGORY_REPOSITORY = 'CATEGORY_REPOSITORY'
-
+export const CATEGORY_REPOSITORY = "CATEGORY_REPOSITORY";
