@@ -18,8 +18,25 @@ let MysqlUserRepository = class MysqlUserRepository {
     constructor(db) {
         this.db = db;
     }
-    async findAll() {
-        const [rows] = await this.db.execute('SELECT id, email, password_hash FROM users ORDER BY id ASC');
+    async findAll(params = {}) {
+        const search = params.search?.trim().toLowerCase();
+        let query = 'SELECT DISTINCT u.id, u.email, u.password_hash FROM users u';
+        const conditions = [];
+        const values = [];
+        if (search) {
+            query += `
+        LEFT JOIN user_profiles up ON up.user_id = u.id
+        LEFT JOIN user_roles ur ON ur.user_id = u.id
+        LEFT JOIN roles r ON r.id = ur.role_id`;
+            const like = `%${search}%`;
+            conditions.push('LOWER(u.email) LIKE ? OR LOWER(COALESCE(up.first_name, \'\')) LIKE ? OR LOWER(COALESCE(up.last_name, \'\')) LIKE ? OR LOWER(COALESCE(r.name, \'\')) LIKE ?');
+            values.push(like, like, like, like);
+        }
+        if (conditions.length) {
+            query += ` WHERE ${conditions.join(' AND ')}`;
+        }
+        query += ' ORDER BY u.id ASC';
+        const [rows] = await this.db.execute(query, values);
         const users = await Promise.all(rows.map((row) => this.hydrateUser(row)));
         return users;
     }

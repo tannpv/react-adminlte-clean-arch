@@ -13,10 +13,16 @@ const mysql_user_repository_1 = require("./mysql/mysql-user.repository");
 const mysql_role_repository_1 = require("./mysql/mysql-role.repository");
 const mysql_product_repository_1 = require("./mysql/mysql-product.repository");
 const mysql_category_repository_1 = require("./mysql/mysql-category.repository");
+const mysql_file_directory_repository_1 = require("./mysql/mysql-file-directory.repository");
+const mysql_file_repository_1 = require("./mysql/mysql-file.repository");
+const mysql_file_grant_repository_1 = require("./mysql/mysql-file-grant.repository");
 const user_repository_1 = require("../../domain/repositories/user.repository");
 const role_repository_1 = require("../../domain/repositories/role.repository");
 const product_repository_1 = require("../../domain/repositories/product.repository");
 const category_repository_1 = require("../../domain/repositories/category.repository");
+const file_directory_repository_1 = require("../../domain/repositories/file-directory.repository");
+const file_repository_1 = require("../../domain/repositories/file.repository");
+const file_grant_repository_1 = require("../../domain/repositories/file-grant.repository");
 const shared_module_1 = require("../../shared/shared.module");
 let PersistenceModule = class PersistenceModule {
 };
@@ -30,8 +36,19 @@ exports.PersistenceModule = PersistenceModule = __decorate([
             { provide: role_repository_1.ROLE_REPOSITORY, useClass: mysql_role_repository_1.MysqlRoleRepository },
             { provide: product_repository_1.PRODUCT_REPOSITORY, useClass: mysql_product_repository_1.MysqlProductRepository },
             { provide: category_repository_1.CATEGORY_REPOSITORY, useClass: mysql_category_repository_1.MysqlCategoryRepository },
+            { provide: file_directory_repository_1.FILE_DIRECTORY_REPOSITORY, useClass: mysql_file_directory_repository_1.MysqlFileDirectoryRepository },
+            { provide: file_repository_1.FILE_REPOSITORY, useClass: mysql_file_repository_1.MysqlFileRepository },
+            { provide: file_grant_repository_1.FILE_GRANT_REPOSITORY, useClass: mysql_file_grant_repository_1.MysqlFileGrantRepository },
         ],
-        exports: [user_repository_1.USER_REPOSITORY, role_repository_1.ROLE_REPOSITORY, product_repository_1.PRODUCT_REPOSITORY, category_repository_1.CATEGORY_REPOSITORY],
+        exports: [
+            user_repository_1.USER_REPOSITORY,
+            role_repository_1.ROLE_REPOSITORY,
+            product_repository_1.PRODUCT_REPOSITORY,
+            category_repository_1.CATEGORY_REPOSITORY,
+            file_directory_repository_1.FILE_DIRECTORY_REPOSITORY,
+            file_repository_1.FILE_REPOSITORY,
+            file_grant_repository_1.FILE_GRANT_REPOSITORY,
+        ],
     })
 ], PersistenceModule);
 //# sourceMappingURL=persistence.module.js.map

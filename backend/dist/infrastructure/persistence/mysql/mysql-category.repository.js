@@ -18,36 +18,36 @@ let MysqlCategoryRepository = class MysqlCategoryRepository {
         this.db = db;
     }
     async findAll() {
-        const [rows] = await this.db.execute('SELECT id, name FROM categories ORDER BY name ASC');
-        return rows.map((row) => new category_entity_1.Category(row.id, row.name));
+        const [rows] = await this.db.execute('SELECT id, name, parent_id FROM categories ORDER BY name ASC');
+        return rows.map((row) => new category_entity_1.Category(row.id, row.name, row.parent_id ?? null));
     }
     async findById(id) {
-        const [rows] = await this.db.execute('SELECT id, name FROM categories WHERE id = ? LIMIT 1', [id]);
+        const [rows] = await this.db.execute('SELECT id, name, parent_id FROM categories WHERE id = ? LIMIT 1', [id]);
         if (!rows.length)
             return null;
-        return new category_entity_1.Category(rows[0].id, rows[0].name);
+        return new category_entity_1.Category(rows[0].id, rows[0].name, rows[0].parent_id ?? null);
     }
     async findByIds(ids) {
         if (!ids.length)
             return [];
         const placeholders = ids.map(() => '?').join(', ');
-        const [rows] = await this.db.execute(`SELECT id, name FROM categories WHERE id IN (${placeholders})`, ids);
-        return rows.map((row) => new category_entity_1.Category(row.id, row.name));
+        const [rows] = await this.db.execute(`SELECT id, name, parent_id FROM categories WHERE id IN (${placeholders})`, ids);
+        return rows.map((row) => new category_entity_1.Category(row.id, row.name, row.parent_id ?? null));
     }
     async findByName(name) {
-        const [rows] = await this.db.execute('SELECT id, name FROM categories WHERE LOWER(name) = LOWER(?) LIMIT 1', [name]);
+        const [rows] = await this.db.execute('SELECT id, name, parent_id FROM categories WHERE LOWER(name) = LOWER(?) LIMIT 1', [name]);
         if (!rows.length)
             return null;
         const row = rows[0];
-        return new category_entity_1.Category(row.id, row.name);
+        return new category_entity_1.Category(row.id, row.name, row.parent_id ?? null);
     }
     async create(category) {
-        const [result] = await this.db.execute('INSERT INTO categories (name) VALUES (?)', [category.name]);
+        const [result] = await this.db.execute('INSERT INTO categories (name, parent_id) VALUES (?, ?)', [category.name, category.parentId ?? null]);
         const id = result.insertId;
-        return new category_entity_1.Category(id, category.name);
+        return new category_entity_1.Category(id, category.name, category.parentId ?? null);
     }
     async update(category) {
-        await this.db.execute('UPDATE categories SET name = ? WHERE id = ?', [category.name, category.id]);
+        await this.db.execute('UPDATE categories SET name = ?, parent_id = ? WHERE id = ?', [category.name, category.parentId ?? null, category.id]);
         return category.clone();
     }
     async remove(id) {

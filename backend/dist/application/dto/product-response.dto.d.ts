@@ -1,4 +1,4 @@
-import { ProductStatus } from '../../domain/entities/product.entity';
+import { ProductStatus, ProductType } from '../../domain/entities/product.entity';
 export interface ProductResponseDto {
     id: number;
     sku: string;
@@ -12,6 +12,7 @@ export interface ProductResponseDto {
         id: number;
         name: string;
     }[];
+    type: ProductType;
     createdAt: string;
     updatedAt: string;
 }

@@ -24,8 +24,8 @@ let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
     }
-    list() {
-        return this.usersService.list();
+    list(search) {
+        return this.usersService.list({ search });
     }
     getOne(id) {
         return this.usersService.findById(id);
@@ -44,8 +44,9 @@ exports.UsersController = UsersController;
 __decorate([
     (0, common_1.Get)(),
     (0, permissions_decorator_1.RequirePermissions)('users:read'),
+    __param(0, (0, common_1.Query)('search')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "list", null);
 __decorate([

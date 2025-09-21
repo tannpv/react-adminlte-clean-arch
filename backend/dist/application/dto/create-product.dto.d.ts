@@ -1,4 +1,4 @@
-import { ProductStatus } from '../../domain/entities/product.entity';
+import { ProductStatus, ProductType } from '../../domain/entities/product.entity';
 export declare class CreateProductDto {
     sku: string;
     name: string;
@@ -8,4 +8,5 @@ export declare class CreateProductDto {
     status?: ProductStatus;
     metadata?: Record<string, unknown>;
     categories?: number[];
+    type?: ProductType;
 }

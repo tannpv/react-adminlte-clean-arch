@@ -23,7 +23,13 @@ let CategoriesService = class CategoriesService {
     }
     async list() {
         const categories = await this.categories.findAll();
-        return categories.map((category) => this.toResponse(category));
+        const byId = new Map(categories.map((category) => [category.id, category]));
+        const responses = categories.map((category) => {
+            const parent = category.parentId ? byId.get(category.parentId) ?? null : null;
+            return this.toResponse(category, parent);
+        });
+        const hierarchy = this.buildHierarchyOptions(categories);
+        return { categories: responses, hierarchy };
     }
     async create(dto) {
         const name = dto.name.trim();
@@ -34,10 +40,12 @@ let CategoriesService = class CategoriesService {
         if (existing) {
             throw (0, validation_error_1.validationException)({ name: { code: 'NAME_EXISTS', message: 'Category name already exists' } });
         }
+        const parent = await this.validateParent(dto.parentId ?? null);
+        const parentId = parent?.id ?? null;
         const id = await this.categories.nextId();
-        const category = new category_entity_1.Category(id, name);
+        const category = new category_entity_1.Category(id, name, parentId);
         const created = await this.categories.create(category);
-        return this.toResponse(created);
+        return this.toResponse(created, parent);
     }
     async update(id, dto) {
         const category = await this.categories.findById(id);
@@ -54,17 +62,101 @@ let CategoriesService = class CategoriesService {
             }
             category.name = name;
         }
+        let parent = null;
+        if (dto.parentId !== undefined) {
+            parent = await this.validateParent(dto.parentId ?? null, id);
+            category.parentId = parent?.id ?? null;
+        }
+        else {
+            parent = category.parentId ? await this.categories.findById(category.parentId) : null;
+        }
         const updated = await this.categories.update(category);
-        return this.toResponse(updated);
+        return this.toResponse(updated, parent);
     }
     async remove(id) {
         const removed = await this.categories.remove(id);
         if (!removed)
             throw new common_1.NotFoundException({ message: 'Category not found' });
-        return this.toResponse(removed);
+        const parent = removed.parentId ? await this.categories.findById(removed.parentId) : null;
+        return this.toResponse(removed, parent);
     }
-    toResponse(category) {
-        return { id: category.id, name: category.name };
+    toResponse(category, parent) {
+        return {
+            id: category.id,
+            name: category.name,
+            parentId: category.parentId ?? null,
+            parentName: parent?.name ?? null,
+        };
+    }
+    async validateParent(parentId, currentId) {
+        if (parentId === null || parentId === undefined) {
+            return null;
+        }
+        if (currentId !== undefined && parentId === currentId) {
+            throw (0, validation_error_1.validationException)({ parentId: { code: 'INVALID_PARENT', message: 'Category cannot be its own parent' } });
+        }
+        const parent = await this.categories.findById(parentId);
+        if (!parent) {
+            throw (0, validation_error_1.validationException)({ parentId: { code: 'PARENT_NOT_FOUND', message: 'Parent category not found' } });
+        }
+        if (currentId !== undefined) {
+            const visited = new Set();
+            let cursor = parent;
+            while (cursor) {
+                if (visited.has(cursor.id))
+                    break;
+                visited.add(cursor.id);
+                if (cursor.parentId === null || cursor.parentId === undefined)
+                    break;
+                if (cursor.parentId === currentId) {
+                    throw (0, validation_error_1.validationException)({ parentId: { code: 'INVALID_PARENT', message: 'Cannot set a descendant as parent' } });
+                }
+                cursor = await this.categories.findById(cursor.parentId);
+            }
+        }
+        return parent;
+    }
+    buildHierarchyOptions(categories) {
+        if (!categories.length)
+            return [];
+        const byId = new Map(categories.map((category) => [category.id, category]));
+        const childrenMap = new Map();
+        categories.forEach((category) => {
+            const key = category.parentId ?? null;
+            if (!childrenMap.has(key)) {
+                childrenMap.set(key, []);
+            }
+            childrenMap.get(key).push(category);
+        });
+        childrenMap.forEach((list) => list.sort((a, b) => a.name.localeCompare(b.name)));
+        const visited = new Set();
+        const options = [];
+        const traverse = (node, depth, ancestry) => {
+            if (ancestry.has(node.id) || visited.has(node.id)) {
+                return;
+            }
+            const nextAncestry = new Set(ancestry);
+            nextAncestry.add(node.id);
+            visited.add(node.id);
+            const prefix = depth ? `${'--'.repeat(depth)} ` : '';
+            options.push({
+                id: node.id,
+                label: `${prefix}${node.name}`,
+                disabled: false,
+            });
+            const children = childrenMap.get(node.id) ?? [];
+            children.forEach((child) => traverse(child, depth + 1, nextAncestry));
+        };
+        const roots = categories
+            .filter((category) => category.parentId == null || !byId.has(category.parentId))
+            .sort((a, b) => a.name.localeCompare(b.name));
+        roots.forEach((root) => traverse(root, 0, new Set()));
+        categories.forEach((category) => {
+            if (!visited.has(category.id)) {
+                traverse(category, 0, new Set());
+            }
+        });
+        return options;
     }
 };
 exports.CategoriesService = CategoriesService;

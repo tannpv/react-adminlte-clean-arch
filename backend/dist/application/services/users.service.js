@@ -27,8 +27,8 @@ let UsersService = class UsersService {
         this.roles = roles;
         this.passwordService = passwordService;
     }
-    async list() {
-        const users = await this.users.findAll();
+    async list({ search } = {}) {
+        const users = await this.users.findAll({ search });
         return users.map((user) => user.toPublic());
     }
     async findById(id) {

@@ -23,6 +23,8 @@ class Product {
     get categories() { return this.props.categories.map((category) => category.clone()); }
     set categories(categories) { this.props.categories = categories.map((category) => category.clone()); }
     get categoryIds() { return this.props.categories.map((category) => category.id); }
+    get type() { return this.props.type; }
+    set type(value) { this.props.type = value; }
     get createdAt() { return this.props.createdAt; }
     set createdAt(value) { this.props.createdAt = value; }
     get updatedAt() { return this.props.updatedAt; }

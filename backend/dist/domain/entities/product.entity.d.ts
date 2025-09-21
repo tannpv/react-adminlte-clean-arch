@@ -1,5 +1,6 @@
 import { Category } from './category.entity';
 export type ProductStatus = 'draft' | 'published' | 'archived';
+export type ProductType = 'simple' | 'variable';
 export interface ProductProps {
     id: number;
     sku: string;
@@ -10,6 +11,7 @@ export interface ProductProps {
     status: ProductStatus;
     metadata?: Record<string, unknown> | null;
     categories: Category[];
+    type: ProductType;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -34,6 +36,8 @@ export declare class Product {
     get categories(): Category[];
     set categories(categories: Category[]);
     get categoryIds(): number[];
+    get type(): ProductType;
+    set type(value: ProductType);
     get createdAt(): Date;
     set createdAt(value: Date);
     get updatedAt(): Date;

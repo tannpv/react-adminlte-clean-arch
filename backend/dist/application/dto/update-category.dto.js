@@ -23,4 +23,11 @@ __decorate([
     (0, class_transformer_1.Transform)(({ value }) => (typeof value === 'string' ? value.trim() : value)),
     __metadata("design:type", String)
 ], UpdateCategoryDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Transform)(({ value }) => (value === null || value === undefined || value === '' ? null : Number(value))),
+    (0, class_validator_1.IsInt)({ message: 'Parent category must be a valid category' }),
+    (0, class_validator_1.Min)(1, { message: 'Parent category must be valid' }),
+    __metadata("design:type", Object)
+], UpdateCategoryDto.prototype, "parentId", void 0);
 //# sourceMappingURL=update-category.dto.js.map

@@ -13,6 +13,7 @@ exports.CreateProductDto = void 0;
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 const statuses = ['draft', 'published', 'archived'];
+const productTypes = ['simple', 'variable'];
 class CreateProductDto {
 }
 exports.CreateProductDto = CreateProductDto;
@@ -75,4 +76,9 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], CreateProductDto.prototype, "categories", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(productTypes, { message: 'Invalid product type provided' }),
+    __metadata("design:type", String)
+], CreateProductDto.prototype, "type", void 0);
 //# sourceMappingURL=create-product.dto.js.map

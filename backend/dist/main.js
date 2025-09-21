@@ -36,12 +36,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
 const bodyParser = __importStar(require("body-parser"));
+const express = __importStar(require("express"));
+const path = __importStar(require("path"));
 const app_module_1 = require("./app.module");
 const validation_error_1 = require("./shared/validation-error");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.use(bodyParser.json({ limit: '10mb' }));
     app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+    const uploadRoot = process.env.FILE_STORAGE_ROOT
+        ? path.resolve(process.env.FILE_STORAGE_ROOT)
+        : path.resolve(process.cwd(), 'uploads');
+    app.use('/uploads', express.static(uploadRoot));
     app.setGlobalPrefix('api');
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,

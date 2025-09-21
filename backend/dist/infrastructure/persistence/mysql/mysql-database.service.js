@@ -85,19 +85,50 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         price_cents INT NOT NULL,
         currency VARCHAR(8) NOT NULL,
         status VARCHAR(32) NOT NULL DEFAULT 'draft',
+        type VARCHAR(32) NOT NULL DEFAULT 'simple',
         metadata JSON NULL,
         created_at DATETIME NOT NULL,
         updated_at DATETIME NOT NULL,
         INDEX idx_products_status (status),
+        INDEX idx_products_type (type),
         INDEX idx_products_updated_at (updated_at)
       ) ENGINE=InnoDB;
     `);
+        const [productTypeColumn] = await this.execute(`SELECT COLUMN_NAME FROM information_schema.COLUMNS
+       WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'products' AND COLUMN_NAME = 'type'`, [this.config.database]);
+        if (!productTypeColumn.length) {
+            await this.execute("ALTER TABLE products ADD COLUMN type VARCHAR(32) NOT NULL DEFAULT 'simple' AFTER status");
+            await this.execute("UPDATE products SET type = 'simple' WHERE type IS NULL OR type = ''");
+        }
         await this.execute(`
       CREATE TABLE IF NOT EXISTS categories (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL UNIQUE
+        name VARCHAR(255) NOT NULL UNIQUE,
+        parent_id INT NULL,
+        CONSTRAINT fk_categories_parent FOREIGN KEY (parent_id)
+          REFERENCES categories(id) ON DELETE SET NULL,
+        INDEX idx_categories_parent (parent_id)
       ) ENGINE=InnoDB;
     `);
+        const [categoryParentColumn] = await this.execute(`SELECT COLUMN_NAME FROM information_schema.COLUMNS
+       WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'categories' AND COLUMN_NAME = 'parent_id'`, [this.config.database]);
+        if (!categoryParentColumn.length) {
+            await this.execute('ALTER TABLE categories ADD COLUMN parent_id INT NULL');
+        }
+        try {
+            await this.execute('CREATE INDEX idx_categories_parent ON categories(parent_id)');
+        }
+        catch (e) {
+        }
+        try {
+            await this.execute(`
+        ALTER TABLE categories
+        ADD CONSTRAINT fk_categories_parent FOREIGN KEY (parent_id)
+          REFERENCES categories(id) ON DELETE SET NULL
+      `);
+        }
+        catch (e) {
+        }
         await this.execute(`
       CREATE TABLE IF NOT EXISTS product_categories (
         product_id INT NOT NULL,
@@ -166,6 +197,55 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         CONSTRAINT fk_user_roles_user FOREIGN KEY (user_id)
           REFERENCES users(id) ON DELETE CASCADE,
         CONSTRAINT fk_user_roles_role FOREIGN KEY (role_id)
+          REFERENCES roles(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS file_directories (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        owner_id INT NOT NULL,
+        parent_id INT NULL,
+        name VARCHAR(255) NOT NULL,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL,
+        CONSTRAINT fk_file_directories_owner FOREIGN KEY (owner_id)
+          REFERENCES users(id) ON DELETE CASCADE,
+        CONSTRAINT fk_file_directories_parent FOREIGN KEY (parent_id)
+          REFERENCES file_directories(id) ON DELETE CASCADE,
+        UNIQUE KEY uniq_directory_name (owner_id, parent_id, name)
+      ) ENGINE=InnoDB;
+    `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS files (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        directory_id INT NULL,
+        owner_id INT NOT NULL,
+        original_name VARCHAR(512) NOT NULL,
+        display_name VARCHAR(512) NOT NULL,
+        storage_key VARCHAR(512) NOT NULL,
+        mime_type VARCHAR(255) NULL,
+        size_bytes BIGINT NULL,
+        visibility VARCHAR(32) NOT NULL DEFAULT 'private',
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL,
+        CONSTRAINT fk_files_owner FOREIGN KEY (owner_id)
+          REFERENCES users(id) ON DELETE CASCADE,
+        CONSTRAINT fk_files_directory FOREIGN KEY (directory_id)
+          REFERENCES file_directories(id) ON DELETE SET NULL,
+        INDEX idx_files_directory (directory_id),
+        INDEX idx_files_owner (owner_id)
+      ) ENGINE=InnoDB;
+    `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS file_grants (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        entity_type ENUM('file','directory') NOT NULL,
+        entity_id INT NOT NULL,
+        role_id INT NOT NULL,
+        access ENUM('read','write') NOT NULL DEFAULT 'read',
+        UNIQUE KEY uniq_entity_role (entity_type, entity_id, role_id, access),
+        INDEX idx_grants_role (role_id),
+        CONSTRAINT fk_file_grants_role FOREIGN KEY (role_id)
           REFERENCES roles(id) ON DELETE CASCADE
       ) ENGINE=InnoDB;
     `);

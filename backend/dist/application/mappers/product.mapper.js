@@ -12,6 +12,7 @@ function toProductResponse(product) {
         status: product.status,
         metadata: product.metadata ? { ...product.metadata } : null,
         categories: product.categories.map((category) => ({ id: category.id, name: category.name })),
+        type: product.type,
         createdAt: product.createdAt.toISOString(),
         updatedAt: product.updatedAt.toISOString(),
     };

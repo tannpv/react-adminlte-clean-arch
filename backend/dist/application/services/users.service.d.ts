@@ -9,7 +9,9 @@ export declare class UsersService {
     private readonly roles;
     private readonly passwordService;
     constructor(users: UserRepository, roles: RoleRepository, passwordService: PasswordService);
-    list(): Promise<PublicUser[]>;
+    list({ search }?: {
+        search?: string;
+    }): Promise<PublicUser[]>;
     findById(id: number): Promise<PublicUser>;
     findDomainById(id: number): Promise<User | null>;
     findByEmail(email: string): Promise<User | null>;

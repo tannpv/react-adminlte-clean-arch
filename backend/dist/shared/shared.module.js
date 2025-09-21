@@ -11,13 +11,14 @@ const common_1 = require("@nestjs/common");
 const password_service_1 = require("./password.service");
 const token_service_1 = require("./token.service");
 const domain_event_bus_1 = require("./events/domain-event.bus");
+const storage_service_1 = require("./services/storage.service");
 let SharedModule = class SharedModule {
 };
 exports.SharedModule = SharedModule;
 exports.SharedModule = SharedModule = __decorate([
     (0, common_1.Module)({
-        providers: [password_service_1.PasswordService, token_service_1.TokenService, domain_event_bus_1.DomainEventBus],
-        exports: [password_service_1.PasswordService, token_service_1.TokenService, domain_event_bus_1.DomainEventBus],
+        providers: [password_service_1.PasswordService, token_service_1.TokenService, domain_event_bus_1.DomainEventBus, storage_service_1.StorageService],
+        exports: [password_service_1.PasswordService, token_service_1.TokenService, domain_event_bus_1.DomainEventBus, storage_service_1.StorageService],
     })
 ], SharedModule);
 //# sourceMappingURL=shared.module.js.map

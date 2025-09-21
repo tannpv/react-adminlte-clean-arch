@@ -15,6 +15,6 @@ export declare class ProductsService {
     update(id: number, dto: UpdateProductDto): Promise<ProductResponseDto>;
     remove(id: number): Promise<ProductResponseDto>;
     private ensureSkuUnique;
-    private toPriceCents;
     private resolveCategories;
+    private toPriceCents;
 }

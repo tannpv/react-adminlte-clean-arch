@@ -45,6 +45,7 @@ let ProductsService = class ProductsService {
         await this.ensureSkuUnique(sku);
         const priceCents = this.toPriceCents(dto.price);
         const status = dto.status ?? 'draft';
+        const type = dto.type ?? 'simple';
         const now = new Date();
         const id = await this.products.nextId();
         const categories = await this.resolveCategories(dto.categories);
@@ -58,6 +59,7 @@ let ProductsService = class ProductsService {
             status,
             metadata: dto.metadata ?? null,
             categories,
+            type,
             createdAt: now,
             updatedAt: now,
         });
@@ -69,92 +71,72 @@ let ProductsService = class ProductsService {
         const product = await this.products.findById(id);
         if (!product)
             throw new common_1.NotFoundException({ message: 'Product not found' });
-        if (dto.sku !== undefined) {
-            const newSku = dto.sku.trim();
-            if (!newSku) {
-                throw (0, validation_error_1.validationException)({ sku: { code: 'SKU_REQUIRED', message: 'SKU is required' } });
-            }
-            if (newSku !== product.sku) {
-                await this.ensureSkuUnique(newSku);
-            }
-            product.sku = newSku;
+        const sku = dto.sku?.trim() ?? product.sku;
+        const name = dto.name?.trim() ?? product.name;
+        if (sku !== product.sku) {
+            await this.ensureSkuUnique(sku);
         }
-        if (dto.name !== undefined) {
-            const newName = dto.name.trim();
-            if (!newName) {
-                throw (0, validation_error_1.validationException)({ name: { code: 'NAME_REQUIRED', message: 'Name is required' } });
-            }
-            product.name = newName;
-        }
-        if (dto.description !== undefined) {
-            product.description = dto.description ?? null;
-        }
-        if (dto.price !== undefined) {
-            product.priceCents = this.toPriceCents(dto.price);
-        }
-        if (dto.currency !== undefined) {
-            const currency = dto.currency.trim().toUpperCase();
-            if (!currency) {
-                throw (0, validation_error_1.validationException)({ currency: { code: 'CURRENCY_REQUIRED', message: 'Currency is required' } });
-            }
-            product.currency = currency;
-        }
-        if (dto.status !== undefined) {
-            product.status = dto.status;
-        }
-        if (dto.metadata !== undefined) {
-            product.metadata = dto.metadata ?? null;
-        }
-        if (dto.categories !== undefined) {
-            const categories = await this.resolveCategories(dto.categories);
-            product.categories = categories;
-        }
-        product.updatedAt = new Date();
-        const updated = await this.products.update(product);
+        const priceCents = dto.price !== undefined ? this.toPriceCents(dto.price) : product.priceCents;
+        const status = dto.status ?? product.status;
+        const type = dto.type ?? product.type;
+        const now = new Date();
+        const categories = dto.categories !== undefined ? await this.resolveCategories(dto.categories) : product.categories;
+        const updatedProduct = new product_entity_1.Product({
+            id: product.id,
+            sku,
+            name,
+            description: dto.description ?? product.description,
+            priceCents,
+            currency: dto.currency?.trim().toUpperCase() ?? product.currency,
+            status,
+            metadata: dto.metadata ?? product.metadata,
+            categories,
+            type,
+            createdAt: product.createdAt,
+            updatedAt: now,
+        });
+        const updated = await this.products.update(updatedProduct);
         this.events.publish(new product_updated_event_1.ProductUpdatedEvent(updated));
         return (0, product_mapper_1.toProductResponse)(updated);
     }
     async remove(id) {
-        const removed = await this.products.remove(id);
-        if (!removed)
+        const product = await this.products.findById(id);
+        if (!product)
             throw new common_1.NotFoundException({ message: 'Product not found' });
+        const removed = await this.products.remove(id);
         this.events.publish(new product_removed_event_1.ProductRemovedEvent(removed));
         return (0, product_mapper_1.toProductResponse)(removed);
     }
     async ensureSkuUnique(sku) {
         const existing = await this.products.findBySku(sku);
         if (existing) {
-            throw (0, validation_error_1.validationException)({ sku: { code: 'SKU_EXISTS', message: 'SKU already exists' } });
+            throw (0, validation_error_1.validationException)({
+                sku: {
+                    code: 'SKU_EXISTS',
+                    message: 'A product with this SKU already exists',
+                },
+            });
         }
-    }
-    toPriceCents(price) {
-        if (Number.isNaN(price) || !Number.isFinite(price)) {
-            throw (0, validation_error_1.validationException)({ price: { code: 'PRICE_INVALID', message: 'Price is invalid' } });
-        }
-        const cents = Math.round(price * 100);
-        if (cents <= 0) {
-            throw (0, validation_error_1.validationException)({ price: { code: 'PRICE_INVALID', message: 'Price must be greater than zero' } });
-        }
-        return cents;
     }
     async resolveCategories(categoryIds) {
         if (!categoryIds || !categoryIds.length)
             return [];
-        const uniqueIds = Array.from(new Set(categoryIds.filter((id) => Number.isInteger(id))));
-        if (!uniqueIds.length)
-            return [];
-        const categories = await this.categories.findByIds(uniqueIds);
-        const foundIds = new Set(categories.map((category) => category.id));
-        const missing = uniqueIds.filter((id) => !foundIds.has(id));
-        if (missing.length) {
-            throw (0, validation_error_1.validationException)({
-                categories: {
-                    code: 'CATEGORIES_INVALID',
-                    message: 'One or more categories are invalid',
-                },
-            });
-        }
+        const categories = await Promise.all(categoryIds.map(async (id) => {
+            const category = await this.categories.findById(id);
+            if (!category) {
+                throw (0, validation_error_1.validationException)({
+                    categories: {
+                        code: 'CATEGORY_NOT_FOUND',
+                        message: `Category with ID ${id} not found`,
+                    },
+                });
+            }
+            return category;
+        }));
         return categories;
+    }
+    toPriceCents(price) {
+        return Math.round(price * 100);
     }
 };
 exports.ProductsService = ProductsService;

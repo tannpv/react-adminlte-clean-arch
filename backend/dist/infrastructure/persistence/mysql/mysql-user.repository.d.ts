@@ -4,7 +4,9 @@ import { MysqlDatabaseService } from './mysql-database.service';
 export declare class MysqlUserRepository implements UserRepository {
     private readonly db;
     constructor(db: MysqlDatabaseService);
-    findAll(): Promise<User[]>;
+    findAll(params?: {
+        search?: string;
+    }): Promise<User[]>;
     findById(id: number): Promise<User | null>;
     findByEmail(email: string): Promise<User | null>;
     create(user: User): Promise<User>;

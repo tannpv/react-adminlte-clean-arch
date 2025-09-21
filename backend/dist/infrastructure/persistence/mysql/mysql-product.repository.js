@@ -35,28 +35,30 @@ let MysqlProductRepository = class MysqlProductRepository {
         return this.hydrate(rows[0]);
     }
     async create(product) {
-        const now = product.updatedAt ?? new Date();
-        const [result] = await this.db.execute(`INSERT INTO products (sku, name, description, price_cents, currency, status, metadata, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
+        const now = new Date();
+        const [result] = await this.db.execute(`INSERT INTO products (sku, name, description, price_cents, currency, status, type, metadata, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
             product.sku,
             product.name,
             product.description,
             product.priceCents,
             product.currency,
             product.status,
+            product.type,
             product.metadata ? JSON.stringify(product.metadata) : null,
-            product.createdAt,
+            now,
             now,
         ]);
-        const id = result.insertId;
-        await this.replaceCategories(id, product.categoryIds);
-        const created = await this.findById(id);
-        return created ?? product.clone();
+        const createdId = result.insertId;
+        await this.replaceCategories(createdId, product.categoryIds);
+        const created = await this.findById(createdId);
+        if (!created)
+            throw new Error('Failed to create product');
+        return created;
     }
     async update(product) {
         const now = new Date();
-        await this.db.execute(`UPDATE products
-       SET sku = ?, name = ?, description = ?, price_cents = ?, currency = ?, status = ?, metadata = ?, updated_at = ?
+        await this.db.execute(`UPDATE products SET sku = ?, name = ?, description = ?, price_cents = ?, currency = ?, status = ?, type = ?, metadata = ?, updated_at = ?
        WHERE id = ?`, [
             product.sku,
             product.name,
@@ -64,13 +66,16 @@ let MysqlProductRepository = class MysqlProductRepository {
             product.priceCents,
             product.currency,
             product.status,
+            product.type,
             product.metadata ? JSON.stringify(product.metadata) : null,
             now,
             product.id,
         ]);
         await this.replaceCategories(product.id, product.categoryIds);
         const updated = await this.findById(product.id);
-        return updated ?? product;
+        if (!updated)
+            throw new Error('Failed to update product');
+        return updated;
     }
     async remove(id) {
         const existing = await this.findById(id);
@@ -80,21 +85,10 @@ let MysqlProductRepository = class MysqlProductRepository {
         return existing;
     }
     async nextId() {
-        const database = this.db.getDatabaseName();
-        const [rows] = await this.db.execute(`SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'products'`, [database]);
-        const nextId = rows[0]?.AUTO_INCREMENT;
-        return nextId ? Number(nextId) : 1;
+        const [rows] = await this.db.execute('SELECT AUTO_INCREMENT as next_id FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?', [this.db.getDatabaseName(), 'products']);
+        return Number(rows[0]?.next_id ?? 1);
     }
     async hydrate(row) {
-        let metadata = null;
-        if (row.metadata) {
-            try {
-                metadata = JSON.parse(row.metadata);
-            }
-            catch {
-                metadata = null;
-            }
-        }
         const categories = await this.loadCategories(row.id);
         return new product_entity_1.Product({
             id: row.id,
@@ -104,28 +98,28 @@ let MysqlProductRepository = class MysqlProductRepository {
             priceCents: row.price_cents,
             currency: row.currency,
             status: row.status,
-            metadata,
+            metadata: row.metadata ? JSON.parse(row.metadata) : null,
             categories,
-            createdAt: new Date(row.created_at),
-            updatedAt: new Date(row.updated_at),
+            type: row.type,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at,
         });
     }
     async loadCategories(productId) {
-        const [rows] = await this.db.execute(`SELECT pc.category_id, c.name
+        const [rows] = await this.db.execute(`SELECT c.id as category_id, c.name, c.parent_id
        FROM product_categories pc
        INNER JOIN categories c ON c.id = pc.category_id
        WHERE pc.product_id = ?
        ORDER BY c.name ASC`, [productId]);
-        return rows.map((row) => new category_entity_1.Category(row.category_id, row.name));
+        return rows.map((row) => new category_entity_1.Category(row.category_id, row.name, row.parent_id));
     }
     async replaceCategories(productId, categoryIds) {
         await this.db.execute('DELETE FROM product_categories WHERE product_id = ?', [productId]);
-        if (!categoryIds || !categoryIds.length)
+        if (!categoryIds.length)
             return;
-        const uniqueIds = Array.from(new Set(categoryIds));
-        const placeholders = uniqueIds.map(() => '(?, ?)').join(', ');
-        const params = uniqueIds.flatMap((categoryId) => [productId, categoryId]);
-        await this.db.execute(`INSERT IGNORE INTO product_categories (product_id, category_id) VALUES ${placeholders}`, params);
+        const placeholders = categoryIds.map(() => '(?, ?)').join(', ');
+        const params = categoryIds.flatMap((categoryId) => [productId, categoryId]);
+        await this.db.execute(`INSERT INTO product_categories (product_id, category_id) VALUES ${placeholders}`, params);
     }
 };
 exports.MysqlProductRepository = MysqlProductRepository;
