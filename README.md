@@ -151,6 +151,8 @@ Documentation
 - [Module Boundaries](backend/docs/module-boundaries.md) - Backend module architecture and dependencies
 - [Search Features Overview](docs/search-features-overview.md) - Overview of all search functionality
 - [Category Search Feature](docs/category-search-feature.md) - Detailed documentation for the category search functionality
+- [Postman Collection Guide](docs/postman-collection-guide.md) - Complete Postman API testing guide
+- [Postman Automatic Auth Guide](docs/postman-automatic-auth-guide.md) - Automatic JWT token handling in Postman
 
 Troubleshooting
 - Missing backend deps: run npm --prefix backend install whenever packages change.

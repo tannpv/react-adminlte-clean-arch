@@ -367,9 +367,27 @@ The collection uses the following environment variables:
 
 ## Testing Workflows
 
-### 1. Authentication Workflow
-1. **Login** → Sets `token` and `userId`
-2. **Get Profile** → Verify authentication works
+### 1. Authentication Workflow (Automatic Token Handling)
+
+#### 🚀 **Quick Start (Recommended)**
+1. **Import Collection & Environment** → Set up Postman
+2. **Run Login Request** → Token automatically stored
+3. **Run Any Other Request** → Token automatically included
+4. **Done!** → No manual token copying needed
+
+#### 📋 **Detailed Steps**
+1. **Login** → 
+   - Execute `Auth > Login` request
+   - ✅ Token automatically stored in `{{token}}` variable
+   - ✅ User ID automatically stored in `{{userId}}` variable
+   - ✅ Console shows "JWT token stored successfully"
+2. **Verify Authentication** → 
+   - Execute `Auth > Me` request
+   - ✅ Token automatically sent with request
+   - ✅ Console shows "JWT token found and will be sent with this request"
+3. **Use Any Endpoint** → 
+   - All requests now automatically authenticated
+   - No need to manually add Authorization headers
 
 ### 2. User Management Workflow
 1. **List Users** → View existing users
@@ -446,7 +464,35 @@ Validation errors are returned in the following format:
 }
 ```
 
-## Environment Variables Auto-Population
+## Automatic Authentication
+
+### JWT Token Management
+
+The collection includes **automatic JWT token handling** that eliminates the need to manually copy and paste tokens:
+
+#### 🔐 **Automatic Token Storage**
+- **Login Request**: Automatically stores JWT token in `{{token}}` environment variable
+- **Register Request**: Automatically stores JWT token in `{{token}}` environment variable
+- **Collection-Level Auth**: All requests automatically use the stored token via Bearer authentication
+
+#### 📋 **How It Works**
+1. **Run Login/Register**: Execute the Auth > Login or Auth > Register request
+2. **Token Auto-Stored**: JWT token is automatically saved to environment variable
+3. **All Requests Authenticated**: Every subsequent request automatically includes the token
+4. **No Manual Copying**: Never need to copy/paste tokens again!
+
+#### 🔍 **Token Status Checking**
+- **Pre-request Script**: Shows token status in console before each request
+- **Visual Feedback**: 
+  - ✅ "JWT token found and will be sent with this request"
+  - ⚠️ "No JWT token found. Please login first using the Auth > Login request."
+
+#### 🧪 **Enhanced Test Scripts**
+- **Login/Register Tests**: Automatically validate response and token storage
+- **Console Logging**: Clear feedback when tokens are stored successfully
+- **Error Handling**: Helpful messages if token storage fails
+
+### Environment Variables Auto-Population
 
 The collection automatically populates environment variables when creating resources:
 

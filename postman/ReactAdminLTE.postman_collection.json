@@ -56,12 +56,27 @@
               "listen": "test",
               "script": {
                 "exec": [
+                  "// Check if response is successful",
+                  "pm.test('Login successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Parse response and store token",
                   "const json = pm.response.json();",
                   "if (json && json.token) {",
-                  "  pm.environment.set('token', json.token);",
+                  "    pm.environment.set('token', json.token);",
+                  "    console.log('✅ JWT token stored successfully');",
+                  "    pm.test('Token received', function () {",
+                  "        pm.expect(json.token).to.be.a('string');",
+                  "    });",
+                  "} else {",
+                  "    console.log('❌ No token received in response');",
                   "}",
+                  "",
+                  "// Store user ID if available",
                   "if (json && json.user && json.user.id) {",
-                  "  pm.environment.set('userId', json.user.id);",
+                  "    pm.environment.set('userId', json.user.id);",
+                  "    console.log('✅ User ID stored:', json.user.id);",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -100,9 +115,28 @@
               "listen": "test",
               "script": {
                 "exec": [
+                  "// Check if response is successful",
+                  "pm.test('Registration successful', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "// Parse response and store token",
                   "const json = pm.response.json();",
-                  "if (json && json.token) { pm.environment.set('token', json.token); }",
-                  "if (json && json.user && json.user.id) { pm.environment.set('userId', json.user.id); }"
+                  "if (json && json.token) {",
+                  "    pm.environment.set('token', json.token);",
+                  "    console.log('✅ JWT token stored successfully');",
+                  "    pm.test('Token received', function () {",
+                  "        pm.expect(json.token).to.be.a('string');",
+                  "    });",
+                  "} else {",
+                  "    console.log('❌ No token received in response');",
+                  "}",
+                  "",
+                  "// Store user ID if available",
+                  "if (json && json.user && json.user.id) {",
+                  "    pm.environment.set('userId', json.user.id);",
+                  "    console.log('✅ User ID stored:', json.user.id);",
+                  "}"
                 ],
                 "type": "text/javascript"
               }
@@ -972,6 +1006,32 @@
       }
     ]
   },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Check if token exists for authenticated requests",
+          "const token = pm.environment.get('token');",
+          "const requestUrl = pm.request.url.toString();",
+          "",
+          "// Skip token check for auth endpoints",
+          "if (requestUrl.includes('/auth/') || requestUrl.includes('/health')) {",
+          "    return;",
+          "}",
+          "",
+          "// Check token for other endpoints",
+          "if (!token || token === '') {",
+          "    console.log('⚠️  No JWT token found. Please login first using the Auth > Login request.');",
+          "    console.log('   The token will be automatically stored after successful login.');",
+          "} else {",
+          "    console.log('✅ JWT token found and will be sent with this request');",
+          "}"
+        ]
+      }
+    }
+  ],
   "variable": [
     {
       "key": "baseUrl",
