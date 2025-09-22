@@ -44,6 +44,7 @@ exports.PersistenceModule = PersistenceModule = __decorate([
             { provide: file_grant_repository_1.FILE_GRANT_REPOSITORY, useClass: mysql_file_grant_repository_1.MysqlFileGrantRepository },
         ],
         exports: [
+            mysql_database_service_1.MysqlDatabaseService,
             user_repository_1.USER_REPOSITORY,
             role_repository_1.ROLE_REPOSITORY,
             product_repository_1.PRODUCT_REPOSITORY,

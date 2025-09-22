@@ -40,3 +40,8 @@ export async function deleteProduct(id) {
   const res = await ApiClient.delete(`/products/${id}`)
   return normalizeProduct(res.data)
 }
+
+export async function fetchProductAttributeValues(productId) {
+  const res = await ApiClient.get(`/products/${productId}/attribute-values`)
+  return res.data || []
+}

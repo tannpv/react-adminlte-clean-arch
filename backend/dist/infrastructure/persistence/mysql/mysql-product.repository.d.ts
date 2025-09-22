@@ -4,7 +4,7 @@ import { MysqlDatabaseService } from "./mysql-database.service";
 export declare class MysqlProductRepository implements ProductRepository {
     private readonly db;
     constructor(db: MysqlDatabaseService);
-    findAll(): Promise<Product[]>;
+    findAll(search?: string): Promise<Product[]>;
     findById(id: number): Promise<Product | null>;
     findBySku(sku: string): Promise<Product | null>;
     create(product: Product): Promise<Product>;

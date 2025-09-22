@@ -85,4 +85,9 @@ __decorate([
     (0, class_validator_1.IsEnum)(productTypes, { message: "Invalid product type provided" }),
     __metadata("design:type", String)
 ], UpdateProductDto.prototype, "type", void 0);
+__decorate([
+    (0, class_validator_1.Allow)(),
+    (0, class_transformer_1.Transform)(({ value }) => value),
+    __metadata("design:type", Object)
+], UpdateProductDto.prototype, "attributeValues", void 0);
 //# sourceMappingURL=update-product.dto.js.map

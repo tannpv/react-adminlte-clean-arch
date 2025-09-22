@@ -4,17 +4,21 @@ import { DomainEventBus } from "../../shared/events/domain-event.bus";
 import { CreateProductDto } from "../dto/create-product.dto";
 import { ProductResponseDto } from "../dto/product-response.dto";
 import { UpdateProductDto } from "../dto/update-product.dto";
+import { ProductAttributeValuesService } from "./product-attribute-values.service";
 export declare class ProductsService {
     private readonly products;
     private readonly categories;
     private readonly events;
-    constructor(products: ProductRepository, categories: CategoryRepository, events: DomainEventBus);
-    list(): Promise<ProductResponseDto[]>;
+    private readonly productAttributeValuesService;
+    constructor(products: ProductRepository, categories: CategoryRepository, events: DomainEventBus, productAttributeValuesService: ProductAttributeValuesService);
+    list(search?: string): Promise<ProductResponseDto[]>;
     findById(id: number): Promise<ProductResponseDto>;
+    getProductAttributeValues(productId: number): Promise<import("../../domain/entities/product-attribute-value.entity").ProductAttributeValue[]>;
     create(dto: CreateProductDto): Promise<ProductResponseDto>;
     update(id: number, dto: UpdateProductDto): Promise<ProductResponseDto>;
     remove(id: number): Promise<ProductResponseDto>;
     private ensureSkuUnique;
     private resolveCategories;
     private toPriceCents;
+    private saveProductAttributeValues;
 }

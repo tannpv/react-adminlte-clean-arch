@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import React from 'react'
 import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
-import { createProduct, deleteProduct, fetchProducts, updateProduct } from '../api/productsApi'
+import { createProduct, deleteProduct, fetchProductAttributeValues, fetchProducts, updateProduct } from '../api/productsApi'
 import { deserializeProduct, serializeProductPayload } from '../utils/productTransforms'
 
 const extractValidationErrors = (error) => {
@@ -109,4 +109,13 @@ export function useProducts({ search } = {}) {
     handleUpdateProduct,
     handleDeleteProduct,
   }
+}
+
+export function useProductAttributeValues(productId) {
+  return useQuery({
+    queryKey: ['product-attribute-values', productId],
+    queryFn: () => fetchProductAttributeValues(productId),
+    enabled: !!productId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  })
 }

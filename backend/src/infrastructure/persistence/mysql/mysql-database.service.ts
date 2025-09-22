@@ -220,6 +220,66 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
+    // Product Attribute Values Table
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_attribute_values (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        product_id INT NOT NULL,
+        attribute_id BIGINT UNSIGNED NOT NULL,
+        value_text TEXT NULL,
+        value_number DECIMAL(15,4) NULL,
+        value_boolean BOOLEAN NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        CONSTRAINT fk_pav_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+        CONSTRAINT fk_pav_attribute FOREIGN KEY (attribute_id) REFERENCES attributes(id) ON DELETE CASCADE,
+        UNIQUE KEY ux_product_attribute (product_id, attribute_id),
+        KEY ix_pav_product (product_id),
+        KEY ix_pav_attribute (attribute_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // Product Variants Table
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_variants (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        product_id INT NOT NULL,
+        sku VARCHAR(191) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        price_cents INT NOT NULL DEFAULT 0,
+        currency VARCHAR(3) NOT NULL DEFAULT 'USD',
+        status VARCHAR(50) NOT NULL DEFAULT 'active',
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        CONSTRAINT fk_pv_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+        UNIQUE KEY ux_variant_sku (sku),
+        KEY ix_pv_product (product_id),
+        KEY ix_pv_status (status)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    // Product Variant Attribute Values Table
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_variant_attribute_values (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        variant_id BIGINT UNSIGNED NOT NULL,
+        attribute_id BIGINT UNSIGNED NOT NULL,
+        value_text TEXT NULL,
+        value_number DECIMAL(15,4) NULL,
+        value_boolean BOOLEAN NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        CONSTRAINT fk_pvav_variant FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE CASCADE,
+        CONSTRAINT fk_pvav_attribute FOREIGN KEY (attribute_id) REFERENCES attributes(id) ON DELETE CASCADE,
+        UNIQUE KEY ux_variant_attribute (variant_id, attribute_id),
+        KEY ix_pvav_variant (variant_id),
+        KEY ix_pvav_attribute (attribute_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
     const [categoryParentColumn] = await this.execute<RowDataPacket[]>(
       `SELECT COLUMN_NAME FROM information_schema.COLUMNS
        WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'categories' AND COLUMN_NAME = 'parent_id'`,

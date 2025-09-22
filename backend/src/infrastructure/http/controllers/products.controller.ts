@@ -9,6 +9,8 @@ import {
   Put,
   Query,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from "@nestjs/common";
 import { CreateProductDto } from "../../../application/dto/create-product.dto";
 import { UpdateProductDto } from "../../../application/dto/update-product.dto";
@@ -37,14 +39,22 @@ export class ProductsController {
     return this.productsService.findById(id);
   }
 
+  @Get(":id/attribute-values")
+  @RequireAnyPermission("products:read", "users:read")
+  getProductAttributeValues(@Param("id", ParseIntPipe) id: number) {
+    return this.productsService.getProductAttributeValues(id);
+  }
+
   @Post()
   @RequirePermissions("products:create")
+  @UsePipes(new ValidationPipe({ whitelist: false, transform: true }))
   create(@Body() dto: CreateProductDto) {
     return this.productsService.create(dto);
   }
 
   @Put(":id")
   @RequirePermissions("products:update")
+  @UsePipes(new ValidationPipe({ whitelist: false, transform: true }))
   update(@Param("id", ParseIntPipe) id: number, @Body() dto: UpdateProductDto) {
     return this.productsService.update(id, dto);
   }

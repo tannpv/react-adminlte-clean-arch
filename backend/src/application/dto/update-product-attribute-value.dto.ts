@@ -1,0 +1,15 @@
+// import { IsOptional, IsString, IsNumber, IsBoolean } from 'class-validator';
+
+export class UpdateProductAttributeValueDto {
+  // @IsOptional()
+  // @IsString()
+  valueText?: string;
+
+  // @IsOptional()
+  // @IsNumber()
+  valueNumber?: number;
+
+  // @IsOptional()
+  // @IsBoolean()
+  valueBoolean?: boolean;
+}
