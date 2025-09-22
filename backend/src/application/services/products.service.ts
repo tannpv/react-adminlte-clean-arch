@@ -22,6 +22,7 @@ import { CreateProductDto } from "../dto/create-product.dto";
 import { ProductResponseDto } from "../dto/product-response.dto";
 import { UpdateProductDto } from "../dto/update-product.dto";
 import { toProductResponse } from "../mappers/product.mapper";
+import { ProductAttributeValuesService } from "./product-attribute-values.service";
 
 @Injectable()
 export class ProductsService {
@@ -29,7 +30,8 @@ export class ProductsService {
     @Inject(PRODUCT_REPOSITORY) private readonly products: ProductRepository,
     @Inject(CATEGORY_REPOSITORY)
     private readonly categories: CategoryRepository,
-    private readonly events: DomainEventBus
+    private readonly events: DomainEventBus,
+    private readonly productAttributeValuesService: ProductAttributeValuesService
   ) {}
 
   async list(search?: string): Promise<ProductResponseDto[]> {
@@ -41,6 +43,10 @@ export class ProductsService {
     const product = await this.products.findById(id);
     if (!product) throw new NotFoundException({ message: "Product not found" });
     return toProductResponse(product);
+  }
+
+  async getProductAttributeValues(productId: number) {
+    return await this.productAttributeValuesService.findByProductId(productId);
   }
 
   async create(dto: CreateProductDto): Promise<ProductResponseDto> {
@@ -73,6 +79,13 @@ export class ProductsService {
     });
 
     const created = await this.products.create(product);
+
+    // Save product attribute values if provided
+    if (dto.attributeValues) {
+      console.log("Saving product attribute values:", dto.attributeValues);
+      await this.saveProductAttributeValues(created.id, dto.attributeValues);
+    }
+
     this.events.publish(new ProductCreatedEvent(created));
     return toProductResponse(created);
   }
@@ -117,6 +130,17 @@ export class ProductsService {
     });
 
     const updated = await this.products.update(updatedProduct);
+
+    // Update product attribute values if provided
+    if (dto.attributeValues !== undefined) {
+      // Remove existing attribute values
+      await this.productAttributeValuesService.removeByProductId(id);
+      // Save new attribute values
+      if (dto.attributeValues && Object.keys(dto.attributeValues).length > 0) {
+        await this.saveProductAttributeValues(id, dto.attributeValues);
+      }
+    }
+
     this.events.publish(new ProductUpdatedEvent(updated));
     return toProductResponse(updated);
   }
@@ -167,5 +191,45 @@ export class ProductsService {
 
   private toPriceCents(price: number): number {
     return Math.round(price * 100);
+  }
+
+  private async saveProductAttributeValues(
+    productId: number,
+    attributeValues: Record<string, any>
+  ): Promise<void> {
+    console.log("saveProductAttributeValues called with:", {
+      productId,
+      attributeValues,
+    });
+    try {
+      for (const [attributeId, valueData] of Object.entries(attributeValues)) {
+        console.log("Processing attribute:", { attributeId, valueData });
+        if (valueData && Object.keys(valueData).length > 0) {
+          const createData = {
+            productId,
+            attributeId: parseInt(attributeId),
+            valueText: valueData.valueText || null,
+            valueNumber: valueData.valueNumber || null,
+            valueBoolean: valueData.valueBoolean || null,
+          };
+          console.log("Creating product attribute value:", createData);
+          try {
+            const result = await this.productAttributeValuesService.create(
+              createData
+            );
+            console.log(
+              "Successfully created product attribute value:",
+              result
+            );
+          } catch (error) {
+            console.error("Error creating product attribute value:", error);
+            throw error;
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error in saveProductAttributeValues:", error);
+      throw error;
+    }
   }
 }

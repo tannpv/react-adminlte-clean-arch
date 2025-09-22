@@ -1,5 +1,6 @@
 import { Transform } from "class-transformer";
 import {
+  Allow,
   ArrayUnique,
   IsArray,
   IsEnum,
@@ -81,4 +82,8 @@ export class UpdateProductDto {
   @IsOptional()
   @IsEnum(productTypes, { message: "Invalid product type provided" })
   type?: ProductType;
+
+  @Allow()
+  @Transform(({ value }) => value)
+  attributeValues?: Record<string, any>;
 }

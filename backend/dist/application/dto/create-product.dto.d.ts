@@ -9,4 +9,5 @@ export declare class CreateProductDto {
     metadata?: Record<string, unknown>;
     categories?: number[];
     type?: ProductType;
+    attributeValues?: Record<string, any>;
 }

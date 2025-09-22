@@ -25,6 +25,7 @@ export declare class MysqlDatabaseService implements OnModuleInit, OnModuleDestr
     private insertRole;
     private ensureSampleProduct;
     private ensureDefaultCategories;
+    private seedDefaultAttributes;
     private insertPermissions;
     execute<T extends RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader = RowDataPacket[]>(sql: string, params?: any): Promise<[T, FieldPacket[]]>;
 }

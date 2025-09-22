@@ -33,6 +33,7 @@ export function serializeProductPayload(values) {
       ? values.categoryIds.map((id) => Number(id)).filter((id) => Number.isFinite(id))
       : [],
     type: values.type || 'simple',
+    attributeValues: values.attributeValues || {},
   }
 
   return payload

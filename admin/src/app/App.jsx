@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { AttributeSetDetailsPage } from '../features/attributes/pages/AttributeSetDetailsPage'
 import { AttributeSetsPage } from '../features/attributes/pages/AttributeSetsPage'
 import { AttributesPage } from '../features/attributes/pages/AttributesPage'
+import { AttributeValuesPage } from '../features/attributes/pages/AttributeValuesPage'
 import { useAuth } from '../features/auth/context/AuthProvider'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
@@ -21,7 +22,7 @@ export default function App() {
   const { user: currentUser, setUser: setCurrentUser, logout } = useAuth()
   const { can, me } = usePermissions()
   const [authScreen, setAuthScreen] = useState('login') // 'login' | 'register'
-  const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'categories' | 'products' | 'storage' | 'attributes' | 'attribute-sets'
+  const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'categories' | 'products' | 'storage' | 'attributes' | 'attribute-values' | 'attribute-sets'
   const [selectedAttributeSetId, setSelectedAttributeSetId] = useState(null)
   const qc = useQueryClient()
 
@@ -106,6 +107,14 @@ export default function App() {
                   </a>
                 </li>
               )}
+              {can('attribute-values:read') && (
+                <li className="nav-item">
+                  <a href="#" className={`nav-link ${menu === 'attribute-values' ? 'active' : ''}`} onClick={() => setMenu('attribute-values')}>
+                    <i className="nav-icon fas fa-list-ul" />
+                    <p>Attribute Values</p>
+                  </a>
+                </li>
+              )}
               {can('attribute-sets:read') && (
                 <li className="nav-item">
                   <a href="#" className={`nav-link ${menu === 'attribute-sets' ? 'active' : ''}`} onClick={() => setMenu('attribute-sets')}>
@@ -133,6 +142,8 @@ export default function App() {
                 <StoragePage />
               ) : menu === 'attributes' ? (
                 <AttributesPage />
+              ) : menu === 'attribute-values' ? (
+                <AttributeValuesPage />
               ) : menu === 'attribute-sets' ? (
                 selectedAttributeSetId ? (
                   <AttributeSetDetailsPage
