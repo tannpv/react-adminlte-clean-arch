@@ -87,104 +87,143 @@ export function ProductForm({
   }
 
   return (
-    <form id={formId} onSubmit={handleSubmit}>
-      <div className="row">
-        <div className="col-md-6">
-          <div className="form-group">
-            <label htmlFor="sku">SKU *</label>
+    <form id={formId} onSubmit={handleSubmit} className="product-form">
+      {/* Basic Information Section */}
+      <div className="form-section mb-4">
+        <h6 className="section-title">
+          <i className="fas fa-info-circle mr-2"></i>
+          Basic Information
+        </h6>
+        <div className="form-row">
+          <div className="form-group col-md-6">
+            <label className="form-label">
+              <i className="fas fa-barcode mr-2"></i>
+              SKU *
+            </label>
             <input
               type="text"
               className={`form-control ${getError(errors, 'sku') ? 'is-invalid' : ''}`}
-              id="sku"
               value={sku}
               onChange={(e) => setSku(e.target.value)}
+              placeholder="Enter product SKU (e.g., PROD-001)"
               disabled={submitting}
               required
             />
             {getError(errors, 'sku') && (
-              <div className="invalid-feedback">{getError(errors, 'sku')}</div>
+              <div className="invalid-feedback">
+                <i className="fas fa-exclamation-triangle mr-1"></i>
+                {getError(errors, 'sku')}
+              </div>
             )}
+            <small className="form-text text-muted">
+              <i className="fas fa-lightbulb mr-1"></i>
+              Stock Keeping Unit - unique identifier for inventory tracking
+            </small>
           </div>
-        </div>
-        <div className="col-md-6">
-          <div className="form-group">
-            <label htmlFor="name">Name *</label>
+          <div className="form-group col-md-6">
+            <label className="form-label">
+              <i className="fas fa-tag mr-2"></i>
+              Product Name *
+            </label>
             <input
               type="text"
               className={`form-control ${getError(errors, 'name') ? 'is-invalid' : ''}`}
-              id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              placeholder="Enter product name"
               disabled={submitting}
               required
             />
             {getError(errors, 'name') && (
-              <div className="invalid-feedback">{getError(errors, 'name')}</div>
+              <div className="invalid-feedback">
+                <i className="fas fa-exclamation-triangle mr-1"></i>
+                {getError(errors, 'name')}
+              </div>
             )}
           </div>
         </div>
+
+        <div className="form-group">
+          <label className="form-label">
+            <i className="fas fa-align-left mr-2"></i>
+            Description
+          </label>
+          <textarea
+            className={`form-control ${getError(errors, 'description') ? 'is-invalid' : ''}`}
+            rows="3"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter product description..."
+            disabled={submitting}
+          />
+          {getError(errors, 'description') && (
+            <div className="invalid-feedback">
+              <i className="fas fa-exclamation-triangle mr-1"></i>
+              {getError(errors, 'description')}
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="description">Description</label>
-        <textarea
-          className={`form-control ${getError(errors, 'description') ? 'is-invalid' : ''}`}
-          id="description"
-          rows="3"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          disabled={submitting}
-        />
-        {getError(errors, 'description') && (
-          <div className="invalid-feedback">{getError(errors, 'description')}</div>
-        )}
-      </div>
-
-      <div className="row">
-        <div className="col-md-4">
-          <div className="form-group">
-            <label htmlFor="price">Price *</label>
+      {/* Pricing & Status Section */}
+      <div className="form-section mb-4">
+        <h6 className="section-title">
+          <i className="fas fa-dollar-sign mr-2"></i>
+          Pricing & Status
+        </h6>
+        <div className="form-row">
+          <div className="form-group col-md-4">
+            <label className="form-label">
+              <i className="fas fa-money-bill-wave mr-2"></i>
+              Price *
+            </label>
             <input
               type="number"
               step="0.01"
               min="0"
               className={`form-control ${getError(errors, 'price') ? 'is-invalid' : ''}`}
-              id="price"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
+              placeholder="0.00"
               disabled={submitting}
               required
             />
             {getError(errors, 'price') && (
-              <div className="invalid-feedback">{getError(errors, 'price')}</div>
+              <div className="invalid-feedback">
+                <i className="fas fa-exclamation-triangle mr-1"></i>
+                {getError(errors, 'price')}
+              </div>
             )}
           </div>
-        </div>
-        <div className="col-md-4">
-          <div className="form-group">
-            <label htmlFor="currency">Currency</label>
+          <div className="form-group col-md-4">
+            <label className="form-label">
+              <i className="fas fa-globe mr-2"></i>
+              Currency
+            </label>
             <select
               className={`form-control ${getError(errors, 'currency') ? 'is-invalid' : ''}`}
-              id="currency"
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
               disabled={submitting}
             >
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-              <option value="GBP">GBP</option>
+              <option value="USD">USD - US Dollar</option>
+              <option value="EUR">EUR - Euro</option>
+              <option value="GBP">GBP - British Pound</option>
             </select>
             {getError(errors, 'currency') && (
-              <div className="invalid-feedback">{getError(errors, 'currency')}</div>
+              <div className="invalid-feedback">
+                <i className="fas fa-exclamation-triangle mr-1"></i>
+                {getError(errors, 'currency')}
+              </div>
             )}
           </div>
-        </div>
-        <div className="col-md-4">
-          <div className="form-group">
-            <label htmlFor="status">Status</label>
+          <div className="form-group col-md-4">
+            <label className="form-label">
+              <i className="fas fa-toggle-on mr-2"></i>
+              Status
+            </label>
             <select
               className={`form-control ${getError(errors, 'status') ? 'is-invalid' : ''}`}
-              id="status"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               disabled={submitting}
@@ -196,67 +235,141 @@ export function ProductForm({
               ))}
             </select>
             {getError(errors, 'status') && (
-              <div className="invalid-feedback">{getError(errors, 'status')}</div>
+              <div className="invalid-feedback">
+                <i className="fas fa-exclamation-triangle mr-1"></i>
+                {getError(errors, 'status')}
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="type">Product Type</label>
-        <select
-          className={`form-control ${getError(errors, 'type') ? 'is-invalid' : ''}`}
-          id="type"
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          disabled={submitting}
-        >
-          {PRODUCT_TYPES.map((typeOption) => (
-            <option key={typeOption.value} value={typeOption.value}>
-              {typeOption.label}
-            </option>
-          ))}
-        </select>
-        {getError(errors, 'type') && (
-          <div className="invalid-feedback">{getError(errors, 'type')}</div>
-        )}
-      </div>
-
-      <div className="form-group">
-        <label>Categories</label>
-        {categoriesLoading ? (
-          <div className="text-muted">Loading categories...</div>
-        ) : (
-          <div className="d-flex flex-wrap">
-            {categoryOptions.map((category) => (
-              <div key={category.id} className="custom-control custom-checkbox mr-4 mb-2">
-                <input
-                  type="checkbox"
-                  className="custom-control-input"
-                  id={`category-${category.id}`}
-                  checked={categories.includes(String(category.id))}
-                  onChange={(e) => handleCategoryChange(category.id, e.target.checked)}
-                  disabled={submitting}
-                />
-                <label className="custom-control-label" htmlFor={`category-${category.id}`}>
-                  {category.name}
-                </label>
-              </div>
+      {/* Product Type Section */}
+      <div className="form-section mb-4">
+        <h6 className="section-title">
+          <i className="fas fa-cogs mr-2"></i>
+          Product Configuration
+        </h6>
+        <div className="form-group">
+          <label className="form-label">
+            <i className="fas fa-layer-group mr-2"></i>
+            Product Type
+          </label>
+          <select
+            className={`form-control ${getError(errors, 'type') ? 'is-invalid' : ''}`}
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            disabled={submitting}
+          >
+            {PRODUCT_TYPES.map((typeOption) => (
+              <option key={typeOption.value} value={typeOption.value}>
+                {typeOption.label}
+              </option>
             ))}
-          </div>
-        )}
-        {getError(errors, 'categoryIds') && (
-          <div className="invalid-feedback d-block">{getError(errors, 'categoryIds')}</div>
-        )}
+          </select>
+          {getError(errors, 'type') && (
+            <div className="invalid-feedback">
+              <i className="fas fa-exclamation-triangle mr-1"></i>
+              {getError(errors, 'type')}
+            </div>
+          )}
+          <small className="form-text text-muted">
+            <i className="fas fa-info-circle mr-1"></i>
+            Simple: Single product variant. Variable: Multiple variants (size, color, etc.)
+          </small>
+        </div>
       </div>
 
-      <div className="modal-footer">
-        <button type="button" className="btn btn-secondary" onClick={onCancel} disabled={submitting}>
-          Cancel
-        </button>
-        <button type="submit" className="btn btn-primary" disabled={submitting}>
-          {submitting ? 'Saving...' : 'Save'}
-        </button>
+      {/* Categories Section */}
+      <div className="form-section mb-4">
+        <h6 className="section-title">
+          <i className="fas fa-tags mr-2"></i>
+          Categories
+        </h6>
+        <div className="form-group">
+          <label className="form-label">
+            <i className="fas fa-folder mr-2"></i>
+            Assign Categories
+          </label>
+          {categoriesLoading ? (
+            <div className="categories-loading">
+              <i className="fas fa-spinner fa-spin mr-2"></i>
+              Loading categories...
+            </div>
+          ) : (
+            <div className="categories-selection">
+              {categoryOptions.length > 0 ? (
+                <div className="categories-grid">
+                  {categoryOptions.map((category) => (
+                    <div key={category.id} className="category-checkbox-item">
+                      <div className="custom-control custom-checkbox">
+                        <input
+                          type="checkbox"
+                          className="custom-control-input"
+                          id={`category-${category.id}`}
+                          checked={categories.includes(String(category.id))}
+                          onChange={(e) => handleCategoryChange(category.id, e.target.checked)}
+                          disabled={submitting}
+                        />
+                        <label className="custom-control-label" htmlFor={`category-${category.id}`}>
+                          <i className="fas fa-folder mr-2"></i>
+                          {category.name}
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="no-categories">
+                  <i className="fas fa-folder-open mr-2"></i>
+                  No categories available. Create categories first to organize your products.
+                </div>
+              )}
+            </div>
+          )}
+          {getError(errors, 'categoryIds') && (
+            <div className="invalid-feedback d-block">
+              <i className="fas fa-exclamation-triangle mr-1"></i>
+              {getError(errors, 'categoryIds')}
+            </div>
+          )}
+          <small className="form-text text-muted">
+            <i className="fas fa-lightbulb mr-1"></i>
+            Select categories to help customers find your products
+          </small>
+        </div>
+      </div>
+
+      {/* Form Actions */}
+      <div className="form-actions">
+        <div className="d-flex justify-content-end gap-3">
+          <button
+            type="button"
+            className="btn btn-outline-secondary"
+            onClick={onCancel}
+            disabled={submitting}
+          >
+            <i className="fas fa-times mr-2"></i>
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className={`btn ${initialProduct?.id ? 'btn-warning' : 'btn-success'}`}
+            disabled={submitting}
+          >
+            {submitting ? (
+              <>
+                <i className="fas fa-spinner fa-spin mr-2"></i>
+                {initialProduct?.id ? 'Updating...' : 'Creating...'}
+              </>
+            ) : (
+              <>
+                <i className={`fas ${initialProduct?.id ? 'fa-save' : 'fa-plus'} mr-2`}></i>
+                {initialProduct?.id ? 'Update Product' : 'Create Product'}
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </form>
   )

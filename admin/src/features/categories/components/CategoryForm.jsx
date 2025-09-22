@@ -21,39 +21,107 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
 
   const nameError = typeof errors.name === 'string' ? errors.name : errors.name?.message
   const parentError = typeof errors.parentId === 'string' ? errors.parentId : errors.parentId?.message
+
   return (
-    <form id={formId} onSubmit={handleSubmit} noValidate className="mb-3">
-      <div className="form-group">
-        <label>Name</label>
-        <input
-          className={`form-control ${nameError ? 'is-invalid' : ''}`}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          disabled={submitting}
-        />
-        {nameError && <div className="invalid-feedback">{nameError}</div>}
+    <form id={formId} onSubmit={handleSubmit} noValidate className="category-form">
+      {/* Basic Information Section */}
+      <div className="form-section mb-4">
+        <h6 className="section-title">
+          <i className="fas fa-tag mr-2"></i>
+          Category Information
+        </h6>
+        <div className="form-group">
+          <label className="form-label">
+            <i className="fas fa-signature mr-2"></i>
+            Category Name
+          </label>
+          <input
+            className={`form-control ${nameError ? 'is-invalid' : ''}`}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter category name (e.g., Electronics, Clothing)"
+            required
+            disabled={submitting}
+          />
+          {nameError && (
+            <div className="invalid-feedback">
+              <i className="fas fa-exclamation-triangle mr-1"></i>
+              {nameError}
+            </div>
+          )}
+          <small className="form-text text-muted">
+            <i className="fas fa-lightbulb mr-1"></i>
+            Choose a clear, descriptive name that helps customers find products.
+          </small>
+        </div>
       </div>
-      <div className="form-group">
-        <label>Parent Category</label>
-        <CategoryTreeSelector
-          categories={categories}
-          tree={tree}
-          hierarchy={hierarchy}
-          value={parentId}
-          onChange={setParentId}
-          disabled={submitting}
-          error={parentError}
-          editingCategoryId={initialCategory?.id}
-        />
+
+      {/* Hierarchy Section */}
+      <div className="form-section mb-4">
+        <h6 className="section-title">
+          <i className="fas fa-sitemap mr-2"></i>
+          Category Hierarchy
+        </h6>
+        <div className="form-group">
+          <label className="form-label">
+            <i className="fas fa-folder mr-2"></i>
+            Parent Category
+          </label>
+          <div className="tree-selector-container">
+            <CategoryTreeSelector
+              categories={categories}
+              tree={tree}
+              hierarchy={hierarchy}
+              value={parentId}
+              onChange={setParentId}
+              disabled={submitting}
+              error={parentError}
+              editingCategoryId={initialCategory?.id}
+            />
+          </div>
+          {parentError && (
+            <div className="invalid-feedback d-block">
+              <i className="fas fa-exclamation-triangle mr-1"></i>
+              {parentError}
+            </div>
+          )}
+          <small className="form-text text-muted">
+            <i className="fas fa-info-circle mr-1"></i>
+            Leave empty to create a root category, or select a parent to create a subcategory.
+          </small>
+        </div>
       </div>
-      <div className="d-flex justify-content-end">
-        <button type="button" className="btn btn-secondary mr-2" onClick={onCancel} disabled={submitting}>
-          Cancel
-        </button>
-        <button type="submit" className="btn btn-primary" disabled={submitting}>
-          {submitting ? 'Saving…' : (initialCategory?.id ? 'Update' : 'Add')}
-        </button>
+
+      {/* Form Actions */}
+      <div className="form-actions">
+        <div className="d-flex justify-content-end gap-3">
+          <button
+            type="button"
+            className="btn btn-outline-secondary"
+            onClick={onCancel}
+            disabled={submitting}
+          >
+            <i className="fas fa-times mr-2"></i>
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className={`btn ${initialCategory?.id ? 'btn-warning' : 'btn-success'}`}
+            disabled={submitting}
+          >
+            {submitting ? (
+              <>
+                <i className="fas fa-spinner fa-spin mr-2"></i>
+                {initialCategory?.id ? 'Updating...' : 'Creating...'}
+              </>
+            ) : (
+              <>
+                <i className={`fas ${initialCategory?.id ? 'fa-save' : 'fa-plus'} mr-2`}></i>
+                {initialCategory?.id ? 'Update Category' : 'Create Category'}
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </form>
   )
