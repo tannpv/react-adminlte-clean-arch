@@ -32,6 +32,7 @@ import { MysqlUserRepository } from "./mysql/mysql-user.repository";
     { provide: FILE_GRANT_REPOSITORY, useClass: MysqlFileGrantRepository },
   ],
   exports: [
+    MysqlDatabaseService,
     USER_REPOSITORY,
     ROLE_REPOSITORY,
     PRODUCT_REPOSITORY,

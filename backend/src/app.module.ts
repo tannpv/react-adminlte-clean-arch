@@ -1,14 +1,25 @@
-import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
-import { AuthModule } from './modules/auth/auth.module'
-import { UsersModule } from './modules/users/users.module'
-import { RolesModule } from './modules/roles/roles.module'
-import { ProductsModule } from './modules/products/products.module'
-import { CategoriesModule } from './modules/categories/categories.module'
-import { StorageModule } from './modules/storage/storage.module'
-import { HealthModule } from './modules/health/health.module'
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { AttributesModule } from "./modules/attributes/attributes.module";
+import { AuthModule } from "./modules/auth/auth.module";
+import { CategoriesModule } from "./modules/categories/categories.module";
+import { HealthModule } from "./modules/health/health.module";
+import { ProductsModule } from "./modules/products/products.module";
+import { RolesModule } from "./modules/roles/roles.module";
+import { StorageModule } from "./modules/storage/storage.module";
+import { UsersModule } from "./modules/users/users.module";
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env', '../.env'] }), HealthModule, AuthModule, UsersModule, RolesModule, CategoriesModule, ProductsModule, StorageModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: [".env", "../.env"] }),
+    HealthModule,
+    AuthModule,
+    UsersModule,
+    RolesModule,
+    CategoriesModule,
+    ProductsModule,
+    StorageModule,
+    AttributesModule,
+  ],
 })
 export class AppModule {}

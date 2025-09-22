@@ -1,5 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query'
 import React, { useEffect, useState } from 'react'
+import { AttributeSetDetailsPage } from '../features/attributes/pages/AttributeSetDetailsPage'
+import { AttributeSetsPage } from '../features/attributes/pages/AttributeSetsPage'
+import { AttributesPage } from '../features/attributes/pages/AttributesPage'
 import { useAuth } from '../features/auth/context/AuthProvider'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
@@ -18,7 +21,8 @@ export default function App() {
   const { user: currentUser, setUser: setCurrentUser, logout } = useAuth()
   const { can, me } = usePermissions()
   const [authScreen, setAuthScreen] = useState('login') // 'login' | 'register'
-  const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'categories' | 'products' | 'storage'
+  const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'categories' | 'products' | 'storage' | 'attributes' | 'attribute-sets'
+  const [selectedAttributeSetId, setSelectedAttributeSetId] = useState(null)
   const qc = useQueryClient()
 
   useEffect(() => {
@@ -94,6 +98,22 @@ export default function App() {
                   <p>Products</p>
                 </a>
               </li>
+              {can('attributes:read') && (
+                <li className="nav-item">
+                  <a href="#" className={`nav-link ${menu === 'attributes' ? 'active' : ''}`} onClick={() => setMenu('attributes')}>
+                    <i className="nav-icon fas fa-list" />
+                    <p>Attributes</p>
+                  </a>
+                </li>
+              )}
+              {can('attribute-sets:read') && (
+                <li className="nav-item">
+                  <a href="#" className={`nav-link ${menu === 'attribute-sets' ? 'active' : ''}`} onClick={() => setMenu('attribute-sets')}>
+                    <i className="nav-icon fas fa-layer-group" />
+                    <p>Attribute Sets</p>
+                  </a>
+                </li>
+              )}
             </ul>
           </nav>
         </div>
@@ -111,6 +131,22 @@ export default function App() {
                 <CategoriesPage />
               ) : menu === 'storage' ? (
                 <StoragePage />
+              ) : menu === 'attributes' ? (
+                <AttributesPage />
+              ) : menu === 'attribute-sets' ? (
+                selectedAttributeSetId ? (
+                  <AttributeSetDetailsPage
+                    id={selectedAttributeSetId}
+                    onBack={() => setSelectedAttributeSetId(null)}
+                  />
+                ) : (
+                  <AttributeSetsPage
+                    onViewDetails={(id) => {
+                      setSelectedAttributeSetId(id)
+                      setMenu('attribute-sets')
+                    }}
+                  />
+                )
               ) : (
                 <ProductsPage />
               )
