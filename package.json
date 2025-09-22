@@ -2,17 +2,30 @@
   "name": "react-adminlte-clean-arch",
   "private": true,
   "scripts": {
-    "dev:client": "npm --prefix admin run dev:client",
+    "dev:client": "npm --prefix admin run dev",
     "dev:server": "npm --prefix backend run start:dev",
-    "dev:all": "npm --prefix admin run dev:all",
+    "dev:all": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "build:client": "npm --prefix admin run build",
     "build:server": "npm --prefix backend run build",
     "preview": "npm --prefix admin run preview",
     "server": "npm --prefix backend run start",
-    "install:all": "npm --prefix admin install && npm --prefix backend install"
+    "install:all": "npm --prefix admin install && npm --prefix backend install",
+    "start": "npm run dev:all",
+    "start:simple": "npm run start:backend & npm run start:frontend",
+    "start:backend": "npm run dev:server",
+    "start:frontend": "npm run dev:client",
+    "stop-all": "bash ./scripts/stop-all.sh",
+    "stop:backend": "pkill -f 'ts-node-dev' && pkill -f 'node.*backend'",
+    "stop:frontend": "pkill -f 'vite' && pkill -f 'node.*admin'",
+    "restart": "npm run stop-all && sleep 2 && npm run start",
+    "restart:backend": "npm run stop:backend && sleep 2 && npm run start:backend",
+    "restart:frontend": "npm run stop:frontend && sleep 2 && npm run start:frontend"
   },
   "workspaces": [
     "admin",
     "backend"
-  ]
+  ],
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
 }

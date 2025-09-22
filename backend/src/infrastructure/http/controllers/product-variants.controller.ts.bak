@@ -1,0 +1,52 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { ProductVariantsService } from '../../application/services/product-variants.service';
+import { CreateProductVariantDto } from '../../application/dto/create-product-variant.dto';
+import { UpdateProductVariantDto } from '../../application/dto/update-product-variant.dto';
+
+@Controller('product-variants')
+export class ProductVariantsController {
+  constructor(private readonly productVariantsService: ProductVariantsService) {}
+
+  @Post()
+  create(@Body() createProductVariantDto: CreateProductVariantDto) {
+    return this.productVariantsService.create(createProductVariantDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.productVariantsService.findAll();
+  }
+
+  @Get('product/:productId')
+  findByProductId(@Param('productId', ParseIntPipe) productId: number) {
+    return this.productVariantsService.findByProductId(productId);
+  }
+
+  @Get('sku/:sku')
+  findBySku(@Param('sku') sku: string) {
+    return this.productVariantsService.findBySku(sku);
+  }
+
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.productVariantsService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProductVariantDto: UpdateProductVariantDto
+  ) {
+    return this.productVariantsService.update(id, updateProductVariantDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.productVariantsService.remove(id);
+  }
+
+  @Delete('product/:productId')
+  removeByProductId(@Param('productId', ParseIntPipe) productId: number) {
+    return this.productVariantsService.removeByProductId(productId);
+  }
+}

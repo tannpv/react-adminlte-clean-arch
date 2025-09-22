@@ -13,12 +13,18 @@ const access_control_module_1 = require("../../infrastructure/http/access-contro
 const products_controller_1 = require("../../infrastructure/http/controllers/products.controller");
 const persistence_module_1 = require("../../infrastructure/persistence/persistence.module");
 const shared_module_1 = require("../../shared/shared.module");
+const attributes_module_1 = require("../attributes/attributes.module");
 let ProductsModule = class ProductsModule {
 };
 exports.ProductsModule = ProductsModule;
 exports.ProductsModule = ProductsModule = __decorate([
     (0, common_1.Module)({
-        imports: [persistence_module_1.PersistenceModule, shared_module_1.SharedModule, access_control_module_1.AccessControlModule],
+        imports: [
+            persistence_module_1.PersistenceModule,
+            shared_module_1.SharedModule,
+            access_control_module_1.AccessControlModule,
+            attributes_module_1.AttributesModule,
+        ],
         controllers: [products_controller_1.ProductsController],
         providers: [products_service_1.ProductsService],
         exports: [products_service_1.ProductsService],

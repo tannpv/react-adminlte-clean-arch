@@ -1,6 +1,6 @@
-import { Category } from '../../../domain/entities/category.entity';
-import { CategoryRepository } from '../../../domain/repositories/category.repository';
-import { MysqlDatabaseService } from './mysql-database.service';
+import { Category } from "../../../domain/entities/category.entity";
+import { CategoryRepository } from "../../../domain/repositories/category.repository";
+import { MysqlDatabaseService } from "./mysql-database.service";
 export declare class MysqlCategoryRepository implements CategoryRepository {
     private readonly db;
     constructor(db: MysqlDatabaseService);

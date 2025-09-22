@@ -1,0 +1,92 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+} from "@nestjs/common";
+import { CreateProductAttributeValueDto } from "../../application/dto/create-product-attribute-value.dto";
+import { UpdateProductAttributeValueDto } from "../../application/dto/update-product-attribute-value.dto";
+import { ProductAttributeValuesService } from "../../application/services/product-attribute-values.service";
+
+@Controller("product-attribute-values")
+export class ProductAttributeValuesController {
+  constructor(
+    private readonly productAttributeValuesService: ProductAttributeValuesService
+  ) {}
+
+  @Post()
+  create(
+    @Body() createProductAttributeValueDto: CreateProductAttributeValueDto
+  ) {
+    return this.productAttributeValuesService.create(
+      createProductAttributeValueDto
+    );
+  }
+
+  @Get()
+  findAll() {
+    return this.productAttributeValuesService.findAll();
+  }
+
+  @Get("product/:productId")
+  findByProductId(@Param("productId", ParseIntPipe) productId: number) {
+    return this.productAttributeValuesService.findByProductId(productId);
+  }
+
+  @Get("attribute/:attributeId")
+  findByAttributeId(@Param("attributeId", ParseIntPipe) attributeId: number) {
+    return this.productAttributeValuesService.findByAttributeId(attributeId);
+  }
+
+  @Get("product/:productId/attribute/:attributeId")
+  findByProductAndAttribute(
+    @Param("productId", ParseIntPipe) productId: number,
+    @Param("attributeId", ParseIntPipe) attributeId: number
+  ) {
+    return this.productAttributeValuesService.findByProductAndAttribute(
+      productId,
+      attributeId
+    );
+  }
+
+  @Get(":id")
+  findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.productAttributeValuesService.findOne(id);
+  }
+
+  @Patch(":id")
+  update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() updateProductAttributeValueDto: UpdateProductAttributeValueDto
+  ) {
+    return this.productAttributeValuesService.update(
+      id,
+      updateProductAttributeValueDto
+    );
+  }
+
+  @Delete(":id")
+  remove(@Param("id", ParseIntPipe) id: number) {
+    return this.productAttributeValuesService.remove(id);
+  }
+
+  @Delete("product/:productId")
+  removeByProductId(@Param("productId", ParseIntPipe) productId: number) {
+    return this.productAttributeValuesService.removeByProductId(productId);
+  }
+
+  @Delete("product/:productId/attribute/:attributeId")
+  removeByProductAndAttribute(
+    @Param("productId", ParseIntPipe) productId: number,
+    @Param("attributeId", ParseIntPipe) attributeId: number
+  ) {
+    return this.productAttributeValuesService.removeByProductAndAttribute(
+      productId,
+      attributeId
+    );
+  }
+}

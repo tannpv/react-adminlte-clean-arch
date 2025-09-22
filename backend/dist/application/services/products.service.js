@@ -23,14 +23,16 @@ const product_repository_1 = require("../../domain/repositories/product.reposito
 const domain_event_bus_1 = require("../../shared/events/domain-event.bus");
 const validation_error_1 = require("../../shared/validation-error");
 const product_mapper_1 = require("../mappers/product.mapper");
+const product_attribute_values_service_1 = require("./product-attribute-values.service");
 let ProductsService = class ProductsService {
-    constructor(products, categories, events) {
+    constructor(products, categories, events, productAttributeValuesService) {
         this.products = products;
         this.categories = categories;
         this.events = events;
+        this.productAttributeValuesService = productAttributeValuesService;
     }
-    async list() {
-        const all = await this.products.findAll();
+    async list(search) {
+        const all = await this.products.findAll(search);
         return all.map((product) => (0, product_mapper_1.toProductResponse)(product));
     }
     async findById(id) {
@@ -38,6 +40,9 @@ let ProductsService = class ProductsService {
         if (!product)
             throw new common_1.NotFoundException({ message: "Product not found" });
         return (0, product_mapper_1.toProductResponse)(product);
+    }
+    async getProductAttributeValues(productId) {
+        return await this.productAttributeValuesService.findByProductId(productId);
     }
     async create(dto) {
         const sku = dto.sku.trim();
@@ -64,6 +69,10 @@ let ProductsService = class ProductsService {
             updatedAt: now,
         });
         const created = await this.products.create(product);
+        if (dto.attributeValues) {
+            console.log("Saving product attribute values:", dto.attributeValues);
+            await this.saveProductAttributeValues(created.id, dto.attributeValues);
+        }
         this.events.publish(new product_created_event_1.ProductCreatedEvent(created));
         return (0, product_mapper_1.toProductResponse)(created);
     }
@@ -100,6 +109,12 @@ let ProductsService = class ProductsService {
             updatedAt: now,
         });
         const updated = await this.products.update(updatedProduct);
+        if (dto.attributeValues !== undefined) {
+            await this.productAttributeValuesService.removeByProductId(id);
+            if (dto.attributeValues && Object.keys(dto.attributeValues).length > 0) {
+                await this.saveProductAttributeValues(id, dto.attributeValues);
+            }
+        }
         this.events.publish(new product_updated_event_1.ProductUpdatedEvent(updated));
         return (0, product_mapper_1.toProductResponse)(updated);
     }
@@ -144,12 +159,46 @@ let ProductsService = class ProductsService {
     toPriceCents(price) {
         return Math.round(price * 100);
     }
+    async saveProductAttributeValues(productId, attributeValues) {
+        console.log("saveProductAttributeValues called with:", {
+            productId,
+            attributeValues,
+        });
+        try {
+            for (const [attributeId, valueData] of Object.entries(attributeValues)) {
+                console.log("Processing attribute:", { attributeId, valueData });
+                if (valueData && Object.keys(valueData).length > 0) {
+                    const createData = {
+                        productId,
+                        attributeId: parseInt(attributeId),
+                        valueText: valueData.valueText || null,
+                        valueNumber: valueData.valueNumber || null,
+                        valueBoolean: valueData.valueBoolean || null,
+                    };
+                    console.log("Creating product attribute value:", createData);
+                    try {
+                        const result = await this.productAttributeValuesService.create(createData);
+                        console.log("Successfully created product attribute value:", result);
+                    }
+                    catch (error) {
+                        console.error("Error creating product attribute value:", error);
+                        throw error;
+                    }
+                }
+            }
+        }
+        catch (error) {
+            console.error("Error in saveProductAttributeValues:", error);
+            throw error;
+        }
+    }
 };
 exports.ProductsService = ProductsService;
 exports.ProductsService = ProductsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(product_repository_1.PRODUCT_REPOSITORY)),
     __param(1, (0, common_1.Inject)(category_repository_1.CATEGORY_REPOSITORY)),
-    __metadata("design:paramtypes", [Object, Object, domain_event_bus_1.DomainEventBus])
+    __metadata("design:paramtypes", [Object, Object, domain_event_bus_1.DomainEventBus,
+        product_attribute_values_service_1.ProductAttributeValuesService])
 ], ProductsService);
 //# sourceMappingURL=products.service.js.map

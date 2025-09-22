@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { ProductAttributeForm } from './ProductAttributeForm'
 
 const STATUSES = [
   { value: 'draft', label: 'Draft' },
@@ -21,7 +22,6 @@ export function ProductForm({
   initialProduct,
   categoriesLoading = false,
   onSubmit,
-  onCancel,
   errors = {},
   submitting = false,
   formId = 'product-form',
@@ -35,6 +35,7 @@ export function ProductForm({
   const [status, setStatus] = useState('draft')
   const [categories, setCategories] = useState([])
   const [type, setType] = useState('simple')
+  const [attributeValues, setAttributeValues] = useState({})
 
   useEffect(() => {
     if (!initialProduct || !initialProduct.id) {
@@ -72,6 +73,7 @@ export function ProductForm({
       status,
       categoryIds: categories.map(Number),
       type,
+      attributeValues,
     }
 
     onSubmit(payload)
@@ -340,37 +342,21 @@ export function ProductForm({
         </div>
       </div>
 
-      {/* Form Actions */}
-      <div className="form-actions">
-        <div className="d-flex justify-content-end gap-3">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            onClick={onCancel}
-            disabled={submitting}
-          >
-            <i className="fas fa-times mr-2"></i>
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className={`btn ${initialProduct?.id ? 'btn-warning' : 'btn-success'}`}
-            disabled={submitting}
-          >
-            {submitting ? (
-              <>
-                <i className="fas fa-spinner fa-spin mr-2"></i>
-                {initialProduct?.id ? 'Updating...' : 'Creating...'}
-              </>
-            ) : (
-              <>
-                <i className={`fas ${initialProduct?.id ? 'fa-save' : 'fa-plus'} mr-2`}></i>
-                {initialProduct?.id ? 'Update Product' : 'Create Product'}
-              </>
-            )}
-          </button>
-        </div>
+      {/* Product Attributes Section */}
+      <div className="form-section mb-4">
+        <h6 className="section-title">
+          <i className="fas fa-tags mr-2"></i>
+          Product Attributes
+        </h6>
+        <ProductAttributeForm
+          productId={initialProduct?.id}
+          onAttributeChange={setAttributeValues}
+          initialValues={attributeValues}
+          errors={errors}
+          disabled={submitting}
+        />
       </div>
+
     </form>
   )
 }

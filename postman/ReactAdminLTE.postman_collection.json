@@ -2,7 +2,7 @@
   "info": {
     "name": "React AdminLTE API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Local API for Users, Roles, Categories, Products, Storage and Auth (JWT)."
+    "description": "Local API for Users, Roles, Categories, Products, Storage, Attributes, Attribute Sets, Attribute Values, and Auth (JWT)."
   },
   "item": [
     {
@@ -473,6 +473,365 @@
       ]
     },
     {
+      "name": "Attributes",
+      "item": [
+        {
+          "name": "List Attributes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attributes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attributes"]
+            }
+          }
+        },
+        {
+          "name": "Get Attribute By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attributes/{{lastAttributeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attributes", "{{lastAttributeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Attribute",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"screen_size\",\n  \"name\": \"Screen Size\",\n  \"inputType\": \"select\",\n  \"dataType\": \"string\",\n  \"unit\": \"inches\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attributes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attributes"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastAttributeId', json.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Attribute",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"screen_size\",\n  \"name\": \"Screen Size\",\n  \"inputType\": \"multiselect\",\n  \"dataType\": \"string\",\n  \"unit\": \"inches\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attributes/{{lastAttributeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attributes", "{{lastAttributeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Attribute",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attributes/{{lastAttributeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attributes", "{{lastAttributeId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attribute Values",
+      "item": [
+        {
+          "name": "List Attribute Values",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-values",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-values"]
+            }
+          }
+        },
+        {
+          "name": "Get Attribute Values By Attribute",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-values/by-attribute/{{lastAttributeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "attribute-values",
+                "by-attribute",
+                "{{lastAttributeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attribute Value By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-values/{{lastAttributeValueId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-values", "{{lastAttributeValueId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Attribute Value",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"attributeId\": {{lastAttributeId}},\n  \"label\": \"6.1 inches\",\n  \"valueCode\": \"6_1_inch\",\n  \"sortOrder\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-values",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-values"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastAttributeValueId', json.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Attribute Value",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"attributeId\": {{lastAttributeId}},\n  \"label\": \"6.1 inches (Updated)\",\n  \"valueCode\": \"6_1_inch_updated\",\n  \"sortOrder\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-values/{{lastAttributeValueId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-values", "{{lastAttributeValueId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Attribute Value",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-values/{{lastAttributeValueId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-values", "{{lastAttributeValueId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attribute Sets",
+      "item": [
+        {
+          "name": "List Attribute Sets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-sets"]
+            }
+          }
+        },
+        {
+          "name": "Get Attribute Set By Name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets/by-name/Clothing Set",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-sets", "by-name", "Clothing Set"]
+            }
+          }
+        },
+        {
+          "name": "Get Attribute Set By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets/{{lastAttributeSetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-sets", "{{lastAttributeSetId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Attribute Set",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Electronics Set\",\n  \"description\": \"Attributes for electronic products\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-sets"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastAttributeSetId', json.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Attribute Set",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Electronics Set (Updated)\",\n  \"description\": \"Updated attributes for electronic products\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets/{{lastAttributeSetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-sets", "{{lastAttributeSetId}}"]
+            }
+          }
+        },
+        {
+          "name": "Assign Attribute to Set",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets/{{lastAttributeSetId}}/attributes/{{lastAttributeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "attribute-sets",
+                "{{lastAttributeSetId}}",
+                "attributes",
+                "{{lastAttributeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remove Attribute from Set",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets/{{lastAttributeSetId}}/attributes/{{lastAttributeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "attribute-sets",
+                "{{lastAttributeSetId}}",
+                "attributes",
+                "{{lastAttributeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Attribute Set",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets/{{lastAttributeSetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-sets", "{{lastAttributeSetId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "Products",
       "item": [
         {
@@ -519,7 +878,7 @@
           }
         },
         {
-          "name": "Create Product",
+          "name": "Create Product (Simple)",
           "request": {
             "method": "POST",
             "header": [
@@ -530,7 +889,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"iPhone 15 Pro\",\n  \"description\": \"Latest iPhone with advanced features\",\n  \"price\": 999.99,\n  \"categoryId\": {{lastCategoryId}},\n  \"sku\": \"IPH15PRO-256\",\n  \"stock\": 50\n}"
+              "raw": "{\n  \"sku\": \"IPH15PRO-256\",\n  \"name\": \"iPhone 15 Pro\",\n  \"description\": \"Latest iPhone with advanced features\",\n  \"price\": 999.99,\n  \"currency\": \"USD\",\n  \"status\": \"published\",\n  \"categories\": [{{lastCategoryId}}],\n  \"type\": \"simple\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/products",
@@ -552,7 +911,40 @@
           ]
         },
         {
-          "name": "Update Product",
+          "name": "Create Product (With Attributes)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"TSHIRT-001\",\n  \"name\": \"Premium T-Shirt\",\n  \"description\": \"High quality cotton t-shirt with multiple color and size options\",\n  \"price\": 29.99,\n  \"currency\": \"USD\",\n  \"status\": \"published\",\n  \"categories\": [{{lastCategoryId}}],\n  \"type\": \"variable\",\n  \"attributeValues\": {\n    \"1\": {\n      \"valueText\": \"Blue,Red,Black\"\n    },\n    \"2\": {\n      \"valueText\": \"S,M,L,XL\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastProductId', json.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Product (With Attributes)",
           "request": {
             "method": "PUT",
             "header": [
@@ -563,7 +955,28 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"iPhone 15 Pro Max\",\n  \"description\": \"Latest iPhone with advanced features and larger screen\",\n  \"price\": 1099.99,\n  \"stock\": 30\n}"
+              "raw": "{\n  \"sku\": \"TSHIRT-001\",\n  \"name\": \"Premium T-Shirt (Updated)\",\n  \"description\": \"High quality cotton t-shirt with multiple color and size options - Updated\",\n  \"price\": 34.99,\n  \"currency\": \"USD\",\n  \"status\": \"published\",\n  \"categories\": [{{lastCategoryId}}],\n  \"type\": \"variable\",\n  \"attributeValues\": {\n    \"1\": {\n      \"valueText\": \"Blue,Green,Black,White\"\n    },\n    \"2\": {\n      \"valueText\": \"S,M,L,XL,XXL\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{lastProductId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{lastProductId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Product (Simple)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"IPH15PRO-256\",\n  \"name\": \"iPhone 15 Pro Max\",\n  \"description\": \"Latest iPhone with advanced features and larger screen\",\n  \"price\": 1099.99,\n  \"currency\": \"USD\",\n  \"status\": \"published\",\n  \"categories\": [{{lastCategoryId}}],\n  \"type\": \"simple\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/products/{{lastProductId}}",
@@ -889,6 +1302,18 @@
     },
     {
       "key": "lastFileId",
+      "value": ""
+    },
+    {
+      "key": "lastAttributeId",
+      "value": ""
+    },
+    {
+      "key": "lastAttributeValueId",
+      "value": ""
+    },
+    {
+      "key": "lastAttributeSetId",
       "value": ""
     }
   ]
