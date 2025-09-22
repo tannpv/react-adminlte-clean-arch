@@ -60,7 +60,6 @@ export function ProductModal({
                   initialProduct={initialProduct}
                   errors={errors}
                   submitting={submitting}
-                  onCancel={onClose}
                   onSubmit={onSubmit}
                   categoryOptions={categoryOptions}
                   categoriesLoading={categoriesLoading}

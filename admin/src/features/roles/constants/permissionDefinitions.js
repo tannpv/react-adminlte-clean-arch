@@ -60,6 +60,16 @@ export const PERMISSION_GROUPS = [
     ],
   },
   {
+    entity: 'attribute-values',
+    label: 'Attribute Values',
+    actions: [
+      { key: 'attribute-values:read', label: 'View' },
+      { key: 'attribute-values:create', label: 'Add' },
+      { key: 'attribute-values:update', label: 'Edit' },
+      { key: 'attribute-values:delete', label: 'Delete' },
+    ],
+  },
+  {
     entity: 'attribute-sets',
     label: 'Attribute Sets',
     actions: [

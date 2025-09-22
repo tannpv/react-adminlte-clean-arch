@@ -137,7 +137,7 @@ export class FileManagerService {
   private async buildBreadcrumb(directoryId: number | null): Promise<any[]> {
     if (!directoryId) return [];
     const breadcrumb = [];
-    let currentId = directoryId;
+    let currentId: number | null = directoryId;
 
     while (currentId) {
       const dir = await this.directories.findById(currentId);

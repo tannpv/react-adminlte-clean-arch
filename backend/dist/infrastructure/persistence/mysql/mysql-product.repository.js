@@ -18,8 +18,17 @@ let MysqlProductRepository = class MysqlProductRepository {
     constructor(db) {
         this.db = db;
     }
-    async findAll() {
-        const [rows] = await this.db.execute("SELECT * FROM products ORDER BY updated_at DESC");
+    async findAll(search) {
+        let query = "SELECT * FROM products";
+        const params = [];
+        if (search?.trim()) {
+            query +=
+                " WHERE LOWER(name) LIKE LOWER(?) OR LOWER(sku) LIKE LOWER(?) OR LOWER(description) LIKE LOWER(?)";
+            const searchTerm = `%${search.trim()}%`;
+            params.push(searchTerm, searchTerm, searchTerm);
+        }
+        query += " ORDER BY updated_at DESC";
+        const [rows] = await this.db.execute(query, params);
         return Promise.all(rows.map((row) => this.hydrate(row)));
     }
     async findById(id) {

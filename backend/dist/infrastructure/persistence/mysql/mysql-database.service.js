@@ -112,6 +112,118 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         INDEX idx_categories_parent (parent_id)
       ) ENGINE=InnoDB;
     `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS attributes (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        code VARCHAR(191) NOT NULL,
+        name VARCHAR(191) NOT NULL,
+        input_type ENUM('select','multiselect','text','number','boolean') NOT NULL DEFAULT 'select',
+        data_type ENUM('string','number','boolean') NOT NULL DEFAULT 'string',
+        unit VARCHAR(32) NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY ux_attributes_code (code)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS attribute_values (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        attribute_id BIGINT UNSIGNED NOT NULL,
+        value_code VARCHAR(191) NOT NULL,
+        label VARCHAR(191) NOT NULL,
+        sort_order INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (id),
+        CONSTRAINT fk_av_attr FOREIGN KEY (attribute_id) REFERENCES attributes(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
+        UNIQUE KEY ux_attribute_value (attribute_id, value_code),
+        KEY ix_av_attr (attribute_id),
+        KEY ix_av_sort (attribute_id, sort_order)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS attribute_sets (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        name VARCHAR(255) NOT NULL,
+        description TEXT NULL,
+        is_system BOOLEAN DEFAULT FALSE,
+        sort_order INT DEFAULT 0,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY ux_attribute_sets_name (name)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS attribute_set_assignments (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        attribute_set_id BIGINT UNSIGNED NOT NULL,
+        attribute_id BIGINT UNSIGNED NOT NULL,
+        sort_order INT DEFAULT 0,
+        is_required BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        CONSTRAINT fk_asa_set FOREIGN KEY (attribute_set_id) REFERENCES attribute_sets(id) ON DELETE CASCADE,
+        CONSTRAINT fk_asa_attr FOREIGN KEY (attribute_id) REFERENCES attributes(id) ON DELETE CASCADE,
+        UNIQUE KEY ux_set_attribute (attribute_set_id, attribute_id),
+        KEY ix_asa_set (attribute_set_id),
+        KEY ix_asa_sort (attribute_set_id, sort_order)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_attribute_values (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        product_id INT NOT NULL,
+        attribute_id BIGINT UNSIGNED NOT NULL,
+        value_text TEXT NULL,
+        value_number DECIMAL(15,4) NULL,
+        value_boolean BOOLEAN NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        CONSTRAINT fk_pav_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+        CONSTRAINT fk_pav_attribute FOREIGN KEY (attribute_id) REFERENCES attributes(id) ON DELETE CASCADE,
+        UNIQUE KEY ux_product_attribute (product_id, attribute_id),
+        KEY ix_pav_product (product_id),
+        KEY ix_pav_attribute (attribute_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_variants (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        product_id INT NOT NULL,
+        sku VARCHAR(191) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        price_cents INT NOT NULL DEFAULT 0,
+        currency VARCHAR(3) NOT NULL DEFAULT 'USD',
+        status VARCHAR(50) NOT NULL DEFAULT 'active',
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        CONSTRAINT fk_pv_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+        UNIQUE KEY ux_variant_sku (sku),
+        KEY ix_pv_product (product_id),
+        KEY ix_pv_status (status)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS product_variant_attribute_values (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        variant_id BIGINT UNSIGNED NOT NULL,
+        attribute_id BIGINT UNSIGNED NOT NULL,
+        value_text TEXT NULL,
+        value_number DECIMAL(15,4) NULL,
+        value_boolean BOOLEAN NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        CONSTRAINT fk_pvav_variant FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE CASCADE,
+        CONSTRAINT fk_pvav_attribute FOREIGN KEY (attribute_id) REFERENCES attributes(id) ON DELETE CASCADE,
+        UNIQUE KEY ux_variant_attribute (variant_id, attribute_id),
+        KEY ix_pvav_variant (variant_id),
+        KEY ix_pvav_attribute (attribute_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
         const [categoryParentColumn] = await this.execute(`SELECT COLUMN_NAME FROM information_schema.COLUMNS
        WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'categories' AND COLUMN_NAME = 'parent_id'`, [this.config.database]);
         if (!categoryParentColumn.length) {
@@ -296,6 +408,7 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         }
         await this.ensureDefaultCategories();
         await this.ensureSampleProduct();
+        await this.seedDefaultAttributes();
     }
     async ensureUsersHavePasswords() {
         const [users] = await this.execute("SELECT id, password_hash FROM users");
@@ -350,6 +463,277 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         const placeholders = defaults.map(() => "(?)").join(", ");
         await this.execute(`INSERT INTO categories (name) VALUES ${placeholders}`, defaults);
         this.logger.log("Seeded default categories");
+    }
+    async seedDefaultAttributes() {
+        const [attributeCountRows] = await this.execute("SELECT COUNT(*) as count FROM attributes");
+        const attributeCount = Number(attributeCountRows[0]?.count ?? 0);
+        if (attributeCount > 0)
+            return;
+        const now = new Date();
+        const defaultAttributes = [
+            {
+                code: "color",
+                name: "Color",
+                input_type: "select",
+                data_type: "string",
+            },
+            { code: "size", name: "Size", input_type: "select", data_type: "string" },
+            {
+                code: "material",
+                name: "Material",
+                input_type: "select",
+                data_type: "string",
+            },
+            { code: "brand", name: "Brand", input_type: "text", data_type: "string" },
+            {
+                code: "weight",
+                name: "Weight",
+                input_type: "number",
+                data_type: "number",
+                unit: "kg",
+            },
+            {
+                code: "memory",
+                name: "Memory",
+                input_type: "select",
+                data_type: "string",
+            },
+            {
+                code: "storage",
+                name: "Storage",
+                input_type: "select",
+                data_type: "string",
+            },
+            {
+                code: "author",
+                name: "Author",
+                input_type: "text",
+                data_type: "string",
+            },
+            {
+                code: "pages",
+                name: "Pages",
+                input_type: "number",
+                data_type: "number",
+            },
+        ];
+        const attributeIds = {};
+        for (const attr of defaultAttributes) {
+            const [attrResult] = await this.execute(`INSERT INTO attributes (code, name, input_type, data_type, unit, created_at, updated_at) 
+         VALUES (?, ?, ?, ?, ?, ?, ?)`, [
+                attr.code,
+                attr.name,
+                attr.input_type,
+                attr.data_type,
+                attr.unit || null,
+                now,
+                now,
+            ]);
+            attributeIds[attr.code] = attrResult.insertId;
+        }
+        const defaultValues = [
+            {
+                attribute_code: "color",
+                value_code: "red",
+                label: "Red",
+                sort_order: 1,
+            },
+            {
+                attribute_code: "color",
+                value_code: "blue",
+                label: "Blue",
+                sort_order: 2,
+            },
+            {
+                attribute_code: "color",
+                value_code: "green",
+                label: "Green",
+                sort_order: 3,
+            },
+            {
+                attribute_code: "color",
+                value_code: "black",
+                label: "Black",
+                sort_order: 4,
+            },
+            {
+                attribute_code: "color",
+                value_code: "white",
+                label: "White",
+                sort_order: 5,
+            },
+            { attribute_code: "size", value_code: "xs", label: "XS", sort_order: 1 },
+            { attribute_code: "size", value_code: "s", label: "S", sort_order: 2 },
+            { attribute_code: "size", value_code: "m", label: "M", sort_order: 3 },
+            { attribute_code: "size", value_code: "l", label: "L", sort_order: 4 },
+            { attribute_code: "size", value_code: "xl", label: "XL", sort_order: 5 },
+            {
+                attribute_code: "material",
+                value_code: "cotton",
+                label: "Cotton",
+                sort_order: 1,
+            },
+            {
+                attribute_code: "material",
+                value_code: "polyester",
+                label: "Polyester",
+                sort_order: 2,
+            },
+            {
+                attribute_code: "material",
+                value_code: "wool",
+                label: "Wool",
+                sort_order: 3,
+            },
+            {
+                attribute_code: "material",
+                value_code: "leather",
+                label: "Leather",
+                sort_order: 4,
+            },
+            {
+                attribute_code: "memory",
+                value_code: "8gb",
+                label: "8GB",
+                sort_order: 1,
+            },
+            {
+                attribute_code: "memory",
+                value_code: "16gb",
+                label: "16GB",
+                sort_order: 2,
+            },
+            {
+                attribute_code: "memory",
+                value_code: "32gb",
+                label: "32GB",
+                sort_order: 3,
+            },
+            {
+                attribute_code: "memory",
+                value_code: "64gb",
+                label: "64GB",
+                sort_order: 4,
+            },
+            {
+                attribute_code: "storage",
+                value_code: "256gb",
+                label: "256GB",
+                sort_order: 1,
+            },
+            {
+                attribute_code: "storage",
+                value_code: "512gb",
+                label: "512GB",
+                sort_order: 2,
+            },
+            {
+                attribute_code: "storage",
+                value_code: "1tb",
+                label: "1TB",
+                sort_order: 3,
+            },
+            {
+                attribute_code: "storage",
+                value_code: "2tb",
+                label: "2TB",
+                sort_order: 4,
+            },
+        ];
+        for (const value of defaultValues) {
+            await this.execute(`INSERT INTO attribute_values (attribute_id, value_code, label, sort_order) 
+         VALUES (?, ?, ?, ?)`, [
+                attributeIds[value.attribute_code],
+                value.value_code,
+                value.label,
+                value.sort_order,
+            ]);
+        }
+        const defaultSets = [
+            { name: "Clothing", description: "Standard clothing attributes" },
+            { name: "Electronics", description: "Standard electronics attributes" },
+            { name: "Books", description: "Standard book attributes" },
+        ];
+        const setIds = {};
+        for (const set of defaultSets) {
+            const [setResult] = await this.execute(`INSERT INTO attribute_sets (name, description, is_system, sort_order, created_at, updated_at) 
+         VALUES (?, ?, ?, ?, ?, ?)`, [set.name, set.description, true, 0, now, now]);
+            setIds[set.name] = setResult.insertId;
+        }
+        const setAssignments = [
+            {
+                set_name: "Clothing",
+                attribute_code: "color",
+                sort_order: 1,
+                is_required: true,
+            },
+            {
+                set_name: "Clothing",
+                attribute_code: "size",
+                sort_order: 2,
+                is_required: true,
+            },
+            {
+                set_name: "Clothing",
+                attribute_code: "material",
+                sort_order: 3,
+                is_required: false,
+            },
+            {
+                set_name: "Clothing",
+                attribute_code: "brand",
+                sort_order: 4,
+                is_required: false,
+            },
+            {
+                set_name: "Electronics",
+                attribute_code: "brand",
+                sort_order: 1,
+                is_required: true,
+            },
+            {
+                set_name: "Electronics",
+                attribute_code: "memory",
+                sort_order: 2,
+                is_required: true,
+            },
+            {
+                set_name: "Electronics",
+                attribute_code: "storage",
+                sort_order: 3,
+                is_required: true,
+            },
+            {
+                set_name: "Electronics",
+                attribute_code: "weight",
+                sort_order: 4,
+                is_required: false,
+            },
+            {
+                set_name: "Books",
+                attribute_code: "author",
+                sort_order: 1,
+                is_required: true,
+            },
+            {
+                set_name: "Books",
+                attribute_code: "pages",
+                sort_order: 2,
+                is_required: false,
+            },
+        ];
+        for (const assignment of setAssignments) {
+            await this.execute(`INSERT INTO attribute_set_assignments (attribute_set_id, attribute_id, sort_order, is_required, created_at, updated_at) 
+         VALUES (?, ?, ?, ?, ?, ?)`, [
+                setIds[assignment.set_name],
+                attributeIds[assignment.attribute_code],
+                assignment.sort_order,
+                assignment.is_required,
+                now,
+                now,
+            ]);
+        }
+        this.logger.log("Seeded default attributes, attribute values, and attribute sets");
     }
     async insertPermissions(roleId, permissions) {
         if (!permissions.length)
