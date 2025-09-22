@@ -7,59 +7,169 @@ const formatPrice = (priceCents, currency = 'USD') => {
 
 export function ProductList({ products, onEdit, onDelete }) {
   return (
-    <table className="table table-hover align-middle mb-0">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>SKU</th>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Status</th>
-          <th>Categories</th>
-          <th className="text-right">Price</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {products.map((product) => (
-          <tr key={product.id}>
-            <td>{product.id}</td>
-            <td>{product.sku}</td>
-            <td>{product.name}</td>
-            <td>
-              <span className="badge badge-pill badge-info text-uppercase">
-                {product.type || 'simple'}
-              </span>
-              {product.type === 'variable' && Array.isArray(product.variants) && (
-                <small className="d-block text-muted">{product.variants.length} variant{product.variants.length === 1 ? '' : 's'}</small>
-              )}
-            </td>
-            <td>
-              <span className="badge badge-pill badge-secondary text-uppercase">{product.status}</span>
-            </td>
-            <td>
-              {Array.isArray(product.categories) && product.categories.length ? (
-                <ul className="list-unstyled mb-0">
-                  {product.categories.map((category) => (
-                    <li key={`${product.id}-${category.id}`}>{category.name}</li>
-                  ))}
-                </ul>
-              ) : (
-                <span className="text-muted">None</span>
-              )}
-            </td>
-            <td className="text-right">{formatPrice(product.priceCents, product.currency)}</td>
-            <td>
-              <button className="btn btn-sm btn-outline-primary mr-2" onClick={() => onEdit(product)}>
-                Edit
-              </button>
-              <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(product)}>
-                Delete
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="products-list-container">
+      <div className="table-responsive">
+        <table className="table table-hover products-table align-middle mb-0">
+          <thead className="table-dark">
+            <tr>
+              <th className="product-id-column">
+                <i className="fas fa-hashtag mr-2"></i>
+                ID
+              </th>
+              <th className="product-sku-column">
+                <i className="fas fa-barcode mr-2"></i>
+                SKU
+              </th>
+              <th className="product-name-column">
+                <i className="fas fa-box mr-2"></i>
+                Product Name
+              </th>
+              <th className="product-type-column">
+                <i className="fas fa-tag mr-2"></i>
+                Type
+              </th>
+              <th className="product-status-column">
+                <i className="fas fa-info-circle mr-2"></i>
+                Status
+              </th>
+              <th className="product-categories-column">
+                <i className="fas fa-tags mr-2"></i>
+                Categories
+              </th>
+              <th className="product-price-column text-right">
+                <i className="fas fa-dollar-sign mr-2"></i>
+                Price
+              </th>
+              <th className="product-actions-column text-center">
+                <i className="fas fa-cogs mr-2"></i>
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product) => {
+              const isVariable = product.type === 'variable'
+              const variantCount = isVariable && Array.isArray(product.variants) ? product.variants.length : 0
+              const hasCategories = Array.isArray(product.categories) && product.categories.length > 0
+
+              return (
+                <tr key={product.id} className="product-row">
+                  <td className="product-id-cell">
+                    <span className="product-id-badge">{product.id}</span>
+                  </td>
+                  <td className="product-sku-cell">
+                    <div className="product-sku">
+                      <code className="sku-code">{product.sku}</code>
+                    </div>
+                  </td>
+                  <td className="product-name-cell">
+                    <div className="product-name-info">
+                      <div className="product-name">
+                        <strong>{product.name}</strong>
+                      </div>
+                      {product.description && (
+                        <small className="text-muted product-description">
+                          {product.description.length > 60
+                            ? `${product.description.substring(0, 60)}...`
+                            : product.description
+                          }
+                        </small>
+                      )}
+                    </div>
+                  </td>
+                  <td className="product-type-cell">
+                    <div className="product-type">
+                      <span className={`type-badge ${isVariable ? 'type-variable' : 'type-simple'}`}>
+                        <i className={`fas ${isVariable ? 'fa-cogs' : 'fa-box'} mr-1`}></i>
+                        {product.type || 'simple'}
+                      </span>
+                      {isVariable && variantCount > 0 && (
+                        <small className="d-block text-muted mt-1">
+                          {variantCount} variant{variantCount === 1 ? '' : 's'}
+                        </small>
+                      )}
+                    </div>
+                  </td>
+                  <td className="product-status-cell">
+                    <span className={`status-badge status-${product.status}`}>
+                      <i className={`fas ${product.status === 'published' ? 'fa-eye' :
+                          product.status === 'draft' ? 'fa-edit' :
+                            'fa-archive'
+                        } mr-1`}></i>
+                      {product.status}
+                    </span>
+                  </td>
+                  <td className="product-categories-cell">
+                    <div className="product-categories">
+                      {hasCategories ? (
+                        <div className="categories-list">
+                          {product.categories.slice(0, 2).map((category) => (
+                            <span key={`${product.id}-${category.id}`} className="category-badge">
+                              {category.name}
+                            </span>
+                          ))}
+                          {product.categories.length > 2 && (
+                            <span className="category-more">
+                              +{product.categories.length - 2} more
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-muted">
+                          <i className="fas fa-minus mr-1"></i>
+                          No categories
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="product-price-cell text-right">
+                    <div className="product-price">
+                      <span className="price-amount">
+                        {formatPrice(product.priceCents, product.currency)}
+                      </span>
+                      <small className="d-block text-muted currency-code">
+                        {product.currency || 'USD'}
+                      </small>
+                    </div>
+                  </td>
+                  <td className="product-actions-cell text-center">
+                    <div className="action-buttons">
+                      <button
+                        className="btn btn-sm btn-outline-primary mr-2"
+                        onClick={() => onEdit(product)}
+                        title="Edit product"
+                      >
+                        <i className="fas fa-edit mr-1"></i>
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => onDelete(product)}
+                        title="Delete product"
+                      >
+                        <i className="fas fa-trash mr-1"></i>
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {products.length === 0 && (
+        <div className="empty-state">
+          <div className="empty-state-content">
+            <i className="fas fa-box empty-state-icon"></i>
+            <h4 className="empty-state-title">No Products Found</h4>
+            <p className="empty-state-description">
+              Get started by adding your first product to build your catalog.
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

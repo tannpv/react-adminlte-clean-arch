@@ -21,37 +21,55 @@ export function StorageActions({ onCreateDirectory, onUpload, canCreate = true, 
     }
 
     return (
-        <div className="d-flex flex-column flex-md-row align-items-stretch w-100" style={{ gap: '12px' }}>
-            <div className="d-flex align-items-stretch w-100" style={{ maxWidth: 360 }}>
-                <input
-                    ref={inputRef}
-                    className="form-control mr-2"
-                    style={{ flex: 1 }}
-                    placeholder="New folder name"
-                    onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                            e.preventDefault()
-                            handleCreate()
-                        }
-                    }}
-                    disabled={!canCreate}
-                />
+        <div className="storage-actions-container">
+            <div className="action-group">
+                <div className="input-group">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text">
+                            <i className="fas fa-folder-plus"></i>
+                        </span>
+                    </div>
+                    <input
+                        ref={inputRef}
+                        className="form-control"
+                        placeholder="Enter folder name..."
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault()
+                                handleCreate()
+                            }
+                        }}
+                        disabled={!canCreate}
+                    />
+                </div>
+            </div>
+
+            <div className="action-group">
                 <button
-                    className="btn btn-primary h-100"
-                    style={{ whiteSpace: 'nowrap' }}
+                    className="btn btn-primary create-folder-btn"
                     onClick={handleCreate}
                     disabled={!canCreate}
+                    title="Create new folder"
                 >
-                    Create
+                    <i className="fas fa-plus mr-2"></i>
+                    Create Folder
                 </button>
             </div>
-            <div className="ml-md-3 mt-2 mt-md-0 d-flex align-items-stretch">
+
+            <div className="action-group">
                 <label
-                    className={`btn btn-success d-flex align-items-center justify-content-center h-100 mb-0 ${!canUpload ? 'disabled' : ''}`}
-                    style={{ whiteSpace: 'nowrap', pointerEvents: canUpload ? 'auto' : 'none', opacity: canUpload ? 1 : 0.65 }}
+                    className={`upload-btn ${!canUpload ? 'disabled' : ''}`}
+                    title={canUpload ? 'Upload files to current directory' : 'Upload not allowed'}
                 >
-                    <i className="fas fa-upload mr-1" /> Upload
-                    <input type="file" className="d-none" onChange={onUpload} disabled={!canUpload} />
+                    <i className="fas fa-upload mr-2"></i>
+                    Upload Files
+                    <input
+                        type="file"
+                        className="d-none"
+                        onChange={onUpload}
+                        disabled={!canUpload}
+                        multiple
+                    />
                 </label>
             </div>
         </div>

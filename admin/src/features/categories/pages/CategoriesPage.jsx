@@ -47,24 +47,38 @@ export function CategoriesPage() {
 
   const submitting = createCategoryMutation.isPending || updateCategoryMutation.isPending
 
+  // Calculate statistics
+  const totalCategories = categories.length
+  const rootCategories = categories.filter(cat => !cat.parentId).length
+  const childCategories = categories.filter(cat => cat.parentId).length
+  const maxDepth = Math.max(...categories.map(cat => cat.depth || 0), 0)
+
   return (
     <>
       <div className="page-card">
         <div className="page-header">
           <div>
-            <h2 className="page-title">Categories</h2>
-            <p className="page-subtitle">Organize products into clear, navigable groups.</p>
+            <h2 className="page-title">
+              <i className="fas fa-tags mr-2"></i>
+              Product Categories
+            </h2>
+            <p className="page-subtitle">
+              Organize products into clear, navigable groups.
+              Create hierarchical categories to improve product discovery and management.
+            </p>
           </div>
           <div className="page-actions">
             <div className="search-control">
               <div className="input-group">
                 <div className="input-group-prepend">
-                  <span className="input-group-text"><i className="fas fa-search" /></span>
+                  <span className="input-group-text">
+                    <i className="fas fa-search"></i>
+                  </span>
                 </div>
                 <input
                   type="search"
                   className="form-control"
-                  placeholder="Search categories..."
+                  placeholder="Search categories by name..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -76,38 +90,136 @@ export function CategoriesPage() {
               disabled={!canCreate}
               title={!canCreate ? 'Not allowed' : undefined}
             >
-              Add Category
+              <i className="fas fa-plus mr-2"></i>
+              Add New Category
             </button>
           </div>
         </div>
 
         <div className="page-body">
           {!canView && (
-            <div className="alert alert-warning" role="alert">
-              You do not have permission to view categories.
+            <div className="error-state">
+              <div className="error-content">
+                <i className="fas fa-ban error-icon"></i>
+                <h4 className="error-title">Access Denied</h4>
+                <p className="error-description">
+                  You do not have permission to view categories.
+                </p>
+              </div>
             </div>
           )}
 
-          {canView && isLoading && <div>Loading...</div>}
-          {canView && !isLoading && isError && (
-            <div className="alert alert-danger" role="alert">{error?.message || 'Failed to load categories'}</div>
+          {canView && isLoading && (
+            <div className="loading-state">
+              <div className="loading-content">
+                <i className="fas fa-spinner fa-spin loading-icon"></i>
+                <h4 className="loading-title">Loading Categories</h4>
+                <p className="loading-description">Please wait while we fetch your category information...</p>
+              </div>
+            </div>
           )}
+
+          {canView && !isLoading && isError && (
+            <div className="error-state">
+              <div className="error-content">
+                <i className="fas fa-exclamation-circle error-icon"></i>
+                <h4 className="error-title">Failed to Load Categories</h4>
+                <p className="error-description">
+                  {error?.message || 'An unexpected error occurred while loading categories.'}
+                </p>
+                <button
+                  className="btn btn-outline-primary"
+                  onClick={() => window.location.reload()}
+                >
+                  <i className="fas fa-redo mr-2"></i>
+                  Try Again
+                </button>
+              </div>
+            </div>
+          )}
+
           {canView && !isLoading && !isError && (
-            <CategoryList
-              categories={categories}
-              canEdit={canUpdate}
-              canDelete={canDelete}
-              onEdit={(category) => {
-                setEditing(category)
-                setFormErrors({})
-                setModalOpen(true)
-              }}
-              onDelete={(id) => {
-                const category = categories.find((c) => c.id === id)
-                setTargetCategory(category || { id })
-                setConfirmOpen(true)
-              }}
-            />
+            <div className="categories-content">
+              {/* Statistics Dashboard */}
+              <div className="categories-stats mb-4">
+                <div className="row">
+                  <div className="col-md-3">
+                    <div className="stat-card">
+                      <div className="stat-icon">
+                        <i className="fas fa-tags"></i>
+                      </div>
+                      <div className="stat-content">
+                        <div className="stat-number">{totalCategories}</div>
+                        <div className="stat-label">Total Categories</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div className="stat-card">
+                      <div className="stat-icon">
+                        <i className="fas fa-folder"></i>
+                      </div>
+                      <div className="stat-content">
+                        <div className="stat-number">{rootCategories}</div>
+                        <div className="stat-label">Root Categories</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div className="stat-card">
+                      <div className="stat-icon">
+                        <i className="fas fa-sitemap"></i>
+                      </div>
+                      <div className="stat-content">
+                        <div className="stat-number">{childCategories}</div>
+                        <div className="stat-label">Subcategories</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div className="stat-card">
+                      <div className="stat-icon">
+                        <i className="fas fa-layer-group"></i>
+                      </div>
+                      <div className="stat-content">
+                        <div className="stat-number">{maxDepth}</div>
+                        <div className="stat-label">Max Depth</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Categories List Section */}
+              <div className="categories-table-section">
+                <div className="section-header">
+                  <h5 className="section-title">
+                    <i className="fas fa-list mr-2"></i>
+                    Category Management
+                  </h5>
+                  <p className="section-description">
+                    Manage your product categories and their hierarchy.
+                    {searchTerm && ` Showing results for "${searchTerm}"`}
+                  </p>
+                </div>
+
+                <CategoryList
+                  categories={categories}
+                  canEdit={canUpdate}
+                  canDelete={canDelete}
+                  onEdit={(category) => {
+                    setEditing(category)
+                    setFormErrors({})
+                    setModalOpen(true)
+                  }}
+                  onDelete={(id) => {
+                    const category = categories.find((c) => c.id === id)
+                    setTargetCategory(category || { id })
+                    setConfirmOpen(true)
+                  }}
+                />
+              </div>
+            </div>
           )}
         </div>
       </div>
