@@ -49,6 +49,26 @@ export const PERMISSION_GROUPS = [
       { key: 'storage:delete', label: 'Delete' },
     ],
   },
+  {
+    entity: 'attributes',
+    label: 'Attributes',
+    actions: [
+      { key: 'attributes:read', label: 'View' },
+      { key: 'attributes:create', label: 'Add' },
+      { key: 'attributes:update', label: 'Edit' },
+      { key: 'attributes:delete', label: 'Delete' },
+    ],
+  },
+  {
+    entity: 'attribute-sets',
+    label: 'Attribute Sets',
+    actions: [
+      { key: 'attribute-sets:read', label: 'View' },
+      { key: 'attribute-sets:create', label: 'Add' },
+      { key: 'attribute-sets:update', label: 'Edit' },
+      { key: 'attribute-sets:delete', label: 'Delete' },
+    ],
+  },
 ]
 
 export const ALL_PERMISSIONS = PERMISSION_GROUPS.flatMap((group) => group.actions.map((action) => action.key))
