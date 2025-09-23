@@ -17,6 +17,7 @@ export class ProductAttributeValuesService {
     const productAttributeValue = ProductAttributeValue.create(
       createDto.productId,
       createDto.attributeId,
+      createDto.attributeValueId,
       createDto.valueText,
       createDto.valueNumber,
       createDto.valueBoolean
@@ -71,6 +72,7 @@ export class ProductAttributeValuesService {
     }
 
     const updated = existing.update(
+      updateDto.attributeValueId,
       updateDto.valueText,
       updateDto.valueNumber,
       updateDto.valueBoolean
@@ -99,6 +101,66 @@ export class ProductAttributeValuesService {
     await this.productAttributeValueRepository.deleteByProductAndAttribute(
       productId,
       attributeId
+    );
+  }
+
+  // Advanced filtering methods for normalized schema
+
+  /**
+   * Find products by attribute values (for advanced filtering)
+   */
+  async findProductsByAttributeValues(
+    attributeValueIds: number[]
+  ): Promise<number[]> {
+    return await this.productAttributeValueRepository.findProductsByAttributeValues(
+      attributeValueIds
+    );
+  }
+
+  /**
+   * Get faceted search data for an attribute
+   */
+  async getFacetedSearchData(attributeId: number): Promise<
+    Array<{
+      attributeValueId: number;
+      label: string;
+      productCount: number;
+    }>
+  > {
+    return await this.productAttributeValueRepository.getFacetedSearchData(
+      attributeId
+    );
+  }
+
+  /**
+   * Get multiple attribute faceted search data
+   */
+  async getMultiAttributeFacetedSearchData(attributeIds: number[]): Promise<
+    Record<
+      number,
+      Array<{
+        attributeValueId: number;
+        label: string;
+        productCount: number;
+      }>
+    >
+  > {
+    return await this.productAttributeValueRepository.getMultiAttributeFacetedSearchData(
+      attributeIds
+    );
+  }
+
+  /**
+   * Advanced product filtering with multiple attribute values
+   */
+  async filterProductsByAttributes(
+    attributeFilters: Array<{
+      attributeId: number;
+      attributeValueIds: number[];
+    }>
+  ): Promise<number[]> {
+    return await this.productAttributeValueRepository.filterProductsByAttributes(
+      attributeFilters
     );
   }
 }

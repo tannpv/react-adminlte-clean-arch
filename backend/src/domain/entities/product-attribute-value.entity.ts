@@ -3,6 +3,7 @@ export class ProductAttributeValue {
     public readonly id: number,
     public readonly productId: number, // INT - matches products.id
     public readonly attributeId: number, // BIGINT UNSIGNED - matches attributes.id
+    public readonly attributeValueId: number | null, // Reference to attribute_values.id
     public readonly valueText: string | null,
     public readonly valueNumber: number | null,
     public readonly valueBoolean: boolean | null,
@@ -13,6 +14,7 @@ export class ProductAttributeValue {
   static create(
     productId: number,
     attributeId: number,
+    attributeValueId?: number | null,
     valueText?: string | null,
     valueNumber?: number | null,
     valueBoolean?: boolean | null
@@ -22,6 +24,7 @@ export class ProductAttributeValue {
       0, // Will be set by database
       productId,
       attributeId,
+      attributeValueId || null,
       valueText || null,
       valueNumber || null,
       valueBoolean || null,
@@ -31,6 +34,7 @@ export class ProductAttributeValue {
   }
 
   update(
+    attributeValueId?: number | null,
     valueText?: string | null,
     valueNumber?: number | null,
     valueBoolean?: boolean | null
@@ -39,6 +43,7 @@ export class ProductAttributeValue {
       this.id,
       this.productId,
       this.attributeId,
+      attributeValueId !== undefined ? attributeValueId : this.attributeValueId,
       valueText !== undefined ? valueText : this.valueText,
       valueNumber !== undefined ? valueNumber : this.valueNumber,
       valueBoolean !== undefined ? valueBoolean : this.valueBoolean,

@@ -40,8 +40,12 @@ export function useProducts({ search } = {}) {
 
   const createProductMutation = useMutation({
     mutationFn: (payload) => createProduct(payload),
-    onSuccess: async () => {
+    onSuccess: async (data) => {
       await qc.invalidateQueries({ queryKey: ['products'] })
+      // Also invalidate product attribute values for the newly created product
+      if (data?.id) {
+        await qc.invalidateQueries({ queryKey: ['product-attribute-values', data.id] })
+      }
       toastr.success('Product created successfully')
     },
     onError: (e) => {
@@ -52,8 +56,10 @@ export function useProducts({ search } = {}) {
 
   const updateProductMutation = useMutation({
     mutationFn: ({ id, payload }) => updateProduct(id, payload),
-    onSuccess: async () => {
+    onSuccess: async (data, variables) => {
       await qc.invalidateQueries({ queryKey: ['products'] })
+      // Also invalidate product attribute values for this specific product
+      await qc.invalidateQueries({ queryKey: ['product-attribute-values', variables.id] })
       toastr.success('Product updated successfully')
     },
     onError: (e) => {
@@ -64,8 +70,10 @@ export function useProducts({ search } = {}) {
 
   const deleteProductMutation = useMutation({
     mutationFn: (id) => deleteProduct(id),
-    onSuccess: async () => {
+    onSuccess: async (data, variables) => {
       await qc.invalidateQueries({ queryKey: ['products'] })
+      // Also remove product attribute values for the deleted product
+      qc.removeQueries({ queryKey: ['product-attribute-values', variables] })
       toastr.success('Product deleted successfully')
     },
     onError: (e) => toastr.error(e?.message || 'Failed to delete product'),

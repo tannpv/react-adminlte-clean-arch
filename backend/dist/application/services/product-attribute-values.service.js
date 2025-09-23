@@ -20,7 +20,7 @@ let ProductAttributeValuesService = class ProductAttributeValuesService {
         this.productAttributeValueRepository = productAttributeValueRepository;
     }
     async create(createDto) {
-        const productAttributeValue = product_attribute_value_entity_1.ProductAttributeValue.create(createDto.productId, createDto.attributeId, createDto.valueText, createDto.valueNumber, createDto.valueBoolean);
+        const productAttributeValue = product_attribute_value_entity_1.ProductAttributeValue.create(createDto.productId, createDto.attributeId, createDto.attributeValueId, createDto.valueText, createDto.valueNumber, createDto.valueBoolean);
         return await this.productAttributeValueRepository.save(productAttributeValue);
     }
     async findAll() {
@@ -43,7 +43,7 @@ let ProductAttributeValuesService = class ProductAttributeValuesService {
         if (!existing) {
             throw new Error("Product attribute value not found");
         }
-        const updated = existing.update(updateDto.valueText, updateDto.valueNumber, updateDto.valueBoolean);
+        const updated = existing.update(updateDto.attributeValueId, updateDto.valueText, updateDto.valueNumber, updateDto.valueBoolean);
         return await this.productAttributeValueRepository.update(id, updated);
     }
     async remove(id) {
@@ -58,6 +58,18 @@ let ProductAttributeValuesService = class ProductAttributeValuesService {
     }
     async removeByProductAndAttribute(productId, attributeId) {
         await this.productAttributeValueRepository.deleteByProductAndAttribute(productId, attributeId);
+    }
+    async findProductsByAttributeValues(attributeValueIds) {
+        return await this.productAttributeValueRepository.findProductsByAttributeValues(attributeValueIds);
+    }
+    async getFacetedSearchData(attributeId) {
+        return await this.productAttributeValueRepository.getFacetedSearchData(attributeId);
+    }
+    async getMultiAttributeFacetedSearchData(attributeIds) {
+        return await this.productAttributeValueRepository.getMultiAttributeFacetedSearchData(attributeIds);
+    }
+    async filterProductsByAttributes(attributeFilters) {
+        return await this.productAttributeValueRepository.filterProductsByAttributes(attributeFilters);
     }
 };
 exports.ProductAttributeValuesService = ProductAttributeValuesService;

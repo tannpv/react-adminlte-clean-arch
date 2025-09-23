@@ -15,4 +15,19 @@ export declare class ProductAttributeValuesService {
     remove(id: number): Promise<void>;
     removeByProductId(productId: number): Promise<void>;
     removeByProductAndAttribute(productId: number, attributeId: number): Promise<void>;
+    findProductsByAttributeValues(attributeValueIds: number[]): Promise<number[]>;
+    getFacetedSearchData(attributeId: number): Promise<Array<{
+        attributeValueId: number;
+        label: string;
+        productCount: number;
+    }>>;
+    getMultiAttributeFacetedSearchData(attributeIds: number[]): Promise<Record<number, Array<{
+        attributeValueId: number;
+        label: string;
+        productCount: number;
+    }>>>;
+    filterProductsByAttributes(attributeFilters: Array<{
+        attributeId: number;
+        attributeValueIds: number[];
+    }>): Promise<number[]>;
 }
