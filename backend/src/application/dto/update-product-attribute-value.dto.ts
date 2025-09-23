@@ -2,6 +2,10 @@
 
 export class UpdateProductAttributeValueDto {
   // @IsOptional()
+  // @IsNumber()
+  attributeValueId?: number;
+
+  // @IsOptional()
   // @IsString()
   valueText?: string;
 

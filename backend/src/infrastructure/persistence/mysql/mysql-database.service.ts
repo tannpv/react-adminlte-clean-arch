@@ -220,12 +220,13 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
-    // Product Attribute Values Table
+    // Product Attribute Values Table (Normalized Structure)
     await this.execute(`
       CREATE TABLE IF NOT EXISTS product_attribute_values (
         id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
         product_id INT NOT NULL,
         attribute_id BIGINT UNSIGNED NOT NULL,
+        attribute_value_id BIGINT UNSIGNED NULL,
         value_text TEXT NULL,
         value_number DECIMAL(15,4) NULL,
         value_boolean BOOLEAN NULL,
@@ -234,9 +235,14 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         PRIMARY KEY (id),
         CONSTRAINT fk_pav_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
         CONSTRAINT fk_pav_attribute FOREIGN KEY (attribute_id) REFERENCES attributes(id) ON DELETE CASCADE,
-        UNIQUE KEY ux_product_attribute (product_id, attribute_id),
+        CONSTRAINT fk_pav_attribute_value FOREIGN KEY (attribute_value_id) REFERENCES attribute_values(id) ON DELETE CASCADE,
         KEY ix_pav_product (product_id),
-        KEY ix_pav_attribute (attribute_id)
+        KEY ix_pav_attribute (attribute_id),
+        KEY ix_pav_attribute_value (attribute_value_id),
+        KEY ix_product_attribute_value (product_id, attribute_id, attribute_value_id),
+        KEY ix_attribute_value_product (attribute_value_id, product_id),
+        KEY ix_value_text (value_text(191)),
+        KEY ix_value_number (value_number)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
@@ -279,6 +285,9 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         KEY ix_pvav_attribute (attribute_id)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
+
+    // Ensure normalized schema is applied to product_attribute_values
+    await this.ensureNormalizedSchema();
 
     const [categoryParentColumn] = await this.execute<RowDataPacket[]>(
       `SELECT COLUMN_NAME FROM information_schema.COLUMNS
@@ -950,5 +959,87 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
   >(sql: string, params?: any): Promise<[T, FieldPacket[]]> {
     const pool = this.getPool();
     return pool.query<T>(sql, params);
+  }
+
+  private async ensureNormalizedSchema(): Promise<void> {
+    try {
+      // Check if attribute_value_id column exists
+      const [existingColumn] = await this.execute(
+        "SHOW COLUMNS FROM product_attribute_values LIKE 'attribute_value_id'"
+      );
+
+      if (!Array.isArray(existingColumn) || existingColumn.length === 0) {
+        console.log(
+          "Adding attribute_value_id column to product_attribute_values table..."
+        );
+
+        // Add the attribute_value_id column
+        await this.execute(
+          "ALTER TABLE product_attribute_values ADD COLUMN attribute_value_id BIGINT UNSIGNED NULL"
+        );
+
+        // Add foreign key constraint
+        try {
+          await this.execute(
+            "ALTER TABLE product_attribute_values ADD CONSTRAINT fk_pav_attribute_value FOREIGN KEY (attribute_value_id) REFERENCES attribute_values(id) ON DELETE CASCADE"
+          );
+        } catch (error) {
+          console.log("Foreign key constraint might already exist:", error);
+        }
+
+        // Add performance indexes
+        try {
+          await this.execute(
+            "ALTER TABLE product_attribute_values ADD KEY ix_pav_attribute_value (attribute_value_id)"
+          );
+        } catch (error) {
+          console.log(
+            "Index ix_pav_attribute_value might already exist:",
+            error
+          );
+        }
+
+        try {
+          await this.execute(
+            "ALTER TABLE product_attribute_values ADD KEY ix_product_attribute_value (product_id, attribute_id, attribute_value_id)"
+          );
+        } catch (error) {
+          console.log(
+            "Index ix_product_attribute_value might already exist:",
+            error
+          );
+        }
+
+        try {
+          await this.execute(
+            "ALTER TABLE product_attribute_values ADD KEY ix_attribute_value_product (attribute_value_id, product_id)"
+          );
+        } catch (error) {
+          console.log(
+            "Index ix_attribute_value_product might already exist:",
+            error
+          );
+        }
+
+        // Remove unique constraint to allow multiple values per product-attribute
+        try {
+          await this.execute(
+            "ALTER TABLE product_attribute_values DROP INDEX ux_product_attribute"
+          );
+        } catch (error) {
+          console.log("Unique constraint might not exist:", error);
+        }
+
+        console.log(
+          "Successfully applied normalized schema to product_attribute_values table"
+        );
+      } else {
+        console.log(
+          "Normalized schema already exists in product_attribute_values table"
+        );
+      }
+    } catch (error) {
+      console.error("Error ensuring normalized schema:", error);
+    }
   }
 }
