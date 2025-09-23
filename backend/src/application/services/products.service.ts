@@ -202,28 +202,80 @@ export class ProductsService {
       attributeValues,
     });
     try {
+      // First, delete all existing attribute values for this product
+      console.log(
+        "Deleting all existing attribute values for product:",
+        productId
+      );
+      await this.productAttributeValuesService.removeByProductId(productId);
+
+      // Then, create new attribute values based on current selection
       for (const [attributeId, valueData] of Object.entries(attributeValues)) {
         console.log("Processing attribute:", { attributeId, valueData });
         if (valueData && Object.keys(valueData).length > 0) {
-          const createData = {
-            productId,
-            attributeId: parseInt(attributeId),
-            valueText: valueData.valueText || null,
-            valueNumber: valueData.valueNumber || null,
-            valueBoolean: valueData.valueBoolean || null,
-          };
-          console.log("Creating product attribute value:", createData);
-          try {
-            const result = await this.productAttributeValuesService.create(
-              createData
-            );
-            console.log(
-              "Successfully created product attribute value:",
-              result
-            );
-          } catch (error) {
-            console.error("Error creating product attribute value:", error);
-            throw error;
+          // Handle normalized structure with attributeValueIds (new approach)
+          if (
+            valueData.attributeValueIds &&
+            Array.isArray(valueData.attributeValueIds) &&
+            valueData.attributeValueIds.length > 0
+          ) {
+            // Create one record per attribute value ID
+            for (const attributeValueId of valueData.attributeValueIds) {
+              const createData = {
+                productId,
+                attributeId: parseInt(attributeId),
+                attributeValueId: attributeValueId,
+                valueText: undefined,
+                valueNumber: undefined,
+                valueBoolean: undefined,
+              };
+              console.log(
+                "Creating normalized product attribute value:",
+                createData
+              );
+              try {
+                const result = await this.productAttributeValuesService.create(
+                  createData
+                );
+                console.log(
+                  "Successfully created normalized product attribute value:",
+                  result
+                );
+              } catch (error) {
+                console.error(
+                  "Error creating normalized product attribute value:",
+                  error
+                );
+                throw error;
+              }
+            }
+          } else if (
+            valueData.valueText ||
+            valueData.valueNumber !== null ||
+            valueData.valueBoolean !== null
+          ) {
+            // Handle legacy structure (old approach for backward compatibility)
+            const createData = {
+              productId,
+              attributeId: parseInt(attributeId),
+              attributeValueId: valueData.attributeValueId || undefined,
+              valueText: valueData.valueText || undefined,
+              valueNumber: valueData.valueNumber || undefined,
+              valueBoolean: valueData.valueBoolean || undefined,
+            };
+            console.log("Creating product attribute value:", createData);
+            try {
+              const result = await this.productAttributeValuesService.create(
+                createData
+              );
+              console.log(
+                "Successfully created product attribute value:",
+                result
+              );
+            } catch (error) {
+              console.error("Error creating product attribute value:", error);
+              throw error;
+            }
           }
         }
       }

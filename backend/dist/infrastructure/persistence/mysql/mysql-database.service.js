@@ -175,6 +175,7 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
         product_id INT NOT NULL,
         attribute_id BIGINT UNSIGNED NOT NULL,
+        attribute_value_id BIGINT UNSIGNED NULL,
         value_text TEXT NULL,
         value_number DECIMAL(15,4) NULL,
         value_boolean BOOLEAN NULL,
@@ -183,9 +184,14 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         PRIMARY KEY (id),
         CONSTRAINT fk_pav_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
         CONSTRAINT fk_pav_attribute FOREIGN KEY (attribute_id) REFERENCES attributes(id) ON DELETE CASCADE,
-        UNIQUE KEY ux_product_attribute (product_id, attribute_id),
+        CONSTRAINT fk_pav_attribute_value FOREIGN KEY (attribute_value_id) REFERENCES attribute_values(id) ON DELETE CASCADE,
         KEY ix_pav_product (product_id),
-        KEY ix_pav_attribute (attribute_id)
+        KEY ix_pav_attribute (attribute_id),
+        KEY ix_pav_attribute_value (attribute_value_id),
+        KEY ix_product_attribute_value (product_id, attribute_id, attribute_value_id),
+        KEY ix_attribute_value_product (attribute_value_id, product_id),
+        KEY ix_value_text (value_text(191)),
+        KEY ix_value_number (value_number)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
         await this.execute(`
