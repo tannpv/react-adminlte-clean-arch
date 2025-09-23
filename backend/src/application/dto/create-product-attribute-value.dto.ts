@@ -8,6 +8,10 @@ export class CreateProductAttributeValueDto {
   attributeId!: number;
 
   // @IsOptional()
+  // @IsNumber()
+  attributeValueId?: number;
+
+  // @IsOptional()
   // @IsString()
   valueText?: string;
 

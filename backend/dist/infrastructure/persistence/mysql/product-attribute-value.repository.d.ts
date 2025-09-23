@@ -1,6 +1,6 @@
-import { ProductAttributeValue } from '../../../domain/entities/product-attribute-value.entity';
-import { ProductAttributeValueRepository } from '../../../domain/repositories/product-attribute-value.repository';
-import { MysqlDatabaseService } from './mysql-database.service';
+import { ProductAttributeValue } from "../../../domain/entities/product-attribute-value.entity";
+import { ProductAttributeValueRepository } from "../../../domain/repositories/product-attribute-value.repository";
+import { MysqlDatabaseService } from "./mysql-database.service";
 export declare class MysqlProductAttributeValueRepository implements ProductAttributeValueRepository {
     private readonly db;
     constructor(db: MysqlDatabaseService);
@@ -13,5 +13,20 @@ export declare class MysqlProductAttributeValueRepository implements ProductAttr
     delete(id: number): Promise<void>;
     deleteByProductId(productId: number): Promise<void>;
     deleteByProductAndAttribute(productId: number, attributeId: number): Promise<void>;
+    findProductsByAttributeValues(attributeValueIds: number[]): Promise<number[]>;
+    getFacetedSearchData(attributeId: number): Promise<Array<{
+        attributeValueId: number;
+        label: string;
+        productCount: number;
+    }>>;
+    getMultiAttributeFacetedSearchData(attributeIds: number[]): Promise<Record<number, Array<{
+        attributeValueId: number;
+        label: string;
+        productCount: number;
+    }>>>;
+    filterProductsByAttributes(attributeFilters: Array<{
+        attributeId: number;
+        attributeValueIds: number[];
+    }>): Promise<number[]>;
     private mapRowToEntity;
 }
