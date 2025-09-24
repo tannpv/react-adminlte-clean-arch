@@ -4,6 +4,8 @@ import { AttributeValuesService } from "../../application/services/attribute-val
 import { AttributesService } from "../../application/services/attributes.service";
 import { ProductAttributeValuesService } from "../../application/services/product-attribute-values.service";
 import { ProductVariantsService } from "../../application/services/product-variants.service";
+import { AccessControlModule } from "../../infrastructure/http/access-control.module";
+import { SharedModule } from "../../shared/shared.module";
 import { AttributeSetsController } from "../../infrastructure/http/controllers/attribute-sets.controller";
 import { AttributeValuesController } from "../../infrastructure/http/controllers/attribute-values.controller";
 import { AttributesController } from "../../infrastructure/http/controllers/attributes.controller";
@@ -16,10 +18,9 @@ import { MysqlProductAttributeValueRepository } from "../../infrastructure/persi
 import { MysqlProductVariantAttributeValueRepository } from "../../infrastructure/persistence/mysql/product-variant-attribute-value.repository";
 import { MysqlProductVariantRepository } from "../../infrastructure/persistence/mysql/product-variant.repository";
 import { PersistenceModule } from "../../infrastructure/persistence/persistence.module";
-import { SharedModule } from "../../shared/shared.module";
 
 @Module({
-  imports: [PersistenceModule, SharedModule],
+  imports: [PersistenceModule, AccessControlModule, SharedModule],
   controllers: [
     AttributesController,
     AttributeValuesController,
