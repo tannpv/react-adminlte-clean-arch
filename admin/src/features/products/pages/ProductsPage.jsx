@@ -1,6 +1,8 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import React, { useState } from 'react'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
+import Button from '../../../shared/components/ui/Button'
+import Card from '../../../shared/components/ui/Card'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { fetchCategories } from '../../categories/api/categoriesApi'
@@ -91,151 +93,160 @@ export function ProductsPage() {
 
   return (
     <>
-      <div className="page-card">
-        <div className="page-header">
-          <div>
-            <h2 className="page-title">
-              <i className="fas fa-box mr-2"></i>
-              {t('title', 'Product Catalog')}
-            </h2>
-            <p className="page-subtitle">
-              {t('subtitle', 'Keep your catalog up to date and aligned with inventory. Manage products, pricing, and categories to drive sales.')}
-            </p>
-          </div>
-          <div className="page-actions">
-            <div className="search-control">
-              <div className="input-group">
-                <div className="input-group-prepend">
-                  <span className="input-group-text">
-                    <i className="fas fa-search"></i>
-                  </span>
+      <div className="max-w-7xl mx-auto">
+        {/* Page Header */}
+        <div className="mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                <i className="fas fa-box mr-3 text-blue-600"></i>
+                {t('title', 'Product Catalog')}
+              </h1>
+              <p className="mt-2 text-gray-600 max-w-2xl">
+                {t('subtitle', 'Keep your catalog up to date and aligned with inventory. Manage products, pricing, and categories to drive sales.')}
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i className="fas fa-search text-gray-400"></i>
                 </div>
                 <input
                   type="search"
-                  className="form-control"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder={t('search_placeholder', 'Search products by name or SKU...')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
+              <Button
+                variant="outline-secondary"
+                onClick={() => qc.invalidateQueries({ queryKey: ['categories'] })}
+                disabled={categoriesLoading}
+                title={categoriesLoading ? t('refreshing', 'Refreshing…') : t('refresh_categories_tooltip', 'Refresh categories')}
+              >
+                <i className="fas fa-sync-alt mr-2"></i>
+                {t('refresh_categories', 'Refresh Categories')}
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => openModal({})}
+                disabled={!can('products:create')}
+                title={!can('products:create') ? t('not_allowed', 'Not allowed') : undefined}
+              >
+                <i className="fas fa-plus mr-2"></i>
+                {t('add_product', 'Add New Product')}
+              </Button>
             </div>
-
-            <button
-              className="btn btn-outline-secondary"
-              onClick={() => qc.invalidateQueries({ queryKey: ['categories'] })}
-              disabled={categoriesLoading}
-              title={categoriesLoading ? t('refreshing', 'Refreshing…') : t('refresh_categories_tooltip', 'Refresh categories')}
-            >
-              <i className="fas fa-sync-alt mr-2"></i>
-              {t('refresh_categories', 'Refresh Categories')}
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={() => openModal({})}
-              disabled={!can('products:create')}
-              title={!can('products:create') ? t('not_allowed', 'Not allowed') : undefined}
-            >
-              <i className="fas fa-plus mr-2"></i>
-              {t('add_product', 'Add New Product')}
-            </button>
           </div>
         </div>
 
-        <div className="page-body">
-          {isLoading && (
-            <div className="loading-state">
-              <div className="loading-content">
-                <i className="fas fa-spinner fa-spin loading-icon"></i>
-                <h4 className="loading-title">{t('loading_title', 'Loading Products')}</h4>
-                <p className="loading-description">{t('loading_description', 'Please wait while we fetch your product catalog...')}</p>
+        {/* Loading State */}
+        {isLoading && (
+          <Card>
+            <Card.Body>
+              <div className="text-center py-12">
+                <i className="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('loading_title', 'Loading Products')}</h4>
+                <p className="text-gray-600">{t('loading_description', 'Please wait while we fetch your product catalog...')}</p>
               </div>
-            </div>
-          )}
+            </Card.Body>
+          </Card>
+        )}
 
-          {!isLoading && isError && (
-            <div className="error-state">
-              <div className="error-content">
-                <i className="fas fa-exclamation-circle error-icon"></i>
-                <h4 className="error-title">{t('failed_to_load_products', 'Failed to Load Products')}</h4>
-                <p className="error-description">
+        {/* Error State */}
+        {!isLoading && isError && (
+          <Card>
+            <Card.Body>
+              <div className="text-center py-12">
+                <i className="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('failed_to_load_products', 'Failed to Load Products')}</h4>
+                <p className="text-gray-600 mb-6">
                   {error?.message || t('unexpected_error_loading_products', 'An unexpected error occurred while loading products.')}
                 </p>
-                <button
-                  className="btn btn-outline-primary"
+                <Button
+                  variant="outline-primary"
                   onClick={() => window.location.reload()}
                 >
                   <i className="fas fa-redo mr-2"></i>
                   {t('try_again', 'Try Again')}
-                </button>
+                </Button>
               </div>
+            </Card.Body>
+          </Card>
+        )}
+
+        {/* Products Content */}
+        {!isLoading && !isError && (
+          <div className="space-y-6">
+            {/* Statistics Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                    <i className="fas fa-box text-2xl"></i>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-blue-100 text-sm font-medium">{t('total_products', 'Total Products')}</p>
+                    <p className="text-2xl font-bold">{totalProducts}</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                    <i className="fas fa-eye text-2xl"></i>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-green-100 text-sm font-medium">{t('published', 'Published')}</p>
+                    <p className="text-2xl font-bold">{publishedProducts}</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                    <i className="fas fa-cogs text-2xl"></i>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-purple-100 text-sm font-medium">{t('variable_products', 'Variable Products')}</p>
+                    <p className="text-2xl font-bold">{variableProducts}</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                    <i className="fas fa-dollar-sign text-2xl"></i>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-orange-100 text-sm font-medium">{t('total_value', 'Total Value')}</p>
+                    <p className="text-2xl font-bold">{formatCurrency(totalValue)}</p>
+                  </div>
+                </div>
+              </Card>
             </div>
-          )}
 
-          {!isLoading && !isError && (
-            <div className="products-content">
-              {/* Statistics Dashboard */}
-              <div className="products-stats mb-4">
-                <div className="row">
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-box"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{totalProducts}</div>
-                        <div className="stat-label">{t('total_products', 'Total Products')}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-eye"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{publishedProducts}</div>
-                        <div className="stat-label">{t('published', 'Published')}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-cogs"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{variableProducts}</div>
-                        <div className="stat-label">{t('variable_products', 'Variable Products')}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-dollar-sign"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{formatCurrency(totalValue)}</div>
-                        <div className="stat-label">{t('total_value', 'Total Value')}</div>
-                      </div>
-                    </div>
+            {/* Products List Section */}
+            <Card>
+              <Card.Header>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                      <i className="fas fa-list mr-2 text-blue-600"></i>
+                      {t('product_management', 'Product Management')}
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-600">
+                      {t('product_management_description', 'Manage your product catalog, pricing, and inventory.')}
+                      {searchTerm && ` ${t('showing_results_for', 'Showing results for')} "${searchTerm}"`}
+                    </p>
                   </div>
                 </div>
-              </div>
-
-              {/* Products List Section */}
-              <div className="products-table-section">
-                <div className="section-header">
-                  <h5 className="section-title">
-                    <i className="fas fa-list mr-2"></i>
-                    {t('product_management', 'Product Management')}
-                  </h5>
-                  <p className="section-description">
-                    {t('product_management_description', 'Manage your product catalog, pricing, and inventory.')}
-                    {searchTerm && ` ${t('showing_results_for', 'Showing results for')} "${searchTerm}"`}
-                  </p>
-                </div>
-
+              </Card.Header>
+              <Card.Body>
                 <ProductList
                   products={products}
                   onEdit={(product) => { if (!can('products:update')) return; openModal(product) }}
@@ -245,10 +256,10 @@ export function ProductsPage() {
                     setConfirmOpen(true)
                   }}
                 />
-              </div>
-            </div>
-          )}
-        </div>
+              </Card.Body>
+            </Card>
+          </div>
+        )}
       </div>
 
       <ProductModal
