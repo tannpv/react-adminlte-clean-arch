@@ -63,7 +63,7 @@ let UserUpdateValidationService = class UserUpdateValidationService extends base
         }
         return {
             isValid: Object.keys(errors).length === 0,
-            errors
+            errors,
         };
     }
     async validateEmailUniqueness(email, userId) {
@@ -73,21 +73,21 @@ let UserUpdateValidationService = class UserUpdateValidationService extends base
         const trimmedEmail = email.trim().toLowerCase();
         const existing = await this.users.findByEmail(trimmedEmail);
         if (existing && existing.id !== userId) {
-            return this.createError('email', 'EMAIL_EXISTS', 'Email is already in use');
+            return this.createError("email", "EMAIL_EXISTS", "Email is already in use");
         }
         return null;
     }
     async validateRoles(roles) {
         if (!roles || !Array.isArray(roles))
             return null;
-        const arrayError = common_validators_1.CommonValidators.validateIntegerArray(roles, 'roles');
+        const arrayError = common_validators_1.CommonValidators.validateIntegerArray(roles, "roles");
         if (arrayError)
             return arrayError;
         const found = await this.roles.findByIds(roles);
-        const foundIds = new Set(found.map(role => role.id));
-        const missing = roles.filter(roleId => !foundIds.has(roleId));
+        const foundIds = new Set(found.map((role) => role.id));
+        const missing = roles.filter((roleId) => !foundIds.has(roleId));
         if (missing.length > 0) {
-            return this.createError('roles', 'ROLES_INVALID', 'Invalid roles selected');
+            return this.createError("roles", "ROLES_INVALID", "Invalid roles selected");
         }
         return null;
     }
@@ -95,13 +95,13 @@ let UserUpdateValidationService = class UserUpdateValidationService extends base
         return common_validators_1.CommonValidators.validatePassword(password);
     }
     validateFirstName(firstName) {
-        return common_validators_1.CommonValidators.validateOptionalString(firstName, 'firstName', 2);
+        return common_validators_1.CommonValidators.validateOptionalString(firstName, "firstName", 2);
     }
     validateLastName(lastName) {
-        return common_validators_1.CommonValidators.validateOptionalString(lastName, 'lastName', 2);
+        return common_validators_1.CommonValidators.validateOptionalString(lastName, "lastName", 2);
     }
     validateDateOfBirth(dateOfBirth) {
-        return common_validators_1.CommonValidators.validateDate(dateOfBirth, 'dateOfBirth');
+        return common_validators_1.CommonValidators.validateDate(dateOfBirth, "dateOfBirth");
     }
     validatePictureUrl(pictureUrl) {
         if (pictureUrl === undefined)
@@ -112,7 +112,7 @@ let UserUpdateValidationService = class UserUpdateValidationService extends base
                 new URL(trimmed);
             }
             catch {
-                return this.createError('pictureUrl', 'PICTURE_URL_INVALID', 'Picture URL must be a valid URL');
+                return this.createError("pictureUrl", "PICTURE_URL_INVALID", "Picture URL must be a valid URL");
             }
         }
         return null;

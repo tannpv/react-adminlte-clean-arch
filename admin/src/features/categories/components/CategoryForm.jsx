@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { CategoryTreeSelector } from './CategoryTreeSelector'
 
 export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {}, submitting = false, formId = 'category-form', categories = [], tree = [], hierarchy = [], isOpen = false }) {
+  const { languageCode } = useLanguage()
+  const { t } = useTranslation(languageCode, 'categories')
   const [name, setName] = useState('')
   const [parentId, setParentId] = useState('')
 
@@ -28,18 +31,18 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
       <div className="form-section mb-4">
         <h6 className="section-title">
           <i className="fas fa-tag mr-2"></i>
-          Category Information
+          {t('category_information', 'Category Information')}
         </h6>
         <div className="form-group">
           <label className="form-label">
             <i className="fas fa-signature mr-2"></i>
-            Category Name
+            {t('category_name', 'Category Name')}
           </label>
           <input
             className={`form-control ${nameError ? 'is-invalid' : ''}`}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Enter category name (e.g., Electronics, Clothing)"
+            placeholder={t('enter_category_name', 'Enter category name (e.g., Electronics, Clothing)')}
             required
             disabled={submitting}
           />
@@ -51,7 +54,7 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
           )}
           <small className="form-text text-muted">
             <i className="fas fa-lightbulb mr-1"></i>
-            Choose a clear, descriptive name that helps customers find products.
+            {t('category_name_help', 'Choose a clear, descriptive name that helps customers find products.')}
           </small>
         </div>
       </div>
@@ -60,12 +63,12 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
       <div className="form-section mb-4">
         <h6 className="section-title">
           <i className="fas fa-sitemap mr-2"></i>
-          Category Hierarchy
+          {t('category_hierarchy', 'Category Hierarchy')}
         </h6>
         <div className="form-group">
           <label className="form-label">
             <i className="fas fa-folder mr-2"></i>
-            Parent Category
+            {t('parent_category', 'Parent Category')}
           </label>
           <div className="tree-selector-container">
             <CategoryTreeSelector
@@ -87,7 +90,7 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
           )}
           <small className="form-text text-muted">
             <i className="fas fa-info-circle mr-1"></i>
-            Leave empty to create a root category, or select a parent to create a subcategory.
+            {t('parent_category_help', 'Leave empty to create a root category, or select a parent to create a subcategory.')}
           </small>
         </div>
       </div>
@@ -102,7 +105,7 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
             disabled={submitting}
           >
             <i className="fas fa-times mr-2"></i>
-            Cancel
+            {t('cancel', 'Cancel')}
           </button>
           <button
             type="submit"
@@ -112,12 +115,12 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
             {submitting ? (
               <>
                 <i className="fas fa-spinner fa-spin mr-2"></i>
-                {initialCategory?.id ? 'Updating...' : 'Creating...'}
+                {initialCategory?.id ? t('updating', 'Updating...') : t('creating', 'Creating...')}
               </>
             ) : (
               <>
                 <i className={`fas ${initialCategory?.id ? 'fa-save' : 'fa-plus'} mr-2`}></i>
-                {initialCategory?.id ? 'Update Category' : 'Create Category'}
+                {initialCategory?.id ? t('update_category', 'Update Category') : t('create_category', 'Create Category')}
               </>
             )}
           </button>

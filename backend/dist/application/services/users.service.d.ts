@@ -1,11 +1,11 @@
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
-import { UserRepository } from '../../domain/repositories/user.repository';
-import { RoleRepository } from '../../domain/repositories/role.repository';
-import { PublicUser, User } from '../../domain/entities/user.entity';
-import { PasswordService } from '../../shared/password.service';
-import { UserValidationService } from '../validation/user-validation.service';
-import { UserUpdateValidationService } from '../validation/user-update-validation.service';
+import { PublicUser, User } from "../../domain/entities/user.entity";
+import { RoleRepository } from "../../domain/repositories/role.repository";
+import { UserRepository } from "../../domain/repositories/user.repository";
+import { PasswordService } from "../../shared/password.service";
+import { CreateUserDto } from "../dto/create-user.dto";
+import { UpdateUserDto } from "../dto/update-user.dto";
+import { UserUpdateValidationService } from "../validation/user-update-validation.service";
+import { UserValidationService } from "../validation/user-validation.service";
 export declare class UsersService {
     private readonly users;
     private readonly roles;

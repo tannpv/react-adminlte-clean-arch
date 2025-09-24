@@ -13,16 +13,21 @@ import { ProductsPage } from '../features/products/pages/ProductsPage'
 import { fetchRoles } from '../features/roles/api/rolesApi'
 import { RolesPage } from '../features/roles/pages/RolesPage'
 import StoragePage from '../features/storage/pages/StoragePage'
+import TranslationsPage from '../features/translations/pages/TranslationsPage'
 import { UsersPage } from '../features/users/pages/UsersPage'
+import LanguageSwitcher from '../shared/components/LanguageSwitcher'
 import { usePermissions } from '../shared/hooks/usePermissions'
+import { useLanguage, useTranslation } from '../shared/hooks/useTranslation'
 import { ApiClient } from '../shared/lib/apiClient'
 import { getUserDisplayName } from '../shared/lib/userDisplayName'
 
 export default function App() {
   const { user: currentUser, setUser: setCurrentUser, logout } = useAuth()
   const { can, me } = usePermissions()
+  const { languageCode } = useLanguage()
+  const { t } = useTranslation(languageCode, 'common')
   const [authScreen, setAuthScreen] = useState('login') // 'login' | 'register'
-  const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'categories' | 'products' | 'storage' | 'attributes' | 'attribute-values' | 'attribute-sets'
+  const [menu, setMenu] = useState('users') // 'users' | 'roles' | 'categories' | 'products' | 'storage' | 'attributes' | 'attribute-values' | 'attribute-sets' | 'translations'
   const [selectedAttributeSetId, setSelectedAttributeSetId] = useState(null)
   const qc = useQueryClient()
 
@@ -42,19 +47,24 @@ export default function App() {
         </ul>
         <ul className="navbar-nav ml-auto">
           {currentUser ? (
-            <li className="nav-item d-flex align-items-center pr-2">
-              <div className="user-chip mr-3">
-                <span>{getUserDisplayName(currentUser)}</span>
-                {me?.roles?.length ? (
-                  <span>
-                    {me.roles.map(r => (
-                      <span key={r.id} className="badge badge-info">{r.name}</span>
-                    ))}
-                  </span>
-                ) : null}
-              </div>
-              <button className="btn btn-sm btn-outline-secondary" onClick={logout}>Logout</button>
-            </li>
+            <>
+              <li className="nav-item d-flex align-items-center pr-2">
+                <LanguageSwitcher />
+              </li>
+              <li className="nav-item d-flex align-items-center pr-2">
+                <div className="user-chip mr-3">
+                  <span>{getUserDisplayName(currentUser)}</span>
+                  {me?.roles?.length ? (
+                    <span>
+                      {me.roles.map(r => (
+                        <span key={r.id} className="badge badge-info">{r.name}</span>
+                      ))}
+                    </span>
+                  ) : null}
+                </div>
+                <button className="btn btn-sm btn-outline-secondary" onClick={logout}>{t('logout', 'Logout')}</button>
+              </li>
+            </>
           ) : null}
         </ul>
       </nav>
@@ -62,48 +72,48 @@ export default function App() {
       <aside className="main-sidebar sidebar-dark-primary elevation-4">
         <a href="#" className="brand-link">
           <span className="brand-logo">AA</span>
-          <span className="brand-text">Aurora Admin</span>
+          <span className="brand-text">{t('aurora_admin', 'Aurora Admin')}</span>
         </a>
         <div className="sidebar">
           <nav className="mt-2">
             <ul className="nav nav-pills nav-sidebar flex-column">
-              <li className="nav-header">System</li>
+              <li className="nav-header">{t('system', 'System')}</li>
               <li className="nav-item">
                 <a href="#" className={`nav-link ${menu === 'users' ? 'active' : ''}`} onClick={() => setMenu('users')}>
                   <i className="nav-icon fas fa-users" />
-                  <p>Users</p>
+                  <p>{t('users', 'Users')}</p>
                 </a>
               </li>
               <li className="nav-item">
                 <a href="#" className={`nav-link ${menu === 'roles' ? 'active' : ''}`} onClick={() => setMenu('roles')}>
                   <i className="nav-icon fas fa-user-shield" />
-                  <p>Roles</p>
+                  <p>{t('roles', 'Roles')}</p>
                 </a>
               </li>
               <li className="nav-item">
                 <a href="#" className={`nav-link ${menu === 'storage' ? 'active' : ''}`} onClick={() => setMenu('storage')}>
                   <i className="nav-icon fas fa-hdd" />
-                  <p>Storage</p>
+                  <p>{t('storage', 'Storage')}</p>
                 </a>
               </li>
-              <li className="nav-header">E-Commerce</li>
+              <li className="nav-header">{t('e_commerce', 'E-Commerce')}</li>
               <li className="nav-item">
                 <a href="#" className={`nav-link ${menu === 'categories' ? 'active' : ''}`} onClick={() => setMenu('categories')}>
                   <i className="nav-icon fas fa-tags" />
-                  <p>Categories</p>
+                  <p>{t('categories', 'Categories')}</p>
                 </a>
               </li>
               <li className="nav-item">
                 <a href="#" className={`nav-link ${menu === 'products' ? 'active' : ''}`} onClick={() => setMenu('products')}>
                   <i className="nav-icon fas fa-box" />
-                  <p>Products</p>
+                  <p>{t('products', 'Products')}</p>
                 </a>
               </li>
               {can('attributes:read') && (
                 <li className="nav-item">
                   <a href="#" className={`nav-link ${menu === 'attributes' ? 'active' : ''}`} onClick={() => setMenu('attributes')}>
                     <i className="nav-icon fas fa-list" />
-                    <p>Attributes</p>
+                    <p>{t('attributes', 'Attributes')}</p>
                   </a>
                 </li>
               )}
@@ -111,7 +121,7 @@ export default function App() {
                 <li className="nav-item">
                   <a href="#" className={`nav-link ${menu === 'attribute-values' ? 'active' : ''}`} onClick={() => setMenu('attribute-values')}>
                     <i className="nav-icon fas fa-list-ul" />
-                    <p>Attribute Values</p>
+                    <p>{t('attribute_values', 'Attribute Values')}</p>
                   </a>
                 </li>
               )}
@@ -119,7 +129,16 @@ export default function App() {
                 <li className="nav-item">
                   <a href="#" className={`nav-link ${menu === 'attribute-sets' ? 'active' : ''}`} onClick={() => setMenu('attribute-sets')}>
                     <i className="nav-icon fas fa-layer-group" />
-                    <p>Attribute Sets</p>
+                    <p>{t('attribute_sets', 'Attribute Sets')}</p>
+                  </a>
+                </li>
+              )}
+              <li className="nav-header">{t('localization', 'Localization')}</li>
+              {can('translations:read') && (
+                <li className="nav-item">
+                  <a href="#" className={`nav-link ${menu === 'translations' ? 'active' : ''}`} onClick={() => setMenu('translations')}>
+                    <i className="nav-icon fas fa-language" />
+                    <p>{t('translations', 'Translations')}</p>
                   </a>
                 </li>
               )}
@@ -158,6 +177,8 @@ export default function App() {
                     }}
                   />
                 )
+              ) : menu === 'translations' ? (
+                <TranslationsPage />
               ) : (
                 <ProductsPage />
               )

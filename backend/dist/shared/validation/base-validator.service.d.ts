@@ -1,5 +1,5 @@
-import { FieldErrorDetail, FieldErrors } from '../validation-error';
-import { ValidationResult } from './validation.types';
+import { FieldErrorDetail, FieldErrors } from "../validation-error";
+import { ValidationResult } from "./validation.types";
 export declare abstract class BaseValidatorService<T> {
     protected createError(field: string, code: string, message: string): FieldErrorDetail;
     protected createSuccess(): ValidationResult;

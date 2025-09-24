@@ -1,9 +1,12 @@
 import React from 'react'
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { UserForm } from './UserForm'
 
 export function UserModal({ show, title, initialUser, onClose, onSubmit, errors, submitting, roles, rolesLoading }) {
   const formId = 'user-modal-form'
   const isEditing = !!initialUser?.id
+  const { languageCode } = useLanguage()
+  const { t } = useTranslation(languageCode, 'users')
 
   return (
     <>
@@ -39,8 +42,8 @@ export function UserModal({ show, title, initialUser, onClose, onSubmit, errors,
                   <div className="col-12">
                     <div className="alert alert-info" role="alert">
                       <i className="fas fa-info-circle mr-2"></i>
-                      <strong>User Management:</strong> Create or edit user accounts with proper roles and permissions.
-                      All fields marked with * are required.
+                      <strong>{t('user_management', 'User Management')}:</strong> {t('user_management_description', 'Create or edit user accounts with proper roles and permissions.')}
+                      {t('required_fields_note', 'All fields marked with * are required.')}
                     </div>
                   </div>
                 </div>
@@ -63,7 +66,7 @@ export function UserModal({ show, title, initialUser, onClose, onSubmit, errors,
                 <div className="text-muted">
                   <small>
                     <i className="fas fa-shield-alt mr-1"></i>
-                    User permissions are controlled by assigned roles
+                    {t('user_permissions_controlled_by_roles', 'User permissions are controlled by assigned roles')}
                   </small>
                 </div>
                 <div>
@@ -74,7 +77,7 @@ export function UserModal({ show, title, initialUser, onClose, onSubmit, errors,
                     disabled={submitting}
                   >
                     <i className="fas fa-times mr-1"></i>
-                    Cancel
+                    {t('cancel', 'Cancel')}
                   </button>
                   <button
                     type="submit"
@@ -85,12 +88,12 @@ export function UserModal({ show, title, initialUser, onClose, onSubmit, errors,
                     {submitting ? (
                       <>
                         <i className="fas fa-spinner fa-spin mr-1"></i>
-                        {isEditing ? 'Updating...' : 'Creating...'}
+                        {isEditing ? t('updating', 'Updating...') : t('creating', 'Creating...')}
                       </>
                     ) : (
                       <>
                         <i className={`fas ${isEditing ? 'fa-save' : 'fa-user-plus'} mr-1`}></i>
-                        {isEditing ? 'Update User' : 'Create User'}
+                        {isEditing ? t('update_user', 'Update User') : t('create_user', 'Create User')}
                       </>
                     )}
                   </button>

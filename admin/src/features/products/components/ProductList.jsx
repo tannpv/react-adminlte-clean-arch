@@ -1,4 +1,5 @@
 import React from 'react'
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 
 const formatPrice = (priceCents, currency = 'USD') => {
   const value = Number(priceCents || 0) / 100
@@ -6,6 +7,8 @@ const formatPrice = (priceCents, currency = 'USD') => {
 }
 
 export function ProductList({ products, onEdit, onDelete }) {
+  const { languageCode } = useLanguage()
+  const { t } = useTranslation(languageCode, 'products')
   return (
     <div className="products-list-container">
       <div className="table-responsive">
@@ -14,35 +17,35 @@ export function ProductList({ products, onEdit, onDelete }) {
             <tr>
               <th className="product-id-column">
                 <i className="fas fa-hashtag mr-2"></i>
-                ID
+                {t('id', 'ID')}
               </th>
               <th className="product-sku-column">
                 <i className="fas fa-barcode mr-2"></i>
-                SKU
+                {t('sku', 'SKU')}
               </th>
               <th className="product-name-column">
                 <i className="fas fa-box mr-2"></i>
-                Product Name
+                {t('product_name', 'Product Name')}
               </th>
               <th className="product-type-column">
                 <i className="fas fa-tag mr-2"></i>
-                Type
+                {t('type', 'Type')}
               </th>
               <th className="product-status-column">
                 <i className="fas fa-info-circle mr-2"></i>
-                Status
+                {t('status', 'Status')}
               </th>
               <th className="product-categories-column">
                 <i className="fas fa-tags mr-2"></i>
-                Categories
+                {t('categories', 'Categories')}
               </th>
               <th className="product-price-column text-right">
                 <i className="fas fa-dollar-sign mr-2"></i>
-                Price
+                {t('price', 'Price')}
               </th>
               <th className="product-actions-column text-center">
                 <i className="fas fa-cogs mr-2"></i>
-                Actions
+                {t('actions', 'Actions')}
               </th>
             </tr>
           </thead>
@@ -85,7 +88,7 @@ export function ProductList({ products, onEdit, onDelete }) {
                       </span>
                       {isVariable && variantCount > 0 && (
                         <small className="d-block text-muted mt-1">
-                          {variantCount} variant{variantCount === 1 ? '' : 's'}
+                          {t('variant_count', '{{count}} variant', { count: variantCount })}
                         </small>
                       )}
                     </div>
@@ -93,8 +96,8 @@ export function ProductList({ products, onEdit, onDelete }) {
                   <td className="product-status-cell">
                     <span className={`status-badge status-${product.status}`}>
                       <i className={`fas ${product.status === 'published' ? 'fa-eye' :
-                          product.status === 'draft' ? 'fa-edit' :
-                            'fa-archive'
+                        product.status === 'draft' ? 'fa-edit' :
+                          'fa-archive'
                         } mr-1`}></i>
                       {product.status}
                     </span>
@@ -110,14 +113,14 @@ export function ProductList({ products, onEdit, onDelete }) {
                           ))}
                           {product.categories.length > 2 && (
                             <span className="category-more">
-                              +{product.categories.length - 2} more
+                              +{product.categories.length - 2} {t('more', 'more')}
                             </span>
                           )}
                         </div>
                       ) : (
                         <span className="text-muted">
                           <i className="fas fa-minus mr-1"></i>
-                          No categories
+                          {t('no_categories', 'No categories')}
                         </span>
                       )}
                     </div>
@@ -137,18 +140,18 @@ export function ProductList({ products, onEdit, onDelete }) {
                       <button
                         className="btn btn-sm btn-outline-primary mr-2"
                         onClick={() => onEdit(product)}
-                        title="Edit product"
+                        title={t('edit_product', 'Edit product')}
                       >
                         <i className="fas fa-edit mr-1"></i>
-                        Edit
+                        {t('edit', 'Edit')}
                       </button>
                       <button
                         className="btn btn-sm btn-outline-danger"
                         onClick={() => onDelete(product)}
-                        title="Delete product"
+                        title={t('delete_product', 'Delete product')}
                       >
                         <i className="fas fa-trash mr-1"></i>
-                        Delete
+                        {t('delete', 'Delete')}
                       </button>
                     </div>
                   </td>
@@ -163,9 +166,9 @@ export function ProductList({ products, onEdit, onDelete }) {
         <div className="empty-state">
           <div className="empty-state-content">
             <i className="fas fa-box empty-state-icon"></i>
-            <h4 className="empty-state-title">No Products Found</h4>
+            <h4 className="empty-state-title">{t('no_products_found', 'No Products Found')}</h4>
             <p className="empty-state-description">
-              Get started by adding your first product to build your catalog.
+              {t('get_started_products', 'Get started by adding your first product to build your catalog.')}
             </p>
           </div>
         </div>

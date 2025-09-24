@@ -1,6 +1,9 @@
 import React from 'react'
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 
 export function CategoryList({ categories, onEdit, onDelete, canEdit = true, canDelete = true }) {
+  const { languageCode } = useLanguage()
+  const { t } = useTranslation(languageCode, 'categories')
   return (
     <div className="categories-list-container">
       <div className="table-responsive">
@@ -9,23 +12,23 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
             <tr>
               <th className="category-id-column">
                 <i className="fas fa-hashtag mr-2"></i>
-                ID
+                {t('id', 'ID')}
               </th>
               <th className="category-name-column">
                 <i className="fas fa-tag mr-2"></i>
-                Category Name
+                {t('category_name', 'Category Name')}
               </th>
               <th className="category-parent-column">
                 <i className="fas fa-sitemap mr-2"></i>
-                Parent Category
+                {t('parent_category', 'Parent Category')}
               </th>
               <th className="category-hierarchy-column">
                 <i className="fas fa-layer-group mr-2"></i>
-                Hierarchy
+                {t('hierarchy', 'Hierarchy')}
               </th>
               <th className="category-actions-column text-center">
                 <i className="fas fa-cogs mr-2"></i>
-                Actions
+                {t('actions', 'Actions')}
               </th>
             </tr>
           </thead>
@@ -46,12 +49,12 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
                         {isRootCategory && (
                           <span className="badge badge-info ml-2">
                             <i className="fas fa-folder mr-1"></i>
-                            Root
+                            {t('root', 'Root')}
                           </span>
                         )}
                       </div>
                       <small className="text-muted">
-                        {isRootCategory ? 'Top-level category' : `Subcategory (Level ${depth})`}
+                        {isRootCategory ? t('top_level_category', 'Top-level category') : t('subcategory_level', 'Subcategory (Level {{depth}})', { depth })}
                       </small>
                     </div>
                   </td>
@@ -65,7 +68,7 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
                       ) : (
                         <span className="no-parent">
                           <i className="fas fa-minus mr-2 text-muted"></i>
-                          <span className="text-muted">No parent</span>
+                          <span className="text-muted">{t('no_parent', 'No parent')}</span>
                         </span>
                       )}
                     </div>
@@ -83,7 +86,7 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
                       )}
                       <span className="hierarchy-badge">
                         <i className="fas fa-layer-group mr-1"></i>
-                        Level {depth}
+                        {t('level', 'Level')} {depth}
                       </span>
                     </div>
                   </td>
@@ -93,19 +96,19 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
                         className="btn btn-sm btn-outline-primary mr-2"
                         onClick={() => { if (canEdit) onEdit(category) }}
                         disabled={!canEdit}
-                        title="Edit category"
+                        title={t('edit_category', 'Edit category')}
                       >
                         <i className="fas fa-edit mr-1"></i>
-                        Edit
+                        {t('edit', 'Edit')}
                       </button>
                       <button
                         className="btn btn-sm btn-outline-danger"
                         onClick={() => { if (canDelete) onDelete(category.id) }}
                         disabled={!canDelete}
-                        title="Delete category"
+                        title={t('delete_category', 'Delete category')}
                       >
                         <i className="fas fa-trash mr-1"></i>
-                        Delete
+                        {t('delete', 'Delete')}
                       </button>
                     </div>
                   </td>
@@ -120,9 +123,9 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
         <div className="empty-state">
           <div className="empty-state-content">
             <i className="fas fa-tags empty-state-icon"></i>
-            <h4 className="empty-state-title">No Categories Found</h4>
+            <h4 className="empty-state-title">{t('no_categories_found', 'No Categories Found')}</h4>
             <p className="empty-state-description">
-              Get started by creating your first product category to organize your inventory.
+              {t('get_started_categories', 'Get started by creating your first product category to organize your inventory.')}
             </p>
           </div>
         </div>

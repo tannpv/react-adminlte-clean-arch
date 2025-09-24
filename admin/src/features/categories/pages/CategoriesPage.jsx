@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { CategoryList } from '../components/CategoryList'
 import { CategoryModal } from '../components/CategoryModal'
 import { useCategories } from '../hooks/useCategories'
@@ -13,6 +14,8 @@ const isValidationErrorMap = (err) => {
 
 export function CategoriesPage() {
   const { can } = usePermissions()
+  const { languageCode } = useLanguage()
+  const { t } = useTranslation(languageCode, 'categories')
   const [modalOpen, setModalOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -60,11 +63,10 @@ export function CategoriesPage() {
           <div>
             <h2 className="page-title">
               <i className="fas fa-tags mr-2"></i>
-              Product Categories
+              {t('product_categories', 'Product Categories')}
             </h2>
             <p className="page-subtitle">
-              Organize products into clear, navigable groups.
-              Create hierarchical categories to improve product discovery and management.
+              {t('page_subtitle', 'Organize products into clear, navigable groups. Create hierarchical categories to improve product discovery and management.')}
             </p>
           </div>
           <div className="page-actions">
@@ -78,7 +80,7 @@ export function CategoriesPage() {
                 <input
                   type="search"
                   className="form-control"
-                  placeholder="Search categories by name..."
+                  placeholder={t('search_placeholder', 'Search categories by name...')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -88,10 +90,10 @@ export function CategoriesPage() {
               className="btn btn-primary"
               onClick={() => { setEditing(null); setFormErrors({}); setModalOpen(true) }}
               disabled={!canCreate}
-              title={!canCreate ? 'Not allowed' : undefined}
+              title={!canCreate ? t('not_allowed', 'Not allowed') : undefined}
             >
               <i className="fas fa-plus mr-2"></i>
-              Add New Category
+              {t('add_new_category', 'Add New Category')}
             </button>
           </div>
         </div>
@@ -101,9 +103,9 @@ export function CategoriesPage() {
             <div className="error-state">
               <div className="error-content">
                 <i className="fas fa-ban error-icon"></i>
-                <h4 className="error-title">Access Denied</h4>
+                <h4 className="error-title">{t('access_denied', 'Access Denied')}</h4>
                 <p className="error-description">
-                  You do not have permission to view categories.
+                  {t('no_permission_view_categories', 'You do not have permission to view categories.')}
                 </p>
               </div>
             </div>
@@ -113,8 +115,8 @@ export function CategoriesPage() {
             <div className="loading-state">
               <div className="loading-content">
                 <i className="fas fa-spinner fa-spin loading-icon"></i>
-                <h4 className="loading-title">Loading Categories</h4>
-                <p className="loading-description">Please wait while we fetch your category information...</p>
+                <h4 className="loading-title">{t('loading_categories', 'Loading Categories')}</h4>
+                <p className="loading-description">{t('loading_categories_description', 'Please wait while we fetch your category information...')}</p>
               </div>
             </div>
           )}
@@ -123,16 +125,16 @@ export function CategoriesPage() {
             <div className="error-state">
               <div className="error-content">
                 <i className="fas fa-exclamation-circle error-icon"></i>
-                <h4 className="error-title">Failed to Load Categories</h4>
+                <h4 className="error-title">{t('failed_to_load_categories', 'Failed to Load Categories')}</h4>
                 <p className="error-description">
-                  {error?.message || 'An unexpected error occurred while loading categories.'}
+                  {error?.message || t('unexpected_error_loading_categories', 'An unexpected error occurred while loading categories.')}
                 </p>
                 <button
                   className="btn btn-outline-primary"
                   onClick={() => window.location.reload()}
                 >
                   <i className="fas fa-redo mr-2"></i>
-                  Try Again
+                  {t('try_again', 'Try Again')}
                 </button>
               </div>
             </div>
@@ -150,7 +152,7 @@ export function CategoriesPage() {
                       </div>
                       <div className="stat-content">
                         <div className="stat-number">{totalCategories}</div>
-                        <div className="stat-label">Total Categories</div>
+                        <div className="stat-label">{t('total_categories', 'Total Categories')}</div>
                       </div>
                     </div>
                   </div>
@@ -161,7 +163,7 @@ export function CategoriesPage() {
                       </div>
                       <div className="stat-content">
                         <div className="stat-number">{rootCategories}</div>
-                        <div className="stat-label">Root Categories</div>
+                        <div className="stat-label">{t('root_categories', 'Root Categories')}</div>
                       </div>
                     </div>
                   </div>
@@ -172,7 +174,7 @@ export function CategoriesPage() {
                       </div>
                       <div className="stat-content">
                         <div className="stat-number">{childCategories}</div>
-                        <div className="stat-label">Subcategories</div>
+                        <div className="stat-label">{t('subcategories', 'Subcategories')}</div>
                       </div>
                     </div>
                   </div>
@@ -183,7 +185,7 @@ export function CategoriesPage() {
                       </div>
                       <div className="stat-content">
                         <div className="stat-number">{maxDepth}</div>
-                        <div className="stat-label">Max Depth</div>
+                        <div className="stat-label">{t('max_depth', 'Max Depth')}</div>
                       </div>
                     </div>
                   </div>
@@ -195,11 +197,11 @@ export function CategoriesPage() {
                 <div className="section-header">
                   <h5 className="section-title">
                     <i className="fas fa-list mr-2"></i>
-                    Category Management
+                    {t('category_management', 'Category Management')}
                   </h5>
                   <p className="section-description">
-                    Manage your product categories and their hierarchy.
-                    {searchTerm && ` Showing results for "${searchTerm}"`}
+                    {t('manage_categories_description', 'Manage your product categories and their hierarchy.')}
+                    {searchTerm && ` ${t('showing_results_for', 'Showing results for')} "${searchTerm}"`}
                   </p>
                 </div>
 
@@ -226,7 +228,7 @@ export function CategoriesPage() {
 
       <CategoryModal
         show={modalOpen}
-        title={editing?.id ? 'Edit Category' : 'Add Category'}
+        title={editing?.id ? t('edit_category', 'Edit Category') : t('add_category', 'Add Category')}
         initialCategory={editing}
         onClose={() => { setModalOpen(false); setEditing(null); setFormErrors({}) }}
         onSubmit={async (payload) => {
@@ -254,10 +256,10 @@ export function CategoriesPage() {
 
       <ConfirmModal
         show={confirmOpen}
-        title="Delete Category"
-        message={`Are you sure you want to delete ${targetCategory?.name || 'this category'}?`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('delete_category', 'Delete Category')}
+        message={`${t('confirm_delete_category', 'Are you sure you want to delete')} ${targetCategory?.name || t('this_category', 'this category')}?`}
+        confirmText={t('delete', 'Delete')}
+        cancelText={t('cancel', 'Cancel')}
         onCancel={() => { setConfirmOpen(false); setTargetCategory(null) }}
         onConfirm={async () => {
           const id = targetCategory?.id

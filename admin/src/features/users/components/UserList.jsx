@@ -1,7 +1,11 @@
 import React from 'react'
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { getUserDisplayName } from '../../../shared/lib/userDisplayName'
 
 export function UserList({ users, onEdit, onDelete, rolesById }) {
+  const { languageCode } = useLanguage()
+  const { t } = useTranslation(languageCode, 'users')
+
   return (
     <div className="users-list-container">
       <div className="table-responsive">
@@ -10,31 +14,31 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
             <tr>
               <th className="user-id-column">
                 <i className="fas fa-hashtag mr-2"></i>
-                ID
+                {t('id', 'ID')}
               </th>
               <th className="user-avatar-column">
                 <i className="fas fa-user-circle mr-2"></i>
-                Avatar
+                {t('avatar', 'Avatar')}
               </th>
               <th className="user-name-column">
                 <i className="fas fa-user mr-2"></i>
-                Name
+                {t('name', 'Name')}
               </th>
               <th className="user-email-column">
                 <i className="fas fa-envelope mr-2"></i>
-                Email
+                {t('email', 'Email')}
               </th>
               <th className="user-roles-column">
                 <i className="fas fa-shield-alt mr-2"></i>
-                Roles
+                {t('roles', 'Roles')}
               </th>
               <th className="user-status-column">
                 <i className="fas fa-info-circle mr-2"></i>
-                Status
+                {t('status', 'Status')}
               </th>
               <th className="user-actions-column text-center">
                 <i className="fas fa-cogs mr-2"></i>
-                Actions
+                {t('actions', 'Actions')}
               </th>
             </tr>
           </thead>
@@ -75,12 +79,12 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
                         {isAdmin && (
                           <span className="badge badge-warning ml-2">
                             <i className="fas fa-crown mr-1"></i>
-                            Admin
+                            {t('admin', 'Admin')}
                           </span>
                         )}
                       </div>
                       <small className="text-muted">
-                        {hasProfile ? 'Profile Complete' : 'Basic Info Only'}
+                        {hasProfile ? t('profile_complete', 'Profile Complete') : t('basic_info_only', 'Basic Info Only')}
                       </small>
                     </div>
                   </td>
@@ -101,14 +105,14 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
                           ))}
                           {userRoles.length > 2 && (
                             <span className="role-more">
-                              +{userRoles.length - 2} more
+                              +{userRoles.length - 2} {t('more', 'more')}
                             </span>
                           )}
                         </div>
                       ) : (
                         <span className="text-muted">
                           <i className="fas fa-exclamation-triangle mr-1"></i>
-                          No roles
+                          {t('no_roles', 'No roles')}
                         </span>
                       )}
                     </div>
@@ -117,7 +121,7 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
                     <div className="user-status">
                       <span className={`status-badge ${isActive ? 'status-active' : 'status-inactive'}`}>
                         <i className={`fas ${isActive ? 'fa-check-circle' : 'fa-times-circle'} mr-1`}></i>
-                        {isActive ? 'Active' : 'Inactive'}
+                        {isActive ? t('active', 'Active') : t('inactive', 'Inactive')}
                       </span>
                     </div>
                   </td>
@@ -126,18 +130,18 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
                       <button
                         className="btn btn-sm btn-outline-primary mr-2"
                         onClick={() => onEdit(user)}
-                        title="Edit user information"
+                        title={t('edit_user_information', 'Edit user information')}
                       >
                         <i className="fas fa-edit mr-1"></i>
-                        Edit
+                        {t('edit', 'Edit')}
                       </button>
                       <button
                         className="btn btn-sm btn-outline-danger"
                         onClick={() => onDelete(user.id)}
-                        title="Delete user"
+                        title={t('delete_user', 'Delete user')}
                       >
                         <i className="fas fa-trash mr-1"></i>
-                        Delete
+                        {t('delete', 'Delete')}
                       </button>
                     </div>
                   </td>

@@ -1,4 +1,4 @@
-import { FieldErrorDetail } from '../validation-error';
+import { FieldErrorDetail } from "../validation-error";
 export declare class CommonValidators {
     static validateEmail(email: string | undefined): FieldErrorDetail | null;
     static validatePassword(password: string | undefined): FieldErrorDetail | null;

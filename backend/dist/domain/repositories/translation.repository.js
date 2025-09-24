@@ -1,0 +1,7 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TRANSLATION_NAMESPACE_REPOSITORY = exports.TRANSLATION_KEY_REPOSITORY = exports.TRANSLATION_REPOSITORY = void 0;
+exports.TRANSLATION_REPOSITORY = "TRANSLATION_REPOSITORY";
+exports.TRANSLATION_KEY_REPOSITORY = "TRANSLATION_KEY_REPOSITORY";
+exports.TRANSLATION_NAMESPACE_REPOSITORY = "TRANSLATION_NAMESPACE_REPOSITORY";
+//# sourceMappingURL=translation.repository.js.map
