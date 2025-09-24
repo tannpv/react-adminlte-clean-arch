@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
+import Button from '../../../shared/components/ui/Button'
+import Card from '../../../shared/components/ui/Card'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
 import { useTranslation, useLanguage } from '../../../shared/hooks/useTranslation'
 import { RoleList } from '../components/RoleList'
@@ -43,116 +45,136 @@ export function RolesPage() {
 
   return (
     <>
-      <div className="page-card">
-        <div className="page-header">
-          <div>
-            <h2 className="page-title">
-              <i className="fas fa-user-shield mr-2"></i>
-              {t('roles_permissions', 'Roles & Permissions')}
-            </h2>
-            <p className="page-subtitle">
-              {t('page_subtitle', 'Define permission sets and control what teams can access. Create custom roles to match your organization\'s needs.')}
-            </p>
-          </div>
-          <div className="page-actions">
-            <button
-              className="btn btn-primary"
-              onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
-              disabled={!canCreateRole}
-              title={!canCreateRole ? t('not_allowed', 'Not allowed') : undefined}
-            >
-              <i className="fas fa-plus mr-2"></i>
-              {t('add_new_role', 'Add New Role')}
-            </button>
+      <div className="max-w-7xl mx-auto">
+        {/* Page Header */}
+        <div className="mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                <i className="fas fa-user-shield mr-3 text-blue-600"></i>
+                {t('roles_permissions', 'Roles & Permissions')}
+              </h1>
+              <p className="mt-2 text-gray-600 max-w-2xl">
+                {t('page_subtitle', 'Define permission sets and control what teams can access. Create custom roles to match your organization\'s needs.')}
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                variant="primary"
+                onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
+                disabled={!canCreateRole}
+                title={!canCreateRole ? t('not_allowed', 'Not allowed') : undefined}
+              >
+                <i className="fas fa-plus mr-2"></i>
+                {t('add_new_role', 'Add New Role')}
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="page-body">
-          {!canViewRoles && (
-            <div className="alert alert-warning" role="alert">
-              <i className="fas fa-exclamation-triangle mr-2"></i>
-              {t('no_permission_view_roles', 'You do not have permission to view roles.')}
-            </div>
-          )}
-
-          {canViewRoles && loading && (
-            <div className="loading-state">
-              <div className="loading-content">
-                <i className="fas fa-spinner fa-spin loading-icon"></i>
-                <h4 className="loading-title">{t('loading_roles', 'Loading Roles')}</h4>
-                <p className="loading-description">{t('loading_roles_description', 'Please wait while we fetch the role information...')}</p>
+        {/* Permission Warning */}
+        {!canViewRoles && (
+          <Card className="mb-6">
+            <Card.Body>
+              <div className="flex items-center p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                <i className="fas fa-exclamation-triangle text-yellow-600 mr-3"></i>
+                <span className="text-yellow-800">{t('no_permission_view_roles', 'You do not have permission to view roles.')}</span>
               </div>
-            </div>
-          )}
+            </Card.Body>
+          </Card>
+        )}
 
-          {canViewRoles && !loading && !isError && (
-            <div className="roles-content">
-              <div className="roles-stats mb-4">
-                <div className="row">
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-users"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{roles.length}</div>
-                        <div className="stat-label">{t('total_roles', 'Total Roles')}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-shield-alt"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">
-                          {roles.reduce((acc, role) => acc + (role.permissions?.length || 0), 0)}
-                        </div>
-                        <div className="stat-label">{t('total_permissions', 'Total Permissions')}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-lock"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">
-                          {roles.filter(role => role.name === 'Administrator' || role.name === 'User').length}
-                        </div>
-                        <div className="stat-label">{t('system_roles', 'System Roles')}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-user-plus"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">
-                          {roles.filter(role => role.name !== 'Administrator' && role.name !== 'User').length}
-                        </div>
-                        <div className="stat-label">{t('custom_roles', 'Custom Roles')}</div>
-                      </div>
-                    </div>
-                  </div>
+        {/* Loading State */}
+        {canViewRoles && loading && (
+          <Card>
+            <Card.Body>
+              <div className="text-center py-12">
+                <i className="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('loading_roles', 'Loading Roles')}</h4>
+                <p className="text-gray-600">{t('loading_roles_description', 'Please wait while we fetch the role information...')}</p>
+              </div>
+            </Card.Body>
+          </Card>
+        )}
+
+        {/* Statistics Cards */}
+        {canViewRoles && !loading && !isError && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+              <div className="flex items-center">
+                <div className="p-3 rounded-full bg-white bg-opacity-20">
+                  <i className="fas fa-users text-2xl"></i>
+                </div>
+                <div className="ml-4">
+                  <p className="text-blue-100 text-sm font-medium">{t('total_roles', 'Total Roles')}</p>
+                  <p className="text-2xl font-bold">{roles.length}</p>
                 </div>
               </div>
+            </Card>
 
-              <div className="roles-table-section">
-                <div className="section-header">
-                  <h5 className="section-title">
-                    <i className="fas fa-list mr-2"></i>
-                    {t('role_management', 'Role Management')}
-                  </h5>
-                  <p className="section-description">
-                    {t('role_management_description', 'Manage existing roles and their permissions. System roles cannot be deleted.')}
+            <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+              <div className="flex items-center">
+                <div className="p-3 rounded-full bg-white bg-opacity-20">
+                  <i className="fas fa-shield-alt text-2xl"></i>
+                </div>
+                <div className="ml-4">
+                  <p className="text-green-100 text-sm font-medium">{t('total_permissions', 'Total Permissions')}</p>
+                  <p className="text-2xl font-bold">
+                    {roles.reduce((acc, role) => acc + (role.permissions?.length || 0), 0)}
                   </p>
                 </div>
+              </div>
+            </Card>
 
+            <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+              <div className="flex items-center">
+                <div className="p-3 rounded-full bg-white bg-opacity-20">
+                  <i className="fas fa-lock text-2xl"></i>
+                </div>
+                <div className="ml-4">
+                  <p className="text-purple-100 text-sm font-medium">{t('system_roles', 'System Roles')}</p>
+                  <p className="text-2xl font-bold">
+                    {roles.filter(role => role.name === 'Administrator' || role.name === 'User').length}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+              <div className="flex items-center">
+                <div className="p-3 rounded-full bg-white bg-opacity-20">
+                  <i className="fas fa-user-plus text-2xl"></i>
+                </div>
+                <div className="ml-4">
+                  <p className="text-orange-100 text-sm font-medium">{t('custom_roles', 'Custom Roles')}</p>
+                  <p className="text-2xl font-bold">
+                    {roles.filter(role => role.name !== 'Administrator' && role.name !== 'User').length}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Roles Content */}
+        {canViewRoles && !loading && !isError && (
+          <div className="space-y-6">
+
+            <Card>
+              <Card.Header>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                      <i className="fas fa-list mr-2 text-blue-600"></i>
+                      {t('role_management', 'Role Management')}
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-600">
+                      {t('role_management_description', 'Manage existing roles and their permissions. System roles cannot be deleted.')}
+                    </p>
+                  </div>
+                </div>
+              </Card.Header>
+              <Card.Body>
                 <RoleList
                   roles={roles}
                   canEdit={canUpdateRole}
@@ -168,29 +190,32 @@ export function RolesPage() {
                     setConfirmOpen(true)
                   }}
                 />
-              </div>
-            </div>
-          )}
+              </Card.Body>
+            </Card>
+          </div>
+        )}
 
-          {canViewRoles && !loading && isError && (
-            <div className="error-state">
-              <div className="error-content">
-                <i className="fas fa-exclamation-circle error-icon"></i>
-                <h4 className="error-title">{t('failed_to_load_roles', 'Failed to Load Roles')}</h4>
-                <p className="error-description">
+        {/* Error State */}
+        {canViewRoles && !loading && isError && (
+          <Card>
+            <Card.Body>
+              <div className="text-center py-12">
+                <i className="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('failed_to_load_roles', 'Failed to Load Roles')}</h4>
+                <p className="text-gray-600 mb-6">
                   {error?.message || t('unexpected_error_loading_roles', 'An unexpected error occurred while loading roles.')}
                 </p>
-                <button
-                  className="btn btn-outline-primary"
+                <Button
+                  variant="outline-primary"
                   onClick={() => window.location.reload()}
                 >
                   <i className="fas fa-redo mr-2"></i>
                   {t('try_again', 'Try Again')}
-                </button>
+                </Button>
               </div>
-            </div>
-          )}
-        </div>
+            </Card.Body>
+          </Card>
+        )}
       </div>
 
       <RoleModal
