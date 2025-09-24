@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { CategoryTreeMultiSelect } from './CategoryTreeMultiSelect'
 import { ProductAttributeForm } from './ProductAttributeForm'
+import Form from '../../../../shared/components/ui/Form'
 
 const STATUSES = [
   { value: 'draft', label: 'Draft' },
@@ -85,235 +86,237 @@ export function ProductForm({
   return (
     <form id={formId} onSubmit={handleSubmit} className="product-form">
       {/* Basic Information Section */}
-      <div className="form-section mb-4">
-        <h6 className="section-title">
-          <i className="fas fa-info-circle mr-2"></i>
+      <div className="mb-6">
+        <h6 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+          <i className="fas fa-info-circle mr-2 text-blue-600"></i>
           Basic Information
         </h6>
-        <div className="form-row">
-          <div className="form-group col-md-6">
-            <label className="form-label">
-              <i className="fas fa-barcode mr-2"></i>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Form.Group>
+            <Form.Label>
+              <i className="fas fa-barcode mr-2 text-blue-600"></i>
               SKU *
-            </label>
-            <input
+            </Form.Label>
+            <Form.Control
               type="text"
-              className={`form-control ${getError(errors, 'sku') ? 'is-invalid' : ''}`}
               value={sku}
               onChange={(e) => setSku(e.target.value)}
               placeholder="Enter product SKU (e.g., PROD-001)"
               disabled={submitting}
               required
+              className={getError(errors, 'sku') ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
             />
             {getError(errors, 'sku') && (
-              <div className="invalid-feedback">
+              <Form.ErrorText>
                 <i className="fas fa-exclamation-triangle mr-1"></i>
                 {getError(errors, 'sku')}
-              </div>
+              </Form.ErrorText>
             )}
-            <small className="form-text text-muted">
+            <Form.HelpText>
               <i className="fas fa-lightbulb mr-1"></i>
               Stock Keeping Unit - unique identifier for inventory tracking
-            </small>
-          </div>
-          <div className="form-group col-md-6">
-            <label className="form-label">
-              <i className="fas fa-tag mr-2"></i>
+            </Form.HelpText>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>
+              <i className="fas fa-tag mr-2 text-blue-600"></i>
               Product Name *
-            </label>
-            <input
+            </Form.Label>
+            <Form.Control
               type="text"
-              className={`form-control ${getError(errors, 'name') ? 'is-invalid' : ''}`}
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter product name"
               disabled={submitting}
               required
+              className={getError(errors, 'name') ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
             />
             {getError(errors, 'name') && (
-              <div className="invalid-feedback">
+              <Form.ErrorText>
                 <i className="fas fa-exclamation-triangle mr-1"></i>
                 {getError(errors, 'name')}
-              </div>
+              </Form.ErrorText>
             )}
-          </div>
+          </Form.Group>
         </div>
 
-        <div className="form-group">
-          <label className="form-label">
-            <i className="fas fa-align-left mr-2"></i>
+        <Form.Group>
+          <Form.Label>
+            <i className="fas fa-align-left mr-2 text-blue-600"></i>
             Description
-          </label>
-          <textarea
-            className={`form-control ${getError(errors, 'description') ? 'is-invalid' : ''}`}
+          </Form.Label>
+          <Form.Textarea
             rows="3"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter product description..."
             disabled={submitting}
+            className={getError(errors, 'description') ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
           />
           {getError(errors, 'description') && (
-            <div className="invalid-feedback">
+            <Form.ErrorText>
               <i className="fas fa-exclamation-triangle mr-1"></i>
               {getError(errors, 'description')}
-            </div>
+            </Form.ErrorText>
           )}
-        </div>
+        </Form.Group>
       </div>
 
       {/* Pricing & Status Section */}
-      <div className="form-section mb-4">
-        <h6 className="section-title">
-          <i className="fas fa-dollar-sign mr-2"></i>
+      <div className="mb-6">
+        <h6 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+          <i className="fas fa-dollar-sign mr-2 text-blue-600"></i>
           Pricing & Status
         </h6>
-        <div className="form-row">
-          <div className="form-group col-md-4">
-            <label className="form-label">
-              <i className="fas fa-money-bill-wave mr-2"></i>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Form.Group>
+            <Form.Label>
+              <i className="fas fa-money-bill-wave mr-2 text-blue-600"></i>
               Price *
-            </label>
-            <input
+            </Form.Label>
+            <Form.Control
               type="number"
               step="0.01"
               min="0"
-              className={`form-control ${getError(errors, 'price') ? 'is-invalid' : ''}`}
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="0.00"
               disabled={submitting}
               required
+              className={getError(errors, 'price') ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
             />
             {getError(errors, 'price') && (
-              <div className="invalid-feedback">
+              <Form.ErrorText>
                 <i className="fas fa-exclamation-triangle mr-1"></i>
                 {getError(errors, 'price')}
-              </div>
+              </Form.ErrorText>
             )}
-          </div>
-          <div className="form-group col-md-4">
-            <label className="form-label">
-              <i className="fas fa-globe mr-2"></i>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>
+              <i className="fas fa-globe mr-2 text-blue-600"></i>
               Currency
-            </label>
-            <select
-              className={`form-control ${getError(errors, 'currency') ? 'is-invalid' : ''}`}
+            </Form.Label>
+            <Form.Select
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
               disabled={submitting}
+              className={getError(errors, 'currency') ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
             >
               <option value="USD">USD - US Dollar</option>
               <option value="EUR">EUR - Euro</option>
               <option value="GBP">GBP - British Pound</option>
-            </select>
+            </Form.Select>
             {getError(errors, 'currency') && (
-              <div className="invalid-feedback">
+              <Form.ErrorText>
                 <i className="fas fa-exclamation-triangle mr-1"></i>
                 {getError(errors, 'currency')}
-              </div>
+              </Form.ErrorText>
             )}
-          </div>
-          <div className="form-group col-md-4">
-            <label className="form-label">
-              <i className="fas fa-toggle-on mr-2"></i>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>
+              <i className="fas fa-toggle-on mr-2 text-blue-600"></i>
               Status
-            </label>
-            <select
-              className={`form-control ${getError(errors, 'status') ? 'is-invalid' : ''}`}
+            </Form.Label>
+            <Form.Select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               disabled={submitting}
+              className={getError(errors, 'status') ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
             >
               {STATUSES.map((statusOption) => (
                 <option key={statusOption.value} value={statusOption.value}>
                   {statusOption.label}
                 </option>
               ))}
-            </select>
+            </Form.Select>
             {getError(errors, 'status') && (
-              <div className="invalid-feedback">
+              <Form.ErrorText>
                 <i className="fas fa-exclamation-triangle mr-1"></i>
                 {getError(errors, 'status')}
-              </div>
+              </Form.ErrorText>
             )}
-          </div>
+          </Form.Group>
         </div>
       </div>
 
       {/* Product Type Section */}
-      <div className="form-section mb-4">
-        <h6 className="section-title">
-          <i className="fas fa-cogs mr-2"></i>
+      <div className="mb-6">
+        <h6 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+          <i className="fas fa-cogs mr-2 text-blue-600"></i>
           Product Configuration
         </h6>
-        <div className="form-group">
-          <label className="form-label">
-            <i className="fas fa-layer-group mr-2"></i>
+        <Form.Group>
+          <Form.Label>
+            <i className="fas fa-layer-group mr-2 text-blue-600"></i>
             Product Type
-          </label>
-          <select
-            className={`form-control ${getError(errors, 'type') ? 'is-invalid' : ''}`}
+          </Form.Label>
+          <Form.Select
             value={type}
             onChange={(e) => setType(e.target.value)}
             disabled={submitting}
+            className={getError(errors, 'type') ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
           >
             {PRODUCT_TYPES.map((typeOption) => (
               <option key={typeOption.value} value={typeOption.value}>
                 {typeOption.label}
               </option>
             ))}
-          </select>
+          </Form.Select>
           {getError(errors, 'type') && (
-            <div className="invalid-feedback">
+            <Form.ErrorText>
               <i className="fas fa-exclamation-triangle mr-1"></i>
               {getError(errors, 'type')}
-            </div>
+            </Form.ErrorText>
           )}
-          <small className="form-text text-muted">
+          <Form.HelpText>
             <i className="fas fa-info-circle mr-1"></i>
             Simple: Single product variant. Variable: Multiple variants (size, color, etc.)
-          </small>
-        </div>
+          </Form.HelpText>
+        </Form.Group>
       </div>
 
       {/* Categories Section */}
-      <div className="form-section mb-4">
-        <h6 className="section-title">
-          <i className="fas fa-tags mr-2"></i>
+      <div className="mb-6">
+        <h6 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+          <i className="fas fa-tags mr-2 text-blue-600"></i>
           Categories
         </h6>
-        <div className="form-group">
-          <label className="form-label">
-            <i className="fas fa-folder mr-2"></i>
+        <Form.Group>
+          <Form.Label>
+            <i className="fas fa-folder mr-2 text-blue-600"></i>
             Assign Categories
-          </label>
+          </Form.Label>
           {categoriesLoading ? (
-            <div className="categories-loading">
+            <div className="flex items-center text-gray-500 py-4">
               <i className="fas fa-spinner fa-spin mr-2"></i>
               Loading categories...
             </div>
           ) : (
-            <CategoryTreeMultiSelect
-              categories={categoryOptions}
-              tree={categoryTree}
-              value={categories}
-              onChange={setCategories}
-              disabled={submitting}
-              error={getError(errors, 'categoryIds')}
-              placeholder="Select categories for this product..."
-            />
+            <div className="category-tree-multiselect">
+              <CategoryTreeMultiSelect
+                categories={categoryOptions}
+                tree={categoryTree}
+                value={categories}
+                onChange={setCategories}
+                disabled={submitting}
+                error={getError(errors, 'categoryIds')}
+                placeholder="Select categories for this product..."
+              />
+            </div>
           )}
-          <small className="form-text text-muted">
+          <Form.HelpText>
             <i className="fas fa-lightbulb mr-1"></i>
             Select categories to help customers find your products. You can search and select multiple categories from the tree structure.
-          </small>
-        </div>
+          </Form.HelpText>
+        </Form.Group>
       </div>
 
       {/* Product Attributes Section */}
-      <div className="form-section mb-4">
-        <h6 className="section-title">
-          <i className="fas fa-tags mr-2"></i>
+      <div className="mb-6">
+        <h6 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+          <i className="fas fa-tags mr-2 text-blue-600"></i>
           Product Attributes
         </h6>
         <ProductAttributeForm

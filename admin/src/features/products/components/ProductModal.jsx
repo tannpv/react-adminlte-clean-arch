@@ -1,5 +1,7 @@
 import React from 'react'
 import { ProductForm } from './ProductForm'
+import Modal from '../../../../shared/components/ui/Modal'
+import Button from '../../../../shared/components/ui/Button'
 
 export function ProductModal({
   show,
@@ -17,101 +19,79 @@ export function ProductModal({
   const isEditing = !!initialProduct?.id
 
   return (
-    <>
-      <div
-        className={`modal fade ${show ? 'show' : ''}`}
-        style={{ display: show ? 'block' : 'none' }}
-        tabIndex="-1"
-        role="dialog"
-        aria-modal={show ? 'true' : undefined}
-        aria-labelledby="productModalTitle"
-      >
-        <div className="modal-dialog modal-xl" role="document">
-          <div className="modal-content">
-            <div className="modal-header bg-primary text-white">
-              <h5 className="modal-title" id="productModalTitle">
-                <i className={`fas ${isEditing ? 'fa-edit' : 'fa-plus'} mr-2`}></i>
-                {title}
-              </h5>
-              <button
-                type="button"
-                className="close text-white"
-                aria-label="Close"
-                onClick={onClose}
-                disabled={submitting}
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
+    <Modal show={show} onClose={onClose} className="max-w-4xl">
+      <Modal.Header onClose={onClose}>
+        <div className="flex items-center">
+          <i className={`fas ${isEditing ? 'fa-edit' : 'fa-plus'} mr-3 text-blue-600`}></i>
+          {title}
+        </div>
+      </Modal.Header>
 
-            <div className="modal-body">
-              <div className="container-fluid">
-                <div className="row">
-                  <div className="col-12">
-                    <div className="alert alert-info" role="alert">
-                      <i className="fas fa-info-circle mr-2"></i>
-                      <strong>Product Management:</strong> Create or edit products to build your catalog.
-                      All fields marked with * are required.
-                    </div>
-                  </div>
-                </div>
-
-                <ProductForm
-                  formId={formId}
-                  initialProduct={initialProduct}
-                  errors={errors}
-                  submitting={submitting}
-                  onSubmit={onSubmit}
-                  categoryOptions={categoryOptions}
-                  categoryTree={categoryTree}
-                  categoriesLoading={categoriesLoading}
-                />
-              </div>
-            </div>
-
-            <div className="modal-footer bg-light border-top">
-              <div className="d-flex justify-content-between w-100">
-                <div className="text-muted">
-                  <small>
-                    <i className="fas fa-box mr-1"></i>
-                    Products help customers discover and purchase your offerings
-                  </small>
-                </div>
-                <div>
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary mr-2"
-                    onClick={onClose}
-                    disabled={submitting}
-                  >
-                    <i className="fas fa-times mr-1"></i>
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    form={formId}
-                    className={`btn ${isEditing ? 'btn-warning' : 'btn-success'}`}
-                    disabled={submitting}
-                  >
-                    {submitting ? (
-                      <>
-                        <i className="fas fa-spinner fa-spin mr-1"></i>
-                        {isEditing ? 'Updating...' : 'Creating...'}
-                      </>
-                    ) : (
-                      <>
-                        <i className={`fas ${isEditing ? 'fa-save' : 'fa-plus'} mr-1`}></i>
-                        {isEditing ? 'Update Product' : 'Create Product'}
-                      </>
-                    )}
-                  </button>
-                </div>
+      <Modal.Body>
+        <div className="mb-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start">
+              <i className="fas fa-info-circle text-blue-600 mr-2 mt-0.5"></i>
+              <div>
+                <strong className="text-blue-800">Product Management:</strong>
+                <span className="text-blue-700 ml-1">
+                  Create or edit products to build your catalog.
+                  All fields marked with * are required.
+                </span>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      {show && <div className="modal-backdrop fade show" />}
-    </>
+
+        <ProductForm
+          formId={formId}
+          initialProduct={initialProduct}
+          errors={errors}
+          submitting={submitting}
+          onSubmit={onSubmit}
+          categoryOptions={categoryOptions}
+          categoryTree={categoryTree}
+          categoriesLoading={categoriesLoading}
+        />
+      </Modal.Body>
+
+      <Modal.Footer>
+        <div className="flex justify-between items-center w-full">
+          <div className="text-gray-500 text-sm">
+            <i className="fas fa-box mr-1"></i>
+            Products help customers discover and purchase your offerings
+          </div>
+          <div className="flex space-x-2">
+            <Button
+              variant="secondary"
+              outline
+              onClick={onClose}
+              disabled={submitting}
+            >
+              <i className="fas fa-times mr-1"></i>
+              Cancel
+            </Button>
+            <Button
+              variant={isEditing ? 'warning' : 'success'}
+              type="submit"
+              form={formId}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <>
+                  <i className="fas fa-spinner fa-spin mr-1"></i>
+                  {isEditing ? 'Updating...' : 'Creating...'}
+                </>
+              ) : (
+                <>
+                  <i className={`fas ${isEditing ? 'fa-save' : 'fa-plus'} mr-1`}></i>
+                  {isEditing ? 'Update Product' : 'Create Product'}
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </Modal.Footer>
+    </Modal>
   )
 }
