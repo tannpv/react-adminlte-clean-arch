@@ -3111,3 +3111,139 @@ select.form-control:not([size]):not([multiple]) {
   }
 }
 
+/* Category Tree Multi-Select Styles */
+.category-tree-multiselect {
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: var(--admin-surface);
+  padding: 1rem;
+}
+
+.category-tree-multiselect .search-container {
+  margin-bottom: 1rem;
+}
+
+.category-tree-multiselect .tree-container {
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  background: #fafbfc;
+}
+
+.category-tree-multiselect .tree-header {
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid var(--admin-border);
+  border-radius: 6px 6px 0 0;
+}
+
+.category-tree-multiselect .tree-list {
+  padding: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.category-tree-multiselect .tree-node {
+  margin-bottom: 2px;
+}
+
+.category-tree-multiselect .tree-node-content {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.category-tree-multiselect .tree-node-content:hover {
+  background-color: #f1f3f4;
+}
+
+.category-tree-multiselect .tree-node-content.selected {
+  background-color: #e3f2fd;
+  border: 1px solid #2196f3;
+}
+
+.category-tree-multiselect .tree-toggle {
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  margin-right: 4px;
+  cursor: pointer;
+  color: var(--admin-muted);
+  transition: color 0.2s ease;
+}
+
+.category-tree-multiselect .tree-toggle:hover {
+  color: var(--admin-text);
+}
+
+.category-tree-multiselect .tree-spacer {
+  width: 20px;
+  height: 1px;
+  margin-right: 4px;
+}
+
+.category-tree-multiselect .tree-label {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--admin-text);
+}
+
+.category-tree-multiselect .tree-label.clickable {
+  cursor: pointer;
+}
+
+.category-tree-multiselect .tree-children {
+  margin-left: 0;
+}
+
+.category-tree-multiselect .tree-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.category-tree-multiselect .selected-summary {
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid var(--admin-border);
+  margin-top: 1rem;
+}
+
+.category-tree-multiselect .selected-summary small {
+  color: var(--admin-muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+/* Custom checkbox styling for tree */
+.category-tree-multiselect .custom-control-input:checked ~ .custom-control-label::before {
+  background-color: var(--admin-primary);
+  border-color: var(--admin-primary);
+}
+
+.category-tree-multiselect .custom-control-input:focus ~ .custom-control-label::before {
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .category-tree-multiselect .tree-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .category-tree-multiselect .tree-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .category-tree-multiselect .tree-list {
+    max-height: 250px;
+  }
+}
+
