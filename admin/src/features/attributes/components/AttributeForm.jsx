@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
-import { useCreateAttribute, useUpdateAttribute } from '../hooks/useAttributes';
-import Modal from '../../../shared/components/ui/Modal';
 import Button from '../../../shared/components/ui/Button';
 import Form from '../../../shared/components/ui/Form';
+import Modal from '../../../shared/components/ui/Modal';
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
+import { useCreateAttribute, useUpdateAttribute } from '../hooks/useAttributes';
 
 export const AttributeForm = ({ attribute, onClose }) => {
     const { languageCode } = useLanguage();
