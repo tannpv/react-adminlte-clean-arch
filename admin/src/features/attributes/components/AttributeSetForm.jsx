@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
 import { useCreateAttributeSet, useUpdateAttributeSet } from '../hooks/useAttributeSets';
+import Modal from '../../../shared/components/ui/Modal';
+import Button from '../../../shared/components/ui/Button';
+import Form from '../../../shared/components/ui/Form';
 
 export const AttributeSetForm = ({ attributeSet, onClose }) => {
     const { languageCode } = useLanguage();
@@ -96,145 +99,129 @@ export const AttributeSetForm = ({ attributeSet, onClose }) => {
     };
 
     return (
-        <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
-            <div className="modal-dialog modal-lg">
-                <div className="modal-content">
-                    <div className="modal-header bg-primary text-white">
-                        <h5 className="modal-title">
-                            <i className={`fas ${isEditing ? 'fa-edit' : 'fa-plus'} mr-2`}></i>
-                            {isEditing ? t('edit_attribute_set', 'Edit Attribute Set') : t('add_new_attribute_set', 'Add New Attribute Set')}
-                        </h5>
-                        <button
-                            type="button"
-                            className="close text-white"
-                            onClick={onClose}
-                            disabled={isLoading}
-                        >
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                    <div className="modal-body">
-                        <div className="container-fluid">
-                            <div className="row">
-                                <div className="col-12">
-                                    <div className="alert alert-info" role="alert">
-                                        <i className="fas fa-info-circle mr-2"></i>
-                                        <strong>{t('attribute_set_management', 'Attribute Set Management')}:</strong> {t('attribute_set_management_description', 'Create or edit attribute sets to organize attributes into reusable groups for products.')}
-                                        {t('required_fields_note', 'All fields marked with * are required.')}
-                                    </div>
-                                </div>
-                            </div>
+        <Modal show={true} onClose={onClose} className="max-w-2xl">
+            <Modal.Header onClose={onClose}>
+                <div className="flex items-center">
+                    <i className={`fas ${isEditing ? 'fa-edit' : 'fa-plus'} mr-3 text-blue-600`}></i>
+                    {isEditing ? t('edit_attribute_set', 'Edit Attribute Set') : t('add_new_attribute_set', 'Add New Attribute Set')}
+                </div>
+            </Modal.Header>
 
-                            <form id="attribute-set-form" onSubmit={handleSubmit}>
-                                <div className="row">
-                                    <div className="col-md-12">
-                                        <div className="form-group">
-                                            <label htmlFor="name" className="form-label">
-                                                <i className="fas fa-tag mr-2"></i>
-                                                {t('name', 'Name')} *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                                                id="name"
-                                                name="name"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                                placeholder={t('attribute_set_name_placeholder', 'e.g., Clothing, Electronics, Books')}
-                                                disabled={isLoading}
-                                            />
-                                            {errors.name && (
-                                                <div className="invalid-feedback">
-                                                    <i className="fas fa-exclamation-triangle mr-1"></i>
-                                                    {errors.name}
-                                                </div>
-                                            )}
-                                            <small className="form-text text-muted">
-                                                {t('attribute_set_name_help_text', 'A descriptive name for the attribute set')}
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="row">
-                                    <div className="col-md-12">
-                                        <div className="form-group">
-                                            <label htmlFor="description" className="form-label">
-                                                <i className="fas fa-align-left mr-2"></i>
-                                                {t('description', 'Description')}
-                                            </label>
-                                            <textarea
-                                                className="form-control"
-                                                id="description"
-                                                name="description"
-                                                value={formData.description}
-                                                onChange={handleChange}
-                                                placeholder={t('attribute_set_description_placeholder', 'Optional description of what this attribute set is used for')}
-                                                rows="3"
-                                                disabled={isLoading}
-                                            />
-                                            <small className="form-text text-muted">
-                                                {t('attribute_set_description_help_text', 'Optional description to help identify the purpose of this attribute set')}
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {isEditing && (
-                                    <div className="row">
-                                        <div className="col-md-12">
-                                            <div className="alert alert-info">
-                                                <i className="fas fa-info-circle mr-2"></i>
-                                                <strong>{t('note', 'Note')}:</strong> {t('attribute_set_note', 'After creating the attribute set, you can add attributes to it from the attribute set details page.')}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </form>
-                        </div>
-                    </div>
-
-                    <div className="modal-footer bg-light border-top">
-                        <div className="d-flex justify-content-between w-100">
-                            <div className="text-muted">
-                                <small>
-                                    <i className="fas fa-lightbulb mr-1"></i>
-                                    {isEditing ? t('update_attribute_set_details', 'Update the attribute set details') : t('create_new_attribute_set', 'Create a new attribute set to organize attributes')}
-                                </small>
-                            </div>
+            <Modal.Body>
+                <div className="mb-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-start">
+                            <i className="fas fa-info-circle text-blue-600 mr-2 mt-0.5"></i>
                             <div>
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-secondary mr-2"
-                                    onClick={onClose}
-                                    disabled={isLoading}
-                                >
-                                    <i className="fas fa-times mr-1"></i>
-                                    {t('cancel', 'Cancel')}
-                                </button>
-                                <button
-                                    type="submit"
-                                    form="attribute-set-form"
-                                    className={`btn ${isEditing ? 'btn-warning' : 'btn-success'}`}
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? (
-                                        <>
-                                            <i className="fas fa-spinner fa-spin mr-1"></i>
-                                            {isEditing ? t('updating', 'Updating...') : t('creating', 'Creating...')}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <i className={`fas ${isEditing ? 'fa-save' : 'fa-plus'} mr-1`}></i>
-                                            {isEditing ? t('update_attribute_set', 'Update Attribute Set') : t('create_attribute_set', 'Create Attribute Set')}
-                                        </>
-                                    )}
-                                </button>
+                                <strong className="text-blue-800">{t('attribute_set_management', 'Attribute Set Management')}:</strong>
+                                <span className="text-blue-700 ml-1">
+                                    {t('attribute_set_management_description', 'Create or edit attribute sets to organize attributes into reusable groups for products.')}
+                                    {t('required_fields_note', 'All fields marked with * are required.')}
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+
+                <form id="attribute-set-form" onSubmit={handleSubmit}>
+                    <Form.Group>
+                        <Form.Label htmlFor="name">
+                            <i className="fas fa-tag mr-2 text-blue-600"></i>
+                            {t('name', 'Name')} *
+                        </Form.Label>
+                        <Form.Control
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            placeholder={t('attribute_set_name_placeholder', 'e.g., Clothing, Electronics, Books')}
+                            disabled={isLoading}
+                            className={errors.name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
+                        />
+                        {errors.name && (
+                            <Form.ErrorText>
+                                <i className="fas fa-exclamation-triangle mr-1"></i>
+                                {errors.name}
+                            </Form.ErrorText>
+                        )}
+                        <Form.HelpText>
+                            {t('attribute_set_name_help_text', 'A descriptive name for the attribute set')}
+                        </Form.HelpText>
+                    </Form.Group>
+
+                    <Form.Group>
+                        <Form.Label htmlFor="description">
+                            <i className="fas fa-align-left mr-2 text-blue-600"></i>
+                            {t('description', 'Description')}
+                        </Form.Label>
+                        <Form.Textarea
+                            id="description"
+                            name="description"
+                            value={formData.description}
+                            onChange={handleChange}
+                            placeholder={t('attribute_set_description_placeholder', 'Optional description of what this attribute set is used for')}
+                            rows="3"
+                            disabled={isLoading}
+                        />
+                        <Form.HelpText>
+                            {t('attribute_set_description_help_text', 'Optional description to help identify the purpose of this attribute set')}
+                        </Form.HelpText>
+                    </Form.Group>
+
+                    {isEditing && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div className="flex items-start">
+                                <i className="fas fa-info-circle text-blue-600 mr-2 mt-0.5"></i>
+                                <div>
+                                    <strong className="text-blue-800">{t('note', 'Note')}:</strong>
+                                    <span className="text-blue-700 ml-1">
+                                        {t('attribute_set_note', 'After creating the attribute set, you can add attributes to it from the attribute set details page.')}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </form>
+            </Modal.Body>
+
+            <Modal.Footer>
+                <div className="flex justify-between items-center w-full">
+                    <div className="text-gray-500 text-sm">
+                        <i className="fas fa-lightbulb mr-1"></i>
+                        {isEditing ? t('update_attribute_set_details', 'Update the attribute set details') : t('create_new_attribute_set', 'Create a new attribute set to organize attributes')}
+                    </div>
+                    <div className="flex space-x-2">
+                        <Button
+                            variant="secondary"
+                            outline
+                            onClick={onClose}
+                            disabled={isLoading}
+                        >
+                            <i className="fas fa-times mr-1"></i>
+                            {t('cancel', 'Cancel')}
+                        </Button>
+                        <Button
+                            variant={isEditing ? 'warning' : 'success'}
+                            type="submit"
+                            form="attribute-set-form"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <>
+                                    <i className="fas fa-spinner fa-spin mr-1"></i>
+                                    {isEditing ? t('updating', 'Updating...') : t('creating', 'Creating...')}
+                                </>
+                            ) : (
+                                <>
+                                    <i className={`fas ${isEditing ? 'fa-save' : 'fa-plus'} mr-1`}></i>
+                                    {isEditing ? t('update_attribute_set', 'Update Attribute Set') : t('create_attribute_set', 'Create Attribute Set')}
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                </div>
+            </Modal.Footer>
+        </Modal>
     );
 };
