@@ -1,7 +1,10 @@
 import React from 'react'
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { formatPermissionsForDisplay } from '../constants/permissionDefinitions'
 
 export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = true }) {
+  const { languageCode } = useLanguage()
+  const { t } = useTranslation(languageCode, 'roles')
   return (
     <div className="roles-list-container">
       <div className="table-responsive">
@@ -10,19 +13,19 @@ export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = 
             <tr>
               <th className="role-id-column">
                 <i className="fas fa-hashtag mr-2"></i>
-                ID
+                {t('id', 'ID')}
               </th>
               <th className="role-name-column">
                 <i className="fas fa-tag mr-2"></i>
-                Role Name
+                {t('role_name', 'Role Name')}
               </th>
               <th className="role-permissions-column">
                 <i className="fas fa-shield-alt mr-2"></i>
-                Permissions
+                {t('permissions', 'Permissions')}
               </th>
               <th className="role-actions-column text-center">
                 <i className="fas fa-cogs mr-2"></i>
-                Actions
+                {t('actions', 'Actions')}
               </th>
             </tr>
           </thead>
@@ -44,12 +47,12 @@ export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = 
                         {isSystemRole && (
                           <span className="badge badge-info ml-2">
                             <i className="fas fa-lock mr-1"></i>
-                            System
+                            {t('system', 'System')}
                           </span>
                         )}
                       </div>
                       <small className="text-muted">
-                        {permissionCount} permission{permissionCount !== 1 ? 's' : ''}
+                        {t('permission_count', '{{count}} permission', { count: permissionCount })}
                       </small>
                     </div>
                   </td>
@@ -67,7 +70,7 @@ export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = 
                             <div className="permission-more">
                               <i className="fas fa-ellipsis-h text-muted mr-2"></i>
                               <span className="text-muted">
-                                +{displayPermissions.length - 3} more permission{displayPermissions.length - 3 !== 1 ? 's' : ''}
+                                +{displayPermissions.length - 3} {t('more_permissions', 'more permission')}
                               </span>
                             </div>
                           )}
@@ -75,7 +78,7 @@ export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = 
                       ) : (
                         <div className="no-permissions">
                           <i className="fas fa-exclamation-triangle text-warning mr-2"></i>
-                          <span className="text-muted">No permissions assigned</span>
+                          <span className="text-muted">{t('no_permissions_assigned', 'No permissions assigned')}</span>
                         </div>
                       )}
                     </div>
@@ -86,24 +89,24 @@ export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = 
                         className="btn btn-sm btn-outline-primary mr-2"
                         onClick={() => { if (canEdit) onEdit(role) }}
                         disabled={!canEdit}
-                        title="Edit role permissions"
+                        title={t('edit_role_permissions', 'Edit role permissions')}
                       >
                         <i className="fas fa-edit mr-1"></i>
-                        Edit
+                        {t('edit', 'Edit')}
                       </button>
                       {!isSystemRole && (
                         <button
                           className="btn btn-sm btn-outline-danger"
                           onClick={() => { if (canDelete) onDelete(role.id) }}
                           disabled={!canDelete}
-                          title="Delete role"
+                          title={t('delete_role', 'Delete role')}
                         >
                           <i className="fas fa-trash mr-1"></i>
-                          Delete
+                          {t('delete', 'Delete')}
                         </button>
                       )}
                       {isSystemRole && (
-                        <span className="text-muted" title="System roles cannot be deleted">
+                        <span className="text-muted" title={t('system_roles_cannot_be_deleted', 'System roles cannot be deleted')}>
                           <i className="fas fa-lock"></i>
                         </span>
                       )}
@@ -120,9 +123,9 @@ export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = 
         <div className="empty-state">
           <div className="empty-state-content">
             <i className="fas fa-user-shield empty-state-icon"></i>
-            <h4 className="empty-state-title">No Roles Found</h4>
+            <h4 className="empty-state-title">{t('no_roles_found', 'No Roles Found')}</h4>
             <p className="empty-state-description">
-              Get started by creating your first role to define user permissions.
+              {t('get_started_roles', 'Get started by creating your first role to define user permissions.')}
             </p>
           </div>
         </div>

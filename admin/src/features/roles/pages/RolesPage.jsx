@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
+import { useTranslation, useLanguage } from '../../../shared/hooks/useTranslation'
 import { RoleList } from '../components/RoleList'
 import { RoleModal } from '../components/RoleModal'
 import { useRoles } from '../hooks/useRoles'
@@ -11,11 +12,13 @@ const isValidationErrorMap = (err) => {
 }
 
 export function RolesPage() {
+  const { can } = usePermissions()
+  const { languageCode } = useLanguage()
+  const { t } = useTranslation(languageCode, 'roles')
   const [modalOpen, setModalOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [targetRole, setTargetRole] = useState(null)
   const [formErrors, setFormErrors] = useState({})
-  const { can } = usePermissions()
   const [editing, setEditing] = useState(null)
 
   const canViewRoles = can('roles:read')
@@ -45,11 +48,10 @@ export function RolesPage() {
           <div>
             <h2 className="page-title">
               <i className="fas fa-user-shield mr-2"></i>
-              Roles & Permissions
+              {t('roles_permissions', 'Roles & Permissions')}
             </h2>
             <p className="page-subtitle">
-              Define permission sets and control what teams can access.
-              Create custom roles to match your organization's needs.
+              {t('page_subtitle', 'Define permission sets and control what teams can access. Create custom roles to match your organization\'s needs.')}
             </p>
           </div>
           <div className="page-actions">
@@ -57,10 +59,10 @@ export function RolesPage() {
               className="btn btn-primary"
               onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
               disabled={!canCreateRole}
-              title={!canCreateRole ? 'Not allowed' : undefined}
+              title={!canCreateRole ? t('not_allowed', 'Not allowed') : undefined}
             >
               <i className="fas fa-plus mr-2"></i>
-              Add New Role
+              {t('add_new_role', 'Add New Role')}
             </button>
           </div>
         </div>
@@ -69,7 +71,7 @@ export function RolesPage() {
           {!canViewRoles && (
             <div className="alert alert-warning" role="alert">
               <i className="fas fa-exclamation-triangle mr-2"></i>
-              You do not have permission to view roles.
+              {t('no_permission_view_roles', 'You do not have permission to view roles.')}
             </div>
           )}
 
@@ -77,8 +79,8 @@ export function RolesPage() {
             <div className="loading-state">
               <div className="loading-content">
                 <i className="fas fa-spinner fa-spin loading-icon"></i>
-                <h4 className="loading-title">Loading Roles</h4>
-                <p className="loading-description">Please wait while we fetch the role information...</p>
+                <h4 className="loading-title">{t('loading_roles', 'Loading Roles')}</h4>
+                <p className="loading-description">{t('loading_roles_description', 'Please wait while we fetch the role information...')}</p>
               </div>
             </div>
           )}
@@ -94,7 +96,7 @@ export function RolesPage() {
                       </div>
                       <div className="stat-content">
                         <div className="stat-number">{roles.length}</div>
-                        <div className="stat-label">Total Roles</div>
+                        <div className="stat-label">{t('total_roles', 'Total Roles')}</div>
                       </div>
                     </div>
                   </div>
@@ -107,7 +109,7 @@ export function RolesPage() {
                         <div className="stat-number">
                           {roles.reduce((acc, role) => acc + (role.permissions?.length || 0), 0)}
                         </div>
-                        <div className="stat-label">Total Permissions</div>
+                        <div className="stat-label">{t('total_permissions', 'Total Permissions')}</div>
                       </div>
                     </div>
                   </div>
@@ -120,7 +122,7 @@ export function RolesPage() {
                         <div className="stat-number">
                           {roles.filter(role => role.name === 'Administrator' || role.name === 'User').length}
                         </div>
-                        <div className="stat-label">System Roles</div>
+                        <div className="stat-label">{t('system_roles', 'System Roles')}</div>
                       </div>
                     </div>
                   </div>
@@ -133,7 +135,7 @@ export function RolesPage() {
                         <div className="stat-number">
                           {roles.filter(role => role.name !== 'Administrator' && role.name !== 'User').length}
                         </div>
-                        <div className="stat-label">Custom Roles</div>
+                        <div className="stat-label">{t('custom_roles', 'Custom Roles')}</div>
                       </div>
                     </div>
                   </div>
@@ -144,10 +146,10 @@ export function RolesPage() {
                 <div className="section-header">
                   <h5 className="section-title">
                     <i className="fas fa-list mr-2"></i>
-                    Role Management
+                    {t('role_management', 'Role Management')}
                   </h5>
                   <p className="section-description">
-                    Manage existing roles and their permissions. System roles cannot be deleted.
+                    {t('role_management_description', 'Manage existing roles and their permissions. System roles cannot be deleted.')}
                   </p>
                 </div>
 
@@ -174,16 +176,16 @@ export function RolesPage() {
             <div className="error-state">
               <div className="error-content">
                 <i className="fas fa-exclamation-circle error-icon"></i>
-                <h4 className="error-title">Failed to Load Roles</h4>
+                <h4 className="error-title">{t('failed_to_load_roles', 'Failed to Load Roles')}</h4>
                 <p className="error-description">
-                  {error?.message || 'An unexpected error occurred while loading roles.'}
+                  {error?.message || t('unexpected_error_loading_roles', 'An unexpected error occurred while loading roles.')}
                 </p>
                 <button
                   className="btn btn-outline-primary"
                   onClick={() => window.location.reload()}
                 >
                   <i className="fas fa-redo mr-2"></i>
-                  Try Again
+                  {t('try_again', 'Try Again')}
                 </button>
               </div>
             </div>
@@ -193,7 +195,7 @@ export function RolesPage() {
 
       <RoleModal
         show={modalOpen}
-        title={editing?.id ? 'Edit Role' : 'Add Role'}
+        title={editing?.id ? t('edit_role', 'Edit Role') : t('add_role', 'Add Role')}
         initialRole={editing}
         errors={formErrors}
         submitting={submitting}
@@ -218,10 +220,10 @@ export function RolesPage() {
 
       <ConfirmModal
         show={confirmOpen}
-        title="Delete Role"
-        message={`Are you sure you want to delete ${targetRole?.name || 'this role'}?`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('delete_role', 'Delete Role')}
+        message={`${t('confirm_delete_role', 'Are you sure you want to delete')} ${targetRole?.name || t('this_role', 'this role')}?`}
+        confirmText={t('delete', 'Delete')}
+        cancelText={t('cancel', 'Cancel')}
         onCancel={() => { setConfirmOpen(false); setTargetRole(null) }}
         onConfirm={async () => {
           const id = targetRole?.id

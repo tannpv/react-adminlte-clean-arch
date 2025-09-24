@@ -1,9 +1,12 @@
 import React from 'react'
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { CategoryForm } from './CategoryForm'
 
 export function CategoryModal({ show, title, initialCategory, onClose, onSubmit, errors, submitting, categories = [], tree = [], hierarchy = [] }) {
   const formId = 'category-modal-form'
   const isEditing = !!initialCategory?.id
+  const { languageCode } = useLanguage()
+  const { t } = useTranslation(languageCode, 'categories')
 
   return (
     <>
@@ -39,8 +42,7 @@ export function CategoryModal({ show, title, initialCategory, onClose, onSubmit,
                   <div className="col-12">
                     <div className="alert alert-info" role="alert">
                       <i className="fas fa-info-circle mr-2"></i>
-                      <strong>Category Management:</strong> Create or edit product categories to organize your inventory.
-                      Categories help customers find products more easily.
+                      <strong>{t('category_management', 'Category Management')}:</strong> {t('category_management_description', 'Create or edit product categories to organize your inventory. Categories help customers find products more easily.')}
                     </div>
                   </div>
                 </div>

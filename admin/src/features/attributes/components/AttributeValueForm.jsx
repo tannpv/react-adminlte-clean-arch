@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
 import { useCreateAttributeValue, useUpdateAttributeValue } from '../hooks/useAttributeValues';
 import { useAttributes } from '../hooks/useAttributes';
 
 export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
+    const { languageCode } = useLanguage();
+    const { t } = useTranslation(languageCode, 'attributes');
+
     const [formData, setFormData] = useState({
         attributeId: '',
         value: '',
@@ -114,10 +118,10 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
         <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
             <div className="modal-dialog modal-lg">
                 <div className="modal-content">
-                    <div className="modal-header bg-gradient-primary text-white">
+                    <div className="modal-header bg-primary text-white">
                         <h5 className="modal-title">
-                            <i className="fas fa-list-ul mr-2"></i>
-                            {isEditing ? 'Edit Attribute Value' : 'Add New Attribute Value'}
+                            <i className={`fas ${isEditing ? 'fa-edit' : 'fa-plus'} mr-2`}></i>
+                            {isEditing ? t('edit_attribute_value', 'Edit Attribute Value') : t('add_new_attribute_value', 'Add New Attribute Value')}
                         </h5>
                         <button
                             type="button"
@@ -135,7 +139,8 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
                                 <div className="col-12">
                                     <div className="alert alert-info" role="alert">
                                         <i className="fas fa-info-circle mr-2"></i>
-                                        <strong>Attribute Values:</strong> Create values like "Red", "Blue", "Small", "Large" for your attributes.
+                                        <strong>{t('attribute_values', 'Attribute Values')}:</strong> {t('attribute_values_description', 'Create values like "Red", "Blue", "Small", "Large" for your attributes.')}
+                                        {t('required_fields_note', 'All fields marked with * are required.')}
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +151,7 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
                                         <div className="form-group">
                                             <label htmlFor="attributeId" className="form-label">
                                                 <i className="fas fa-tag mr-2"></i>
-                                                Attribute *
+                                                {t('attribute', 'Attribute')} *
                                             </label>
                                             <select
                                                 id="attributeId"
@@ -157,7 +162,7 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
                                                 disabled={isLoading}
                                                 required
                                             >
-                                                <option value="">Select an attribute...</option>
+                                                <option value="">{t('select_attribute', 'Select an attribute...')}</option>
                                                 {attributes.map(attribute => (
                                                     <option key={attribute.id} value={attribute.id}>
                                                         {attribute.name} ({attribute.inputType})
@@ -171,7 +176,7 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
                                                 </div>
                                             )}
                                             <small className="form-text text-muted">
-                                                Choose the attribute this value belongs to
+                                                {t('choose_attribute_help_text', 'Choose the attribute this value belongs to')}
                                             </small>
                                         </div>
                                     </div>
@@ -180,7 +185,7 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
                                         <div className="form-group">
                                             <label htmlFor="value" className="form-label">
                                                 <i className="fas fa-list mr-2"></i>
-                                                Value *
+                                                {t('value', 'Value')} *
                                             </label>
                                             <input
                                                 type="text"
@@ -189,7 +194,7 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
                                                 className={`form-control ${errors.value ? 'is-invalid' : ''}`}
                                                 value={formData.value}
                                                 onChange={handleInputChange}
-                                                placeholder="e.g., Red, Blue, Small, Large"
+                                                placeholder={t('value_placeholder', 'e.g., Red, Blue, Small, Large')}
                                                 disabled={isLoading}
                                                 required
                                             />
@@ -200,7 +205,7 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
                                                 </div>
                                             )}
                                             <small className="form-text text-muted">
-                                                The actual value (e.g., "Red" for Color attribute)
+                                                {t('value_help_text', 'The actual value (e.g., "Red" for Color attribute)')}
                                             </small>
                                         </div>
                                     </div>
@@ -211,7 +216,7 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
                                         <div className="form-group">
                                             <label htmlFor="sortOrder" className="form-label">
                                                 <i className="fas fa-sort-numeric-up mr-2"></i>
-                                                Sort Order
+                                                {t('sort_order', 'Sort Order')}
                                             </label>
                                             <input
                                                 type="number"
@@ -224,7 +229,7 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
                                                 disabled={isLoading}
                                             />
                                             <small className="form-text text-muted">
-                                                Lower numbers appear first in dropdowns
+                                                {t('sort_order_help_text', 'Lower numbers appear first in dropdowns')}
                                             </small>
                                         </div>
                                     </div>
@@ -240,39 +245,39 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
                         </div>
                     </div>
 
-                    <div className="modal-footer">
+                    <div className="modal-footer bg-light border-top">
                         <div className="d-flex justify-content-between w-100">
                             <div className="text-muted">
                                 <small>
                                     <i className="fas fa-lightbulb mr-1"></i>
-                                    {isEditing ? 'Update the attribute value details' : 'Create a new value for an attribute'}
+                                    {isEditing ? t('update_attribute_value_details', 'Update the attribute value details') : t('create_new_attribute_value', 'Create a new value for an attribute')}
                                 </small>
                             </div>
                             <div>
                                 <button
                                     type="button"
-                                    className="btn btn-secondary mr-2"
+                                    className="btn btn-outline-secondary mr-2"
                                     onClick={onClose}
                                     disabled={isLoading}
                                 >
                                     <i className="fas fa-times mr-1"></i>
-                                    Cancel
+                                    {t('cancel', 'Cancel')}
                                 </button>
                                 <button
                                     type="button"
-                                    className="btn btn-primary"
+                                    className={`btn ${isEditing ? 'btn-warning' : 'btn-success'}`}
                                     onClick={handleSubmit}
                                     disabled={isLoading}
                                 >
                                     {isLoading ? (
                                         <>
-                                            <span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
-                                            {isEditing ? 'Updating...' : 'Creating...'}
+                                            <i className="fas fa-spinner fa-spin mr-1"></i>
+                                            {isEditing ? t('updating', 'Updating...') : t('creating', 'Creating...')}
                                         </>
                                     ) : (
                                         <>
                                             <i className={`fas ${isEditing ? 'fa-save' : 'fa-plus'} mr-1`}></i>
-                                            {isEditing ? 'Update Value' : 'Create Value'}
+                                            {isEditing ? t('update_value', 'Update Value') : t('create_value', 'Create Value')}
                                         </>
                                     )}
                                 </button>

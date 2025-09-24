@@ -28,20 +28,20 @@ let BaseValidatorService = class BaseValidatorService {
     validateEmail(email) {
         const trimmed = email?.trim();
         if (!trimmed) {
-            return this.createError('email', 'EMAIL_REQUIRED', 'Email is required');
+            return this.createError("email", "EMAIL_REQUIRED", "Email is required");
         }
         const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRe.test(trimmed)) {
-            return this.createError('email', 'EMAIL_INVALID', 'Email is invalid');
+            return this.createError("email", "EMAIL_INVALID", "Email is invalid");
         }
         return null;
     }
     validatePassword(password) {
         if (!password?.trim()) {
-            return this.createError('password', 'PASSWORD_REQUIRED', 'Password is required');
+            return this.createError("password", "PASSWORD_REQUIRED", "Password is required");
         }
         if (password.length < 6) {
-            return this.createError('password', 'PASSWORD_MIN', 'Password must be at least 6 characters');
+            return this.createError("password", "PASSWORD_MIN", "Password must be at least 6 characters");
         }
         return null;
     }

@@ -9,22 +9,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ValidationModule = void 0;
 const common_1 = require("@nestjs/common");
 const persistence_module_1 = require("../../infrastructure/persistence/persistence.module");
-const user_validation_service_1 = require("./user-validation.service");
 const user_update_validation_service_1 = require("./user-update-validation.service");
+const user_validation_service_1 = require("./user-validation.service");
 let ValidationModule = class ValidationModule {
 };
 exports.ValidationModule = ValidationModule;
 exports.ValidationModule = ValidationModule = __decorate([
     (0, common_1.Module)({
         imports: [persistence_module_1.PersistenceModule],
-        providers: [
-            user_validation_service_1.UserValidationService,
-            user_update_validation_service_1.UserUpdateValidationService,
-        ],
-        exports: [
-            user_validation_service_1.UserValidationService,
-            user_update_validation_service_1.UserUpdateValidationService,
-        ],
+        providers: [user_validation_service_1.UserValidationService, user_update_validation_service_1.UserUpdateValidationService],
+        exports: [user_validation_service_1.UserValidationService, user_update_validation_service_1.UserUpdateValidationService],
     })
 ], ValidationModule);
 //# sourceMappingURL=validation.module.js.map

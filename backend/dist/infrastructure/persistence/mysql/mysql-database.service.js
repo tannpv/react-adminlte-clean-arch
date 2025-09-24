@@ -370,6 +370,70 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
           REFERENCES roles(id) ON DELETE CASCADE
       ) ENGINE=InnoDB;
     `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS languages (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        code VARCHAR(5) NOT NULL UNIQUE,
+        name VARCHAR(100) NOT NULL,
+        nativeName VARCHAR(100) NOT NULL,
+        isDefault BOOLEAN NOT NULL DEFAULT FALSE,
+        isActive BOOLEAN NOT NULL DEFAULT TRUE,
+        flagIcon VARCHAR(10) NULL,
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_languages_code (code),
+        INDEX idx_languages_active (isActive),
+        INDEX idx_languages_default (isDefault)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS translation_namespaces (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL UNIQUE,
+        description VARCHAR(255) NULL,
+        isActive BOOLEAN NOT NULL DEFAULT TRUE,
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_namespaces_name (name),
+        INDEX idx_namespaces_active (isActive)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS translation_keys (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        key_path VARCHAR(255) NOT NULL,
+        description VARCHAR(500) NULL,
+        isActive BOOLEAN NOT NULL DEFAULT TRUE,
+        namespaceId INT NOT NULL,
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        CONSTRAINT fk_translation_keys_namespace FOREIGN KEY (namespaceId)
+          REFERENCES translation_namespaces(id) ON DELETE CASCADE,
+        INDEX idx_translation_keys_namespace (namespaceId),
+        INDEX idx_translation_keys_path (key_path),
+        INDEX idx_translation_keys_active (isActive),
+        UNIQUE KEY uniq_key_namespace (key_path, namespaceId)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+        await this.execute(`
+      CREATE TABLE IF NOT EXISTS translations (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        value TEXT NOT NULL,
+        notes TEXT NULL,
+        isActive BOOLEAN NOT NULL DEFAULT TRUE,
+        languageId INT NOT NULL,
+        keyId INT NOT NULL,
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        CONSTRAINT fk_translations_language FOREIGN KEY (languageId)
+          REFERENCES languages(id) ON DELETE CASCADE,
+        CONSTRAINT fk_translations_key FOREIGN KEY (keyId)
+          REFERENCES translation_keys(id) ON DELETE CASCADE,
+        INDEX idx_translations_language_key (languageId, keyId),
+        INDEX idx_translations_active (isActive),
+        UNIQUE KEY uniq_translation_language_key (languageId, keyId)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
         await this.seedDefaults();
     }
     async seedDefaults() {
@@ -378,7 +442,8 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         if (roleCount === 0) {
             const adminId = await this.insertRole("Admin", constants_1.DEFAULT_ADMIN_PERMISSIONS);
             const userId = await this.insertRole("User", constants_1.DEFAULT_USER_PERMISSIONS);
-            this.logger.log(`Seeded default roles (Admin=${adminId}, User=${userId})`);
+            const translatorId = await this.insertRole("Translator", constants_1.DEFAULT_TRANSLATOR_PERMISSIONS);
+            this.logger.log(`Seeded default roles (Admin=${adminId}, User=${userId}, Translator=${translatorId})`);
         }
         else {
             const [roles] = await this.execute("SELECT id, name FROM roles");
@@ -389,7 +454,9 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
                     ? constants_1.DEFAULT_ADMIN_PERMISSIONS
                     : role.name.toLowerCase() === "user"
                         ? constants_1.DEFAULT_USER_PERMISSIONS
-                        : ["users:read"];
+                        : role.name.toLowerCase() === "translator"
+                            ? constants_1.DEFAULT_TRANSLATOR_PERMISSIONS
+                            : ["users:read"];
                 const missing = desired.filter((perm) => !existingSet.has(perm));
                 if (missing.length) {
                     await this.insertPermissions(role.id, missing);
@@ -416,6 +483,7 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         await this.ensureDefaultCategories();
         await this.ensureSampleProduct();
         await this.seedDefaultAttributes();
+        await this.seedDefaultTranslations();
     }
     async ensureUsersHavePasswords() {
         const [users] = await this.execute("SELECT id, password_hash FROM users");
@@ -798,6 +866,482 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         catch (error) {
             console.error("Error ensuring normalized schema:", error);
         }
+    }
+    async seedDefaultTranslations() {
+        const [languageCount] = await this.execute("SELECT COUNT(*) as count FROM languages");
+        const languagesExist = Number(languageCount[0]?.count ?? 0) > 0;
+        if (!languagesExist) {
+            await this.execute(`
+        INSERT INTO languages (code, name, nativeName, isDefault, isActive, flagIcon) VALUES
+        ('en', 'English', 'English', true, true, '🇺🇸'),
+        ('es', 'Spanish', 'Español', false, true, '🇪🇸'),
+        ('fr', 'French', 'Français', false, true, '🇫🇷'),
+        ('de', 'German', 'Deutsch', false, true, '🇩🇪'),
+        ('it', 'Italian', 'Italiano', false, true, '🇮🇹')
+      `);
+        }
+        const [namespaceCount] = await this.execute("SELECT COUNT(*) as count FROM translation_namespaces");
+        if (Number(namespaceCount[0]?.count ?? 0) === 0) {
+            await this.execute(`
+        INSERT INTO translation_namespaces (name, description, isActive) VALUES
+        ('common', 'Common UI elements and messages', true),
+        ('auth', 'Authentication related messages', true),
+        ('products', 'Product management messages', true),
+        ('users', 'User management messages', true),
+        ('categories', 'Category management messages', true),
+        ('roles', 'Role management messages', true),
+        ('storage', 'File storage messages', true),
+        ('validation', 'Form validation messages', true),
+        ('translations', 'Translation management messages', true)
+      `);
+        }
+        const [languages] = await this.execute("SELECT id, code FROM languages");
+        const [namespaces] = await this.execute("SELECT id, name FROM translation_namespaces");
+        const languageMap = new Map(languages.map((l) => [l.code, l.id]));
+        const namespaceMap = new Map(namespaces.map((n) => [n.name, n.id]));
+        const translationKeys = [
+            { namespace: "common", key: "loading", description: "Loading message" },
+            { namespace: "common", key: "save", description: "Save button text" },
+            { namespace: "common", key: "cancel", description: "Cancel button text" },
+            { namespace: "common", key: "delete", description: "Delete button text" },
+            { namespace: "common", key: "edit", description: "Edit button text" },
+            { namespace: "common", key: "create", description: "Create button text" },
+            { namespace: "common", key: "search", description: "Search placeholder" },
+            {
+                namespace: "common",
+                key: "no_results",
+                description: "No results message",
+            },
+            {
+                namespace: "auth",
+                key: "login.title",
+                description: "Login page title",
+            },
+            {
+                namespace: "auth",
+                key: "login.email",
+                description: "Email field label",
+            },
+            {
+                namespace: "auth",
+                key: "login.password",
+                description: "Password field label",
+            },
+            {
+                namespace: "auth",
+                key: "login.submit",
+                description: "Login button text",
+            },
+            {
+                namespace: "auth",
+                key: "login.invalid_credentials",
+                description: "Invalid credentials error",
+            },
+            {
+                namespace: "products",
+                key: "title",
+                description: "Products page title",
+            },
+            {
+                namespace: "products",
+                key: "create.title",
+                description: "Create product title",
+            },
+            {
+                namespace: "products",
+                key: "edit.title",
+                description: "Edit product title",
+            },
+            { namespace: "products", key: "name", description: "Product name field" },
+            {
+                namespace: "products",
+                key: "description",
+                description: "Product description field",
+            },
+            {
+                namespace: "products",
+                key: "price",
+                description: "Product price field",
+            },
+            { namespace: "products", key: "sku", description: "Product SKU field" },
+            { namespace: "users", key: "title", description: "Users page title" },
+            {
+                namespace: "users",
+                key: "create.title",
+                description: "Create user title",
+            },
+            { namespace: "users", key: "edit.title", description: "Edit user title" },
+            {
+                namespace: "users",
+                key: "first_name",
+                description: "First name field",
+            },
+            { namespace: "users", key: "last_name", description: "Last name field" },
+            { namespace: "users", key: "email", description: "Email field" },
+            {
+                namespace: "validation",
+                key: "required",
+                description: "Required field error",
+            },
+            {
+                namespace: "validation",
+                key: "email_invalid",
+                description: "Invalid email error",
+            },
+            {
+                namespace: "validation",
+                key: "min_length",
+                description: "Minimum length error",
+            },
+            {
+                namespace: "validation",
+                key: "max_length",
+                description: "Maximum length error",
+            },
+            {
+                namespace: "translations",
+                key: "title",
+                description: "Translation management page title",
+            },
+            {
+                namespace: "translations",
+                key: "languages.title",
+                description: "Languages tab title",
+            },
+            {
+                namespace: "translations",
+                key: "translations.title",
+                description: "Translations tab title",
+            },
+            {
+                namespace: "translations",
+                key: "cache.title",
+                description: "Cache management tab title",
+            },
+            {
+                namespace: "translations",
+                key: "add_language",
+                description: "Add language button text",
+            },
+            {
+                namespace: "translations",
+                key: "edit_language",
+                description: "Edit language button text",
+            },
+            {
+                namespace: "translations",
+                key: "delete_language",
+                description: "Delete language button text",
+            },
+            {
+                namespace: "translations",
+                key: "clear_cache",
+                description: "Clear cache button text",
+            },
+            {
+                namespace: "translations",
+                key: "warm_up_cache",
+                description: "Warm up cache button text",
+            },
+        ];
+        const [keyCount] = await this.execute("SELECT COUNT(*) as count FROM translation_keys");
+        if (Number(keyCount[0]?.count ?? 0) === 0) {
+            for (const keyData of translationKeys) {
+                const namespaceId = namespaceMap.get(keyData.namespace);
+                if (namespaceId) {
+                    await this.execute(`
+            INSERT INTO translation_keys (key_path, description, isActive, namespaceId) 
+            VALUES (?, ?, true, ?)
+          `, [keyData.key, keyData.description, namespaceId]);
+                }
+            }
+        }
+        const englishId = languageMap.get("en");
+        if (englishId) {
+            const [keys] = await this.execute("SELECT id, key_path FROM translation_keys");
+            const englishTranslations = {
+                loading: "Loading...",
+                save: "Save",
+                cancel: "Cancel",
+                delete: "Delete",
+                edit: "Edit",
+                create: "Create",
+                search: "Search...",
+                no_results: "No results found",
+                "login.title": "Sign In",
+                "login.email": "Email",
+                "login.password": "Password",
+                "login.submit": "Sign In",
+                "login.invalid_credentials": "Invalid email or password",
+                "products.title": "Products",
+                "products.create.title": "Create Product",
+                "products.edit.title": "Edit Product",
+                "products.name": "Product Name",
+                "products.description": "Description",
+                "products.price": "Price",
+                "products.sku": "SKU",
+                "users.title": "Users",
+                "users.create.title": "Create User",
+                "users.edit.title": "Edit User",
+                "users.first_name": "First Name",
+                "users.last_name": "Last Name",
+                "users.email": "Email",
+                required: "This field is required",
+                email_invalid: "Please enter a valid email address",
+                min_length: "Minimum length is {min} characters",
+                max_length: "Maximum length is {max} characters",
+                "translations.title": "Translation Management",
+                "translations.languages.title": "Languages",
+                "translations.translations.title": "Translations",
+                "translations.cache.title": "Cache Management",
+                "translations.add_language": "Add Language",
+                "translations.edit_language": "Edit Language",
+                "translations.delete_language": "Delete Language",
+                "translations.clear_cache": "Clear Cache",
+                "translations.warm_up_cache": "Warm Up Cache",
+            };
+            const [englishTranslationCount] = await this.execute("SELECT COUNT(*) as count FROM translations WHERE languageId = ?", [englishId]);
+            if (Number(englishTranslationCount[0]?.count ?? 0) === 0) {
+                for (const key of keys) {
+                    const translation = englishTranslations[key.key_path];
+                    if (translation) {
+                        await this.execute(`
+              INSERT INTO translations (value, isActive, languageId, keyId) 
+              VALUES (?, true, ?, ?)
+            `, [translation, englishId, key.id]);
+                    }
+                }
+            }
+            const frenchId = languageMap.get("fr");
+            if (frenchId) {
+                const frenchTranslations = {
+                    loading: "Chargement...",
+                    save: "Enregistrer",
+                    cancel: "Annuler",
+                    delete: "Supprimer",
+                    edit: "Modifier",
+                    create: "Créer",
+                    search: "Rechercher...",
+                    no_results: "Aucun résultat trouvé",
+                    "login.title": "Se connecter",
+                    "login.email": "Email",
+                    "login.password": "Mot de passe",
+                    "login.submit": "Se connecter",
+                    "login.invalid_credentials": "Email ou mot de passe invalide",
+                    "products.title": "Produits",
+                    "products.create.title": "Créer un produit",
+                    "products.edit.title": "Modifier le produit",
+                    "products.name": "Nom du produit",
+                    "products.description": "Description",
+                    "products.price": "Prix",
+                    "products.sku": "SKU",
+                    "users.title": "Utilisateurs",
+                    "users.create.title": "Créer un utilisateur",
+                    "users.edit.title": "Modifier l'utilisateur",
+                    "users.first_name": "Prénom",
+                    "users.last_name": "Nom de famille",
+                    "users.email": "Email",
+                    required: "Ce champ est obligatoire",
+                    email_invalid: "Veuillez saisir une adresse email valide",
+                    min_length: "La longueur minimale est de {min} caractères",
+                    max_length: "La longueur maximale est de {max} caractères",
+                    "translations.title": "Gestion des traductions",
+                    "translations.languages.title": "Langues",
+                    "translations.translations.title": "Traductions",
+                    "translations.cache.title": "Gestion du cache",
+                    "translations.add_language": "Ajouter une langue",
+                    "translations.edit_language": "Modifier la langue",
+                    "translations.delete_language": "Supprimer la langue",
+                    "translations.clear_cache": "Vider le cache",
+                    "translations.warm_up_cache": "Préchauffer le cache",
+                };
+                const [frenchTranslationCount] = await this.execute("SELECT COUNT(*) as count FROM translations WHERE languageId = ?", [frenchId]);
+                if (Number(frenchTranslationCount[0]?.count ?? 0) === 0) {
+                    for (const key of keys) {
+                        const translation = frenchTranslations[key.key_path];
+                        if (translation) {
+                            await this.execute(`
+                INSERT INTO translations (value, isActive, languageId, keyId) 
+                VALUES (?, true, ?, ?)
+              `, [translation, frenchId, key.id]);
+                        }
+                    }
+                }
+                this.logger.log("Seeded default French translations");
+            }
+            const spanishId = languageMap.get("es");
+            if (spanishId) {
+                const spanishTranslations = {
+                    loading: "Cargando...",
+                    save: "Guardar",
+                    cancel: "Cancelar",
+                    delete: "Eliminar",
+                    edit: "Editar",
+                    create: "Crear",
+                    search: "Buscar...",
+                    no_results: "No se encontraron resultados",
+                    "login.title": "Iniciar sesión",
+                    "login.email": "Correo electrónico",
+                    "login.password": "Contraseña",
+                    "login.submit": "Iniciar sesión",
+                    "login.invalid_credentials": "Correo electrónico o contraseña inválidos",
+                    "products.title": "Productos",
+                    "products.create.title": "Crear producto",
+                    "products.edit.title": "Editar producto",
+                    "products.name": "Nombre del producto",
+                    "products.description": "Descripción",
+                    "products.price": "Precio",
+                    "products.sku": "SKU",
+                    "users.title": "Usuarios",
+                    "users.create.title": "Crear usuario",
+                    "users.edit.title": "Editar usuario",
+                    "users.first_name": "Nombre",
+                    "users.last_name": "Apellido",
+                    "users.email": "Correo electrónico",
+                    required: "Este campo es obligatorio",
+                    email_invalid: "Por favor ingrese una dirección de correo electrónico válida",
+                    min_length: "La longitud mínima es de {min} caracteres",
+                    max_length: "La longitud máxima es de {max} caracteres",
+                    "translations.title": "Gestión de traducciones",
+                    "translations.languages.title": "Idiomas",
+                    "translations.translations.title": "Traducciones",
+                    "translations.cache.title": "Gestión de caché",
+                    "translations.add_language": "Agregar idioma",
+                    "translations.edit_language": "Editar idioma",
+                    "translations.delete_language": "Eliminar idioma",
+                    "translations.clear_cache": "Limpiar caché",
+                    "translations.warm_up_cache": "Precalentar caché",
+                };
+                const [spanishTranslationCount] = await this.execute("SELECT COUNT(*) as count FROM translations WHERE languageId = ?", [spanishId]);
+                if (Number(spanishTranslationCount[0]?.count ?? 0) === 0) {
+                    for (const key of keys) {
+                        const translation = spanishTranslations[key.key_path];
+                        if (translation) {
+                            await this.execute(`
+                INSERT INTO translations (value, isActive, languageId, keyId) 
+                VALUES (?, true, ?, ?)
+              `, [translation, spanishId, key.id]);
+                        }
+                    }
+                }
+                this.logger.log("Seeded default Spanish translations");
+            }
+            const germanId = languageMap.get("de");
+            if (germanId) {
+                const germanTranslations = {
+                    loading: "Laden...",
+                    save: "Speichern",
+                    cancel: "Abbrechen",
+                    delete: "Löschen",
+                    edit: "Bearbeiten",
+                    create: "Erstellen",
+                    search: "Suchen...",
+                    no_results: "Keine Ergebnisse gefunden",
+                    "login.title": "Anmelden",
+                    "login.email": "E-Mail",
+                    "login.password": "Passwort",
+                    "login.submit": "Anmelden",
+                    "login.invalid_credentials": "Ungültige E-Mail oder Passwort",
+                    "products.title": "Produkte",
+                    "products.create.title": "Produkt erstellen",
+                    "products.edit.title": "Produkt bearbeiten",
+                    "products.name": "Produktname",
+                    "products.description": "Beschreibung",
+                    "products.price": "Preis",
+                    "products.sku": "SKU",
+                    "users.title": "Benutzer",
+                    "users.create.title": "Benutzer erstellen",
+                    "users.edit.title": "Benutzer bearbeiten",
+                    "users.first_name": "Vorname",
+                    "users.last_name": "Nachname",
+                    "users.email": "E-Mail",
+                    required: "Dieses Feld ist erforderlich",
+                    email_invalid: "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+                    min_length: "Mindestlänge ist {min} Zeichen",
+                    max_length: "Maximale Länge ist {max} Zeichen",
+                    "translations.title": "Übersetzungsverwaltung",
+                    "translations.languages.title": "Sprachen",
+                    "translations.translations.title": "Übersetzungen",
+                    "translations.cache.title": "Cache-Verwaltung",
+                    "translations.add_language": "Sprache hinzufügen",
+                    "translations.edit_language": "Sprache bearbeiten",
+                    "translations.delete_language": "Sprache löschen",
+                    "translations.clear_cache": "Cache leeren",
+                    "translations.warm_up_cache": "Cache vorwärmen",
+                };
+                const [germanTranslationCount] = await this.execute("SELECT COUNT(*) as count FROM translations WHERE languageId = ?", [germanId]);
+                if (Number(germanTranslationCount[0]?.count ?? 0) === 0) {
+                    for (const key of keys) {
+                        const translation = germanTranslations[key.key_path];
+                        if (translation) {
+                            await this.execute(`
+                INSERT INTO translations (value, isActive, languageId, keyId) 
+                VALUES (?, true, ?, ?)
+              `, [translation, germanId, key.id]);
+                        }
+                    }
+                }
+                this.logger.log("Seeded default German translations");
+            }
+            const italianId = languageMap.get("it");
+            if (italianId) {
+                const italianTranslations = {
+                    loading: "Caricamento...",
+                    save: "Salva",
+                    cancel: "Annulla",
+                    delete: "Elimina",
+                    edit: "Modifica",
+                    create: "Crea",
+                    search: "Cerca...",
+                    no_results: "Nessun risultato trovato",
+                    "login.title": "Accedi",
+                    "login.email": "Email",
+                    "login.password": "Password",
+                    "login.submit": "Accedi",
+                    "login.invalid_credentials": "Email o password non validi",
+                    "products.title": "Prodotti",
+                    "products.create.title": "Crea prodotto",
+                    "products.edit.title": "Modifica prodotto",
+                    "products.name": "Nome prodotto",
+                    "products.description": "Descrizione",
+                    "products.price": "Prezzo",
+                    "products.sku": "SKU",
+                    "users.title": "Utenti",
+                    "users.create.title": "Crea utente",
+                    "users.edit.title": "Modifica utente",
+                    "users.first_name": "Nome",
+                    "users.last_name": "Cognome",
+                    "users.email": "Email",
+                    required: "Questo campo è obbligatorio",
+                    email_invalid: "Inserisci un indirizzo email valido",
+                    min_length: "La lunghezza minima è di {min} caratteri",
+                    max_length: "La lunghezza massima è di {max} caratteri",
+                    "translations.title": "Gestione traduzioni",
+                    "translations.languages.title": "Lingue",
+                    "translations.translations.title": "Traduzioni",
+                    "translations.cache.title": "Gestione cache",
+                    "translations.add_language": "Aggiungi lingua",
+                    "translations.edit_language": "Modifica lingua",
+                    "translations.delete_language": "Elimina lingua",
+                    "translations.clear_cache": "Svuota cache",
+                    "translations.warm_up_cache": "Riscalda cache",
+                };
+                const [italianTranslationCount] = await this.execute("SELECT COUNT(*) as count FROM translations WHERE languageId = ?", [italianId]);
+                if (Number(italianTranslationCount[0]?.count ?? 0) === 0) {
+                    for (const key of keys) {
+                        const translation = italianTranslations[key.key_path];
+                        if (translation) {
+                            await this.execute(`
+                INSERT INTO translations (value, isActive, languageId, keyId) 
+                VALUES (?, true, ?, ?)
+              `, [translation, italianId, key.id]);
+                        }
+                    }
+                }
+                this.logger.log("Seeded default Italian translations");
+            }
+        }
+        this.logger.log("Seeded default English translations");
     }
 };
 exports.MysqlDatabaseService = MysqlDatabaseService;

@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import React, { useMemo, useState } from 'react'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { getUserDisplayName } from '../../../shared/lib/userDisplayName'
 import { fetchRoles } from '../../roles/api/rolesApi'
 import { UserList } from '../components/UserList'
@@ -21,6 +22,8 @@ export function UsersPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [targetUser, setTargetUser] = useState(null)
   const [formErrors, setFormErrors] = useState({})
+  const { languageCode } = useLanguage()
+  const { t } = useTranslation(languageCode, 'users')
 
   const {
     searchTerm,
@@ -80,11 +83,10 @@ export function UsersPage() {
           <div>
             <h2 className="page-title">
               <i className="fas fa-users mr-2"></i>
-              Users & Members
+              {t('title', 'Users & Members')}
             </h2>
             <p className="page-subtitle">
-              Manage workspace members, permissions, and access.
-              Add new users and assign roles to control what they can do.
+              {t('subtitle', 'Manage workspace members, permissions, and access. Add new users and assign roles to control what they can do.')}
             </p>
           </div>
           <div className="page-actions">
@@ -98,7 +100,7 @@ export function UsersPage() {
                 <input
                   type="search"
                   className="form-control"
-                  placeholder="Search users by name or email..."
+                  placeholder={t('search_placeholder', 'Search users by name or email...')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -108,19 +110,19 @@ export function UsersPage() {
               className="btn btn-outline-secondary"
               onClick={() => qc.invalidateQueries({ queryKey: ['roles'] })}
               disabled={rolesLoading}
-              title="Refresh role options"
+              title={t('refresh_roles_tooltip', 'Refresh role options')}
             >
               <i className="fas fa-sync-alt mr-2"></i>
-              Refresh Roles
+              {t('refresh_roles', 'Refresh Roles')}
             </button>
             <button
               className="btn btn-primary"
               onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
               disabled={!can('users:create')}
-              title={!can('users:create') ? 'Not allowed' : undefined}
+              title={!can('users:create') ? t('not_allowed', 'Not allowed') : undefined}
             >
               <i className="fas fa-user-plus mr-2"></i>
-              Add New User
+              {t('add_user', 'Add New User')}
             </button>
           </div>
         </div>
@@ -130,8 +132,8 @@ export function UsersPage() {
             <div className="loading-state">
               <div className="loading-content">
                 <i className="fas fa-spinner fa-spin loading-icon"></i>
-                <h4 className="loading-title">Loading Users</h4>
-                <p className="loading-description">Please wait while we fetch the user information...</p>
+                <h4 className="loading-title">{t('loading_title', 'Loading Users')}</h4>
+                <p className="loading-description">{t('loading_description', 'Please wait while we fetch the user information...')}</p>
               </div>
             </div>
           )}
@@ -147,7 +149,7 @@ export function UsersPage() {
                       </div>
                       <div className="stat-content">
                         <div className="stat-number">{totalUsers}</div>
-                        <div className="stat-label">Total Users</div>
+                        <div className="stat-label">{t('total_users', 'Total Users')}</div>
                       </div>
                     </div>
                   </div>
@@ -158,7 +160,7 @@ export function UsersPage() {
                       </div>
                       <div className="stat-content">
                         <div className="stat-number">{activeUsers}</div>
-                        <div className="stat-label">Active Users</div>
+                        <div className="stat-label">{t('active_users', 'Active Users')}</div>
                       </div>
                     </div>
                   </div>
@@ -169,7 +171,7 @@ export function UsersPage() {
                       </div>
                       <div className="stat-content">
                         <div className="stat-number">{adminUsers}</div>
-                        <div className="stat-label">Administrators</div>
+                        <div className="stat-label">{t('administrators', 'Administrators')}</div>
                       </div>
                     </div>
                   </div>
@@ -180,7 +182,7 @@ export function UsersPage() {
                       </div>
                       <div className="stat-content">
                         <div className="stat-number">{usersWithProfile}</div>
-                        <div className="stat-label">With Profiles</div>
+                        <div className="stat-label">{t('with_profiles', 'With Profiles')}</div>
                       </div>
                     </div>
                   </div>
@@ -191,11 +193,11 @@ export function UsersPage() {
                 <div className="section-header">
                   <h5 className="section-title">
                     <i className="fas fa-list mr-2"></i>
-                    User Management
+                    {t('user_management', 'User Management')}
                   </h5>
                   <p className="section-description">
-                    Manage existing users, their roles, and permissions.
-                    {searchTerm && ` Showing results for "${searchTerm}"`}
+                    {t('user_management_description', 'Manage existing users, their roles, and permissions.')}
+                    {searchTerm && ` ${t('showing_results_for', 'Showing results for')} "${searchTerm}"`}
                   </p>
                 </div>
 
@@ -219,12 +221,12 @@ export function UsersPage() {
               <div className="empty-state-content">
                 <i className="fas fa-user-slash empty-state-icon"></i>
                 <h4 className="empty-state-title">
-                  {searchTerm ? 'No Users Found' : 'No Users Yet'}
+                  {searchTerm ? t('no_users_found', 'No Users Found') : t('no_users_yet', 'No Users Yet')}
                 </h4>
                 <p className="empty-state-description">
                   {searchTerm
-                    ? `No users match your search for "${searchTerm}". Try adjusting your search terms.`
-                    : 'Get started by adding your first user to the workspace.'
+                    ? t('no_users_match_search', `No users match your search for "${searchTerm}". Try adjusting your search terms.`)
+                    : t('get_started_add_user', 'Get started by adding your first user to the workspace.')
                   }
                 </p>
                 {!searchTerm && can('users:create') && (
@@ -233,7 +235,7 @@ export function UsersPage() {
                     onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
                   >
                     <i className="fas fa-user-plus mr-2"></i>
-                    Add First User
+                    {t('add_first_user', 'Add First User')}
                   </button>
                 )}
               </div>
@@ -244,16 +246,16 @@ export function UsersPage() {
             <div className="error-state">
               <div className="error-content">
                 <i className="fas fa-exclamation-circle error-icon"></i>
-                <h4 className="error-title">Failed to Load Users</h4>
+                <h4 className="error-title">{t('failed_to_load_users', 'Failed to Load Users')}</h4>
                 <p className="error-description">
-                  {error?.message || 'An unexpected error occurred while loading users.'}
+                  {error?.message || t('unexpected_error_loading_users', 'An unexpected error occurred while loading users.')}
                 </p>
                 <button
                   className="btn btn-outline-primary"
                   onClick={() => window.location.reload()}
                 >
                   <i className="fas fa-redo mr-2"></i>
-                  Try Again
+                  {t('try_again', 'Try Again')}
                 </button>
               </div>
             </div>
@@ -263,7 +265,7 @@ export function UsersPage() {
 
       <UserModal
         show={modalOpen}
-        title={editing ? 'Edit User' : 'Add User'}
+        title={editing ? t('edit_user', 'Edit User') : t('add_user', 'Add User')}
         initialUser={editing}
         errors={formErrors}
         submitting={submitting}
@@ -290,10 +292,10 @@ export function UsersPage() {
 
       <ConfirmModal
         show={confirmOpen}
-        title="Delete User"
-        message={`Are you sure you want to delete ${getUserDisplayName(targetUser) || 'this user'}?`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('delete_user', 'Delete User')}
+        message={t('confirm_delete_user', `Are you sure you want to delete ${getUserDisplayName(targetUser) || 'this user'}?`)}
+        confirmText={t('delete', 'Delete')}
+        cancelText={t('cancel', 'Cancel')}
         onCancel={() => { setConfirmOpen(false); setTargetUser(null) }}
         onConfirm={async () => {
           const id = targetUser?.id

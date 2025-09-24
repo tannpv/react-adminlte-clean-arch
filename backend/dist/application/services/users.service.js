@@ -14,15 +14,15 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
-const user_repository_1 = require("../../domain/repositories/user.repository");
-const role_repository_1 = require("../../domain/repositories/role.repository");
-const user_entity_1 = require("../../domain/entities/user.entity");
 const user_profile_entity_1 = require("../../domain/entities/user-profile.entity");
-const password_service_1 = require("../../shared/password.service");
+const user_entity_1 = require("../../domain/entities/user.entity");
+const role_repository_1 = require("../../domain/repositories/role.repository");
+const user_repository_1 = require("../../domain/repositories/user.repository");
 const constants_1 = require("../../shared/constants");
+const password_service_1 = require("../../shared/password.service");
 const validation_error_1 = require("../../shared/validation-error");
-const user_validation_service_1 = require("../validation/user-validation.service");
 const user_update_validation_service_1 = require("../validation/user-update-validation.service");
+const user_validation_service_1 = require("../validation/user-validation.service");
 let UsersService = class UsersService {
     constructor(users, roles, passwordService, userValidationService, userUpdateValidationService) {
         this.users = users;
@@ -38,7 +38,7 @@ let UsersService = class UsersService {
     async findById(id) {
         const user = await this.users.findById(id);
         if (!user)
-            throw new common_1.NotFoundException({ message: 'Not found' });
+            throw new common_1.NotFoundException({ message: "Not found" });
         return user.toPublic();
     }
     async findDomainById(id) {
@@ -74,19 +74,20 @@ let UsersService = class UsersService {
     async update(id, dto) {
         const existing = await this.users.findById(id);
         if (!existing)
-            throw new common_1.NotFoundException({ message: 'Not found' });
+            throw new common_1.NotFoundException({ message: "Not found" });
         const validation = await this.userUpdateValidationService.validate(dto, id);
         if (!validation.isValid) {
             throw (0, validation_error_1.validationException)(validation.errors);
         }
         const updated = existing.clone();
-        const profile = updated.profile ?? new user_profile_entity_1.UserProfile({
-            userId: updated.id,
-            firstName: '',
-            lastName: null,
-            dateOfBirth: null,
-            pictureUrl: null,
-        });
+        const profile = updated.profile ??
+            new user_profile_entity_1.UserProfile({
+                userId: updated.id,
+                firstName: "",
+                lastName: null,
+                dateOfBirth: null,
+                pictureUrl: null,
+            });
         if (dto.email !== undefined) {
             updated.email = dto.email.trim();
         }
@@ -106,7 +107,7 @@ let UsersService = class UsersService {
             profile.dateOfBirth = dto.dateOfBirth ? new Date(dto.dateOfBirth) : null;
         }
         if (dto.pictureUrl !== undefined) {
-            const trimmed = dto.pictureUrl?.trim() || '';
+            const trimmed = dto.pictureUrl?.trim() || "";
             profile.pictureUrl = trimmed.length ? trimmed : null;
         }
         updated.profile = profile;
@@ -116,7 +117,7 @@ let UsersService = class UsersService {
     async remove(id) {
         const removed = await this.users.remove(id);
         if (!removed)
-            throw new common_1.NotFoundException({ message: 'Not found' });
+            throw new common_1.NotFoundException({ message: "Not found" });
         return removed.toPublic();
     }
 };

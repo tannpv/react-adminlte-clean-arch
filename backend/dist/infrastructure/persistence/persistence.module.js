@@ -12,8 +12,10 @@ const category_repository_1 = require("../../domain/repositories/category.reposi
 const file_directory_repository_1 = require("../../domain/repositories/file-directory.repository");
 const file_grant_repository_1 = require("../../domain/repositories/file-grant.repository");
 const file_repository_1 = require("../../domain/repositories/file.repository");
+const language_repository_1 = require("../../domain/repositories/language.repository");
 const product_repository_1 = require("../../domain/repositories/product.repository");
 const role_repository_1 = require("../../domain/repositories/role.repository");
+const translation_repository_1 = require("../../domain/repositories/translation.repository");
 const user_repository_1 = require("../../domain/repositories/user.repository");
 const shared_module_1 = require("../../shared/shared.module");
 const mysql_category_repository_1 = require("./mysql/mysql-category.repository");
@@ -21,8 +23,10 @@ const mysql_database_service_1 = require("./mysql/mysql-database.service");
 const mysql_file_directory_repository_1 = require("./mysql/mysql-file-directory.repository");
 const mysql_file_grant_repository_1 = require("./mysql/mysql-file-grant.repository");
 const mysql_file_repository_1 = require("./mysql/mysql-file.repository");
+const mysql_language_repository_1 = require("./mysql/mysql-language.repository");
 const mysql_product_repository_1 = require("./mysql/mysql-product.repository");
 const mysql_role_repository_1 = require("./mysql/mysql-role.repository");
+const mysql_translation_repository_1 = require("./mysql/mysql-translation.repository");
 const mysql_user_repository_1 = require("./mysql/mysql-user.repository");
 let PersistenceModule = class PersistenceModule {
 };
@@ -36,6 +40,16 @@ exports.PersistenceModule = PersistenceModule = __decorate([
             { provide: role_repository_1.ROLE_REPOSITORY, useClass: mysql_role_repository_1.MysqlRoleRepository },
             { provide: product_repository_1.PRODUCT_REPOSITORY, useClass: mysql_product_repository_1.MysqlProductRepository },
             { provide: category_repository_1.CATEGORY_REPOSITORY, useClass: mysql_category_repository_1.MysqlCategoryRepository },
+            { provide: language_repository_1.LANGUAGE_REPOSITORY, useClass: mysql_language_repository_1.MysqlLanguageRepository },
+            { provide: translation_repository_1.TRANSLATION_REPOSITORY, useClass: mysql_translation_repository_1.MysqlTranslationRepository },
+            {
+                provide: translation_repository_1.TRANSLATION_KEY_REPOSITORY,
+                useClass: mysql_translation_repository_1.MysqlTranslationKeyRepository,
+            },
+            {
+                provide: translation_repository_1.TRANSLATION_NAMESPACE_REPOSITORY,
+                useClass: mysql_translation_repository_1.MysqlTranslationNamespaceRepository,
+            },
             {
                 provide: file_directory_repository_1.FILE_DIRECTORY_REPOSITORY,
                 useClass: mysql_file_directory_repository_1.MysqlFileDirectoryRepository,
@@ -49,6 +63,10 @@ exports.PersistenceModule = PersistenceModule = __decorate([
             role_repository_1.ROLE_REPOSITORY,
             product_repository_1.PRODUCT_REPOSITORY,
             category_repository_1.CATEGORY_REPOSITORY,
+            language_repository_1.LANGUAGE_REPOSITORY,
+            translation_repository_1.TRANSLATION_REPOSITORY,
+            translation_repository_1.TRANSLATION_KEY_REPOSITORY,
+            translation_repository_1.TRANSLATION_NAMESPACE_REPOSITORY,
             file_directory_repository_1.FILE_DIRECTORY_REPOSITORY,
             file_repository_1.FILE_REPOSITORY,
             file_grant_repository_1.FILE_GRANT_REPOSITORY,

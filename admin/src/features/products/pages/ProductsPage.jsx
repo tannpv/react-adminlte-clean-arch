@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import React, { useState } from 'react'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { fetchCategories } from '../../categories/api/categoriesApi'
 import { ProductList } from '../components/ProductList'
 import { ProductModal } from '../components/ProductModal'
@@ -16,6 +17,8 @@ const isValidationErrorMap = (err) => {
 export function ProductsPage() {
   const qc = useQueryClient()
   const { can } = usePermissions()
+  const { languageCode } = useLanguage()
+  const { t } = useTranslation(languageCode, 'products')
 
   const {
     searchTerm,
@@ -93,11 +96,10 @@ export function ProductsPage() {
           <div>
             <h2 className="page-title">
               <i className="fas fa-box mr-2"></i>
-              Product Catalog
+              {t('title', 'Product Catalog')}
             </h2>
             <p className="page-subtitle">
-              Keep your catalog up to date and aligned with inventory.
-              Manage products, pricing, and categories to drive sales.
+              {t('subtitle', 'Keep your catalog up to date and aligned with inventory. Manage products, pricing, and categories to drive sales.')}
             </p>
           </div>
           <div className="page-actions">
@@ -111,7 +113,7 @@ export function ProductsPage() {
                 <input
                   type="search"
                   className="form-control"
-                  placeholder="Search products by name or SKU..."
+                  placeholder={t('search_placeholder', 'Search products by name or SKU...')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -122,19 +124,19 @@ export function ProductsPage() {
               className="btn btn-outline-secondary"
               onClick={() => qc.invalidateQueries({ queryKey: ['categories'] })}
               disabled={categoriesLoading}
-              title={categoriesLoading ? 'Refreshing…' : 'Refresh categories'}
+              title={categoriesLoading ? t('refreshing', 'Refreshing…') : t('refresh_categories_tooltip', 'Refresh categories')}
             >
               <i className="fas fa-sync-alt mr-2"></i>
-              Refresh Categories
+              {t('refresh_categories', 'Refresh Categories')}
             </button>
             <button
               className="btn btn-primary"
               onClick={() => openModal({})}
               disabled={!can('products:create')}
-              title={!can('products:create') ? 'Not allowed' : undefined}
+              title={!can('products:create') ? t('not_allowed', 'Not allowed') : undefined}
             >
               <i className="fas fa-plus mr-2"></i>
-              Add New Product
+              {t('add_product', 'Add New Product')}
             </button>
           </div>
         </div>
@@ -144,8 +146,8 @@ export function ProductsPage() {
             <div className="loading-state">
               <div className="loading-content">
                 <i className="fas fa-spinner fa-spin loading-icon"></i>
-                <h4 className="loading-title">Loading Products</h4>
-                <p className="loading-description">Please wait while we fetch your product catalog...</p>
+                <h4 className="loading-title">{t('loading_title', 'Loading Products')}</h4>
+                <p className="loading-description">{t('loading_description', 'Please wait while we fetch your product catalog...')}</p>
               </div>
             </div>
           )}
@@ -154,16 +156,16 @@ export function ProductsPage() {
             <div className="error-state">
               <div className="error-content">
                 <i className="fas fa-exclamation-circle error-icon"></i>
-                <h4 className="error-title">Failed to Load Products</h4>
+                <h4 className="error-title">{t('failed_to_load_products', 'Failed to Load Products')}</h4>
                 <p className="error-description">
-                  {error?.message || 'An unexpected error occurred while loading products.'}
+                  {error?.message || t('unexpected_error_loading_products', 'An unexpected error occurred while loading products.')}
                 </p>
                 <button
                   className="btn btn-outline-primary"
                   onClick={() => window.location.reload()}
                 >
                   <i className="fas fa-redo mr-2"></i>
-                  Try Again
+                  {t('try_again', 'Try Again')}
                 </button>
               </div>
             </div>
@@ -181,7 +183,7 @@ export function ProductsPage() {
                       </div>
                       <div className="stat-content">
                         <div className="stat-number">{totalProducts}</div>
-                        <div className="stat-label">Total Products</div>
+                        <div className="stat-label">{t('total_products', 'Total Products')}</div>
                       </div>
                     </div>
                   </div>
@@ -192,7 +194,7 @@ export function ProductsPage() {
                       </div>
                       <div className="stat-content">
                         <div className="stat-number">{publishedProducts}</div>
-                        <div className="stat-label">Published</div>
+                        <div className="stat-label">{t('published', 'Published')}</div>
                       </div>
                     </div>
                   </div>
@@ -203,7 +205,7 @@ export function ProductsPage() {
                       </div>
                       <div className="stat-content">
                         <div className="stat-number">{variableProducts}</div>
-                        <div className="stat-label">Variable Products</div>
+                        <div className="stat-label">{t('variable_products', 'Variable Products')}</div>
                       </div>
                     </div>
                   </div>
@@ -214,7 +216,7 @@ export function ProductsPage() {
                       </div>
                       <div className="stat-content">
                         <div className="stat-number">{formatCurrency(totalValue)}</div>
-                        <div className="stat-label">Total Value</div>
+                        <div className="stat-label">{t('total_value', 'Total Value')}</div>
                       </div>
                     </div>
                   </div>
@@ -226,11 +228,11 @@ export function ProductsPage() {
                 <div className="section-header">
                   <h5 className="section-title">
                     <i className="fas fa-list mr-2"></i>
-                    Product Management
+                    {t('product_management', 'Product Management')}
                   </h5>
                   <p className="section-description">
-                    Manage your product catalog, pricing, and inventory.
-                    {searchTerm && ` Showing results for "${searchTerm}"`}
+                    {t('product_management_description', 'Manage your product catalog, pricing, and inventory.')}
+                    {searchTerm && ` ${t('showing_results_for', 'Showing results for')} "${searchTerm}"`}
                   </p>
                 </div>
 
@@ -251,7 +253,7 @@ export function ProductsPage() {
 
       <ProductModal
         show={modalOpen}
-        title={editing?.id ? 'Edit Product' : 'Add Product'}
+        title={editing?.id ? t('edit_product', 'Edit Product') : t('add_product', 'Add Product')}
         initialProduct={editing}
         errors={formErrors}
         submitting={submitting}
@@ -278,10 +280,10 @@ export function ProductsPage() {
 
       <ConfirmModal
         show={confirmOpen}
-        title="Delete Product"
-        message={`Are you sure you want to delete ${targetProduct?.name || 'this product'}?`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('delete_product', 'Delete Product')}
+        message={t('confirm_delete_product', `Are you sure you want to delete ${targetProduct?.name || 'this product'}?`)}
+        confirmText={t('delete', 'Delete')}
+        cancelText={t('cancel', 'Cancel')}
         onCancel={() => { setConfirmOpen(false); setTargetProduct(null) }}
         onConfirm={async () => {
           if (!targetProduct?.id) return

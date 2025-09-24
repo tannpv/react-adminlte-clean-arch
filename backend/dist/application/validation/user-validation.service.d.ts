@@ -1,8 +1,8 @@
-import { CreateUserDto } from '../dto/create-user.dto';
-import { RoleRepository } from '../../domain/repositories/role.repository';
-import { UserRepository } from '../../domain/repositories/user.repository';
-import { BaseValidatorService } from '../../shared/validation/base-validator.service';
-import { ValidationResult } from '../../shared/validation/validation.types';
+import { RoleRepository } from "../../domain/repositories/role.repository";
+import { UserRepository } from "../../domain/repositories/user.repository";
+import { BaseValidatorService } from "../../shared/validation/base-validator.service";
+import { ValidationResult } from "../../shared/validation/validation.types";
+import { CreateUserDto } from "../dto/create-user.dto";
 export declare class UserValidationService extends BaseValidatorService<CreateUserDto> {
     private readonly users;
     private readonly roles;

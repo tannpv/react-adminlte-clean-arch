@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 
 const buildInitialProfile = (user) => {
   if (!user || !user.profile) {
@@ -13,6 +14,8 @@ const buildInitialProfile = (user) => {
 }
 
 export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitting = false, formId = 'user-form', roleOptions = [], rolesLoading = false }) {
+  const { languageCode } = useLanguage()
+  const { t } = useTranslation(languageCode, 'users')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -87,19 +90,19 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
       <div className="form-section mb-4">
         <h6 className="section-title">
           <i className="fas fa-user mr-2"></i>
-          Basic Information
+          {t('basic_information', 'Basic Information')}
         </h6>
         <div className="form-row">
           <div className="form-group col-md-6">
             <label className="form-label">
               <i className="fas fa-signature mr-2"></i>
-              First Name
+              {t('first_name', 'First Name')}
             </label>
             <input
               className={`form-control ${firstNameError ? 'is-invalid' : ''}`}
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              placeholder="Enter first name"
+              placeholder={t('enter_first_name', 'Enter first name')}
               required
               disabled={submitting}
             />
@@ -108,13 +111,13 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
           <div className="form-group col-md-6">
             <label className="form-label">
               <i className="fas fa-signature mr-2"></i>
-              Last Name
+              {t('last_name', 'Last Name')}
             </label>
             <input
               className={`form-control ${lastNameError ? 'is-invalid' : ''}`}
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              placeholder="Enter last name"
+              placeholder={t('enter_last_name', 'Enter last name')}
               required
               disabled={submitting}
             />
@@ -126,14 +129,14 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
           <div className="form-group col-md-6">
             <label className="form-label">
               <i className="fas fa-envelope mr-2"></i>
-              Email Address
+              {t('email', 'Email Address')}
             </label>
             <input
               type="email"
               className={`form-control ${emailError ? 'is-invalid' : ''}`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter email address"
+              placeholder={t('enter_email', 'Enter email address')}
               required
               disabled={submitting}
             />
@@ -142,7 +145,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
           <div className="form-group col-md-6">
             <label className="form-label">
               <i className="fas fa-birthday-cake mr-2"></i>
-              Date of Birth
+              {t('date_of_birth', 'Date of Birth')}
             </label>
             <input
               type="date"
@@ -160,7 +163,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
       <div className="form-section mb-4">
         <h6 className="section-title">
           <i className="fas fa-image mr-2"></i>
-          Profile Picture
+          {t('profile_picture', 'Profile Picture')}
         </h6>
         <div className="form-group">
           <div className="picture-upload-container">
@@ -174,7 +177,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
               ) : (
                 <div className="preview-placeholder">
                   <i className="fas fa-user"></i>
-                  <span>No Image</span>
+                  <span>{t('no_image', 'No Image')}</span>
                 </div>
               )}
             </div>
@@ -227,7 +230,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                 />
                 <label className="file-input-label">
                   <i className="fas fa-upload mr-2"></i>
-                  Choose Image
+                  {t('choose_image', 'Choose Image')}
                 </label>
               </div>
               <div className="picture-actions">
@@ -242,12 +245,12 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                   disabled={submitting || (!pictureData && !picturePreview)}
                 >
                   <i className="fas fa-trash mr-1"></i>
-                  Remove
+                  {t('remove', 'Remove')}
                 </button>
                 {pictureLoading && (
                   <span className="upload-status">
                     <i className="fas fa-spinner fa-spin mr-1"></i>
-                    Uploading...
+                    {t('uploading', 'Uploading...')}
                   </span>
                 )}
               </div>
@@ -266,12 +269,12 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
       <div className="form-section mb-4">
         <h6 className="section-title">
           <i className="fas fa-shield-alt mr-2"></i>
-          Roles & Permissions
+          {t('roles_permissions', 'Roles & Permissions')}
         </h6>
         <div className="form-group">
           <label className="form-label">
             <i className="fas fa-user-tag mr-2"></i>
-            Assign Roles
+            {t('assign_roles', 'Assign Roles')}
           </label>
           <div className="roles-select-container">
             <select
@@ -293,19 +296,19 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
               {rolesLoading && (
                 <div className="loading-indicator">
                   <i className="fas fa-spinner fa-spin mr-1"></i>
-                  Loading roles...
+                  {t('loading_roles', 'Loading roles...')}
                 </div>
               )}
               {!rolesLoading && !roleOptions.length && (
                 <div className="no-roles-warning">
                   <i className="fas fa-exclamation-triangle mr-1"></i>
-                  No roles available or not authorized to view roles.
+                  {t('no_roles_available', 'No roles available or not authorized to view roles.')}
                 </div>
               )}
               {!rolesLoading && roleOptions.length > 0 && (
                 <div className="roles-help">
                   <i className="fas fa-info-circle mr-1"></i>
-                  Hold Ctrl/Cmd to select multiple roles
+                  {t('hold_ctrl_select_multiple', 'Hold Ctrl/Cmd to select multiple roles')}
                 </div>
               )}
             </div>
@@ -319,13 +322,13 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
         <div className="form-section">
           <h6 className="section-title">
             <i className="fas fa-lock mr-2"></i>
-            Change Password
+            {t('change_password', 'Change Password')}
           </h6>
           <div className="form-row">
             <div className="form-group col-md-6">
               <label className="form-label">
                 <i className="fas fa-key mr-2"></i>
-                New Password
+                {t('new_password', 'New Password')}
               </label>
               <input
                 type="password"
@@ -335,7 +338,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                   setPassword(e.target.value)
                   if (localPasswordError) setLocalPasswordError(null)
                 }}
-                placeholder="Leave blank to keep current password"
+                placeholder={t('leave_blank_keep_current', 'Leave blank to keep current password')}
                 disabled={submitting}
               />
               {passwordError && <div className="invalid-feedback">{passwordError}</div>}
@@ -343,7 +346,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
             <div className="form-group col-md-6">
               <label className="form-label">
                 <i className="fas fa-key mr-2"></i>
-                Confirm Password
+                {t('confirm_password', 'Confirm Password')}
               </label>
               <input
                 type="password"
@@ -353,7 +356,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                   setConfirmPassword(e.target.value)
                   if (localPasswordError) setLocalPasswordError(null)
                 }}
-                placeholder="Re-enter new password"
+                placeholder={t('re_enter_password', 'Re-enter new password')}
                 disabled={submitting}
               />
             </div>

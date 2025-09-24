@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ConfirmModal } from '../../../shared/components/ConfirmModal';
 import { usePermissions } from '../../../shared/hooks/usePermissions';
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
 import { AttributeAssignmentModal } from '../components/AttributeAssignmentModal';
 import { useAddAttributeToSet, useAttributeSet, useRemoveAttributeFromSet } from '../hooks/useAttributeSets';
 import { useAttributes } from '../hooks/useAttributes';
@@ -14,6 +15,8 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
     const addAttributeMutation = useAddAttributeToSet();
     const removeAttributeMutation = useRemoveAttributeFromSet();
     const { can } = usePermissions();
+    const { languageCode } = useLanguage();
+    const { t } = useTranslation(languageCode, 'attributes');
 
     const handleAddAttribute = () => {
         if (!can('attribute-sets:update')) return;
@@ -138,14 +141,15 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                             <button
                                 className="btn btn-sm btn-outline-secondary mr-3"
                                 onClick={onBack}
-                                title="Back to Attribute Sets"
+                                title={t('back_to_attribute_sets', 'Back to Attribute Sets')}
                             >
                                 <i className="fas fa-arrow-left"></i>
                             </button>
+                            <i className="fas fa-layer-group mr-2"></i>
                             {attributeSet.name}
                         </h2>
                         <p className="page-subtitle">
-                            {attributeSet.description || 'Manage attributes assigned to this set.'}
+                            {attributeSet.description || t('manage_attributes_assigned_to_set', 'Manage attributes assigned to this set.')}
                         </p>
                     </div>
                     <div className="page-actions">
@@ -153,9 +157,10 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                             className="btn btn-primary"
                             onClick={handleAddAttribute}
                             disabled={addAttributeMutation.isPending || !can('attribute-sets:update')}
-                            title={!can('attribute-sets:update') ? 'Not allowed' : undefined}
+                            title={!can('attribute-sets:update') ? t('not_allowed', 'Not allowed') : undefined}
                         >
-                            <i className="fas fa-plus"></i> Add Attribute
+                            <i className="fas fa-plus mr-2"></i>
+                            {t('add_attribute', 'Add Attribute')}
                         </button>
                     </div>
                 </div>
@@ -163,63 +168,28 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                 <div className="page-body">
                     <div className="row mb-4">
                         <div className="col-md-6">
-                            <div className="card">
-                                <div className="card-header">
-                                    <h5 className="card-title mb-0">Set Information</h5>
-                                </div>
-                                <div className="card-body">
-                                    <dl className="row">
-                                        <dt className="col-sm-4">ID:</dt>
-                                        <dd className="col-sm-8">{attributeSet.id}</dd>
-
-                                        <dt className="col-sm-4">Name:</dt>
-                                        <dd className="col-sm-8">{attributeSet.name}</dd>
-
-                                        <dt className="col-sm-4">Type:</dt>
-                                        <dd className="col-sm-8">
-                                            {attributeSet.isSystem ? (
-                                                <span className="badge badge-success">System</span>
-                                            ) : (
-                                                <span className="badge badge-primary">Custom</span>
-                                            )}
-                                        </dd>
-
-                                        <dt className="col-sm-4">Created:</dt>
-                                        <dd className="col-sm-8">
-                                            {new Date(attributeSet.createdAt).toLocaleDateString()}
-                                        </dd>
-
-                                        {attributeSet.description && (
-                                            <>
-                                                <dt className="col-sm-4">Description:</dt>
-                                                <dd className="col-sm-8">{attributeSet.description}</dd>
-                                            </>
-                                        )}
-                                    </dl>
+                            <div className="info-box">
+                                <span className="info-box-icon bg-primary">
+                                    <i className="fas fa-layer-group"></i>
+                                </span>
+                                <div className="info-box-content">
+                                    <span className="info-box-text">{t('total_attributes', 'Total Attributes')}</span>
+                                    <span className="info-box-number">
+                                        {attributeSet.attributes?.length || 0}
+                                    </span>
                                 </div>
                             </div>
                         </div>
                         <div className="col-md-6">
-                            <div className="card">
-                                <div className="card-header">
-                                    <h5 className="card-title mb-0">Statistics</h5>
-                                </div>
-                                <div className="card-body">
-                                    <dl className="row">
-                                        <dt className="col-sm-6">Total Attributes:</dt>
-                                        <dd className="col-sm-6">
-                                            <span className="badge badge-info">
-                                                {attributeSet.attributes?.length || 0}
-                                            </span>
-                                        </dd>
-
-                                        <dt className="col-sm-6">Required Attributes:</dt>
-                                        <dd className="col-sm-6">
-                                            <span className="badge badge-warning">
-                                                {attributeSet.attributes?.filter(attr => attr.isRequired)?.length || 0}
-                                            </span>
-                                        </dd>
-                                    </dl>
+                            <div className="info-box">
+                                <span className="info-box-icon bg-success">
+                                    <i className="fas fa-tag"></i>
+                                </span>
+                                <div className="info-box-content">
+                                    <span className="info-box-text">{t('set_type', 'Set Type')}</span>
+                                    <span className="info-box-number">
+                                        {attributeSet.isSystem ? t('system', 'System') : t('custom', 'Custom')}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -227,27 +197,27 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
 
                     <div className="card">
                         <div className="card-header">
-                            <h5 className="card-title mb-0">Assigned Attributes</h5>
+                            <h5 className="card-title mb-0">{t('assigned_attributes', 'Assigned Attributes')}</h5>
                         </div>
                         <div className="card-body">
                             {!attributeSet.attributes || attributeSet.attributes.length === 0 ? (
                                 <div className="empty-state">
-                                    <h5>No attributes assigned</h5>
-                                    <p className="mb-0 text-muted">Add attributes to this set to get started.</p>
+                                    <h5>{t('no_attributes_assigned', 'No attributes assigned')}</h5>
+                                    <p className="mb-0 text-muted">{t('add_attributes_to_set', 'Add attributes to this set to get started.')}</p>
                                 </div>
                             ) : (
                                 <div className="table-responsive">
                                     <table className="table table-bordered table-striped">
                                         <thead>
                                             <tr>
-                                                <th>Sort Order</th>
-                                                <th>Code</th>
-                                                <th>Name</th>
-                                                <th>Input Type</th>
-                                                <th>Data Type</th>
-                                                <th>Unit</th>
-                                                <th>Required</th>
-                                                <th>Actions</th>
+                                                <th>{t('sort_order', 'Sort Order')}</th>
+                                                <th>{t('code', 'Code')}</th>
+                                                <th>{t('name', 'Name')}</th>
+                                                <th>{t('input_type', 'Input Type')}</th>
+                                                <th>{t('data_type', 'Data Type')}</th>
+                                                <th>{t('unit', 'Unit')}</th>
+                                                <th>{t('required', 'Required')}</th>
+                                                <th>{t('actions', 'Actions')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -273,9 +243,9 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                                                         <td>{attribute.unit || '-'}</td>
                                                         <td>
                                                             {attribute.isRequired ? (
-                                                                <span className="badge badge-danger">Required</span>
+                                                                <span className="badge badge-danger">{t('required', 'Required')}</span>
                                                             ) : (
-                                                                <span className="badge badge-light">Optional</span>
+                                                                <span className="badge badge-light">{t('optional', 'Optional')}</span>
                                                             )}
                                                         </td>
                                                         <td>
@@ -283,9 +253,9 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                                                                 className="btn btn-sm btn-danger"
                                                                 onClick={() => handleRemoveAttribute(attribute)}
                                                                 disabled={removeAttributeMutation.isPending || !can('attribute-sets:update')}
-                                                                title={!can('attribute-sets:update') ? 'Not allowed' : undefined}
+                                                                title={!can('attribute-sets:update') ? t('not_allowed', 'Not allowed') : undefined}
                                                             >
-                                                                <i className="fas fa-trash"></i> Remove
+                                                                <i className="fas fa-trash"></i> {t('remove', 'Remove')}
                                                             </button>
                                                         </td>
                                                     </tr>
