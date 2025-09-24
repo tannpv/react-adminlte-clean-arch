@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { ConfirmModal } from '../../../shared/components/ConfirmModal';
+import Button from '../../../shared/components/ui/Button';
+import Table from '../../../shared/components/ui/Table';
 import { usePermissions } from '../../../shared/hooks/usePermissions';
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
 import { AttributeForm } from '../components/AttributeForm';
 import { useAttributes, useDeleteAttribute } from '../hooks/useAttributes';
-import Button from '../../../shared/components/ui/Button';
-import Table from '../../../shared/components/ui/Table';
 
 export const AttributesPage = () => {
     const { can } = usePermissions();
