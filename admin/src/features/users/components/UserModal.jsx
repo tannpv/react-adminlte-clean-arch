@@ -1,8 +1,8 @@
 import React from 'react'
+import Button from '../../../shared/components/ui/Button'
+import Modal from '../../../shared/components/ui/Modal'
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { UserForm } from './UserForm'
-import Modal from '../../../shared/components/ui/Modal'
-import Button from '../../../shared/components/ui/Button'
 
 export function UserModal({ show, title, initialUser, onClose, onSubmit, errors, submitting, roles, rolesLoading }) {
   const formId = 'user-modal-form'

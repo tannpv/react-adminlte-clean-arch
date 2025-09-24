@@ -95,12 +95,12 @@ export function ProductList({ products, onEdit, onDelete }) {
                 </Table.Cell>
                 <Table.Cell>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.status === 'published' ? 'bg-green-100 text-green-800' :
-                      product.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
+                    product.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
                     }`}>
                     <i className={`fas ${product.status === 'published' ? 'fa-eye' :
-                        product.status === 'draft' ? 'fa-edit' :
-                          'fa-archive'
+                      product.status === 'draft' ? 'fa-edit' :
+                        'fa-archive'
                       } mr-1`}></i>
                     {product.status}
                   </span>

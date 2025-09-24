@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
+import Form from '../../../shared/components/ui/Form'
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { CategoryTreeSelector } from './CategoryTreeSelector'
-import Form from '../../../shared/components/ui/Form'
 
 export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {}, submitting = false, formId = 'category-form', categories = [], tree = [], hierarchy = [], isOpen = false }) {
   const { languageCode } = useLanguage()
