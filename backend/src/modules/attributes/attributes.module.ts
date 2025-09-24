@@ -16,9 +16,10 @@ import { MysqlProductAttributeValueRepository } from "../../infrastructure/persi
 import { MysqlProductVariantAttributeValueRepository } from "../../infrastructure/persistence/mysql/product-variant-attribute-value.repository";
 import { MysqlProductVariantRepository } from "../../infrastructure/persistence/mysql/product-variant.repository";
 import { PersistenceModule } from "../../infrastructure/persistence/persistence.module";
+import { AuthModule } from "../auth/auth.module";
 
 @Module({
-  imports: [PersistenceModule],
+  imports: [PersistenceModule, AuthModule],
   controllers: [
     AttributesController,
     AttributeValuesController,
