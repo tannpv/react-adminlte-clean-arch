@@ -5,12 +5,14 @@ import { CreateProductDto } from "../dto/create-product.dto";
 import { ProductResponseDto } from "../dto/product-response.dto";
 import { UpdateProductDto } from "../dto/update-product.dto";
 import { ProductAttributeValuesService } from "./product-attribute-values.service";
+import { ProductVariantsService } from "./product-variants.service";
 export declare class ProductsService {
     private readonly products;
     private readonly categories;
     private readonly events;
     private readonly productAttributeValuesService;
-    constructor(products: ProductRepository, categories: CategoryRepository, events: DomainEventBus, productAttributeValuesService: ProductAttributeValuesService);
+    private readonly productVariantsService;
+    constructor(products: ProductRepository, categories: CategoryRepository, events: DomainEventBus, productAttributeValuesService: ProductAttributeValuesService, productVariantsService: ProductVariantsService);
     list(search?: string): Promise<ProductResponseDto[]>;
     findById(id: number): Promise<ProductResponseDto>;
     getProductAttributeValues(productId: number): Promise<import("../../domain/entities/product-attribute-value.entity").ProductAttributeValue[]>;
@@ -21,4 +23,5 @@ export declare class ProductsService {
     private resolveCategories;
     private toPriceCents;
     private saveProductAttributeValues;
+    getProductVariants(productId: number): Promise<any[]>;
 }

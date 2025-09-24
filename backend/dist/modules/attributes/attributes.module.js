@@ -16,6 +16,7 @@ const product_variants_service_1 = require("../../application/services/product-v
 const attribute_sets_controller_1 = require("../../infrastructure/http/controllers/attribute-sets.controller");
 const attribute_values_controller_1 = require("../../infrastructure/http/controllers/attribute-values.controller");
 const attributes_controller_1 = require("../../infrastructure/http/controllers/attributes.controller");
+const product_variants_controller_1 = require("../../infrastructure/http/controllers/product-variants.controller");
 const attribute_set_assignment_repository_1 = require("../../infrastructure/persistence/mysql/attribute-set-assignment.repository");
 const attribute_set_repository_1 = require("../../infrastructure/persistence/mysql/attribute-set.repository");
 const attribute_value_repository_1 = require("../../infrastructure/persistence/mysql/attribute-value.repository");
@@ -34,6 +35,7 @@ exports.AttributesModule = AttributesModule = __decorate([
             attributes_controller_1.AttributesController,
             attribute_values_controller_1.AttributeValuesController,
             attribute_sets_controller_1.AttributeSetsController,
+            product_variants_controller_1.ProductVariantsController,
         ],
         providers: [
             attributes_service_1.AttributesService,

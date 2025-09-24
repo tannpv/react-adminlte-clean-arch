@@ -45,6 +45,12 @@ export class ProductsController {
     return this.productsService.getProductAttributeValues(id);
   }
 
+  @Get(":id/variants")
+  @RequireAnyPermission("products:read", "users:read")
+  getProductVariants(@Param("id", ParseIntPipe) id: number) {
+    return this.productsService.getProductVariants(id);
+  }
+
   @Post()
   @RequirePermissions("products:create")
   @UsePipes(new ValidationPipe({ whitelist: false, transform: true }))
