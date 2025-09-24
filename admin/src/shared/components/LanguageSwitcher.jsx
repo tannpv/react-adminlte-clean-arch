@@ -23,40 +23,50 @@ const LanguageSwitcher = () => {
     const currentLanguage = languages.find(lang => lang.code === languageCode);
 
     return (
-        <div className="dropdown">
+        <div className="relative">
             <button
-                className="btn btn-outline-light dropdown-toggle d-flex align-items-center"
+                className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 type="button"
                 id="languageDropdown"
-                data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded={dropdownOpen}
                 onClick={toggle}
             >
-                <span style={{ fontSize: '1.2em', marginRight: '8px' }}>
+                <span className="text-lg mr-2">
                     {currentLanguage?.flagIcon || '🌐'}
                 </span>
-                <span className="d-none d-md-inline">
+                <span className="hidden md:inline">
                     {currentLanguage?.name || currentLanguage?.code || 'Language'}
                 </span>
+                <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
             </button>
-            <div className={`dropdown-menu dropdown-menu-right ${dropdownOpen ? 'show' : ''}`} aria-labelledby="languageDropdown">
-                {languages.map(language => (
-                    <button
-                        key={language.id}
-                        className={`dropdown-item ${language.code === languageCode ? 'active' : ''}`}
-                        onClick={() => handleLanguageChange(language.code)}
-                    >
-                        <span style={{ fontSize: '1.2em', marginRight: '8px' }}>
-                            {language.flagIcon || '🌐'}
-                        </span>
-                        {language.name || language.code || 'Unknown'}
-                        {(language.isDefault === true || language.isDefault === 1) && (
-                            <span className="text-muted ml-2">(Default)</span>
-                        )}
-                    </button>
-                ))}
-            </div>
+            {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 border border-gray-200">
+                    <div className="py-1">
+                        {languages.map(language => (
+                            <button
+                                key={language.id}
+                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center ${
+                                    language.code === languageCode ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                                }`}
+                                onClick={() => handleLanguageChange(language.code)}
+                            >
+                                <span className="text-lg mr-3">
+                                    {language.flagIcon || '🌐'}
+                                </span>
+                                <span className="flex-grow">
+                                    {language.name || language.code || 'Unknown'}
+                                </span>
+                                {(language.isDefault === true || language.isDefault === 1) && (
+                                    <span className="text-gray-500 text-xs">(Default)</span>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
