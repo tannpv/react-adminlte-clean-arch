@@ -1,12 +1,10 @@
 import { CreateProductDto } from "../../../application/dto/create-product.dto";
 import { UpdateProductDto } from "../../../application/dto/update-product.dto";
-import { ProductSearchDto } from "../../../application/dto/product-search.dto";
 import { ProductsService } from "../../../application/services/products.service";
 export declare class ProductsController {
     private readonly productsService;
     constructor(productsService: ProductsService);
     list(search?: string): Promise<import("../../../application/dto/product-response.dto").ProductResponseDto[]>;
-    advancedSearch(searchDto: ProductSearchDto): Promise<import("../../../application/dto/product-search.dto").ProductSearchResponseDto>;
     getOne(id: number): Promise<import("../../../application/dto/product-response.dto").ProductResponseDto>;
     getProductAttributeValues(id: number): Promise<import("../../../domain/entities/product-attribute-value.entity").ProductAttributeValue[]>;
     getProductVariants(id: number): Promise<any[]>;
