@@ -1,1 +1,1 @@
-{"version":3,"file":"update-product-attribute-value.dto.js","sourceRoot":"","sources":["../../../src/application/dto/update-product-attribute-value.dto.ts"],"names":[],"mappings":";;;AAEA,MAAa,8BAA8B;CAgB1C;AAhBD,wEAgBC"}
+{"version":3,"file":"update-product-attribute-value.dto.js","sourceRoot":"","sources":["../../../src/application/dto/update-product-attribute-value.dto.ts"],"names":[],"mappings":";;;AAAA,MAAa,8BAA8B;CAK1C;AALD,wEAKC"}

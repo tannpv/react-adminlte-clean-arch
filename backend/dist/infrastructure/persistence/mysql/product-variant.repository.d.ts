@@ -4,6 +4,7 @@ import { MysqlDatabaseService } from './mysql-database.service';
 export declare class MysqlProductVariantRepository implements ProductVariantRepository {
     private readonly db;
     constructor(db: MysqlDatabaseService);
+    findAll(): Promise<ProductVariant[]>;
     findById(id: number): Promise<ProductVariant | null>;
     findByProductId(productId: number): Promise<ProductVariant[]>;
     findBySku(sku: string): Promise<ProductVariant | null>;

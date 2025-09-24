@@ -3,12 +3,16 @@ import { ProductVariant } from '../../domain/entities/product-variant.entity';
 import { ProductVariantRepository } from '../../domain/repositories/product-variant.repository';
 import { CreateProductVariantDto } from '../dto/create-product-variant.dto';
 import { UpdateProductVariantDto } from '../dto/update-product-variant.dto';
+import { ProductAttributeValuesService } from './product-attribute-values.service';
+import { AttributeValuesService } from './attribute-values.service';
 
 @Injectable()
 export class ProductVariantsService {
   constructor(
     @Inject('ProductVariantRepository')
-    private readonly productVariantRepository: ProductVariantRepository
+    private readonly productVariantRepository: ProductVariantRepository,
+    private readonly productAttributeValuesService: ProductAttributeValuesService,
+    private readonly attributeValuesService: AttributeValuesService
   ) {}
 
   async create(createDto: CreateProductVariantDto): Promise<ProductVariant> {
@@ -31,9 +35,7 @@ export class ProductVariantsService {
   }
 
   async findAll(): Promise<ProductVariant[]> {
-    // This would need to be implemented differently in a real scenario
-    // For now, we'll return an empty array as we don't have a method to get all
-    return [];
+    return await this.productVariantRepository.findAll();
   }
 
   async findByProductId(productId: number): Promise<ProductVariant[]> {
@@ -84,5 +86,86 @@ export class ProductVariantsService {
 
   async removeByProductId(productId: number): Promise<void> {
     await this.productVariantRepository.deleteByProductId(productId);
+  }
+
+  async getVariantAttributeValues(variantId: number): Promise<any[]> {
+    // This would need to be implemented with a proper variant attribute values service
+    // For now, return empty array
+    return [];
+  }
+
+  async setVariantAttributeValues(variantId: number, attributeValues: Record<string, any>): Promise<void> {
+    // This would need to be implemented with a proper variant attribute values service
+    // For now, just log the values
+    console.log('Setting variant attribute values:', { variantId, attributeValues });
+  }
+
+  async generateVariantsFromAttributes(productId: number): Promise<ProductVariant[]> {
+    try {
+      // Get product attribute values to understand the combinations
+      const productAttributeValues = await this.productAttributeValuesService.findByProductId(productId);
+      
+      if (!productAttributeValues || productAttributeValues.length === 0) {
+        throw new Error('No attribute values found for this product');
+      }
+
+      // Group attribute values by attribute
+      const attributeGroups = new Map<number, any[]>();
+      productAttributeValues.forEach(pav => {
+        if (!attributeGroups.has(pav.attributeId)) {
+          attributeGroups.set(pav.attributeId, []);
+        }
+        attributeGroups.get(pav.attributeId)!.push(pav);
+      });
+
+      // Generate all possible combinations
+      const combinations = this.generateCombinations(Array.from(attributeGroups.values()));
+      
+      const variants: ProductVariant[] = [];
+      
+      for (let i = 0; i < combinations.length; i++) {
+        const combination = combinations[i];
+        const sku = `VAR-${productId}-${i + 1}`;
+        const name = `Variant ${i + 1}`;
+        
+        // Create variant
+        const variant = ProductVariant.create(
+          productId,
+          sku,
+          name,
+          0, // Default price
+          'USD',
+          'active'
+        );
+        
+        const savedVariant = await this.productVariantRepository.save(variant);
+        variants.push(savedVariant);
+        
+        // TODO: Set variant attribute values for this combination
+        console.log('Generated variant:', { variant: savedVariant, combination });
+      }
+      
+      return variants;
+    } catch (error) {
+      console.error('Error generating variants:', error);
+      throw error;
+    }
+  }
+
+  private generateCombinations(attributeGroups: any[][]): any[][] {
+    if (attributeGroups.length === 0) return [[]];
+    if (attributeGroups.length === 1) return attributeGroups[0].map(item => [item]);
+    
+    const result: any[][] = [];
+    const firstGroup = attributeGroups[0];
+    const restCombinations = this.generateCombinations(attributeGroups.slice(1));
+    
+    for (const item of firstGroup) {
+      for (const combination of restCombinations) {
+        result.push([item, ...combination]);
+      }
+    }
+    
+    return result;
   }
 }

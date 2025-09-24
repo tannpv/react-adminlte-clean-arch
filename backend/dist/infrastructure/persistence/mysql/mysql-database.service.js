@@ -230,6 +230,7 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
         KEY ix_pvav_attribute (attribute_id)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
+        await this.ensureNormalizedSchema();
         const [categoryParentColumn] = await this.execute(`SELECT COLUMN_NAME FROM information_schema.COLUMNS
        WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'categories' AND COLUMN_NAME = 'parent_id'`, [this.config.database]);
         if (!categoryParentColumn.length) {
@@ -751,6 +752,52 @@ let MysqlDatabaseService = MysqlDatabaseService_1 = class MysqlDatabaseService {
     async execute(sql, params) {
         const pool = this.getPool();
         return pool.query(sql, params);
+    }
+    async ensureNormalizedSchema() {
+        try {
+            const [existingColumn] = await this.execute("SHOW COLUMNS FROM product_attribute_values LIKE 'attribute_value_id'");
+            if (!Array.isArray(existingColumn) || existingColumn.length === 0) {
+                console.log("Adding attribute_value_id column to product_attribute_values table...");
+                await this.execute("ALTER TABLE product_attribute_values ADD COLUMN attribute_value_id BIGINT UNSIGNED NULL");
+                try {
+                    await this.execute("ALTER TABLE product_attribute_values ADD CONSTRAINT fk_pav_attribute_value FOREIGN KEY (attribute_value_id) REFERENCES attribute_values(id) ON DELETE CASCADE");
+                }
+                catch (error) {
+                    console.log("Foreign key constraint might already exist:", error);
+                }
+                try {
+                    await this.execute("ALTER TABLE product_attribute_values ADD KEY ix_pav_attribute_value (attribute_value_id)");
+                }
+                catch (error) {
+                    console.log("Index ix_pav_attribute_value might already exist:", error);
+                }
+                try {
+                    await this.execute("ALTER TABLE product_attribute_values ADD KEY ix_product_attribute_value (product_id, attribute_id, attribute_value_id)");
+                }
+                catch (error) {
+                    console.log("Index ix_product_attribute_value might already exist:", error);
+                }
+                try {
+                    await this.execute("ALTER TABLE product_attribute_values ADD KEY ix_attribute_value_product (attribute_value_id, product_id)");
+                }
+                catch (error) {
+                    console.log("Index ix_attribute_value_product might already exist:", error);
+                }
+                try {
+                    await this.execute("ALTER TABLE product_attribute_values DROP INDEX ux_product_attribute");
+                }
+                catch (error) {
+                    console.log("Unique constraint might not exist:", error);
+                }
+                console.log("Successfully applied normalized schema to product_attribute_values table");
+            }
+            else {
+                console.log("Normalized schema already exists in product_attribute_values table");
+            }
+        }
+        catch (error) {
+            console.error("Error ensuring normalized schema:", error);
+        }
     }
 };
 exports.MysqlDatabaseService = MysqlDatabaseService;

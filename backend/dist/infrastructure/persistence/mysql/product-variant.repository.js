@@ -17,6 +17,10 @@ let MysqlProductVariantRepository = class MysqlProductVariantRepository {
     constructor(db) {
         this.db = db;
     }
+    async findAll() {
+        const [rows] = await this.db.execute('SELECT * FROM product_variants ORDER BY created_at DESC');
+        return Array.isArray(rows) ? rows.map(row => this.mapRowToEntity(row)) : [];
+    }
     async findById(id) {
         const [rows] = await this.db.execute('SELECT * FROM product_variants WHERE id = ?', [id]);
         if (!Array.isArray(rows) || rows.length === 0) {

@@ -7,6 +7,7 @@ import { ProductVariantsService } from "../../application/services/product-varia
 import { AttributeSetsController } from "../../infrastructure/http/controllers/attribute-sets.controller";
 import { AttributeValuesController } from "../../infrastructure/http/controllers/attribute-values.controller";
 import { AttributesController } from "../../infrastructure/http/controllers/attributes.controller";
+import { ProductVariantsController } from "../../infrastructure/http/controllers/product-variants.controller";
 import { MysqlAttributeSetAssignmentRepository } from "../../infrastructure/persistence/mysql/attribute-set-assignment.repository";
 import { MysqlAttributeSetRepository } from "../../infrastructure/persistence/mysql/attribute-set.repository";
 import { MysqlAttributeValueRepository } from "../../infrastructure/persistence/mysql/attribute-value.repository";
@@ -22,6 +23,7 @@ import { PersistenceModule } from "../../infrastructure/persistence/persistence.
     AttributesController,
     AttributeValuesController,
     AttributeSetsController,
+    ProductVariantsController,
   ],
   providers: [
     AttributesService,

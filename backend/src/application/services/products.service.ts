@@ -23,6 +23,7 @@ import { ProductResponseDto } from "../dto/product-response.dto";
 import { UpdateProductDto } from "../dto/update-product.dto";
 import { toProductResponse } from "../mappers/product.mapper";
 import { ProductAttributeValuesService } from "./product-attribute-values.service";
+import { ProductVariantsService } from "./product-variants.service";
 
 @Injectable()
 export class ProductsService {
@@ -31,7 +32,8 @@ export class ProductsService {
     @Inject(CATEGORY_REPOSITORY)
     private readonly categories: CategoryRepository,
     private readonly events: DomainEventBus,
-    private readonly productAttributeValuesService: ProductAttributeValuesService
+    private readonly productAttributeValuesService: ProductAttributeValuesService,
+    private readonly productVariantsService: ProductVariantsService
   ) {}
 
   async list(search?: string): Promise<ProductResponseDto[]> {
@@ -281,6 +283,15 @@ export class ProductsService {
       }
     } catch (error) {
       console.error("Error in saveProductAttributeValues:", error);
+      throw error;
+    }
+  }
+
+  async getProductVariants(productId: number): Promise<any[]> {
+    try {
+      return await this.productVariantsService.findByProductId(productId);
+    } catch (error) {
+      console.error("Error getting product variants:", error);
       throw error;
     }
   }

@@ -15,9 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductVariantsService = void 0;
 const common_1 = require("@nestjs/common");
 const product_variant_entity_1 = require("../../domain/entities/product-variant.entity");
+const product_attribute_values_service_1 = require("./product-attribute-values.service");
+const attribute_values_service_1 = require("./attribute-values.service");
 let ProductVariantsService = class ProductVariantsService {
-    constructor(productVariantRepository) {
+    constructor(productVariantRepository, productAttributeValuesService, attributeValuesService) {
         this.productVariantRepository = productVariantRepository;
+        this.productAttributeValuesService = productAttributeValuesService;
+        this.attributeValuesService = attributeValuesService;
     }
     async create(createDto) {
         const existingVariant = await this.productVariantRepository.findBySku(createDto.sku);
@@ -28,7 +32,7 @@ let ProductVariantsService = class ProductVariantsService {
         return await this.productVariantRepository.save(productVariant);
     }
     async findAll() {
-        return [];
+        return await this.productVariantRepository.findAll();
     }
     async findByProductId(productId) {
         return await this.productVariantRepository.findByProductId(productId);
@@ -63,11 +67,64 @@ let ProductVariantsService = class ProductVariantsService {
     async removeByProductId(productId) {
         await this.productVariantRepository.deleteByProductId(productId);
     }
+    async getVariantAttributeValues(variantId) {
+        return [];
+    }
+    async setVariantAttributeValues(variantId, attributeValues) {
+        console.log('Setting variant attribute values:', { variantId, attributeValues });
+    }
+    async generateVariantsFromAttributes(productId) {
+        try {
+            const productAttributeValues = await this.productAttributeValuesService.findByProductId(productId);
+            if (!productAttributeValues || productAttributeValues.length === 0) {
+                throw new Error('No attribute values found for this product');
+            }
+            const attributeGroups = new Map();
+            productAttributeValues.forEach(pav => {
+                if (!attributeGroups.has(pav.attributeId)) {
+                    attributeGroups.set(pav.attributeId, []);
+                }
+                attributeGroups.get(pav.attributeId).push(pav);
+            });
+            const combinations = this.generateCombinations(Array.from(attributeGroups.values()));
+            const variants = [];
+            for (let i = 0; i < combinations.length; i++) {
+                const combination = combinations[i];
+                const sku = `VAR-${productId}-${i + 1}`;
+                const name = `Variant ${i + 1}`;
+                const variant = product_variant_entity_1.ProductVariant.create(productId, sku, name, 0, 'USD', 'active');
+                const savedVariant = await this.productVariantRepository.save(variant);
+                variants.push(savedVariant);
+                console.log('Generated variant:', { variant: savedVariant, combination });
+            }
+            return variants;
+        }
+        catch (error) {
+            console.error('Error generating variants:', error);
+            throw error;
+        }
+    }
+    generateCombinations(attributeGroups) {
+        if (attributeGroups.length === 0)
+            return [[]];
+        if (attributeGroups.length === 1)
+            return attributeGroups[0].map(item => [item]);
+        const result = [];
+        const firstGroup = attributeGroups[0];
+        const restCombinations = this.generateCombinations(attributeGroups.slice(1));
+        for (const item of firstGroup) {
+            for (const combination of restCombinations) {
+                result.push([item, ...combination]);
+            }
+        }
+        return result;
+    }
 };
 exports.ProductVariantsService = ProductVariantsService;
 exports.ProductVariantsService = ProductVariantsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)('ProductVariantRepository')),
-    __metadata("design:paramtypes", [Object])
+    __metadata("design:paramtypes", [Object, product_attribute_values_service_1.ProductAttributeValuesService,
+        attribute_values_service_1.AttributeValuesService])
 ], ProductVariantsService);
 //# sourceMappingURL=product-variants.service.js.map
