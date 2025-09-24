@@ -3,8 +3,8 @@ import { ProductRepository } from "../../domain/repositories/product.repository"
 import { DomainEventBus } from "../../shared/events/domain-event.bus";
 import { CreateProductDto } from "../dto/create-product.dto";
 import { ProductResponseDto } from "../dto/product-response.dto";
-import { UpdateProductDto } from "../dto/update-product.dto";
 import { ProductSearchDto, ProductSearchResponseDto } from "../dto/product-search.dto";
+import { UpdateProductDto } from "../dto/update-product.dto";
 import { ProductAttributeValuesService } from "./product-attribute-values.service";
 import { ProductVariantsService } from "./product-variants.service";
 export declare class ProductsService {
