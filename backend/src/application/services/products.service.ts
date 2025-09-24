@@ -20,8 +20,11 @@ import { DomainEventBus } from "../../shared/events/domain-event.bus";
 import { validationException } from "../../shared/validation-error";
 import { CreateProductDto } from "../dto/create-product.dto";
 import { ProductResponseDto } from "../dto/product-response.dto";
+import {
+  ProductSearchDto,
+  ProductSearchResponseDto,
+} from "../dto/product-search.dto";
 import { UpdateProductDto } from "../dto/update-product.dto";
-import { ProductSearchDto, ProductSearchResponseDto } from "../dto/product-search.dto";
 import { toProductResponse } from "../mappers/product.mapper";
 import { ProductAttributeValuesService } from "./product-attribute-values.service";
 import { ProductVariantsService } from "./product-variants.service";
@@ -297,18 +300,20 @@ export class ProductsService {
     }
   }
 
-  async advancedSearch(searchDto: ProductSearchDto): Promise<ProductSearchResponseDto> {
+  async advancedSearch(
+    searchDto: ProductSearchDto
+  ): Promise<ProductSearchResponseDto> {
     try {
       // Use the repository's advanced search method
       const result = await this.products.advancedSearch(searchDto);
-      
+
       return {
-        products: result.products.map(product => toProductResponse(product)),
+        products: result.products.map((product) => toProductResponse(product)),
         total: result.total,
         page: searchDto.page || 1,
         limit: searchDto.limit || 20,
         totalPages: Math.ceil(result.total / (searchDto.limit || 20)),
-        facets: result.facets
+        facets: result.facets,
       };
     } catch (error) {
       console.error("Error in advanced search:", error);

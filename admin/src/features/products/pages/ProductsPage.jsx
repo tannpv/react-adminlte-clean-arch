@@ -5,6 +5,7 @@ import { usePermissions } from '../../../shared/hooks/usePermissions'
 import { fetchCategories } from '../../categories/api/categoriesApi'
 import { ProductList } from '../components/ProductList'
 import { ProductModal } from '../components/ProductModal'
+import { AdvancedProductSearch } from '../components/AdvancedProductSearch'
 import { useProducts } from '../hooks/useProducts'
 import { useProductSearch } from '../hooks/useProductSearch'
 
@@ -16,6 +17,7 @@ const isValidationErrorMap = (err) => {
 export function ProductsPage() {
   const qc = useQueryClient()
   const { can } = usePermissions()
+  const [viewMode, setViewMode] = useState('list') // 'list' or 'advanced'
 
   const {
     searchTerm,
@@ -101,22 +103,48 @@ export function ProductsPage() {
             </p>
           </div>
           <div className="page-actions">
-            <div className="search-control">
-              <div className="input-group">
-                <div className="input-group-prepend">
-                  <span className="input-group-text">
-                    <i className="fas fa-search"></i>
-                  </span>
-                </div>
-                <input
-                  type="search"
-                  className="form-control"
-                  placeholder="Search products by name or SKU..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+            {/* View Mode Toggle */}
+            <div className="view-mode-toggle">
+              <div className="btn-group" role="group">
+                <button
+                  type="button"
+                  className={`btn ${viewMode === 'list' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                  onClick={() => setViewMode('list')}
+                >
+                  <i className="fas fa-list mr-2"></i>
+                  List View
+                </button>
+                <button
+                  type="button"
+                  className={`btn ${viewMode === 'advanced' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                  onClick={() => setViewMode('advanced')}
+                >
+                  <i className="fas fa-search-plus mr-2"></i>
+                  Advanced Search
+                </button>
               </div>
             </div>
+
+            {/* Simple Search (only show in list view) */}
+            {viewMode === 'list' && (
+              <div className="search-control">
+                <div className="input-group">
+                  <div className="input-group-prepend">
+                    <span className="input-group-text">
+                      <i className="fas fa-search"></i>
+                    </span>
+                  </div>
+                  <input
+                    type="search"
+                    className="form-control"
+                    placeholder="Search products by name or SKU..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
+
             <button
               className="btn btn-outline-secondary"
               onClick={() => qc.invalidateQueries({ queryKey: ['categories'] })}
@@ -139,111 +167,117 @@ export function ProductsPage() {
         </div>
 
         <div className="page-body">
-          {isLoading && (
-            <div className="loading-state">
-              <div className="loading-content">
-                <i className="fas fa-spinner fa-spin loading-icon"></i>
-                <h4 className="loading-title">Loading Products</h4>
-                <p className="loading-description">Please wait while we fetch your product catalog...</p>
-              </div>
-            </div>
-          )}
-
-          {!isLoading && isError && (
-            <div className="error-state">
-              <div className="error-content">
-                <i className="fas fa-exclamation-circle error-icon"></i>
-                <h4 className="error-title">Failed to Load Products</h4>
-                <p className="error-description">
-                  {error?.message || 'An unexpected error occurred while loading products.'}
-                </p>
-                <button
-                  className="btn btn-outline-primary"
-                  onClick={() => window.location.reload()}
-                >
-                  <i className="fas fa-redo mr-2"></i>
-                  Try Again
-                </button>
-              </div>
-            </div>
-          )}
-
-          {!isLoading && !isError && (
-            <div className="products-content">
-              {/* Statistics Dashboard */}
-              <div className="products-stats mb-4">
-                <div className="row">
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-box"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{totalProducts}</div>
-                        <div className="stat-label">Total Products</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-eye"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{publishedProducts}</div>
-                        <div className="stat-label">Published</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-cogs"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{variableProducts}</div>
-                        <div className="stat-label">Variable Products</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-dollar-sign"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{formatCurrency(totalValue)}</div>
-                        <div className="stat-label">Total Value</div>
-                      </div>
-                    </div>
+          {viewMode === 'advanced' ? (
+            <AdvancedProductSearch />
+          ) : (
+            <>
+              {isLoading && (
+                <div className="loading-state">
+                  <div className="loading-content">
+                    <i className="fas fa-spinner fa-spin loading-icon"></i>
+                    <h4 className="loading-title">Loading Products</h4>
+                    <p className="loading-description">Please wait while we fetch your product catalog...</p>
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Products List Section */}
-              <div className="products-table-section">
-                <div className="section-header">
-                  <h5 className="section-title">
-                    <i className="fas fa-list mr-2"></i>
-                    Product Management
-                  </h5>
-                  <p className="section-description">
-                    Manage your product catalog, pricing, and inventory.
-                    {searchTerm && ` Showing results for "${searchTerm}"`}
-                  </p>
+              {!isLoading && isError && (
+                <div className="error-state">
+                  <div className="error-content">
+                    <i className="fas fa-exclamation-circle error-icon"></i>
+                    <h4 className="error-title">Failed to Load Products</h4>
+                    <p className="error-description">
+                      {error?.message || 'An unexpected error occurred while loading products.'}
+                    </p>
+                    <button
+                      className="btn btn-outline-primary"
+                      onClick={() => window.location.reload()}
+                    >
+                      <i className="fas fa-redo mr-2"></i>
+                      Try Again
+                    </button>
+                  </div>
                 </div>
+              )}
 
-                <ProductList
-                  products={products}
-                  onEdit={(product) => { if (!can('products:update')) return; openModal(product) }}
-                  onDelete={(product) => {
-                    if (!can('products:delete')) return
-                    setTargetProduct(product)
-                    setConfirmOpen(true)
-                  }}
-                />
-              </div>
-            </div>
+              {!isLoading && !isError && (
+                <div className="products-content">
+                  {/* Statistics Dashboard */}
+                  <div className="products-stats mb-4">
+                    <div className="row">
+                      <div className="col-md-3">
+                        <div className="stat-card">
+                          <div className="stat-icon">
+                            <i className="fas fa-box"></i>
+                          </div>
+                          <div className="stat-content">
+                            <div className="stat-number">{totalProducts}</div>
+                            <div className="stat-label">Total Products</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="stat-card">
+                          <div className="stat-icon">
+                            <i className="fas fa-eye"></i>
+                          </div>
+                          <div className="stat-content">
+                            <div className="stat-number">{publishedProducts}</div>
+                            <div className="stat-label">Published</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="stat-card">
+                          <div className="stat-icon">
+                            <i className="fas fa-cogs"></i>
+                          </div>
+                          <div className="stat-content">
+                            <div className="stat-number">{variableProducts}</div>
+                            <div className="stat-label">Variable Products</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="stat-card">
+                          <div className="stat-icon">
+                            <i className="fas fa-dollar-sign"></i>
+                          </div>
+                          <div className="stat-content">
+                            <div className="stat-number">{formatCurrency(totalValue)}</div>
+                            <div className="stat-label">Total Value</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Products List Section */}
+                  <div className="products-table-section">
+                    <div className="section-header">
+                      <h5 className="section-title">
+                        <i className="fas fa-list mr-2"></i>
+                        Product Management
+                      </h5>
+                      <p className="section-description">
+                        Manage your product catalog, pricing, and inventory.
+                        {searchTerm && ` Showing results for "${searchTerm}"`}
+                      </p>
+                    </div>
+
+                    <ProductList
+                      products={products}
+                      onEdit={(product) => { if (!can('products:update')) return; openModal(product) }}
+                      onDelete={(product) => {
+                        if (!can('products:delete')) return
+                        setTargetProduct(product)
+                        setConfirmOpen(true)
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
