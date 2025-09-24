@@ -1,4 +1,4 @@
-import { FieldErrorDetail, FieldErrors } from '../validation-error';
+import { FieldErrors } from "../validation-error";
 
 export interface ValidationResult {
   isValid: boolean;
