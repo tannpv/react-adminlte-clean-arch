@@ -1,4 +1,6 @@
 import React from 'react'
+import Button from '../../../shared/components/ui/Button'
+import Table from '../../../shared/components/ui/Table'
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { getUserDisplayName } from '../../../shared/lib/userDisplayName'
 
@@ -7,42 +9,38 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
   const { t } = useTranslation(languageCode, 'users')
 
   return (
-    <div className="users-list-container">
-      <div className="table-responsive">
-        <table className="table table-hover users-table align-middle mb-0">
-          <thead className="table-dark">
-            <tr>
-              <th className="user-id-column">
-                <i className="fas fa-hashtag mr-2"></i>
-                {t('id', 'ID')}
-              </th>
-              <th className="user-avatar-column">
-                <i className="fas fa-user-circle mr-2"></i>
-                {t('avatar', 'Avatar')}
-              </th>
-              <th className="user-name-column">
-                <i className="fas fa-user mr-2"></i>
-                {t('name', 'Name')}
-              </th>
-              <th className="user-email-column">
-                <i className="fas fa-envelope mr-2"></i>
-                {t('email', 'Email')}
-              </th>
-              <th className="user-roles-column">
-                <i className="fas fa-shield-alt mr-2"></i>
-                {t('roles', 'Roles')}
-              </th>
-              <th className="user-status-column">
-                <i className="fas fa-info-circle mr-2"></i>
-                {t('status', 'Status')}
-              </th>
-              <th className="user-actions-column text-center">
-                <i className="fas fa-cogs mr-2"></i>
-                {t('actions', 'Actions')}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+    <Table hover darkHeader>
+      <Table.Header>
+        <Table.HeaderCell>
+          <i className="fas fa-hashtag mr-2"></i>
+          {t('id', 'ID')}
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+          <i className="fas fa-user-circle mr-2"></i>
+          {t('avatar', 'Avatar')}
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+          <i className="fas fa-user mr-2"></i>
+          {t('name', 'Name')}
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+          <i className="fas fa-envelope mr-2"></i>
+          {t('email', 'Email')}
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+          <i className="fas fa-shield-alt mr-2"></i>
+          {t('roles', 'Roles')}
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+          <i className="fas fa-info-circle mr-2"></i>
+          {t('status', 'Status')}
+        </Table.HeaderCell>
+        <Table.HeaderCell className="text-center">
+          <i className="fas fa-cogs mr-2"></i>
+          {t('actions', 'Actions')}
+        </Table.HeaderCell>
+      </Table.Header>
+      <Table.Body>
             {users.map((user) => {
               const displayName = getUserDisplayName(user)
               const userRoles = Array.isArray(user.roles) && rolesById
@@ -53,104 +51,108 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
               const isActive = user.isActive !== false
 
               return (
-                <tr key={user.id} className="user-row">
-                  <td className="user-id-cell">
-                    <span className="user-id-badge">{user.id}</span>
-                  </td>
-                  <td className="user-avatar-cell">
-                    <div className="user-avatar">
+                <Table.Row key={user.id}>
+                  <Table.Cell className="font-medium text-gray-900">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      {user.id}
+                    </span>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <div className="flex items-center">
                       {user.profile?.pictureUrl ? (
                         <img
                           src={user.profile.pictureUrl}
                           alt={displayName}
-                          className="avatar-image"
+                          className="h-10 w-10 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="avatar-placeholder">
-                          <i className="fas fa-user"></i>
+                        <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                          <i className="fas fa-user text-gray-600"></i>
                         </div>
                       )}
                     </div>
-                  </td>
-                  <td className="user-name-cell">
-                    <div className="user-name-info">
-                      <div className="user-name">
-                        <strong>{displayName}</strong>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <div className="flex flex-col">
+                      <div className="flex items-center">
+                        <span className="font-medium text-gray-900">{displayName}</span>
                         {isAdmin && (
-                          <span className="badge badge-warning ml-2">
+                          <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                             <i className="fas fa-crown mr-1"></i>
                             {t('admin', 'Admin')}
                           </span>
                         )}
                       </div>
-                      <small className="text-muted">
+                      <span className="text-sm text-gray-500">
                         {hasProfile ? t('profile_complete', 'Profile Complete') : t('basic_info_only', 'Basic Info Only')}
-                      </small>
+                      </span>
                     </div>
-                  </td>
-                  <td className="user-email-cell">
-                    <div className="user-email">
-                      <i className="fas fa-envelope mr-2 text-muted"></i>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <div className="flex items-center text-gray-600">
+                      <i className="fas fa-envelope mr-2"></i>
                       <span>{user.email}</span>
                     </div>
-                  </td>
-                  <td className="user-roles-cell">
-                    <div className="user-roles">
+                  </Table.Cell>
+                  <Table.Cell>
+                    <div className="flex flex-wrap gap-1">
                       {userRoles.length > 0 ? (
-                        <div className="roles-list">
+                        <>
                           {userRoles.slice(0, 2).map((role, idx) => (
-                            <span key={idx} className="role-badge">
+                            <span key={idx} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                               {role.name}
                             </span>
                           ))}
                           {userRoles.length > 2 && (
-                            <span className="role-more">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                               +{userRoles.length - 2} {t('more', 'more')}
                             </span>
                           )}
-                        </div>
+                        </>
                       ) : (
-                        <span className="text-muted">
+                        <span className="text-gray-500 text-sm">
                           <i className="fas fa-exclamation-triangle mr-1"></i>
                           {t('no_roles', 'No roles')}
                         </span>
                       )}
                     </div>
-                  </td>
-                  <td className="user-status-cell">
-                    <div className="user-status">
-                      <span className={`status-badge ${isActive ? 'status-active' : 'status-inactive'}`}>
-                        <i className={`fas ${isActive ? 'fa-check-circle' : 'fa-times-circle'} mr-1`}></i>
-                        {isActive ? t('active', 'Active') : t('inactive', 'Inactive')}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="user-actions-cell text-center">
-                    <div className="action-buttons">
-                      <button
-                        className="btn btn-sm btn-outline-primary mr-2"
+                  </Table.Cell>
+                  <Table.Cell>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      isActive 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      <i className={`fas ${isActive ? 'fa-check-circle' : 'fa-times-circle'} mr-1`}></i>
+                      {isActive ? t('active', 'Active') : t('inactive', 'Inactive')}
+                    </span>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <div className="flex justify-center space-x-2">
+                      <Button
+                        variant="primary"
+                        size="sm"
                         onClick={() => onEdit(user)}
                         title={t('edit_user_information', 'Edit user information')}
                       >
                         <i className="fas fa-edit mr-1"></i>
                         {t('edit', 'Edit')}
-                      </button>
-                      <button
-                        className="btn btn-sm btn-outline-danger"
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
                         onClick={() => onDelete(user.id)}
                         title={t('delete_user', 'Delete user')}
                       >
                         <i className="fas fa-trash mr-1"></i>
                         {t('delete', 'Delete')}
-                      </button>
+                      </Button>
                     </div>
-                  </td>
-                </tr>
+                  </Table.Cell>
+                </Table.Row>
               )
             })}
-          </tbody>
-        </table>
-      </div>
-    </div>
+      </Table.Body>
+    </Table>
   )
 }
