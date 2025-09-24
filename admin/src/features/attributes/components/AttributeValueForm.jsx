@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
 import { useCreateAttributeValue, useUpdateAttributeValue } from '../hooks/useAttributeValues';
 import { useAttributes } from '../hooks/useAttributes';
+import Modal from '../../../shared/components/ui/Modal';
+import Button from '../../../shared/components/ui/Button';
+import Form from '../../../shared/components/ui/Form';
 
 export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
     const { languageCode } = useLanguage();
@@ -115,178 +118,159 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
     if (!show) return null;
 
     return (
-        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-            <div className="modal-dialog modal-lg">
-                <div className="modal-content">
-                    <div className="modal-header bg-primary text-white">
-                        <h5 className="modal-title">
-                            <i className={`fas ${isEditing ? 'fa-edit' : 'fa-plus'} mr-2`}></i>
-                            {isEditing ? t('edit_attribute_value', 'Edit Attribute Value') : t('add_new_attribute_value', 'Add New Attribute Value')}
-                        </h5>
-                        <button
-                            type="button"
-                            className="close text-white"
-                            onClick={onClose}
-                            disabled={isLoading}
-                        >
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+        <Modal show={show} onClose={onClose} className="max-w-2xl">
+            <Modal.Header onClose={onClose}>
+                <div className="flex items-center">
+                    <i className={`fas ${isEditing ? 'fa-edit' : 'fa-plus'} mr-3 text-blue-600`}></i>
+                    {isEditing ? t('edit_attribute_value', 'Edit Attribute Value') : t('add_new_attribute_value', 'Add New Attribute Value')}
+                </div>
+            </Modal.Header>
 
-                    <div className="modal-body">
-                        <div className="container-fluid">
-                            <div className="row">
-                                <div className="col-12">
-                                    <div className="alert alert-info" role="alert">
-                                        <i className="fas fa-info-circle mr-2"></i>
-                                        <strong>{t('attribute_values', 'Attribute Values')}:</strong> {t('attribute_values_description', 'Create values like "Red", "Blue", "Small", "Large" for your attributes.')}
-                                        {t('required_fields_note', 'All fields marked with * are required.')}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <form onSubmit={handleSubmit}>
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <div className="form-group">
-                                            <label htmlFor="attributeId" className="form-label">
-                                                <i className="fas fa-tag mr-2"></i>
-                                                {t('attribute', 'Attribute')} *
-                                            </label>
-                                            <select
-                                                id="attributeId"
-                                                name="attributeId"
-                                                className={`form-control ${errors.attributeId ? 'is-invalid' : ''}`}
-                                                value={formData.attributeId}
-                                                onChange={handleInputChange}
-                                                disabled={isLoading}
-                                                required
-                                            >
-                                                <option value="">{t('select_attribute', 'Select an attribute...')}</option>
-                                                {attributes.map(attribute => (
-                                                    <option key={attribute.id} value={attribute.id}>
-                                                        {attribute.name} ({attribute.inputType})
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            {errors.attributeId && (
-                                                <div className="invalid-feedback">
-                                                    <i className="fas fa-exclamation-triangle mr-1"></i>
-                                                    {errors.attributeId}
-                                                </div>
-                                            )}
-                                            <small className="form-text text-muted">
-                                                {t('choose_attribute_help_text', 'Choose the attribute this value belongs to')}
-                                            </small>
-                                        </div>
-                                    </div>
-
-                                    <div className="col-md-6">
-                                        <div className="form-group">
-                                            <label htmlFor="value" className="form-label">
-                                                <i className="fas fa-list mr-2"></i>
-                                                {t('value', 'Value')} *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="value"
-                                                name="value"
-                                                className={`form-control ${errors.value ? 'is-invalid' : ''}`}
-                                                value={formData.value}
-                                                onChange={handleInputChange}
-                                                placeholder={t('value_placeholder', 'e.g., Red, Blue, Small, Large')}
-                                                disabled={isLoading}
-                                                required
-                                            />
-                                            {errors.value && (
-                                                <div className="invalid-feedback">
-                                                    <i className="fas fa-exclamation-triangle mr-1"></i>
-                                                    {errors.value}
-                                                </div>
-                                            )}
-                                            <small className="form-text text-muted">
-                                                {t('value_help_text', 'The actual value (e.g., "Red" for Color attribute)')}
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <div className="form-group">
-                                            <label htmlFor="sortOrder" className="form-label">
-                                                <i className="fas fa-sort-numeric-up mr-2"></i>
-                                                {t('sort_order', 'Sort Order')}
-                                            </label>
-                                            <input
-                                                type="number"
-                                                id="sortOrder"
-                                                name="sortOrder"
-                                                className="form-control"
-                                                value={formData.sortOrder}
-                                                onChange={handleInputChange}
-                                                min="0"
-                                                disabled={isLoading}
-                                            />
-                                            <small className="form-text text-muted">
-                                                {t('sort_order_help_text', 'Lower numbers appear first in dropdowns')}
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {errors.submit && (
-                                    <div className="alert alert-danger" role="alert">
-                                        <i className="fas fa-exclamation-triangle mr-2"></i>
-                                        {errors.submit}
-                                    </div>
-                                )}
-                            </form>
-                        </div>
-                    </div>
-
-                    <div className="modal-footer bg-light border-top">
-                        <div className="d-flex justify-content-between w-100">
-                            <div className="text-muted">
-                                <small>
-                                    <i className="fas fa-lightbulb mr-1"></i>
-                                    {isEditing ? t('update_attribute_value_details', 'Update the attribute value details') : t('create_new_attribute_value', 'Create a new value for an attribute')}
-                                </small>
-                            </div>
+            <Modal.Body>
+                <div className="mb-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-start">
+                            <i className="fas fa-info-circle text-blue-600 mr-2 mt-0.5"></i>
                             <div>
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-secondary mr-2"
-                                    onClick={onClose}
-                                    disabled={isLoading}
-                                >
-                                    <i className="fas fa-times mr-1"></i>
-                                    {t('cancel', 'Cancel')}
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`btn ${isEditing ? 'btn-warning' : 'btn-success'}`}
-                                    onClick={handleSubmit}
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? (
-                                        <>
-                                            <i className="fas fa-spinner fa-spin mr-1"></i>
-                                            {isEditing ? t('updating', 'Updating...') : t('creating', 'Creating...')}
-                                        </>
-                                    ) : (
-                                        <>
-                                            <i className={`fas ${isEditing ? 'fa-save' : 'fa-plus'} mr-1`}></i>
-                                            {isEditing ? t('update_value', 'Update Value') : t('create_value', 'Create Value')}
-                                        </>
-                                    )}
-                                </button>
+                                <strong className="text-blue-800">{t('attribute_values', 'Attribute Values')}:</strong>
+                                <span className="text-blue-700 ml-1">
+                                    {t('attribute_values_description', 'Create values like "Red", "Blue", "Small", "Large" for your attributes.')}
+                                    {t('required_fields_note', 'All fields marked with * are required.')}
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+
+                <form onSubmit={handleSubmit}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Form.Group>
+                            <Form.Label htmlFor="attributeId">
+                                <i className="fas fa-tag mr-2 text-blue-600"></i>
+                                {t('attribute', 'Attribute')} *
+                            </Form.Label>
+                            <Form.Select
+                                id="attributeId"
+                                name="attributeId"
+                                value={formData.attributeId}
+                                onChange={handleInputChange}
+                                disabled={isLoading}
+                                required
+                                className={errors.attributeId ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
+                            >
+                                <option value="">{t('select_attribute', 'Select an attribute...')}</option>
+                                {attributes.map(attribute => (
+                                    <option key={attribute.id} value={attribute.id}>
+                                        {attribute.name} ({attribute.inputType})
+                                    </option>
+                                ))}
+                            </Form.Select>
+                            {errors.attributeId && (
+                                <Form.ErrorText>
+                                    <i className="fas fa-exclamation-triangle mr-1"></i>
+                                    {errors.attributeId}
+                                </Form.ErrorText>
+                            )}
+                            <Form.HelpText>
+                                {t('choose_attribute_help_text', 'Choose the attribute this value belongs to')}
+                            </Form.HelpText>
+                        </Form.Group>
+
+                        <Form.Group>
+                            <Form.Label htmlFor="value">
+                                <i className="fas fa-list mr-2 text-blue-600"></i>
+                                {t('value', 'Value')} *
+                            </Form.Label>
+                            <Form.Control
+                                type="text"
+                                id="value"
+                                name="value"
+                                value={formData.value}
+                                onChange={handleInputChange}
+                                placeholder={t('value_placeholder', 'e.g., Red, Blue, Small, Large')}
+                                disabled={isLoading}
+                                required
+                                className={errors.value ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
+                            />
+                            {errors.value && (
+                                <Form.ErrorText>
+                                    <i className="fas fa-exclamation-triangle mr-1"></i>
+                                    {errors.value}
+                                </Form.ErrorText>
+                            )}
+                            <Form.HelpText>
+                                {t('value_help_text', 'The actual value (e.g., "Red" for Color attribute)')}
+                            </Form.HelpText>
+                        </Form.Group>
+                    </div>
+
+                    <Form.Group>
+                        <Form.Label htmlFor="sortOrder">
+                            <i className="fas fa-sort-numeric-up mr-2 text-blue-600"></i>
+                            {t('sort_order', 'Sort Order')}
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            id="sortOrder"
+                            name="sortOrder"
+                            value={formData.sortOrder}
+                            onChange={handleInputChange}
+                            min="0"
+                            disabled={isLoading}
+                        />
+                        <Form.HelpText>
+                            {t('sort_order_help_text', 'Lower numbers appear first in dropdowns')}
+                        </Form.HelpText>
+                    </Form.Group>
+
+                    {errors.submit && (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div className="flex items-start">
+                                <i className="fas fa-exclamation-triangle text-red-600 mr-2 mt-0.5"></i>
+                                <span className="text-red-800">{errors.submit}</span>
+                            </div>
+                        </div>
+                    )}
+                </form>
+            </Modal.Body>
+
+            <Modal.Footer>
+                <div className="flex justify-between items-center w-full">
+                    <div className="text-gray-500 text-sm">
+                        <i className="fas fa-lightbulb mr-1"></i>
+                        {isEditing ? t('update_attribute_value_details', 'Update the attribute value details') : t('create_new_attribute_value', 'Create a new value for an attribute')}
+                    </div>
+                    <div className="flex space-x-2">
+                        <Button
+                            variant="secondary"
+                            outline
+                            onClick={onClose}
+                            disabled={isLoading}
+                        >
+                            <i className="fas fa-times mr-1"></i>
+                            {t('cancel', 'Cancel')}
+                        </Button>
+                        <Button
+                            variant={isEditing ? 'warning' : 'success'}
+                            onClick={handleSubmit}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <>
+                                    <i className="fas fa-spinner fa-spin mr-1"></i>
+                                    {isEditing ? t('updating', 'Updating...') : t('creating', 'Creating...')}
+                                </>
+                            ) : (
+                                <>
+                                    <i className={`fas ${isEditing ? 'fa-save' : 'fa-plus'} mr-1`}></i>
+                                    {isEditing ? t('update_value', 'Update Value') : t('create_value', 'Create Value')}
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                </div>
+            </Modal.Footer>
+        </Modal>
     );
 };
 
