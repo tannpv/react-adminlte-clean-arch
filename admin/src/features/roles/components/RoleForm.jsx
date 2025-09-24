@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { ALL_PERMISSIONS, PERMISSION_GROUPS, groupPermissions } from '../constants/permissionDefinitions'
+import Form from '../../../../shared/components/ui/Form'
 
 export function RoleForm({ onSubmit, initialRole, errors = {}, submitting = false, formId = 'role-form' }) {
   const [name, setName] = useState('')
@@ -71,31 +72,32 @@ export function RoleForm({ onSubmit, initialRole, errors = {}, submitting = fals
   return (
     <form id={formId} onSubmit={handleSubmit} noValidate className="role-form">
       {/* Role Name Section */}
-      <div className="form-section mb-4">
-        <div className="form-group">
-          <label className="form-label">
-            <i className="fas fa-tag mr-2"></i>
+      <div className="mb-6">
+        <Form.Group>
+          <Form.Label>
+            <i className="fas fa-tag mr-2 text-blue-600"></i>
             Role Name
-          </label>
-          <input
-            className={`form-control ${showNameInvalid ? 'is-invalid' : ''}`}
+          </Form.Label>
+          <Form.Control
+            type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter role name (e.g., Administrator, Editor)"
             required
             disabled={submitting}
+            className={showNameInvalid ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
           />
-          {showNameInvalid && <div className="invalid-feedback">{nameError}</div>}
-        </div>
+          {showNameInvalid && <Form.ErrorText>{nameError}</Form.ErrorText>}
+        </Form.Group>
       </div>
 
       {/* Permissions Section */}
-      <div className="form-section">
-        <div className="form-group">
-          <label className="form-label">
-            <i className="fas fa-shield-alt mr-2"></i>
+      <div className="mb-6">
+        <Form.Group>
+          <Form.Label>
+            <i className="fas fa-shield-alt mr-2 text-blue-600"></i>
             Permissions
-          </label>
+          </Form.Label>
           <div className="permissions-container">
             <div className="permissions-header mb-3">
               <div className="row">
@@ -196,13 +198,15 @@ export function RoleForm({ onSubmit, initialRole, errors = {}, submitting = fals
             </div>
 
             {permissionsError && (
-              <div className="alert alert-danger mt-3" role="alert">
-                <i className="fas fa-exclamation-triangle mr-2"></i>
-                {permissionsError}
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                <div className="flex items-start">
+                  <i className="fas fa-exclamation-triangle text-red-600 mr-2 mt-0.5"></i>
+                  <span className="text-red-800">{permissionsError}</span>
+                </div>
               </div>
             )}
           </div>
-        </div>
+        </Form.Group>
       </div>
     </form>
   )
