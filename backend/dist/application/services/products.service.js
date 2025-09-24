@@ -24,12 +24,14 @@ const domain_event_bus_1 = require("../../shared/events/domain-event.bus");
 const validation_error_1 = require("../../shared/validation-error");
 const product_mapper_1 = require("../mappers/product.mapper");
 const product_attribute_values_service_1 = require("./product-attribute-values.service");
+const product_variants_service_1 = require("./product-variants.service");
 let ProductsService = class ProductsService {
-    constructor(products, categories, events, productAttributeValuesService) {
+    constructor(products, categories, events, productAttributeValuesService, productVariantsService) {
         this.products = products;
         this.categories = categories;
         this.events = events;
         this.productAttributeValuesService = productAttributeValuesService;
+        this.productVariantsService = productVariantsService;
     }
     async list(search) {
         const all = await this.products.findAll(search);
@@ -165,30 +167,69 @@ let ProductsService = class ProductsService {
             attributeValues,
         });
         try {
+            console.log("Deleting all existing attribute values for product:", productId);
+            await this.productAttributeValuesService.removeByProductId(productId);
             for (const [attributeId, valueData] of Object.entries(attributeValues)) {
                 console.log("Processing attribute:", { attributeId, valueData });
                 if (valueData && Object.keys(valueData).length > 0) {
-                    const createData = {
-                        productId,
-                        attributeId: parseInt(attributeId),
-                        valueText: valueData.valueText || null,
-                        valueNumber: valueData.valueNumber || null,
-                        valueBoolean: valueData.valueBoolean || null,
-                    };
-                    console.log("Creating product attribute value:", createData);
-                    try {
-                        const result = await this.productAttributeValuesService.create(createData);
-                        console.log("Successfully created product attribute value:", result);
+                    if (valueData.attributeValueIds &&
+                        Array.isArray(valueData.attributeValueIds) &&
+                        valueData.attributeValueIds.length > 0) {
+                        for (const attributeValueId of valueData.attributeValueIds) {
+                            const createData = {
+                                productId,
+                                attributeId: parseInt(attributeId),
+                                attributeValueId: attributeValueId,
+                                valueText: undefined,
+                                valueNumber: undefined,
+                                valueBoolean: undefined,
+                            };
+                            console.log("Creating normalized product attribute value:", createData);
+                            try {
+                                const result = await this.productAttributeValuesService.create(createData);
+                                console.log("Successfully created normalized product attribute value:", result);
+                            }
+                            catch (error) {
+                                console.error("Error creating normalized product attribute value:", error);
+                                throw error;
+                            }
+                        }
                     }
-                    catch (error) {
-                        console.error("Error creating product attribute value:", error);
-                        throw error;
+                    else if (valueData.valueText ||
+                        valueData.valueNumber !== null ||
+                        valueData.valueBoolean !== null) {
+                        const createData = {
+                            productId,
+                            attributeId: parseInt(attributeId),
+                            attributeValueId: valueData.attributeValueId || undefined,
+                            valueText: valueData.valueText || undefined,
+                            valueNumber: valueData.valueNumber || undefined,
+                            valueBoolean: valueData.valueBoolean || undefined,
+                        };
+                        console.log("Creating product attribute value:", createData);
+                        try {
+                            const result = await this.productAttributeValuesService.create(createData);
+                            console.log("Successfully created product attribute value:", result);
+                        }
+                        catch (error) {
+                            console.error("Error creating product attribute value:", error);
+                            throw error;
+                        }
                     }
                 }
             }
         }
         catch (error) {
             console.error("Error in saveProductAttributeValues:", error);
+            throw error;
+        }
+    }
+    async getProductVariants(productId) {
+        try {
+            return await this.productVariantsService.findByProductId(productId);
+        }
+        catch (error) {
+            console.error("Error getting product variants:", error);
             throw error;
         }
     }
@@ -199,6 +240,7 @@ exports.ProductsService = ProductsService = __decorate([
     __param(0, (0, common_1.Inject)(product_repository_1.PRODUCT_REPOSITORY)),
     __param(1, (0, common_1.Inject)(category_repository_1.CATEGORY_REPOSITORY)),
     __metadata("design:paramtypes", [Object, Object, domain_event_bus_1.DomainEventBus,
-        product_attribute_values_service_1.ProductAttributeValuesService])
+        product_attribute_values_service_1.ProductAttributeValuesService,
+        product_variants_service_1.ProductVariantsService])
 ], ProductsService);
 //# sourceMappingURL=products.service.js.map
