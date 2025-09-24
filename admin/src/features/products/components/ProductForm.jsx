@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
+import Form from '../../../shared/components/ui/Form'
 import { CategoryTreeMultiSelect } from './CategoryTreeMultiSelect'
 import { ProductAttributeForm } from './ProductAttributeForm'
-import Form from '../../../../shared/components/ui/Form'
 
 const STATUSES = [
   { value: 'draft', label: 'Draft' },

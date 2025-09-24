@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import Form from '../../../shared/components/ui/Form'
 import { ALL_PERMISSIONS, PERMISSION_GROUPS, groupPermissions } from '../constants/permissionDefinitions'
-import Form from '../../../../shared/components/ui/Form'
 
 export function RoleForm({ onSubmit, initialRole, errors = {}, submitting = false, formId = 'role-form' }) {
   const [name, setName] = useState('')

@@ -1,7 +1,7 @@
 import React from 'react'
+import Button from '../../../shared/components/ui/Button'
+import Modal from '../../../shared/components/ui/Modal'
 import { ProductForm } from './ProductForm'
-import Modal from '../../../../shared/components/ui/Modal'
-import Button from '../../../../shared/components/ui/Button'
 
 export function ProductModal({
   show,
