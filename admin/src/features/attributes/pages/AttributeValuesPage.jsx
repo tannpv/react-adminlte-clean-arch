@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { ConfirmModal } from '../../../shared/components/ConfirmModal';
+import Button from '../../../shared/components/ui/Button';
+import Form from '../../../shared/components/ui/Form';
+import Table from '../../../shared/components/ui/Table';
 import { usePermissions } from '../../../shared/hooks/usePermissions';
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
 import { AttributeValueForm } from '../components/AttributeValueForm';
 import { useAttributeValues, useDeleteAttributeValue } from '../hooks/useAttributeValues';
 import { useAttributes } from '../hooks/useAttributes';
-import Button from '../../../shared/components/ui/Button';
-import Table from '../../../shared/components/ui/Table';
-import Form from '../../../shared/components/ui/Form';
 
 export const AttributeValuesPage = () => {
     const [showForm, setShowForm] = useState(false);

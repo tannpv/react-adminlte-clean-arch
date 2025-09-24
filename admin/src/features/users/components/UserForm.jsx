@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
+import Form from '../../../shared/components/ui/Form'
 
 const buildInitialProfile = (user) => {
   if (!user || !user.profile) {
@@ -85,108 +86,114 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
   const passwordError = localPasswordError || passwordServerError
 
   return (
-    <form id={formId} onSubmit={handleSubmit} noValidate className="user-form">
+    <form id={formId} onSubmit={handleSubmit} noValidate className="space-y-6">
       {/* Basic Information Section */}
-      <div className="form-section mb-4">
-        <h6 className="section-title">
-          <i className="fas fa-user mr-2"></i>
+      <div>
+        <h6 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <i className="fas fa-user mr-2 text-blue-600"></i>
           {t('basic_information', 'Basic Information')}
         </h6>
-        <div className="form-row">
-          <div className="form-group col-md-6">
-            <label className="form-label">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Form.Group>
+            <Form.Label htmlFor="firstName">
               <i className="fas fa-signature mr-2"></i>
               {t('first_name', 'First Name')}
-            </label>
-            <input
-              className={`form-control ${firstNameError ? 'is-invalid' : ''}`}
+            </Form.Label>
+            <Form.Control
+              id="firstName"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               placeholder={t('enter_first_name', 'Enter first name')}
               required
               disabled={submitting}
+              className={firstNameError ? 'border-red-500' : ''}
             />
-            {firstNameError && <div className="invalid-feedback">{firstNameError}</div>}
-          </div>
-          <div className="form-group col-md-6">
-            <label className="form-label">
+            {firstNameError && <Form.ErrorText>{firstNameError}</Form.ErrorText>}
+          </Form.Group>
+          <Form.Group>
+            <Form.Label htmlFor="lastName">
               <i className="fas fa-signature mr-2"></i>
               {t('last_name', 'Last Name')}
-            </label>
-            <input
-              className={`form-control ${lastNameError ? 'is-invalid' : ''}`}
+            </Form.Label>
+            <Form.Control
+              id="lastName"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               placeholder={t('enter_last_name', 'Enter last name')}
               required
               disabled={submitting}
+              className={lastNameError ? 'border-red-500' : ''}
             />
-            {lastNameError && <div className="invalid-feedback">{lastNameError}</div>}
-          </div>
+            {lastNameError && <Form.ErrorText>{lastNameError}</Form.ErrorText>}
+          </Form.Group>
         </div>
 
-        <div className="form-row">
-          <div className="form-group col-md-6">
-            <label className="form-label">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <Form.Group>
+            <Form.Label htmlFor="email">
               <i className="fas fa-envelope mr-2"></i>
               {t('email', 'Email Address')}
-            </label>
-            <input
+            </Form.Label>
+            <Form.Control
+              id="email"
               type="email"
-              className={`form-control ${emailError ? 'is-invalid' : ''}`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t('enter_email', 'Enter email address')}
               required
               disabled={submitting}
+              className={emailError ? 'border-red-500' : ''}
             />
-            {emailError && <div className="invalid-feedback">{emailError}</div>}
-          </div>
-          <div className="form-group col-md-6">
-            <label className="form-label">
+            {emailError && <Form.ErrorText>{emailError}</Form.ErrorText>}
+          </Form.Group>
+          <Form.Group>
+            <Form.Label htmlFor="dateOfBirth">
               <i className="fas fa-birthday-cake mr-2"></i>
               {t('date_of_birth', 'Date of Birth')}
-            </label>
-            <input
+            </Form.Label>
+            <Form.Control
+              id="dateOfBirth"
               type="date"
-              className={`form-control ${dobError ? 'is-invalid' : ''}`}
               value={dateOfBirth || ''}
               onChange={(e) => setDateOfBirth(e.target.value)}
               disabled={submitting}
+              className={dobError ? 'border-red-500' : ''}
             />
-            {dobError && <div className="invalid-feedback">{dobError}</div>}
-          </div>
+            {dobError && <Form.ErrorText>{dobError}</Form.ErrorText>}
+          </Form.Group>
         </div>
       </div>
 
       {/* Profile Picture Section */}
-      <div className="form-section mb-4">
-        <h6 className="section-title">
-          <i className="fas fa-image mr-2"></i>
+      <div>
+        <h6 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <i className="fas fa-image mr-2 text-blue-600"></i>
           {t('profile_picture', 'Profile Picture')}
         </h6>
-        <div className="form-group">
-          <div className="picture-upload-container">
-            <div className="picture-preview">
-              {picturePreview ? (
-                <img
-                  src={picturePreview}
-                  alt="Profile preview"
-                  className="preview-image"
-                />
-              ) : (
-                <div className="preview-placeholder">
-                  <i className="fas fa-user"></i>
-                  <span>{t('no_image', 'No Image')}</span>
-                </div>
-              )}
+        <Form.Group>
+          <div className="flex items-start space-x-4">
+            <div className="flex-shrink-0">
+              <div className="w-20 h-20 border-2 border-gray-300 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                {picturePreview ? (
+                  <img
+                    src={picturePreview}
+                    alt="Profile preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="text-gray-400 text-center">
+                    <i className="fas fa-user text-2xl"></i>
+                    <div className="text-xs mt-1">{t('no_image', 'No Image')}</div>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="picture-controls">
-              <div className="file-input-wrapper">
+            <div className="flex-1">
+              <div className="space-y-2">
                 <input
                   type="file"
                   accept="image/*"
-                  className={`form-control-file ${pictureError ? 'is-invalid' : ''}`}
+                  className={`block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 ${pictureError ? 'border-red-500' : ''}`}
                   onChange={async (e) => {
                     const file = e.target.files?.[0]
                     if (!file) {
@@ -228,15 +235,15 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                   }}
                   disabled={submitting}
                 />
-                <label className="file-input-label">
-                  <i className="fas fa-upload mr-2"></i>
-                  {t('choose_image', 'Choose Image')}
-                </label>
+                <div className="text-sm text-gray-500">
+                  <i className="fas fa-upload mr-1"></i>
+                  {t('choose_image', 'Choose Image')} (Max 5MB)
+                </div>
               </div>
-              <div className="picture-actions">
+              <div className="flex items-center space-x-2 mt-2">
                 <button
                   type="button"
-                  className="btn btn-outline-secondary btn-sm"
+                  className="px-3 py-1 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50"
                   onClick={() => {
                     setPictureData('')
                     setPicturePreview('')
@@ -248,38 +255,37 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                   {t('remove', 'Remove')}
                 </button>
                 {pictureLoading && (
-                  <span className="upload-status">
+                  <span className="text-sm text-blue-600">
                     <i className="fas fa-spinner fa-spin mr-1"></i>
                     {t('uploading', 'Uploading...')}
                   </span>
                 )}
               </div>
               {pictureError && (
-                <div className="invalid-feedback d-block">
+                <div className="text-sm text-red-600 mt-1">
                   <i className="fas fa-exclamation-triangle mr-1"></i>
                   {pictureError}
                 </div>
               )}
             </div>
           </div>
-        </div>
+        </Form.Group>
       </div>
 
       {/* Roles Section */}
-      <div className="form-section mb-4">
-        <h6 className="section-title">
-          <i className="fas fa-shield-alt mr-2"></i>
+      <div>
+        <h6 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <i className="fas fa-shield-alt mr-2 text-blue-600"></i>
           {t('roles_permissions', 'Roles & Permissions')}
         </h6>
-        <div className="form-group">
-          <label className="form-label">
+        <Form.Group>
+          <Form.Label>
             <i className="fas fa-user-tag mr-2"></i>
             {t('assign_roles', 'Assign Roles')}
-          </label>
-          <div className="roles-select-container">
-            <select
+          </Form.Label>
+          <div className="border border-gray-300 rounded-md">
+            <Form.Select
               multiple
-              className={`form-control roles-select ${rolesError ? 'is-invalid' : ''}`}
               value={roles}
               size={Math.min(8, Math.max(3, roleOptions.length || 3))}
               disabled={rolesLoading || submitting}
@@ -287,52 +293,53 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                 const values = Array.from(e.target.selectedOptions).map(o => o.value)
                 setRoles(values)
               }}
+              className={`${rolesError ? 'border-red-500' : ''}`}
             >
               {roleOptions.map(r => (
                 <option key={r.id} value={String(r.id)}>{r.name}</option>
               ))}
-            </select>
-            <div className="roles-info">
+            </Form.Select>
+            <div className="p-2 bg-gray-50 text-sm text-gray-600">
               {rolesLoading && (
-                <div className="loading-indicator">
+                <div className="flex items-center">
                   <i className="fas fa-spinner fa-spin mr-1"></i>
                   {t('loading_roles', 'Loading roles...')}
                 </div>
               )}
               {!rolesLoading && !roleOptions.length && (
-                <div className="no-roles-warning">
+                <div className="flex items-center text-yellow-600">
                   <i className="fas fa-exclamation-triangle mr-1"></i>
                   {t('no_roles_available', 'No roles available or not authorized to view roles.')}
                 </div>
               )}
               {!rolesLoading && roleOptions.length > 0 && (
-                <div className="roles-help">
+                <div className="flex items-center">
                   <i className="fas fa-info-circle mr-1"></i>
                   {t('hold_ctrl_select_multiple', 'Hold Ctrl/Cmd to select multiple roles')}
                 </div>
               )}
             </div>
           </div>
-          {rolesError && <div className="invalid-feedback">{rolesError}</div>}
-        </div>
+          {rolesError && <Form.ErrorText>{rolesError}</Form.ErrorText>}
+        </Form.Group>
       </div>
 
       {/* Password Section (only for editing) */}
       {isEditing && (
-        <div className="form-section">
-          <h6 className="section-title">
-            <i className="fas fa-lock mr-2"></i>
+        <div>
+          <h6 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i className="fas fa-lock mr-2 text-blue-600"></i>
             {t('change_password', 'Change Password')}
           </h6>
-          <div className="form-row">
-            <div className="form-group col-md-6">
-              <label className="form-label">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Form.Group>
+              <Form.Label htmlFor="newPassword">
                 <i className="fas fa-key mr-2"></i>
                 {t('new_password', 'New Password')}
-              </label>
-              <input
+              </Form.Label>
+              <Form.Control
+                id="newPassword"
                 type="password"
-                className={`form-control ${passwordError ? 'is-invalid' : ''}`}
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value)
@@ -340,17 +347,18 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                 }}
                 placeholder={t('leave_blank_keep_current', 'Leave blank to keep current password')}
                 disabled={submitting}
+                className={passwordError ? 'border-red-500' : ''}
               />
-              {passwordError && <div className="invalid-feedback">{passwordError}</div>}
-            </div>
-            <div className="form-group col-md-6">
-              <label className="form-label">
+              {passwordError && <Form.ErrorText>{passwordError}</Form.ErrorText>}
+            </Form.Group>
+            <Form.Group>
+              <Form.Label htmlFor="confirmPassword">
                 <i className="fas fa-key mr-2"></i>
                 {t('confirm_password', 'Confirm Password')}
-              </label>
-              <input
+              </Form.Label>
+              <Form.Control
+                id="confirmPassword"
                 type="password"
-                className={`form-control ${passwordError ? 'is-invalid' : ''}`}
                 value={confirmPassword}
                 onChange={(e) => {
                   setConfirmPassword(e.target.value)
@@ -358,8 +366,9 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                 }}
                 placeholder={t('re_enter_password', 'Re-enter new password')}
                 disabled={submitting}
+                className={passwordError ? 'border-red-500' : ''}
               />
-            </div>
+            </Form.Group>
           </div>
         </div>
       )}
