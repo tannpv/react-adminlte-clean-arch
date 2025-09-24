@@ -25,13 +25,13 @@ const product_attribute_value_repository_1 = require("../../infrastructure/persi
 const product_variant_attribute_value_repository_1 = require("../../infrastructure/persistence/mysql/product-variant-attribute-value.repository");
 const product_variant_repository_1 = require("../../infrastructure/persistence/mysql/product-variant.repository");
 const persistence_module_1 = require("../../infrastructure/persistence/persistence.module");
-const auth_module_1 = require("../auth/auth.module");
+const shared_module_1 = require("../../shared/shared.module");
 let AttributesModule = class AttributesModule {
 };
 exports.AttributesModule = AttributesModule;
 exports.AttributesModule = AttributesModule = __decorate([
     (0, common_1.Module)({
-        imports: [persistence_module_1.PersistenceModule, auth_module_1.AuthModule],
+        imports: [persistence_module_1.PersistenceModule, shared_module_1.SharedModule],
         controllers: [
             attributes_controller_1.AttributesController,
             attribute_values_controller_1.AttributeValuesController,
