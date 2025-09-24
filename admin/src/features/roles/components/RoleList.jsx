@@ -29,95 +29,95 @@ export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = 
           </Table.HeaderCell>
         </Table.Header>
         <Table.Body>
-            {roles.map((role, index) => {
-              const displayPermissions = formatPermissionsForDisplay(role.permissions)
-              const permissionCount = role.permissions ? role.permissions.length : 0
-              const isSystemRole = role.name === 'Administrator' || role.name === 'User'
+          {roles.map((role, index) => {
+            const displayPermissions = formatPermissionsForDisplay(role.permissions)
+            const permissionCount = role.permissions ? role.permissions.length : 0
+            const isSystemRole = role.name === 'Administrator' || role.name === 'User'
 
-              return (
-                <Table.Row key={role.id}>
-                  <Table.Cell className="font-medium text-gray-900">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                      {role.id}
-                    </span>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <div className="flex flex-col">
-                      <div className="flex items-center">
-                        <span className="font-medium text-gray-900">{role.name}</span>
-                        {isSystemRole && (
-                          <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            <i className="fas fa-lock mr-1"></i>
-                            {t('system', 'System')}
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-sm text-gray-500">
-                        {t('permission_count', '{{count}} permission', { count: permissionCount })}
-                      </span>
-                    </div>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <div className="space-y-1">
-                      {displayPermissions.length > 0 ? (
-                        <>
-                          {displayPermissions.slice(0, 3).map((line, idx) => (
-                            <div key={`${role.id}-${idx}`} className="flex items-center text-sm">
-                              <i className="fas fa-check-circle text-green-500 mr-2"></i>
-                              <span className="text-gray-700">{line}</span>
-                            </div>
-                          ))}
-                          {displayPermissions.length > 3 && (
-                            <div className="flex items-center text-sm text-gray-500">
-                              <i className="fas fa-ellipsis-h mr-2"></i>
-                              <span>
-                                +{displayPermissions.length - 3} {t('more_permissions', 'more permission')}
-                              </span>
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <div className="flex items-center text-sm text-gray-500">
-                          <i className="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
-                          <span>{t('no_permissions_assigned', 'No permissions assigned')}</span>
-                        </div>
-                      )}
-                    </div>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <div className="flex justify-center space-x-2">
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => { if (canEdit) onEdit(role) }}
-                        disabled={!canEdit}
-                        title={t('edit_role_permissions', 'Edit role permissions')}
-                      >
-                        <i className="fas fa-edit mr-1"></i>
-                        {t('edit', 'Edit')}
-                      </Button>
-                      {!isSystemRole && (
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => { if (canDelete) onDelete(role.id) }}
-                          disabled={!canDelete}
-                          title={t('delete_role', 'Delete role')}
-                        >
-                          <i className="fas fa-trash mr-1"></i>
-                          {t('delete', 'Delete')}
-                        </Button>
-                      )}
+            return (
+              <Table.Row key={role.id}>
+                <Table.Cell className="font-medium text-gray-900">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    {role.id}
+                  </span>
+                </Table.Cell>
+                <Table.Cell>
+                  <div className="flex flex-col">
+                    <div className="flex items-center">
+                      <span className="font-medium text-gray-900">{role.name}</span>
                       {isSystemRole && (
-                        <span className="text-gray-400" title={t('system_roles_cannot_be_deleted', 'System roles cannot be deleted')}>
-                          <i className="fas fa-lock"></i>
+                        <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <i className="fas fa-lock mr-1"></i>
+                          {t('system', 'System')}
                         </span>
                       )}
                     </div>
-                  </Table.Cell>
-                </Table.Row>
-              )
-            })}
+                    <span className="text-sm text-gray-500">
+                      {t('permission_count', '{{count}} permission', { count: permissionCount })}
+                    </span>
+                  </div>
+                </Table.Cell>
+                <Table.Cell>
+                  <div className="space-y-1">
+                    {displayPermissions.length > 0 ? (
+                      <>
+                        {displayPermissions.slice(0, 3).map((line, idx) => (
+                          <div key={`${role.id}-${idx}`} className="flex items-center text-sm">
+                            <i className="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span className="text-gray-700">{line}</span>
+                          </div>
+                        ))}
+                        {displayPermissions.length > 3 && (
+                          <div className="flex items-center text-sm text-gray-500">
+                            <i className="fas fa-ellipsis-h mr-2"></i>
+                            <span>
+                              +{displayPermissions.length - 3} {t('more_permissions', 'more permission')}
+                            </span>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="flex items-center text-sm text-gray-500">
+                        <i className="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                        <span>{t('no_permissions_assigned', 'No permissions assigned')}</span>
+                      </div>
+                    )}
+                  </div>
+                </Table.Cell>
+                <Table.Cell>
+                  <div className="flex justify-center space-x-2">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => { if (canEdit) onEdit(role) }}
+                      disabled={!canEdit}
+                      title={t('edit_role_permissions', 'Edit role permissions')}
+                    >
+                      <i className="fas fa-edit mr-1"></i>
+                      {t('edit', 'Edit')}
+                    </Button>
+                    {!isSystemRole && (
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => { if (canDelete) onDelete(role.id) }}
+                        disabled={!canDelete}
+                        title={t('delete_role', 'Delete role')}
+                      >
+                        <i className="fas fa-trash mr-1"></i>
+                        {t('delete', 'Delete')}
+                      </Button>
+                    )}
+                    {isSystemRole && (
+                      <span className="text-gray-400" title={t('system_roles_cannot_be_deleted', 'System roles cannot be deleted')}>
+                        <i className="fas fa-lock"></i>
+                      </span>
+                    )}
+                  </div>
+                </Table.Cell>
+              </Table.Row>
+            )
+          })}
         </Table.Body>
       </Table>
 

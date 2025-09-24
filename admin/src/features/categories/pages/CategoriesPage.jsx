@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
+import Button from '../../../shared/components/ui/Button'
+import Card from '../../../shared/components/ui/Card'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { CategoryList } from '../components/CategoryList'
@@ -58,153 +60,168 @@ export function CategoriesPage() {
 
   return (
     <>
-      <div className="page-card">
-        <div className="page-header">
-          <div>
-            <h2 className="page-title">
-              <i className="fas fa-tags mr-2"></i>
-              {t('product_categories', 'Product Categories')}
-            </h2>
-            <p className="page-subtitle">
-              {t('page_subtitle', 'Organize products into clear, navigable groups. Create hierarchical categories to improve product discovery and management.')}
-            </p>
-          </div>
-          <div className="page-actions">
-            <div className="search-control">
-              <div className="input-group">
-                <div className="input-group-prepend">
-                  <span className="input-group-text">
-                    <i className="fas fa-search"></i>
-                  </span>
+      <div className="max-w-7xl mx-auto">
+        {/* Page Header */}
+        <div className="mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                <i className="fas fa-tags mr-3 text-blue-600"></i>
+                {t('product_categories', 'Product Categories')}
+              </h1>
+              <p className="mt-2 text-gray-600 max-w-2xl">
+                {t('page_subtitle', 'Organize products into clear, navigable groups. Create hierarchical categories to improve product discovery and management.')}
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i className="fas fa-search text-gray-400"></i>
                 </div>
                 <input
                   type="search"
-                  className="form-control"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder={t('search_placeholder', 'Search categories by name...')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
+              <Button
+                variant="primary"
+                onClick={() => { setEditing(null); setFormErrors({}); setModalOpen(true) }}
+                disabled={!canCreate}
+                title={!canCreate ? t('not_allowed', 'Not allowed') : undefined}
+              >
+                <i className="fas fa-plus mr-2"></i>
+                {t('add_new_category', 'Add New Category')}
+              </Button>
             </div>
-            <button
-              className="btn btn-primary"
-              onClick={() => { setEditing(null); setFormErrors({}); setModalOpen(true) }}
-              disabled={!canCreate}
-              title={!canCreate ? t('not_allowed', 'Not allowed') : undefined}
-            >
-              <i className="fas fa-plus mr-2"></i>
-              {t('add_new_category', 'Add New Category')}
-            </button>
           </div>
         </div>
 
-        <div className="page-body">
-          {!canView && (
-            <div className="error-state">
-              <div className="error-content">
-                <i className="fas fa-ban error-icon"></i>
-                <h4 className="error-title">{t('access_denied', 'Access Denied')}</h4>
-                <p className="error-description">
-                  {t('no_permission_view_categories', 'You do not have permission to view categories.')}
-                </p>
+        {/* Permission Warning */}
+        {!canView && (
+          <Card className="mb-6">
+            <Card.Body>
+              <div className="flex items-center p-4 bg-red-50 border border-red-200 rounded-md">
+                <i className="fas fa-ban text-red-600 mr-3"></i>
+                <div>
+                  <h4 className="text-red-800 font-medium">{t('access_denied', 'Access Denied')}</h4>
+                  <p className="text-red-700 text-sm">
+                    {t('no_permission_view_categories', 'You do not have permission to view categories.')}
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            </Card.Body>
+          </Card>
+        )}
 
-          {canView && isLoading && (
-            <div className="loading-state">
-              <div className="loading-content">
-                <i className="fas fa-spinner fa-spin loading-icon"></i>
-                <h4 className="loading-title">{t('loading_categories', 'Loading Categories')}</h4>
-                <p className="loading-description">{t('loading_categories_description', 'Please wait while we fetch your category information...')}</p>
+        {/* Loading State */}
+        {canView && isLoading && (
+          <Card>
+            <Card.Body>
+              <div className="text-center py-12">
+                <i className="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('loading_categories', 'Loading Categories')}</h4>
+                <p className="text-gray-600">{t('loading_categories_description', 'Please wait while we fetch your category information...')}</p>
               </div>
-            </div>
-          )}
+            </Card.Body>
+          </Card>
+        )}
 
-          {canView && !isLoading && isError && (
-            <div className="error-state">
-              <div className="error-content">
-                <i className="fas fa-exclamation-circle error-icon"></i>
-                <h4 className="error-title">{t('failed_to_load_categories', 'Failed to Load Categories')}</h4>
-                <p className="error-description">
+        {/* Error State */}
+        {canView && !isLoading && isError && (
+          <Card>
+            <Card.Body>
+              <div className="text-center py-12">
+                <i className="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('failed_to_load_categories', 'Failed to Load Categories')}</h4>
+                <p className="text-gray-600 mb-6">
                   {error?.message || t('unexpected_error_loading_categories', 'An unexpected error occurred while loading categories.')}
                 </p>
-                <button
-                  className="btn btn-outline-primary"
+                <Button
+                  variant="outline-primary"
                   onClick={() => window.location.reload()}
                 >
                   <i className="fas fa-redo mr-2"></i>
                   {t('try_again', 'Try Again')}
-                </button>
+                </Button>
               </div>
+            </Card.Body>
+          </Card>
+        )}
+
+        {/* Categories Content */}
+        {canView && !isLoading && !isError && (
+          <div className="space-y-6">
+            {/* Statistics Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                    <i className="fas fa-tags text-2xl"></i>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-blue-100 text-sm font-medium">{t('total_categories', 'Total Categories')}</p>
+                    <p className="text-2xl font-bold">{totalCategories}</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                    <i className="fas fa-folder text-2xl"></i>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-green-100 text-sm font-medium">{t('root_categories', 'Root Categories')}</p>
+                    <p className="text-2xl font-bold">{rootCategories}</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                    <i className="fas fa-sitemap text-2xl"></i>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-purple-100 text-sm font-medium">{t('subcategories', 'Subcategories')}</p>
+                    <p className="text-2xl font-bold">{childCategories}</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+                <div className="flex items-center">
+                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                    <i className="fas fa-layer-group text-2xl"></i>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-orange-100 text-sm font-medium">{t('max_depth', 'Max Depth')}</p>
+                    <p className="text-2xl font-bold">{maxDepth}</p>
+                  </div>
+                </div>
+              </Card>
             </div>
-          )}
 
-          {canView && !isLoading && !isError && (
-            <div className="categories-content">
-              {/* Statistics Dashboard */}
-              <div className="categories-stats mb-4">
-                <div className="row">
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-tags"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{totalCategories}</div>
-                        <div className="stat-label">{t('total_categories', 'Total Categories')}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-folder"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{rootCategories}</div>
-                        <div className="stat-label">{t('root_categories', 'Root Categories')}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-sitemap"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{childCategories}</div>
-                        <div className="stat-label">{t('subcategories', 'Subcategories')}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-3">
-                    <div className="stat-card">
-                      <div className="stat-icon">
-                        <i className="fas fa-layer-group"></i>
-                      </div>
-                      <div className="stat-content">
-                        <div className="stat-number">{maxDepth}</div>
-                        <div className="stat-label">{t('max_depth', 'Max Depth')}</div>
-                      </div>
-                    </div>
+            {/* Categories List Section */}
+            <Card>
+              <Card.Header>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                      <i className="fas fa-list mr-2 text-blue-600"></i>
+                      {t('category_management', 'Category Management')}
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-600">
+                      {t('manage_categories_description', 'Manage your product categories and their hierarchy.')}
+                      {searchTerm && ` ${t('showing_results_for', 'Showing results for')} "${searchTerm}"`}
+                    </p>
                   </div>
                 </div>
-              </div>
-
-              {/* Categories List Section */}
-              <div className="categories-table-section">
-                <div className="section-header">
-                  <h5 className="section-title">
-                    <i className="fas fa-list mr-2"></i>
-                    {t('category_management', 'Category Management')}
-                  </h5>
-                  <p className="section-description">
-                    {t('manage_categories_description', 'Manage your product categories and their hierarchy.')}
-                    {searchTerm && ` ${t('showing_results_for', 'Showing results for')} "${searchTerm}"`}
-                  </p>
-                </div>
-
+              </Card.Header>
+              <Card.Body>
                 <CategoryList
                   categories={categories}
                   canEdit={canUpdate}
@@ -220,10 +237,10 @@ export function CategoriesPage() {
                     setConfirmOpen(true)
                   }}
                 />
-              </div>
-            </div>
-          )}
-        </div>
+              </Card.Body>
+            </Card>
+          </div>
+        )}
       </div>
 
       <CategoryModal
