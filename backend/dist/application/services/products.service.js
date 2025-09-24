@@ -233,6 +233,23 @@ let ProductsService = class ProductsService {
             throw error;
         }
     }
+    async advancedSearch(searchDto) {
+        try {
+            const result = await this.products.advancedSearch(searchDto);
+            return {
+                products: result.products.map(product => (0, product_mapper_1.toProductResponse)(product)),
+                total: result.total,
+                page: searchDto.page || 1,
+                limit: searchDto.limit || 20,
+                totalPages: Math.ceil(result.total / (searchDto.limit || 20)),
+                facets: result.facets
+            };
+        }
+        catch (error) {
+            console.error("Error in advanced search:", error);
+            throw error;
+        }
+    }
 };
 exports.ProductsService = ProductsService;
 exports.ProductsService = ProductsService = __decorate([

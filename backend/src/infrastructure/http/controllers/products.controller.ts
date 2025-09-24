@@ -14,6 +14,7 @@ import {
 } from "@nestjs/common";
 import { CreateProductDto } from "../../../application/dto/create-product.dto";
 import { UpdateProductDto } from "../../../application/dto/update-product.dto";
+import { ProductSearchDto } from "../../../application/dto/product-search.dto";
 import { ProductsService } from "../../../application/services/products.service";
 import {
   RequireAnyPermission,
@@ -31,6 +32,13 @@ export class ProductsController {
   @RequireAnyPermission("products:read", "users:read")
   list(@Query("search") search?: string) {
     return this.productsService.list(search);
+  }
+
+  @Post("search")
+  @RequireAnyPermission("products:read", "users:read")
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  advancedSearch(@Body() searchDto: ProductSearchDto) {
+    return this.productsService.advancedSearch(searchDto);
   }
 
   @Get(":id")

@@ -14,7 +14,6 @@ const attributes_service_1 = require("../../application/services/attributes.serv
 const product_attribute_values_service_1 = require("../../application/services/product-attribute-values.service");
 const product_variants_service_1 = require("../../application/services/product-variants.service");
 const access_control_module_1 = require("../../infrastructure/http/access-control.module");
-const shared_module_1 = require("../../shared/shared.module");
 const attribute_sets_controller_1 = require("../../infrastructure/http/controllers/attribute-sets.controller");
 const attribute_values_controller_1 = require("../../infrastructure/http/controllers/attribute-values.controller");
 const attributes_controller_1 = require("../../infrastructure/http/controllers/attributes.controller");
@@ -27,6 +26,7 @@ const product_attribute_value_repository_1 = require("../../infrastructure/persi
 const product_variant_attribute_value_repository_1 = require("../../infrastructure/persistence/mysql/product-variant-attribute-value.repository");
 const product_variant_repository_1 = require("../../infrastructure/persistence/mysql/product-variant.repository");
 const persistence_module_1 = require("../../infrastructure/persistence/persistence.module");
+const shared_module_1 = require("../../shared/shared.module");
 let AttributesModule = class AttributesModule {
 };
 exports.AttributesModule = AttributesModule;

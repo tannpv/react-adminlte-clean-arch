@@ -16,6 +16,7 @@ exports.ProductsController = void 0;
 const common_1 = require("@nestjs/common");
 const create_product_dto_1 = require("../../../application/dto/create-product.dto");
 const update_product_dto_1 = require("../../../application/dto/update-product.dto");
+const product_search_dto_1 = require("../../../application/dto/product-search.dto");
 const products_service_1 = require("../../../application/services/products.service");
 const permissions_decorator_1 = require("../decorators/permissions.decorator");
 const jwt_auth_guard_1 = require("../guards/jwt-auth.guard");
@@ -26,6 +27,9 @@ let ProductsController = class ProductsController {
     }
     list(search) {
         return this.productsService.list(search);
+    }
+    advancedSearch(searchDto) {
+        return this.productsService.advancedSearch(searchDto);
     }
     getOne(id) {
         return this.productsService.findById(id);
@@ -55,6 +59,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "list", null);
+__decorate([
+    (0, common_1.Post)("search"),
+    (0, permissions_decorator_1.RequireAnyPermission)("products:read", "users:read"),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, transform: true })),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [product_search_dto_1.ProductSearchDto]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "advancedSearch", null);
 __decorate([
     (0, common_1.Get)(":id"),
     (0, permissions_decorator_1.RequireAnyPermission)("products:read", "users:read"),
