@@ -21,11 +21,15 @@ const user_profile_entity_1 = require("../../domain/entities/user-profile.entity
 const password_service_1 = require("../../shared/password.service");
 const constants_1 = require("../../shared/constants");
 const validation_error_1 = require("../../shared/validation-error");
+const user_validation_service_1 = require("../validation/user-validation.service");
+const user_update_validation_service_1 = require("../validation/user-update-validation.service");
 let UsersService = class UsersService {
-    constructor(users, roles, passwordService) {
+    constructor(users, roles, passwordService, userValidationService, userUpdateValidationService) {
         this.users = users;
         this.roles = roles;
         this.passwordService = passwordService;
+        this.userValidationService = userValidationService;
+        this.userUpdateValidationService = userUpdateValidationService;
     }
     async list({ search } = {}) {
         const users = await this.users.findAll({ search });
@@ -44,57 +48,25 @@ let UsersService = class UsersService {
         return this.users.findByEmail(email);
     }
     async create(dto) {
-        const trimmedFirstName = dto.firstName.trim();
-        const trimmedLastName = dto.lastName.trim();
-        const trimmedEmail = dto.email.trim();
-        const emailLower = trimmedEmail.toLowerCase();
-        if (!trimmedFirstName || trimmedFirstName.length < 2) {
-            throw (0, validation_error_1.validationException)({
-                firstName: { code: 'FIRST_NAME_MIN', message: 'First name is required (min 2 characters)' },
-            });
+        const validation = await this.userValidationService.validate(dto);
+        if (!validation.isValid) {
+            throw (0, validation_error_1.validationException)(validation.errors);
         }
-        if (!trimmedLastName || trimmedLastName.length < 2) {
-            throw (0, validation_error_1.validationException)({
-                lastName: { code: 'LAST_NAME_MIN', message: 'Last name is required (min 2 characters)' },
-            });
-        }
-        if (!trimmedEmail) {
-            throw (0, validation_error_1.validationException)({
-                email: { code: 'EMAIL_REQUIRED', message: 'Email is required' },
-            });
-        }
-        const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRe.test(trimmedEmail)) {
-            throw (0, validation_error_1.validationException)({
-                email: { code: 'EMAIL_INVALID', message: 'Email is invalid' },
-            });
-        }
-        const existingByEmail = await this.users.findByEmail(emailLower);
-        if (existingByEmail) {
-            throw (0, validation_error_1.validationException)({
-                email: { code: 'EMAIL_EXISTS', message: 'Email is already in use' },
-            });
-        }
-        const roleIds = await this.validateRoles(dto.roles);
+        const trimmedEmail = dto.email.trim().toLowerCase();
+        const roleIds = dto.roles || [];
         const id = await this.users.nextId();
         const passwordHash = this.passwordService.hashSync(constants_1.DEFAULT_USER_PASSWORD);
         let dateOfBirth = null;
         if (dto.dateOfBirth) {
-            const dob = new Date(dto.dateOfBirth);
-            if (Number.isNaN(dob.getTime())) {
-                throw (0, validation_error_1.validationException)({
-                    dateOfBirth: { code: 'DOB_INVALID', message: 'Date of birth must be a valid date' },
-                });
-            }
-            dateOfBirth = dob;
+            dateOfBirth = new Date(dto.dateOfBirth);
         }
         const user = new user_entity_1.User(id, trimmedEmail, roleIds, passwordHash);
         user.profile = new user_profile_entity_1.UserProfile({
             userId: id,
-            firstName: trimmedFirstName,
-            lastName: trimmedLastName,
+            firstName: dto.firstName.trim(),
+            lastName: dto.lastName.trim(),
             dateOfBirth,
-            pictureUrl: dto.pictureUrl ? dto.pictureUrl.trim() || null : null,
+            pictureUrl: dto.pictureUrl?.trim() || null,
         });
         const created = await this.users.create(user);
         return created.toPublic();
@@ -103,6 +75,10 @@ let UsersService = class UsersService {
         const existing = await this.users.findById(id);
         if (!existing)
             throw new common_1.NotFoundException({ message: 'Not found' });
+        const validation = await this.userUpdateValidationService.validate(dto, id);
+        if (!validation.isValid) {
+            throw (0, validation_error_1.validationException)(validation.errors);
+        }
         const updated = existing.clone();
         const profile = updated.profile ?? new user_profile_entity_1.UserProfile({
             userId: updated.id,
@@ -112,75 +88,22 @@ let UsersService = class UsersService {
             pictureUrl: null,
         });
         if (dto.email !== undefined) {
-            const trimmedEmail = dto.email.trim();
-            if (!trimmedEmail) {
-                throw (0, validation_error_1.validationException)({
-                    email: { code: 'EMAIL_REQUIRED', message: 'Email is required' },
-                });
-            }
-            const emailLower = trimmedEmail.toLowerCase();
-            const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRe.test(trimmedEmail)) {
-                throw (0, validation_error_1.validationException)({
-                    email: { code: 'EMAIL_INVALID', message: 'Email is invalid' },
-                });
-            }
-            const conflict = await this.users.findByEmail(emailLower);
-            if (conflict && conflict.id !== id) {
-                throw (0, validation_error_1.validationException)({
-                    email: { code: 'EMAIL_EXISTS', message: 'Email is already in use' },
-                });
-            }
-            updated.email = trimmedEmail;
+            updated.email = dto.email.trim();
         }
         if (dto.roles !== undefined) {
-            const roleIds = await this.validateRoles(dto.roles);
-            updated.roles = roleIds;
+            updated.roles = dto.roles;
         }
         if (dto.password !== undefined) {
-            if (!dto.password.trim()) {
-                throw (0, validation_error_1.validationException)({
-                    password: { code: 'PASSWORD_REQUIRED', message: 'Password must be at least 6 characters' },
-                });
-            }
-            if (dto.password.length < 6) {
-                throw (0, validation_error_1.validationException)({
-                    password: { code: 'PASSWORD_MIN', message: 'Password must be at least 6 characters' },
-                });
-            }
             updated.passwordHash = this.passwordService.hashSync(dto.password);
         }
         if (dto.firstName !== undefined) {
-            const trimmed = dto.firstName.trim();
-            if (!trimmed || trimmed.length < 2) {
-                throw (0, validation_error_1.validationException)({
-                    firstName: { code: 'FIRST_NAME_MIN', message: 'First name must be at least 2 characters' },
-                });
-            }
-            profile.firstName = trimmed;
+            profile.firstName = dto.firstName.trim();
         }
         if (dto.lastName !== undefined) {
-            const trimmed = dto.lastName.trim();
-            if (!trimmed || trimmed.length < 2) {
-                throw (0, validation_error_1.validationException)({
-                    lastName: { code: 'LAST_NAME_MIN', message: 'Last name must be at least 2 characters' },
-                });
-            }
-            profile.lastName = trimmed;
+            profile.lastName = dto.lastName.trim();
         }
         if (dto.dateOfBirth !== undefined) {
-            if (!dto.dateOfBirth) {
-                profile.dateOfBirth = null;
-            }
-            else {
-                const dob = new Date(dto.dateOfBirth);
-                if (Number.isNaN(dob.getTime())) {
-                    throw (0, validation_error_1.validationException)({
-                        dateOfBirth: { code: 'DOB_INVALID', message: 'Date of birth must be a valid date' },
-                    });
-                }
-                profile.dateOfBirth = dob;
-            }
+            profile.dateOfBirth = dto.dateOfBirth ? new Date(dto.dateOfBirth) : null;
         }
         if (dto.pictureUrl !== undefined) {
             const trimmed = dto.pictureUrl?.trim() || '';
@@ -196,33 +119,14 @@ let UsersService = class UsersService {
             throw new common_1.NotFoundException({ message: 'Not found' });
         return removed.toPublic();
     }
-    async validateRoles(roles) {
-        if (roles === undefined)
-            return [];
-        if (!Array.isArray(roles)) {
-            throw (0, validation_error_1.validationException)({
-                roles: { code: 'ROLES_INVALID', message: 'Invalid roles selected' },
-            });
-        }
-        const cleaned = roles.filter((roleId) => Number.isInteger(roleId));
-        if (!cleaned.length)
-            return [];
-        const found = await this.roles.findByIds(cleaned);
-        const foundIds = new Set(found.map((role) => role.id));
-        const missing = cleaned.filter((roleId) => !foundIds.has(roleId));
-        if (missing.length) {
-            throw (0, validation_error_1.validationException)({
-                roles: { code: 'ROLES_INVALID', message: 'Invalid roles selected' },
-            });
-        }
-        return cleaned;
-    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(user_repository_1.USER_REPOSITORY)),
     __param(1, (0, common_1.Inject)(role_repository_1.ROLE_REPOSITORY)),
-    __metadata("design:paramtypes", [Object, Object, password_service_1.PasswordService])
+    __metadata("design:paramtypes", [Object, Object, password_service_1.PasswordService,
+        user_validation_service_1.UserValidationService,
+        user_update_validation_service_1.UserUpdateValidationService])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

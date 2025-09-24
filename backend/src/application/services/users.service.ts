@@ -8,6 +8,8 @@ import { UserProfile } from '../../domain/entities/user-profile.entity'
 import { PasswordService } from '../../shared/password.service'
 import { DEFAULT_USER_PASSWORD } from '../../shared/constants'
 import { validationException } from '../../shared/validation-error'
+import { UserValidationService } from '../validation/user-validation.service'
+import { UserUpdateValidationService } from '../validation/user-update-validation.service'
 
 @Injectable()
 export class UsersService {
@@ -15,6 +17,8 @@ export class UsersService {
     @Inject(USER_REPOSITORY) private readonly users: UserRepository,
     @Inject(ROLE_REPOSITORY) private readonly roles: RoleRepository,
     private readonly passwordService: PasswordService,
+    private readonly userValidationService: UserValidationService,
+    private readonly userUpdateValidationService: UserUpdateValidationService,
   ) {}
 
   async list({ search }: { search?: string } = {}): Promise<PublicUser[]> {
@@ -37,66 +41,32 @@ export class UsersService {
   }
 
   async create(dto: CreateUserDto): Promise<PublicUser> {
-    const trimmedFirstName = dto.firstName.trim()
-    const trimmedLastName = dto.lastName.trim()
-    const trimmedEmail = dto.email.trim()
-    const emailLower = trimmedEmail.toLowerCase()
-
-    if (!trimmedFirstName || trimmedFirstName.length < 2) {
-      throw validationException({
-        firstName: { code: 'FIRST_NAME_MIN', message: 'First name is required (min 2 characters)' },
-      })
+    // Validate input using validation service
+    const validation = await this.userValidationService.validate(dto)
+    if (!validation.isValid) {
+      throw validationException(validation.errors)
     }
 
-    if (!trimmedLastName || trimmedLastName.length < 2) {
-      throw validationException({
-        lastName: { code: 'LAST_NAME_MIN', message: 'Last name is required (min 2 characters)' },
-      })
-    }
-
-    if (!trimmedEmail) {
-      throw validationException({
-        email: { code: 'EMAIL_REQUIRED', message: 'Email is required' },
-      })
-    }
-
-    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRe.test(trimmedEmail)) {
-      throw validationException({
-        email: { code: 'EMAIL_INVALID', message: 'Email is invalid' },
-      })
-    }
-
-    const existingByEmail = await this.users.findByEmail(emailLower)
-    if (existingByEmail) {
-      throw validationException({
-        email: { code: 'EMAIL_EXISTS', message: 'Email is already in use' },
-      })
-    }
-
-    const roleIds = await this.validateRoles(dto.roles)
-
+    // Business logic - create user
+    const trimmedEmail = dto.email.trim().toLowerCase()
+    const roleIds = dto.roles || []
     const id = await this.users.nextId()
     const passwordHash = this.passwordService.hashSync(DEFAULT_USER_PASSWORD)
+    
     let dateOfBirth: Date | null = null
     if (dto.dateOfBirth) {
-      const dob = new Date(dto.dateOfBirth)
-      if (Number.isNaN(dob.getTime())) {
-        throw validationException({
-          dateOfBirth: { code: 'DOB_INVALID', message: 'Date of birth must be a valid date' },
-        })
-      }
-      dateOfBirth = dob
+      dateOfBirth = new Date(dto.dateOfBirth)
     }
 
     const user = new User(id, trimmedEmail, roleIds, passwordHash)
     user.profile = new UserProfile({
       userId: id,
-      firstName: trimmedFirstName,
-      lastName: trimmedLastName,
+      firstName: dto.firstName.trim(),
+      lastName: dto.lastName.trim(),
       dateOfBirth,
-      pictureUrl: dto.pictureUrl ? dto.pictureUrl.trim() || null : null,
+      pictureUrl: dto.pictureUrl?.trim() || null,
     })
+    
     const created = await this.users.create(user)
     return created.toPublic()
   }
@@ -105,6 +75,13 @@ export class UsersService {
     const existing = await this.users.findById(id)
     if (!existing) throw new NotFoundException({ message: 'Not found' })
 
+    // Validate input using validation service
+    const validation = await this.userUpdateValidationService.validate(dto, id)
+    if (!validation.isValid) {
+      throw validationException(validation.errors)
+    }
+
+    // Business logic - update user
     const updated = existing.clone()
     const profile = updated.profile ?? new UserProfile({
       userId: updated.id,
@@ -115,79 +92,27 @@ export class UsersService {
     })
 
     if (dto.email !== undefined) {
-      const trimmedEmail = dto.email.trim()
-      if (!trimmedEmail) {
-        throw validationException({
-          email: { code: 'EMAIL_REQUIRED', message: 'Email is required' },
-        })
-      }
-      const emailLower = trimmedEmail.toLowerCase()
-      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      if (!emailRe.test(trimmedEmail)) {
-        throw validationException({
-          email: { code: 'EMAIL_INVALID', message: 'Email is invalid' },
-        })
-      }
-      const conflict = await this.users.findByEmail(emailLower)
-      if (conflict && conflict.id !== id) {
-        throw validationException({
-          email: { code: 'EMAIL_EXISTS', message: 'Email is already in use' },
-        })
-      }
-      updated.email = trimmedEmail
+      updated.email = dto.email.trim()
     }
 
     if (dto.roles !== undefined) {
-      const roleIds = await this.validateRoles(dto.roles)
-      updated.roles = roleIds
+      updated.roles = dto.roles
     }
 
     if (dto.password !== undefined) {
-      if (!dto.password.trim()) {
-        throw validationException({
-          password: { code: 'PASSWORD_REQUIRED', message: 'Password must be at least 6 characters' },
-        })
-      }
-      if (dto.password.length < 6) {
-        throw validationException({
-          password: { code: 'PASSWORD_MIN', message: 'Password must be at least 6 characters' },
-        })
-      }
       updated.passwordHash = this.passwordService.hashSync(dto.password)
     }
 
     if (dto.firstName !== undefined) {
-      const trimmed = dto.firstName.trim()
-      if (!trimmed || trimmed.length < 2) {
-        throw validationException({
-          firstName: { code: 'FIRST_NAME_MIN', message: 'First name must be at least 2 characters' },
-        })
-      }
-      profile.firstName = trimmed
+      profile.firstName = dto.firstName.trim()
     }
 
     if (dto.lastName !== undefined) {
-      const trimmed = dto.lastName.trim()
-      if (!trimmed || trimmed.length < 2) {
-        throw validationException({
-          lastName: { code: 'LAST_NAME_MIN', message: 'Last name must be at least 2 characters' },
-        })
-      }
-      profile.lastName = trimmed
+      profile.lastName = dto.lastName.trim()
     }
 
     if (dto.dateOfBirth !== undefined) {
-      if (!dto.dateOfBirth) {
-        profile.dateOfBirth = null
-      } else {
-        const dob = new Date(dto.dateOfBirth)
-        if (Number.isNaN(dob.getTime())) {
-          throw validationException({
-            dateOfBirth: { code: 'DOB_INVALID', message: 'Date of birth must be a valid date' },
-          })
-        }
-        profile.dateOfBirth = dob
-      }
+      profile.dateOfBirth = dto.dateOfBirth ? new Date(dto.dateOfBirth) : null
     }
 
     if (dto.pictureUrl !== undefined) {
@@ -207,25 +132,4 @@ export class UsersService {
     return removed.toPublic()
   }
 
-  private async validateRoles(roles?: number[]): Promise<number[]> {
-    if (roles === undefined) return []
-    if (!Array.isArray(roles)) {
-      throw validationException({
-        roles: { code: 'ROLES_INVALID', message: 'Invalid roles selected' },
-      })
-    }
-
-    const cleaned = roles.filter((roleId) => Number.isInteger(roleId))
-    if (!cleaned.length) return []
-
-    const found = await this.roles.findByIds(cleaned)
-    const foundIds = new Set(found.map((role) => role.id))
-    const missing = cleaned.filter((roleId) => !foundIds.has(roleId))
-    if (missing.length) {
-      throw validationException({
-        roles: { code: 'ROLES_INVALID', message: 'Invalid roles selected' },
-      })
-    }
-    return cleaned
-  }
 }
