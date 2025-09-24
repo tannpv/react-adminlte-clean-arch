@@ -15,12 +15,13 @@ const shared_module_1 = require("../../shared/shared.module");
 const access_control_module_1 = require("../../infrastructure/http/access-control.module");
 const me_controller_1 = require("../../infrastructure/http/controllers/me.controller");
 const roles_module_1 = require("../roles/roles.module");
+const validation_module_1 = require("../../application/validation/validation.module");
 let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;
 exports.UsersModule = UsersModule = __decorate([
     (0, common_1.Module)({
-        imports: [persistence_module_1.PersistenceModule, shared_module_1.SharedModule, access_control_module_1.AccessControlModule, roles_module_1.RolesModule],
+        imports: [persistence_module_1.PersistenceModule, shared_module_1.SharedModule, access_control_module_1.AccessControlModule, roles_module_1.RolesModule, validation_module_1.ValidationModule],
         controllers: [users_controller_1.UsersController, me_controller_1.MeController],
         providers: [users_service_1.UsersService],
         exports: [users_service_1.UsersService],

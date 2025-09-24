@@ -4,11 +4,15 @@ import { UserRepository } from '../../domain/repositories/user.repository';
 import { RoleRepository } from '../../domain/repositories/role.repository';
 import { PublicUser, User } from '../../domain/entities/user.entity';
 import { PasswordService } from '../../shared/password.service';
+import { UserValidationService } from '../validation/user-validation.service';
+import { UserUpdateValidationService } from '../validation/user-update-validation.service';
 export declare class UsersService {
     private readonly users;
     private readonly roles;
     private readonly passwordService;
-    constructor(users: UserRepository, roles: RoleRepository, passwordService: PasswordService);
+    private readonly userValidationService;
+    private readonly userUpdateValidationService;
+    constructor(users: UserRepository, roles: RoleRepository, passwordService: PasswordService, userValidationService: UserValidationService, userUpdateValidationService: UserUpdateValidationService);
     list({ search }?: {
         search?: string;
     }): Promise<PublicUser[]>;
@@ -18,5 +22,4 @@ export declare class UsersService {
     create(dto: CreateUserDto): Promise<PublicUser>;
     update(id: number, dto: UpdateUserDto): Promise<PublicUser>;
     remove(id: number): Promise<PublicUser>;
-    private validateRoles;
 }
