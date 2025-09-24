@@ -38,118 +38,134 @@ export default function App() {
     qc.prefetchQuery({ queryKey: ['products'], queryFn: fetchProducts, staleTime: 60_000 })
   }, [currentUser, qc, can])
   return (
-    <div className="wrapper">
-      <nav className="main-header navbar navbar-expand navbar-white navbar-light">
-        <ul className="navbar-nav">
-          <li className="nav-item">
-            <a className="nav-link" data-widget="pushmenu" href="#" role="button"><i className="fas fa-bars"></i></a>
-          </li>
-        </ul>
-        <ul className="navbar-nav ml-auto">
+    <div className="flex min-h-screen">
+      <nav className="bg-white shadow-md p-4 flex justify-between items-center w-full">
+        <div className="flex items-center">
+          <button className="text-gray-600 hover:text-gray-900 p-2" data-widget="pushmenu">
+            <i className="fas fa-bars"></i>
+          </button>
+        </div>
+        <div className="flex items-center space-x-4">
           {currentUser ? (
             <>
-              <li className="nav-item d-flex align-items-center pr-2">
-                <LanguageSwitcher />
-              </li>
-              <li className="nav-item d-flex align-items-center pr-2">
-                <div className="user-chip mr-3">
-                  <span>{getUserDisplayName(currentUser)}</span>
+              <LanguageSwitcher />
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2">
+                  <span className="text-gray-700 font-medium">{getUserDisplayName(currentUser)}</span>
                   {me?.roles?.length ? (
-                    <span>
+                    <div className="flex space-x-1">
                       {me.roles.map(r => (
-                        <span key={r.id} className="badge badge-info">{r.name}</span>
+                        <span key={r.id} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {r.name}
+                        </span>
                       ))}
-                    </span>
+                    </div>
                   ) : null}
                 </div>
-                <button className="btn btn-sm btn-outline-secondary" onClick={logout}>{t('logout', 'Logout')}</button>
-              </li>
+                <button 
+                  className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" 
+                  onClick={logout}
+                >
+                  {t('logout', 'Logout')}
+                </button>
+              </div>
             </>
           ) : null}
-        </ul>
+        </div>
       </nav>
 
-      <aside className="main-sidebar sidebar-dark-primary elevation-4">
-        <a href="#" className="brand-link">
-          <span className="brand-logo">AA</span>
-          <span className="brand-text">{t('aurora_admin', 'Aurora Admin')}</span>
-        </a>
-        <div className="sidebar">
+      <aside className="w-64 bg-gray-800 text-white flex-shrink-0">
+        <div className="flex items-center p-4 text-white text-xl font-bold">
+          <span className="mr-2">AA</span>
+          <span>{t('aurora_admin', 'Aurora Admin')}</span>
+        </div>
+        <div className="p-4">
           <nav className="mt-2">
-            <ul className="nav nav-pills nav-sidebar flex-column">
-              <li className="nav-header">{t('system', 'System')}</li>
-              <li className="nav-item">
-                <a href="#" className={`nav-link ${menu === 'users' ? 'active' : ''}`} onClick={() => setMenu('users')}>
-                  <i className="nav-icon fas fa-users" />
-                  <p>{t('users', 'Users')}</p>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a href="#" className={`nav-link ${menu === 'roles' ? 'active' : ''}`} onClick={() => setMenu('roles')}>
-                  <i className="nav-icon fas fa-user-shield" />
-                  <p>{t('roles', 'Roles')}</p>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a href="#" className={`nav-link ${menu === 'storage' ? 'active' : ''}`} onClick={() => setMenu('storage')}>
-                  <i className="nav-icon fas fa-hdd" />
-                  <p>{t('storage', 'Storage')}</p>
-                </a>
-              </li>
-              <li className="nav-header">{t('e_commerce', 'E-Commerce')}</li>
-              <li className="nav-item">
-                <a href="#" className={`nav-link ${menu === 'categories' ? 'active' : ''}`} onClick={() => setMenu('categories')}>
-                  <i className="nav-icon fas fa-tags" />
-                  <p>{t('categories', 'Categories')}</p>
-                </a>
-              </li>
-              <li className="nav-item">
-                <a href="#" className={`nav-link ${menu === 'products' ? 'active' : ''}`} onClick={() => setMenu('products')}>
-                  <i className="nav-icon fas fa-box" />
-                  <p>{t('products', 'Products')}</p>
-                </a>
-              </li>
+            <div className="space-y-1">
+              <div className="text-gray-400 uppercase text-xs font-bold mt-4 mb-2">{t('system', 'System')}</div>
+              <button 
+                className={`w-full flex items-center py-2 px-4 rounded-md text-white hover:bg-gray-700 ${menu === 'users' ? 'bg-blue-600' : ''}`}
+                onClick={() => setMenu('users')}
+              >
+                <i className="fas fa-users mr-3" />
+                <span>{t('users', 'Users')}</span>
+              </button>
+              <button 
+                className={`w-full flex items-center py-2 px-4 rounded-md text-white hover:bg-gray-700 ${menu === 'roles' ? 'bg-blue-600' : ''}`}
+                onClick={() => setMenu('roles')}
+              >
+                <i className="fas fa-user-shield mr-3" />
+                <span>{t('roles', 'Roles')}</span>
+              </button>
+              <button 
+                className={`w-full flex items-center py-2 px-4 rounded-md text-white hover:bg-gray-700 ${menu === 'storage' ? 'bg-blue-600' : ''}`}
+                onClick={() => setMenu('storage')}
+              >
+                <i className="fas fa-hdd mr-3" />
+                <span>{t('storage', 'Storage')}</span>
+              </button>
+              
+              <div className="text-gray-400 uppercase text-xs font-bold mt-4 mb-2">{t('e_commerce', 'E-Commerce')}</div>
+              <button 
+                className={`w-full flex items-center py-2 px-4 rounded-md text-white hover:bg-gray-700 ${menu === 'categories' ? 'bg-blue-600' : ''}`}
+                onClick={() => setMenu('categories')}
+              >
+                <i className="fas fa-tags mr-3" />
+                <span>{t('categories', 'Categories')}</span>
+              </button>
+              <button 
+                className={`w-full flex items-center py-2 px-4 rounded-md text-white hover:bg-gray-700 ${menu === 'products' ? 'bg-blue-600' : ''}`}
+                onClick={() => setMenu('products')}
+              >
+                <i className="fas fa-box mr-3" />
+                <span>{t('products', 'Products')}</span>
+              </button>
               {can('attributes:read') && (
-                <li className="nav-item">
-                  <a href="#" className={`nav-link ${menu === 'attributes' ? 'active' : ''}`} onClick={() => setMenu('attributes')}>
-                    <i className="nav-icon fas fa-list" />
-                    <p>{t('attributes', 'Attributes')}</p>
-                  </a>
-                </li>
+                <button 
+                  className={`w-full flex items-center py-2 px-4 rounded-md text-white hover:bg-gray-700 ${menu === 'attributes' ? 'bg-blue-600' : ''}`}
+                  onClick={() => setMenu('attributes')}
+                >
+                  <i className="fas fa-list mr-3" />
+                  <span>{t('attributes', 'Attributes')}</span>
+                </button>
               )}
               {can('attribute-values:read') && (
-                <li className="nav-item">
-                  <a href="#" className={`nav-link ${menu === 'attribute-values' ? 'active' : ''}`} onClick={() => setMenu('attribute-values')}>
-                    <i className="nav-icon fas fa-list-ul" />
-                    <p>{t('attribute_values', 'Attribute Values')}</p>
-                  </a>
-                </li>
+                <button 
+                  className={`w-full flex items-center py-2 px-4 rounded-md text-white hover:bg-gray-700 ${menu === 'attribute-values' ? 'bg-blue-600' : ''}`}
+                  onClick={() => setMenu('attribute-values')}
+                >
+                  <i className="fas fa-list-ul mr-3" />
+                  <span>{t('attribute_values', 'Attribute Values')}</span>
+                </button>
               )}
               {can('attribute-sets:read') && (
-                <li className="nav-item">
-                  <a href="#" className={`nav-link ${menu === 'attribute-sets' ? 'active' : ''}`} onClick={() => setMenu('attribute-sets')}>
-                    <i className="nav-icon fas fa-layer-group" />
-                    <p>{t('attribute_sets', 'Attribute Sets')}</p>
-                  </a>
-                </li>
+                <button 
+                  className={`w-full flex items-center py-2 px-4 rounded-md text-white hover:bg-gray-700 ${menu === 'attribute-sets' ? 'bg-blue-600' : ''}`}
+                  onClick={() => setMenu('attribute-sets')}
+                >
+                  <i className="fas fa-layer-group mr-3" />
+                  <span>{t('attribute_sets', 'Attribute Sets')}</span>
+                </button>
               )}
-              <li className="nav-header">{t('localization', 'Localization')}</li>
+              
+              <div className="text-gray-400 uppercase text-xs font-bold mt-4 mb-2">{t('localization', 'Localization')}</div>
               {can('translations:read') && (
-                <li className="nav-item">
-                  <a href="#" className={`nav-link ${menu === 'translations' ? 'active' : ''}`} onClick={() => setMenu('translations')}>
-                    <i className="nav-icon fas fa-language" />
-                    <p>{t('translations', 'Translations')}</p>
-                  </a>
-                </li>
+                <button 
+                  className={`w-full flex items-center py-2 px-4 rounded-md text-white hover:bg-gray-700 ${menu === 'translations' ? 'bg-blue-600' : ''}`}
+                  onClick={() => setMenu('translations')}
+                >
+                  <i className="fas fa-language mr-3" />
+                  <span>{t('translations', 'Translations')}</span>
+                </button>
               )}
-            </ul>
+            </div>
           </nav>
         </div>
       </aside>
 
-      <div className="content-wrapper">
-        <section className="content">
-          <div className="container-fluid p-4">
+      <div className="flex-grow flex flex-col">
+        <main className="flex-grow p-4">
+          <div className="mx-auto">
             {currentUser ? (
               menu === 'users' ? (
                 <UsersPage />
@@ -194,13 +210,15 @@ export default function App() {
               />
             )}
           </div>
-        </section>
-      </div>
+        </main>
 
-      <footer className="main-footer">
-        <div className="float-right d-none d-sm-inline">v0.1</div>
-        <strong>Copyright &copy; 2025</strong>
-      </footer>
+        <footer className="bg-gray-100 p-4 text-center text-gray-600">
+          <div className="flex justify-between items-center">
+            <strong>Copyright &copy; 2025</strong>
+            <span className="hidden sm:inline">v0.1</span>
+          </div>
+        </footer>
+      </div>
     </div>
   )
 }
