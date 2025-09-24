@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { CategoryTreeMultiSelect } from './CategoryTreeMultiSelect'
 import { ProductAttributeForm } from './ProductAttributeForm'
 
 const STATUSES = [
@@ -26,6 +27,7 @@ export function ProductForm({
   submitting = false,
   formId = 'product-form',
   categoryOptions = [],
+  categoryTree = [],
 }) {
   const [sku, setSku] = useState('')
   const [name, setName] = useState('')
@@ -79,14 +81,6 @@ export function ProductForm({
     onSubmit(payload)
   }
 
-  const handleCategoryChange = (categoryId, checked) => {
-    const categoryIdStr = String(categoryId)
-    if (checked) {
-      setCategories((prev) => [...prev, categoryIdStr])
-    } else {
-      setCategories((prev) => prev.filter((id) => id !== categoryIdStr))
-    }
-  }
 
   return (
     <form id={formId} onSubmit={handleSubmit} className="product-form">
@@ -299,45 +293,19 @@ export function ProductForm({
               Loading categories...
             </div>
           ) : (
-            <div className="categories-selection">
-              {categoryOptions.length > 0 ? (
-                <div className="categories-grid">
-                  {categoryOptions.map((category) => (
-                    <div key={category.id} className="category-checkbox-item">
-                      <div className="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          className="custom-control-input"
-                          id={`category-${category.id}`}
-                          checked={categories.includes(String(category.id))}
-                          onChange={(e) => handleCategoryChange(category.id, e.target.checked)}
-                          disabled={submitting}
-                        />
-                        <label className="custom-control-label" htmlFor={`category-${category.id}`}>
-                          <i className="fas fa-folder mr-2"></i>
-                          {category.name}
-                        </label>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="no-categories">
-                  <i className="fas fa-folder-open mr-2"></i>
-                  No categories available. Create categories first to organize your products.
-                </div>
-              )}
-            </div>
-          )}
-          {getError(errors, 'categoryIds') && (
-            <div className="invalid-feedback d-block">
-              <i className="fas fa-exclamation-triangle mr-1"></i>
-              {getError(errors, 'categoryIds')}
-            </div>
+            <CategoryTreeMultiSelect
+              categories={categoryOptions}
+              tree={categoryTree}
+              value={categories}
+              onChange={setCategories}
+              disabled={submitting}
+              error={getError(errors, 'categoryIds')}
+              placeholder="Select categories for this product..."
+            />
           )}
           <small className="form-text text-muted">
             <i className="fas fa-lightbulb mr-1"></i>
-            Select categories to help customers find your products
+            Select categories to help customers find your products. You can search and select multiple categories from the tree structure.
           </small>
         </div>
       </div>

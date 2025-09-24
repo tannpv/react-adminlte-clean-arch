@@ -56,6 +56,7 @@ export function ProductsPage() {
 
   // Extract categories from the new response structure
   const categoryOptions = Array.isArray(categoriesData.categories) ? categoriesData.categories : []
+  const categoryTree = Array.isArray(categoriesData.tree) ? categoriesData.tree : []
 
   const submitting = createProductMutation.isPending || updateProductMutation.isPending
 
@@ -270,6 +271,7 @@ export function ProductsPage() {
           }
         }}
         categoryOptions={categoryOptions}
+        categoryTree={categoryTree}
         categoriesLoading={categoriesLoading}
       />
 
