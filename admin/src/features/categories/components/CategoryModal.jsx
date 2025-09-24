@@ -1,8 +1,8 @@
 import React from 'react'
+import Button from '../../../shared/components/ui/Button'
+import Modal from '../../../shared/components/ui/Modal'
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { CategoryForm } from './CategoryForm'
-import Modal from '../../../shared/components/ui/Modal'
-import Button from '../../../shared/components/ui/Button'
 
 export function CategoryModal({ show, title, initialCategory, onClose, onSubmit, errors, submitting, categories = [], tree = [], hierarchy = [] }) {
   const formId = 'category-modal-form'

@@ -1,7 +1,7 @@
 import React from 'react'
-import { RoleForm } from './RoleForm'
-import Modal from '../../../shared/components/ui/Modal'
 import Button from '../../../shared/components/ui/Button'
+import Modal from '../../../shared/components/ui/Modal'
+import { RoleForm } from './RoleForm'
 
 export function RoleModal({ show, title, initialRole, onClose, onSubmit, errors, submitting }) {
   const formId = 'role-modal-form'

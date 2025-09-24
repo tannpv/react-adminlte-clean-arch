@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import Form from '../../../shared/components/ui/Form'
+import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 
 const buildInitialProfile = (user) => {
   if (!user || !user.profile) {
