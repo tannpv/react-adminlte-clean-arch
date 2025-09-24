@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { apiClient } from '../../../shared/lib/apiClient'
+import { ApiClient } from '../../../shared/lib/apiClient'
 
 const searchProducts = async (searchParams) => {
-  const response = await apiClient.post('/api/products/search', searchParams)
+  const response = await ApiClient.post('/products/search', searchParams)
   return response.data
 }
 
