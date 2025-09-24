@@ -1,5 +1,6 @@
 import { ProductVariant } from '../entities/product-variant.entity';
 export interface ProductVariantRepository {
+    findAll(): Promise<ProductVariant[]>;
     findById(id: number): Promise<ProductVariant | null>;
     findByProductId(productId: number): Promise<ProductVariant[]>;
     findBySku(sku: string): Promise<ProductVariant | null>;

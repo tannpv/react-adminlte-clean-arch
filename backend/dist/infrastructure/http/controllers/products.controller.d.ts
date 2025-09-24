@@ -7,6 +7,7 @@ export declare class ProductsController {
     list(search?: string): Promise<import("../../../application/dto/product-response.dto").ProductResponseDto[]>;
     getOne(id: number): Promise<import("../../../application/dto/product-response.dto").ProductResponseDto>;
     getProductAttributeValues(id: number): Promise<import("../../../domain/entities/product-attribute-value.entity").ProductAttributeValue[]>;
+    getProductVariants(id: number): Promise<any[]>;
     create(dto: CreateProductDto): Promise<import("../../../application/dto/product-response.dto").ProductResponseDto>;
     update(id: number, dto: UpdateProductDto): Promise<import("../../../application/dto/product-response.dto").ProductResponseDto>;
     remove(id: number): Promise<import("../../../application/dto/product-response.dto").ProductResponseDto>;

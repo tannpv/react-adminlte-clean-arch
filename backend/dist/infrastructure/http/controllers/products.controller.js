@@ -33,6 +33,9 @@ let ProductsController = class ProductsController {
     getProductAttributeValues(id) {
         return this.productsService.getProductAttributeValues(id);
     }
+    getProductVariants(id) {
+        return this.productsService.getProductVariants(id);
+    }
     create(dto) {
         return this.productsService.create(dto);
     }
@@ -68,6 +71,14 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "getProductAttributeValues", null);
+__decorate([
+    (0, common_1.Get)(":id/variants"),
+    (0, permissions_decorator_1.RequireAnyPermission)("products:read", "users:read"),
+    __param(0, (0, common_1.Param)("id", common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "getProductVariants", null);
 __decorate([
     (0, common_1.Post)(),
     (0, permissions_decorator_1.RequirePermissions)("products:create"),

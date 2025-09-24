@@ -7,6 +7,14 @@ import { MysqlDatabaseService } from './mysql-database.service';
 export class MysqlProductVariantRepository implements ProductVariantRepository {
   constructor(private readonly db: MysqlDatabaseService) {}
 
+  async findAll(): Promise<ProductVariant[]> {
+    const [rows] = await this.db.execute(
+      'SELECT * FROM product_variants ORDER BY created_at DESC'
+    );
+
+    return Array.isArray(rows) ? rows.map(row => this.mapRowToEntity(row as any)) : [];
+  }
+
   async findById(id: number): Promise<ProductVariant | null> {
     const [rows] = await this.db.execute(
       'SELECT * FROM product_variants WHERE id = ?',

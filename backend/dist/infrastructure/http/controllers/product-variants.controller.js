@@ -11,101 +11,120 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductVariantsController = void 0;
 const common_1 = require("@nestjs/common");
-const product_variants_service_1 = require("../../application/services/product-variants.service");
-const create_product_variant_dto_1 = require("../../application/dto/create-product-variant.dto");
-const update_product_variant_dto_1 = require("../../application/dto/update-product-variant.dto");
+const create_product_variant_dto_1 = require("../../../application/dto/create-product-variant.dto");
+const update_product_variant_dto_1 = require("../../../application/dto/update-product-variant.dto");
+const product_variants_service_1 = require("../../../application/services/product-variants.service");
+const permissions_decorator_1 = require("../decorators/permissions.decorator");
+const jwt_auth_guard_1 = require("../guards/jwt-auth.guard");
+const permissions_guard_1 = require("../guards/permissions.guard");
 let ProductVariantsController = class ProductVariantsController {
     constructor(productVariantsService) {
         this.productVariantsService = productVariantsService;
     }
-    create(createProductVariantDto) {
-        return this.productVariantsService.create(createProductVariantDto);
-    }
-    findAll() {
+    async findAll(productId) {
+        if (productId) {
+            return this.productVariantsService.findByProductId(parseInt(productId));
+        }
         return this.productVariantsService.findAll();
     }
-    findByProductId(productId) {
-        return this.productVariantsService.findByProductId(productId);
-    }
-    findBySku(sku) {
-        return this.productVariantsService.findBySku(sku);
-    }
-    findOne(id) {
+    async findOne(id) {
         return this.productVariantsService.findOne(id);
     }
-    update(id, updateProductVariantDto) {
-        return this.productVariantsService.update(id, updateProductVariantDto);
+    async getVariantAttributeValues(id) {
+        return this.productVariantsService.getVariantAttributeValues(id);
     }
-    remove(id) {
+    async create(dto) {
+        return this.productVariantsService.create(dto);
+    }
+    async update(id, dto) {
+        return this.productVariantsService.update(id, dto);
+    }
+    async remove(id) {
         return this.productVariantsService.remove(id);
     }
-    removeByProductId(productId) {
-        return this.productVariantsService.removeByProductId(productId);
+    async setVariantAttributeValues(id, attributeValues) {
+        return this.productVariantsService.setVariantAttributeValues(id, attributeValues);
+    }
+    async generateVariants(productId) {
+        return this.productVariantsService.generateVariantsFromAttributes(productId);
     }
 };
 exports.ProductVariantsController = ProductVariantsController;
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof create_product_variant_dto_1.CreateProductVariantDto !== "undefined" && create_product_variant_dto_1.CreateProductVariantDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", void 0)
-], ProductVariantsController.prototype, "create", null);
-__decorate([
     (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], ProductVariantsController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)('product/:productId'),
-    __param(0, (0, common_1.Param)('productId', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", void 0)
-], ProductVariantsController.prototype, "findByProductId", null);
-__decorate([
-    (0, common_1.Get)('sku/:sku'),
-    __param(0, (0, common_1.Param)('sku')),
+    (0, permissions_decorator_1.RequireAnyPermission)("products:read", "users:read"),
+    __param(0, (0, common_1.Query)("productId")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], ProductVariantsController.prototype, "findBySku", null);
+    __metadata("design:returntype", Promise)
+], ProductVariantsController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    (0, common_1.Get)(":id"),
+    (0, permissions_decorator_1.RequireAnyPermission)("products:read", "users:read"),
+    __param(0, (0, common_1.Param)("id", common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ProductVariantsController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    (0, common_1.Get)(":id/attribute-values"),
+    (0, permissions_decorator_1.RequireAnyPermission)("products:read", "users:read"),
+    __param(0, (0, common_1.Param)("id", common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], ProductVariantsController.prototype, "getVariantAttributeValues", null);
+__decorate([
+    (0, common_1.Post)(),
+    (0, permissions_decorator_1.RequirePermissions)("products:create"),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: false, transform: true })),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_product_variant_dto_1.CreateProductVariantDto]),
+    __metadata("design:returntype", Promise)
+], ProductVariantsController.prototype, "create", null);
+__decorate([
+    (0, common_1.Put)(":id"),
+    (0, permissions_decorator_1.RequirePermissions)("products:update"),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: false, transform: true })),
+    __param(0, (0, common_1.Param)("id", common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, typeof (_c = typeof update_product_variant_dto_1.UpdateProductVariantDto !== "undefined" && update_product_variant_dto_1.UpdateProductVariantDto) === "function" ? _c : Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Number, update_product_variant_dto_1.UpdateProductVariantDto]),
+    __metadata("design:returntype", Promise)
 ], ProductVariantsController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    (0, common_1.Delete)(":id"),
+    (0, permissions_decorator_1.RequirePermissions)("products:delete"),
+    __param(0, (0, common_1.Param)("id", common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ProductVariantsController.prototype, "remove", null);
 __decorate([
-    (0, common_1.Delete)('product/:productId'),
-    __param(0, (0, common_1.Param)('productId', common_1.ParseIntPipe)),
+    (0, common_1.Post)(":id/attribute-values"),
+    (0, permissions_decorator_1.RequirePermissions)("products:update"),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: false, transform: true })),
+    __param(0, (0, common_1.Param)("id", common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], ProductVariantsController.prototype, "setVariantAttributeValues", null);
+__decorate([
+    (0, common_1.Get)("product/:productId/generate"),
+    (0, permissions_decorator_1.RequirePermissions)("products:create"),
+    __param(0, (0, common_1.Param)("productId", common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", void 0)
-], ProductVariantsController.prototype, "removeByProductId", null);
+    __metadata("design:returntype", Promise)
+], ProductVariantsController.prototype, "generateVariants", null);
 exports.ProductVariantsController = ProductVariantsController = __decorate([
-    (0, common_1.Controller)('product-variants'),
-    __metadata("design:paramtypes", [typeof (_a = typeof product_variants_service_1.ProductVariantsService !== "undefined" && product_variants_service_1.ProductVariantsService) === "function" ? _a : Object])
+    (0, common_1.Controller)("product-variants"),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, permissions_guard_1.PermissionsGuard),
+    __metadata("design:paramtypes", [product_variants_service_1.ProductVariantsService])
 ], ProductVariantsController);
 //# sourceMappingURL=product-variants.controller.js.map
