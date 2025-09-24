@@ -10,6 +10,7 @@ export function ProductModal({
   onClose,
   onSubmit,
   categoryOptions = [],
+  categoryTree = [],
   categoriesLoading = false,
 }) {
   const formId = 'product-modal-form'
@@ -62,6 +63,7 @@ export function ProductModal({
                   submitting={submitting}
                   onSubmit={onSubmit}
                   categoryOptions={categoryOptions}
+                  categoryTree={categoryTree}
                   categoriesLoading={categoriesLoading}
                 />
               </div>
