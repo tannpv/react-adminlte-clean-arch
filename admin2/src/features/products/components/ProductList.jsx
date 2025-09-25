@@ -68,11 +68,11 @@ export function ProductList({ products, onEdit, onDelete }) {
                 </Table.Cell>
                 <Table.Cell>
                   <div className="flex flex-col">
-                    <span className="font-medium text-gray-900">{product.name}</span>
+                    <span className="font-semibold text-gray-900 text-base">{product.name}</span>
                     {product.description && (
-                      <span className="text-sm text-gray-500">
-                        {product.description.length > 60
-                          ? `${product.description.substring(0, 60)}...`
+                      <span className="text-xs text-gray-400 mt-1">
+                        {product.description.length > 50
+                          ? `${product.description.substring(0, 50)}...`
                           : product.description
                         }
                       </span>
