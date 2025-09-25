@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 export function CategoryTreeSelector({
     categories = [],
@@ -75,7 +75,7 @@ export function CategoryTreeSelector({
     }, [tree, searchTerm])
 
     // Auto-expand nodes when searching
-    React.useEffect(() => {
+    useEffect(() => {
         if (searchTerm.trim()) {
             const newExpanded = new Set()
             const allNodes = flattenTree(tree)

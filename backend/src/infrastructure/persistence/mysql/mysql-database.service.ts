@@ -1923,6 +1923,21 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       },
       {
         namespace: "categories",
+        key: "id",
+        description: "ID column header",
+      },
+      {
+        namespace: "categories",
+        key: "actions",
+        description: "Actions column header",
+      },
+      {
+        namespace: "categories",
+        key: "edit",
+        description: "Edit button text",
+      },
+      {
+        namespace: "categories",
         key: "delete_category",
         description: "Delete category tooltip",
       },
@@ -2276,6 +2291,141 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         key: "data_type_boolean",
         description: "Boolean data type label",
       },
+      {
+        namespace: "attributes",
+        key: "total_attributes",
+        description: "Total attributes stat label",
+      },
+      {
+        namespace: "attributes",
+        key: "select_attributes",
+        description: "Select attributes stat label",
+      },
+      {
+        namespace: "attributes",
+        key: "input_attributes",
+        description: "Input attributes stat label",
+      },
+      {
+        namespace: "attributes",
+        key: "with_units",
+        description: "With units stat label",
+      },
+      {
+        namespace: "attributes",
+        key: "attribute_management",
+        description: "Attribute Management section title",
+      },
+      {
+        namespace: "attributes",
+        key: "attribute_management_description",
+        description: "Attribute Management description",
+      },
+      {
+        namespace: "attributes",
+        key: "edit_attribute",
+        description: "Edit Attribute button",
+      },
+      {
+        namespace: "attributes",
+        key: "edit",
+        description: "Edit button text",
+      },
+      {
+        namespace: "attributes",
+        key: "delete",
+        description: "Delete button text",
+      },
+      {
+        namespace: "attributes",
+        key: "add_new_attribute",
+        description: "Add New Attribute button",
+      },
+      {
+        namespace: "attributes",
+        key: "required_fields_note",
+        description: "Required fields note",
+      },
+      {
+        namespace: "attributes",
+        key: "code_placeholder",
+        description: "Code placeholder text",
+      },
+      {
+        namespace: "attributes",
+        key: "code_help_text",
+        description: "Code help text",
+      },
+      {
+        namespace: "attributes",
+        key: "name_placeholder",
+        description: "Name placeholder text",
+      },
+      {
+        namespace: "attributes",
+        key: "select_single_choice",
+        description: "Select single choice option",
+      },
+      {
+        namespace: "attributes",
+        key: "multiselect_multiple_choices",
+        description: "Multiselect multiple choices option",
+      },
+      {
+        namespace: "attributes",
+        key: "text_input",
+        description: "Text input option",
+      },
+      {
+        namespace: "attributes",
+        key: "number_input",
+        description: "Number input option",
+      },
+      {
+        namespace: "attributes",
+        key: "boolean_yes_no",
+        description: "Boolean yes/no option",
+      },
+      {
+        namespace: "attributes",
+        key: "string",
+        description: "String data type option",
+      },
+      {
+        namespace: "attributes",
+        key: "number",
+        description: "Number data type option",
+      },
+      {
+        namespace: "attributes",
+        key: "boolean",
+        description: "Boolean data type option",
+      },
+      {
+        namespace: "attributes",
+        key: "unit_placeholder",
+        description: "Unit placeholder text",
+      },
+      {
+        namespace: "attributes",
+        key: "unit_help_text",
+        description: "Unit help text",
+      },
+      {
+        namespace: "attributes",
+        key: "create_new_attribute",
+        description: "Create new attribute button",
+      },
+      {
+        namespace: "attributes",
+        key: "cancel",
+        description: "Cancel button text",
+      },
+      {
+        namespace: "attributes",
+        key: "create_attribute",
+        description: "Create attribute button",
+      },
 
       // Validation namespace
       {
@@ -2570,6 +2720,9 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         "categories.this_category": "this category",
         "categories.delete": "Delete",
         "categories.cancel": "Cancel",
+        "categories.id": "ID",
+        "categories.actions": "Actions",
+        "categories.edit": "Edit",
         "categories.category_name": "Category Name",
         "categories.parent_category": "Parent Category",
         "categories.hierarchy": "Hierarchy",
@@ -2757,6 +2910,12 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
           "Create a new attribute for products",
         "attributes.update_attribute": "Update Attribute",
         "attributes.create_attribute": "Create Attribute",
+        "attributes.total_attributes": "Total Attributes",
+        "attributes.select_attributes": "Select Attributes",
+        "attributes.input_attributes": "Input Attributes",
+        "attributes.with_units": "With Units",
+        "attributes.required_fields_note": "Fields marked with * are required",
+        "attributes.cancel": "Cancel",
 
         // Attribute Set Form Translations
         "attributes.edit_attribute_set": "Edit Attribute Set",
@@ -3143,6 +3302,9 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
           "categories.this_category": "cette catégorie",
           "categories.delete": "Supprimer",
           "categories.cancel": "Annuler",
+          "categories.id": "ID",
+          "categories.actions": "Actions",
+          "categories.edit": "Modifier",
           "categories.category_name": "Nom de la Catégorie",
           "categories.parent_category": "Catégorie Parente",
           "categories.hierarchy": "Hiérarchie",
@@ -3337,6 +3499,13 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
             "Créer un nouvel attribut pour les produits",
           "attributes.update_attribute": "Mettre à jour l'attribut",
           "attributes.create_attribute": "Créer l'attribut",
+          "attributes.total_attributes": "Total des Attributs",
+          "attributes.select_attributes": "Attributs de Sélection",
+          "attributes.input_attributes": "Attributs de Saisie",
+          "attributes.with_units": "Avec Unités",
+          "attributes.required_fields_note":
+            "Les champs marqués d'un * sont obligatoires",
+          "attributes.cancel": "Annuler",
 
           // Attribute Set Form Translations
           "attributes.edit_attribute_set": "Modifier l'ensemble d'attributs",
@@ -3741,6 +3910,9 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
           "categories.this_category": "esta categoría",
           "categories.delete": "Eliminar",
           "categories.cancel": "Cancelar",
+          "categories.id": "ID",
+          "categories.actions": "Acciones",
+          "categories.edit": "Editar",
           "categories.category_name": "Nombre de la Categoría",
           "categories.parent_category": "Categoría Padre",
           "categories.hierarchy": "Jerarquía",
@@ -3934,6 +4106,13 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
             "Crear un nuevo atributo para productos",
           "attributes.update_attribute": "Actualizar Atributo",
           "attributes.create_attribute": "Crear Atributo",
+          "attributes.total_attributes": "Total de Atributos",
+          "attributes.select_attributes": "Atributos de Selección",
+          "attributes.input_attributes": "Atributos de Entrada",
+          "attributes.with_units": "Con Unidades",
+          "attributes.required_fields_note":
+            "Los campos marcados con * son obligatorios",
+          "attributes.cancel": "Cancelar",
 
           // Attribute Set Form Translations
           "attributes.edit_attribute_set": "Editar Conjunto de Atributos",
