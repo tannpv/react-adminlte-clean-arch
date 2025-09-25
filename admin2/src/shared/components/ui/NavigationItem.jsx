@@ -25,13 +25,6 @@ export const NavigationItem = ({
 }) => {
     const { isCollapsed } = useNavigation();
 
-    // Debug logging to help identify width issues
-    React.useEffect(() => {
-        if (active) {
-            console.log(`Active navigation item: ${label}, isCollapsed: ${isCollapsed}`);
-        }
-    }, [active, label, isCollapsed]);
-
     const handleClick = (e) => {
         if (disabled) {
             e.preventDefault();
