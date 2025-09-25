@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from '../../../shared/hooks/useTranslation';
 import Button from '../../../shared/components/ui/Button';
 import Modal from '../../../shared/components/ui/Modal';
+import { useTranslation } from '../../../shared/hooks/useTranslation';
 
 const TranslationEditModal = ({
     isOpen,
@@ -109,9 +109,8 @@ const TranslationEditModal = ({
                                 Translation Value *
                             </label>
                             <textarea
-                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
-                                    errors.value ? 'border-red-300' : 'border-gray-300'
-                                }`}
+                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${errors.value ? 'border-red-300' : 'border-gray-300'
+                                    }`}
                                 name="value"
                                 id="value"
                                 rows={4}

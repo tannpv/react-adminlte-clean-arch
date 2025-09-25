@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from '../../../shared/hooks/useTranslation';
 import Button from '../../../shared/components/ui/Button';
 import Modal from '../../../shared/components/ui/Modal';
+import { useTranslation } from '../../../shared/hooks/useTranslation';
 
 const LanguageModal = ({ isOpen, toggle, language, onSave, isLoading }) => {
     const [formData, setFormData] = useState({
@@ -123,9 +123,8 @@ const LanguageModal = ({ isOpen, toggle, language, onSave, isLoading }) => {
                             </label>
                             <input
                                 type="text"
-                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
-                                    errors.code ? 'border-red-300' : 'border-gray-300'
-                                }`}
+                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${errors.code ? 'border-red-300' : 'border-gray-300'
+                                    }`}
                                 name="code"
                                 id="code"
                                 value={formData.code}
@@ -158,9 +157,8 @@ const LanguageModal = ({ isOpen, toggle, language, onSave, isLoading }) => {
                             </label>
                             <input
                                 type="text"
-                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
-                                    errors.name ? 'border-red-300' : 'border-gray-300'
-                                }`}
+                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${errors.name ? 'border-red-300' : 'border-gray-300'
+                                    }`}
                                 name="name"
                                 id="name"
                                 value={formData.name}
@@ -176,9 +174,8 @@ const LanguageModal = ({ isOpen, toggle, language, onSave, isLoading }) => {
                             </label>
                             <input
                                 type="text"
-                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
-                                    errors.nativeName ? 'border-red-300' : 'border-gray-300'
-                                }`}
+                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${errors.nativeName ? 'border-red-300' : 'border-gray-300'
+                                    }`}
                                 name="nativeName"
                                 id="nativeName"
                                 value={formData.nativeName}
@@ -229,9 +226,8 @@ const LanguageModal = ({ isOpen, toggle, language, onSave, isLoading }) => {
                                 <button
                                     key={index}
                                     type="button"
-                                    className={`p-2 border rounded-md text-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        formData.flagIcon === icon ? 'bg-blue-50 border-blue-300' : 'border-gray-300'
-                                    }`}
+                                    className={`p-2 border rounded-md text-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 ${formData.flagIcon === icon ? 'bg-blue-50 border-blue-300' : 'border-gray-300'
+                                        }`}
                                     onClick={() => setFormData(prev => ({ ...prev, flagIcon: icon }))}
                                 >
                                     {icon}

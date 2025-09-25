@@ -88,9 +88,8 @@ export const AttributeAssignmentModal = ({ availableAttributes, onSubmit, onClos
                                 Select Attribute *
                             </label>
                             <select
-                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
-                                    errors.attributeId ? 'border-red-300' : 'border-gray-300'
-                                }`}
+                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${errors.attributeId ? 'border-red-300' : 'border-gray-300'
+                                    }`}
                                 name="attributeId"
                                 id="attributeId"
                                 value={formData.attributeId}
@@ -115,9 +114,8 @@ export const AttributeAssignmentModal = ({ availableAttributes, onSubmit, onClos
                             </label>
                             <input
                                 type="number"
-                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
-                                    errors.sortOrder ? 'border-red-300' : 'border-gray-300'
-                                }`}
+                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${errors.sortOrder ? 'border-red-300' : 'border-gray-300'
+                                    }`}
                                 name="sortOrder"
                                 id="sortOrder"
                                 value={formData.sortOrder}
