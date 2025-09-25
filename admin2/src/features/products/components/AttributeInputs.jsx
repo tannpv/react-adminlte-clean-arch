@@ -11,8 +11,8 @@ export function TextAttributeInput({ attribute, value, onChange, disabled, hasEr
         <input
             type="text"
             className={`block w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-colors duration-200 ${hasError
-                    ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500'
-                    : 'border-gray-300 bg-white hover:border-gray-400'
+                ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500'
+                : 'border-gray-300 bg-white hover:border-gray-400'
                 } ${disabled ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
             value={value || ''}
             onChange={(e) => onChange(e.target.value)}
@@ -33,8 +33,8 @@ export function NumberAttributeInput({ attribute, value, onChange, disabled, has
             type="number"
             step="0.01"
             className={`block w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-colors duration-200 ${hasError
-                    ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500'
-                    : 'border-gray-300 bg-white hover:border-gray-400'
+                ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500'
+                : 'border-gray-300 bg-white hover:border-gray-400'
                 } ${disabled ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
             value={value || ''}
             onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
@@ -90,8 +90,8 @@ export function SelectAttributeInput({ attribute, value, onChange, disabled, has
         <div className="relative">
             <select
                 className={`block w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-colors duration-200 appearance-none ${hasError
-                        ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500'
-                        : 'border-gray-300 bg-white hover:border-gray-400'
+                    ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500'
+                    : 'border-gray-300 bg-white hover:border-gray-400'
                     } ${disabled ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
                 value={value || ''}
                 onChange={(e) => onChange(e.target.value)}
