@@ -1,11 +1,43 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
-const Modal = ({ isOpen, onClose, children, className = '', ...props }) => {
-    if (!isOpen) return null;
+const Modal = ({ isOpen, show, onClose, children, className = '', ...props }) => {
+    // Support both isOpen and show props for backward compatibility
+    const modalOpen = isOpen || show;
+    
+    if (!modalOpen) return null;
+
+    // Handle escape key
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape' && onClose) {
+                onClose();
+            }
+        };
+
+        if (modalOpen) {
+            document.addEventListener('keydown', handleEscape);
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+            document.body.style.overflow = 'unset';
+        };
+    }, [modalOpen, onClose]);
+
+    const handleBackdropClick = (e) => {
+        if (e.target === e.currentTarget && onClose) {
+            onClose();
+        }
+    };
 
     return (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div 
+            className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+            onClick={handleBackdropClick}
+        >
+            <div className="relative top-20 mx-auto p-5 border shadow-lg rounded-md bg-white max-w-4xl w-full mx-4">
                 <div className="mt-3">
                     {children}
                 </div>

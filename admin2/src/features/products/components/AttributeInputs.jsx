@@ -10,7 +10,7 @@ export function TextAttributeInput({ attribute, value, onChange, disabled, hasEr
     return (
         <input
             type="text"
-            className={`form-control ${hasError ? 'is-invalid' : ''}`}
+            className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${hasError ? 'border-red-300' : 'border-gray-300'}`}
             value={value || ''}
             onChange={(e) => onChange(e.target.value)}
             disabled={disabled}
@@ -29,7 +29,7 @@ export function NumberAttributeInput({ attribute, value, onChange, disabled, has
         <input
             type="number"
             step="0.01"
-            className={`form-control ${hasError ? 'is-invalid' : ''}`}
+            className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${hasError ? 'border-red-300' : 'border-gray-300'}`}
             value={value || ''}
             onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
             disabled={disabled}
@@ -48,7 +48,7 @@ export function BooleanAttributeInput({ attribute, value, onChange, disabled, ha
         <div className="form-check">
             <input
                 type="checkbox"
-                className={`form-check-input ${hasError ? 'is-invalid' : ''}`}
+                className={`form-check-input ${hasError ? 'border-red-300' : ''}`}
                 checked={value || false}
                 onChange={(e) => onChange(e.target.checked)}
                 disabled={disabled}
@@ -68,8 +68,8 @@ export function SelectAttributeInput({ attribute, value, onChange, disabled, has
 
     if (isLoading) {
         return (
-            <div className="form-control d-flex align-items-center" style={{ minHeight: '38px' }}>
-                <span className="text-muted">
+            <div className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm flex items-center" style={{ minHeight: '38px' }}>
+                <span className="text-gray-500">
                     <i className="fas fa-spinner fa-spin mr-2"></i>
                     Loading options...
                 </span>
@@ -79,7 +79,7 @@ export function SelectAttributeInput({ attribute, value, onChange, disabled, has
 
     return (
         <select
-            className={`form-control ${hasError ? 'is-invalid' : ''}`}
+            className={`block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${hasError ? 'border-red-300' : ''}`}
             value={value || ''}
             onChange={(e) => onChange(e.target.value)}
             disabled={disabled}
@@ -104,8 +104,8 @@ export function MultiSelectAttributeInput({ attribute, values = [], onChange, di
 
     if (isLoading) {
         return (
-            <div className="form-control d-flex align-items-center" style={{ minHeight: '38px' }}>
-                <span className="text-muted">
+            <div className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm flex items-center" style={{ minHeight: '38px' }}>
+                <span className="text-gray-500">
                     <i className="fas fa-spinner fa-spin mr-2"></i>
                     Loading options...
                 </span>
@@ -124,10 +124,10 @@ export function MultiSelectAttributeInput({ attribute, values = [], onChange, di
     };
 
     return (
-        <div className={`attribute-multiselect ${hasError ? 'is-invalid' : ''}`}>
+        <div className={`attribute-multiselect ${hasError ? 'border-red-300' : ''}`}>
             <div className="multiselect-header">
                 <div className="d-flex justify-content-between align-items-center">
-                    <small className="text-muted">
+                    <small className="text-gray-500">
                         <i className="fas fa-check-square mr-1"></i>
                         Select multiple options ({values.length} selected)
                     </small>
