@@ -11,6 +11,7 @@ import { ProductsPage } from '../features/products/pages/ProductsPage'
 import { AttributesPage } from '../features/attributes/pages/AttributesPage'
 import { AttributeValuesPage } from '../features/attributes/pages/AttributeValuesPage'
 import { AttributeSetsPage } from '../features/attributes/pages/AttributeSetsPage'
+import { TranslationsPage } from '../features/translations/pages/TranslationsPage'
 import { queryClient } from '../shared/lib/queryClient'
 
 function AppContent() {
@@ -119,6 +120,14 @@ function AppContent() {
                                  <i className="fas fa-layer-group mr-3 text-lg" />
                                  <span className="font-medium">Attribute Sets</span>
                              </button>
+                             <button
+                                 className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'translations' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                                     }`}
+                                 onClick={() => setCurrentPage('translations')}
+                             >
+                                 <i className="fas fa-language mr-3 text-lg" />
+                                 <span className="font-medium">Translations</span>
+                             </button>
                         </div>
                     </nav>
                 </aside>
@@ -140,6 +149,8 @@ function AppContent() {
                              <AttributeValuesPage />
                          ) : currentPage === 'attribute-sets' ? (
                              <AttributeSetsPage />
+                         ) : currentPage === 'translations' ? (
+                             <TranslationsPage />
                          ) : null}
                     </div>
                 </main>
