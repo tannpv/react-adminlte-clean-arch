@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 const Modal = ({ isOpen, show, onClose, children, className = '', ...props }) => {
     // Support both isOpen and show props for backward compatibility
     const modalOpen = isOpen || show;
-    
+
     if (!modalOpen) return null;
 
     // Handle escape key
@@ -34,10 +34,10 @@ const Modal = ({ isOpen, show, onClose, children, className = '', ...props }) =>
 
     return (
         <div
-            className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+            className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
             onClick={handleBackdropClick}
         >
-            <div className="relative top-20 mx-auto p-5 border shadow-lg rounded-md bg-white max-w-4xl w-full mx-4">
+            <div className="relative p-5 border shadow-lg rounded-md bg-white max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="mt-3">
                     {children}
                 </div>

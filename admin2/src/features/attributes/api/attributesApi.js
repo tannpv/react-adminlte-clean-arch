@@ -4,16 +4,16 @@ import { apiClient } from '../../../shared/lib/apiClient';
 export const attributesApi = {
     // Get all attributes
     getAll: () => apiClient.get('/attributes'),
-    
+
     // Get attribute by ID
     getById: (id) => apiClient.get(`/attributes/${id}`),
-    
+
     // Create new attribute
     create: (data) => apiClient.post('/attributes', data),
-    
+
     // Update attribute
     update: (id, data) => apiClient.put(`/attributes/${id}`, data),
-    
+
     // Delete attribute
     delete: (id) => apiClient.delete(`/attributes/${id}`),
 };
@@ -22,19 +22,19 @@ export const attributesApi = {
 export const attributeValuesApi = {
     // Get all attribute values
     getAll: () => apiClient.get('/attribute-values'),
-    
+
     // Get attribute values by attribute ID
     getByAttributeId: (attributeId) => apiClient.get(`/attribute-values/by-attribute/${attributeId}`),
-    
+
     // Get attribute value by ID
     getById: (id) => apiClient.get(`/attribute-values/${id}`),
-    
+
     // Create new attribute value
     create: (data) => apiClient.post('/attribute-values', data),
-    
+
     // Update attribute value
     update: (id, data) => apiClient.put(`/attribute-values/${id}`, data),
-    
+
     // Delete attribute value
     delete: (id) => apiClient.delete(`/attribute-values/${id}`),
 };
