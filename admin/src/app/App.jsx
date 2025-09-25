@@ -72,8 +72,8 @@ export default function App() {
                       ) : null}
                     </div>
                   </div>
-                  <button 
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm" 
+                  <button
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm"
                     onClick={logout}
                   >
                     <i className="fas fa-sign-out-alt mr-2"></i>
@@ -103,58 +103,52 @@ export default function App() {
           <nav className="p-4">
             <div className="space-y-2">
               <div className="text-gray-400 uppercase text-xs font-semibold tracking-wider mt-6 mb-3 px-3">{t('system', 'System')}</div>
-              <button 
-                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${
-                  menu === 'users' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                }`}
+              <button
+                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${menu === 'users' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                  }`}
                 onClick={() => setMenu('users')}
               >
                 <i className="fas fa-users mr-3 text-lg" />
                 <span className="font-medium">{t('users', 'Users')}</span>
               </button>
-              <button 
-                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${
-                  menu === 'roles' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                }`}
+              <button
+                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${menu === 'roles' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                  }`}
                 onClick={() => setMenu('roles')}
               >
                 <i className="fas fa-user-shield mr-3 text-lg" />
                 <span className="font-medium">{t('roles', 'Roles')}</span>
               </button>
-              <button 
-                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${
-                  menu === 'storage' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                }`}
+              <button
+                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${menu === 'storage' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                  }`}
                 onClick={() => setMenu('storage')}
               >
                 <i className="fas fa-hdd mr-3 text-lg" />
                 <span className="font-medium">{t('storage', 'Storage')}</span>
               </button>
-              
+
               <div className="text-gray-400 uppercase text-xs font-semibold tracking-wider mt-6 mb-3 px-3">{t('e_commerce', 'E-Commerce')}</div>
-              <button 
-                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${
-                  menu === 'categories' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                }`}
+              <button
+                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${menu === 'categories' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                  }`}
                 onClick={() => setMenu('categories')}
               >
                 <i className="fas fa-tags mr-3 text-lg" />
                 <span className="font-medium">{t('categories', 'Categories')}</span>
               </button>
-              <button 
-                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${
-                  menu === 'products' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                }`}
+              <button
+                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${menu === 'products' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                  }`}
                 onClick={() => setMenu('products')}
               >
                 <i className="fas fa-box mr-3 text-lg" />
                 <span className="font-medium">{t('products', 'Products')}</span>
               </button>
               {can('attributes:read') && (
-                <button 
-                  className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${
-                    menu === 'attributes' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                  }`}
+                <button
+                  className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${menu === 'attributes' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                    }`}
                   onClick={() => setMenu('attributes')}
                 >
                   <i className="fas fa-list mr-3 text-lg" />
@@ -162,10 +156,9 @@ export default function App() {
                 </button>
               )}
               {can('attribute-values:read') && (
-                <button 
-                  className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${
-                    menu === 'attribute-values' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                  }`}
+                <button
+                  className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${menu === 'attribute-values' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                    }`}
                   onClick={() => setMenu('attribute-values')}
                 >
                   <i className="fas fa-list-ul mr-3 text-lg" />
@@ -173,23 +166,21 @@ export default function App() {
                 </button>
               )}
               {can('attribute-sets:read') && (
-                <button 
-                  className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${
-                    menu === 'attribute-sets' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                  }`}
+                <button
+                  className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${menu === 'attribute-sets' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                    }`}
                   onClick={() => setMenu('attribute-sets')}
                 >
                   <i className="fas fa-layer-group mr-3 text-lg" />
                   <span className="font-medium">{t('attribute_sets', 'Attribute Sets')}</span>
                 </button>
               )}
-              
+
               <div className="text-gray-400 uppercase text-xs font-semibold tracking-wider mt-6 mb-3 px-3">{t('localization', 'Localization')}</div>
               {can('translations:read') && (
-                <button 
-                  className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${
-                    menu === 'translations' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                  }`}
+                <button
+                  className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${menu === 'translations' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                    }`}
                   onClick={() => setMenu('translations')}
                 >
                   <i className="fas fa-language mr-3 text-lg" />
