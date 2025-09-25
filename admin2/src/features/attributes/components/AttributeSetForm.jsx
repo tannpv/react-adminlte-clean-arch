@@ -140,14 +140,14 @@ export const AttributeSetForm = ({ attributeSet, onClose }) => {
                             className={errors.name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
                         />
                         {errors.name && (
-                            <Form.ErrorText>
+                            <Form.Error>
                                 <i className="fas fa-exclamation-triangle mr-1"></i>
                                 {errors.name}
-                            </Form.ErrorText>
+                            </Form.Error>
                         )}
-                        <Form.HelpText>
+                        <Form.Help>
                             {t('attribute_set_name_help_text', 'A descriptive name for the attribute set')}
-                        </Form.HelpText>
+                        </Form.Help>
                     </Form.Group>
 
                     <Form.Group>
@@ -164,9 +164,9 @@ export const AttributeSetForm = ({ attributeSet, onClose }) => {
                             rows="3"
                             disabled={isLoading}
                         />
-                        <Form.HelpText>
+                        <Form.Help>
                             {t('attribute_set_description_help_text', 'Optional description to help identify the purpose of this attribute set')}
-                        </Form.HelpText>
+                        </Form.Help>
                     </Form.Group>
 
                     {isEditing && (

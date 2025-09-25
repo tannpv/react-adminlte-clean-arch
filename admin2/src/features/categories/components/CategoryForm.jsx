@@ -49,15 +49,15 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
             className={nameError ? 'border-red-500' : ''}
           />
           {nameError && (
-            <Form.ErrorText>
+            <Form.Error>
               <i className="fas fa-exclamation-triangle mr-1"></i>
               {nameError}
-            </Form.ErrorText>
+            </Form.Error>
           )}
-          <Form.HelpText>
+          <Form.Help>
             <i className="fas fa-lightbulb mr-1"></i>
             {t('category_name_help', 'Choose a clear, descriptive name that helps customers find products.')}
-          </Form.HelpText>
+          </Form.Help>
         </Form.Group>
       </div>
 
@@ -85,15 +85,15 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
             />
           </div>
           {parentError && (
-            <Form.ErrorText>
+            <Form.Error>
               <i className="fas fa-exclamation-triangle mr-1"></i>
               {parentError}
-            </Form.ErrorText>
+            </Form.Error>
           )}
-          <Form.HelpText>
+          <Form.Help>
             <i className="fas fa-info-circle mr-1"></i>
             {t('parent_category_help', 'Leave empty to create a root category, or select a parent to create a subcategory.')}
-          </Form.HelpText>
+          </Form.Help>
         </Form.Group>
       </div>
     </form>

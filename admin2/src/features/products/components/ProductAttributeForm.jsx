@@ -113,9 +113,12 @@ export function ProductAttributeForm({
             )}
 
             {!selectedAttributeSetId && (
-                <div className="alert alert-light">
-                    <i className="fas fa-lightbulb mr-2"></i>
-                    Select an attribute set above to add product-specific attributes.
+                <div className="flex flex-col items-center justify-center py-12 text-gray-500 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                        <i className="fas fa-lightbulb text-2xl text-yellow-500"></i>
+                    </div>
+                    <div className="text-sm font-medium text-gray-600 mb-1">Select an Attribute Set</div>
+                    <div className="text-xs text-gray-500">Choose an attribute set above to add product-specific attributes</div>
                 </div>
             )}
         </div>

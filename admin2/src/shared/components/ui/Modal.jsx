@@ -1,24 +1,23 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 const Modal = ({ isOpen, show, onClose, children, className = '', ...props }) => {
     // Support both isOpen and show props for backward compatibility
     const modalOpen = isOpen || show;
 
-    if (!modalOpen) return null;
-
     // Handle escape key
     useEffect(() => {
+        if (!modalOpen) return;
+
         const handleEscape = (e) => {
             if (e.key === 'Escape' && onClose) {
                 onClose();
             }
         };
 
-        if (modalOpen) {
-            document.addEventListener('keydown', handleEscape);
-            // Prevent body scroll when modal is open
-            document.body.style.overflow = 'hidden';
-        }
+        document.addEventListener('keydown', handleEscape);
+        // Prevent body scroll when modal is open
+        document.body.style.overflow = 'hidden';
 
         return () => {
             document.removeEventListener('keydown', handleEscape);
@@ -32,7 +31,10 @@ const Modal = ({ isOpen, show, onClose, children, className = '', ...props }) =>
         }
     };
 
-    return (
+    // Use portal to render modal outside the normal DOM tree
+    if (!modalOpen) return null;
+
+    const modalContent = (
         <div
             className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
             onClick={handleBackdropClick}
@@ -44,6 +46,8 @@ const Modal = ({ isOpen, show, onClose, children, className = '', ...props }) =>
             </div>
         </div>
     );
+
+    return createPortal(modalContent, document.body);
 };
 
 const ModalHeader = ({ children, onClose, className = '', ...props }) => {
