@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { Button } from '../../../shared/components/ui/Button';
+import { Card } from '../../../shared/components/ui/Card';
+import { Table } from '../../../shared/components/ui/Table';
 import { ConfirmModal } from '../../../shared/components/ConfirmModal';
 import { usePermissions } from '../../../shared/hooks/usePermissions';
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
@@ -81,191 +84,257 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
 
     if (setLoading) {
         return (
-            <div className="page-card">
-                <div className="page-header">
-                    <div>
-                        <h2 className="page-title">Loading...</h2>
-                    </div>
-                </div>
-                <div className="page-body">
-                    <div className="text-center">
-                        <div className="spinner-border" role="status">
-                            <span className="sr-only">Loading...</span>
+            <div className="max-w-7xl mx-auto">
+                <Card>
+                    <Card.Body>
+                        <div className="text-center py-12">
+                            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <p className="mt-4 text-gray-600">Loading attribute set details...</p>
                         </div>
-                    </div>
-                </div>
+                    </Card.Body>
+                </Card>
             </div>
         );
     }
 
     if (setError) {
         return (
-            <div className="page-card">
-                <div className="page-header">
-                    <div>
-                        <h2 className="page-title">Error</h2>
-                    </div>
-                </div>
-                <div className="page-body">
-                    <div className="alert alert-danger" role="alert">
-                        {setError?.message || 'Failed to load attribute set'}
-                    </div>
-                </div>
+            <div className="max-w-7xl mx-auto">
+                <Card>
+                    <Card.Body>
+                        <div className="text-center py-12">
+                            <i className="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+                            <h4 className="text-lg font-medium text-gray-900 mb-2">Error Loading Attribute Set</h4>
+                            <p className="text-red-600">
+                                {setError?.message || 'Failed to load attribute set'}
+                            </p>
+                        </div>
+                    </Card.Body>
+                </Card>
             </div>
         );
     }
 
     if (!attributeSet) {
         return (
-            <div className="page-card">
-                <div className="page-header">
-                    <div>
-                        <h2 className="page-title">Not Found</h2>
-                    </div>
-                </div>
-                <div className="page-body">
-                    <div className="alert alert-warning" role="alert">
-                        Attribute set not found.
-                    </div>
-                </div>
+            <div className="max-w-7xl mx-auto">
+                <Card>
+                    <Card.Body>
+                        <div className="text-center py-12">
+                            <i className="fas fa-search text-4xl text-gray-400 mb-4"></i>
+                            <h4 className="text-lg font-medium text-gray-900 mb-2">Attribute Set Not Found</h4>
+                            <p className="text-gray-600">
+                                The requested attribute set could not be found.
+                            </p>
+                        </div>
+                    </Card.Body>
+                </Card>
             </div>
         );
     }
 
     return (
         <>
-            <div className="page-card">
-                <div className="page-header">
-                    <div>
-                        <h2 className="page-title">
-                            <button
-                                className="btn btn-sm btn-outline-secondary mr-3"
-                                onClick={onBack}
-                                title={t('back_to_attribute_sets', 'Back to Attribute Sets')}
-                            >
-                                <i className="fas fa-arrow-left"></i>
-                            </button>
-                            <i className="fas fa-layer-group mr-2"></i>
-                            {attributeSet.name}
-                        </h2>
-                        <p className="page-subtitle">
-                            {attributeSet.description || t('manage_attributes_assigned_to_set', 'Manage attributes assigned to this set.')}
-                        </p>
-                    </div>
-                    <div className="page-actions">
-                        <button
-                            className="btn btn-primary"
-                            onClick={handleAddAttribute}
-                            disabled={addAttributeMutation.isPending || !can('attribute-sets:update')}
-                            title={!can('attribute-sets:update') ? t('not_allowed', 'Not allowed') : undefined}
-                        >
-                            <i className="fas fa-plus mr-2"></i>
-                            {t('add_attribute', 'Add Attribute')}
-                        </button>
-                    </div>
-                </div>
-
-                <div className="page-body">
-                    <div className="row mb-4">
-                        <div className="col-md-6">
-                            <div className="info-box">
-                                <span className="info-box-icon bg-primary">
-                                    <i className="fas fa-layer-group"></i>
-                                </span>
-                                <div className="info-box-content">
-                                    <span className="info-box-text">{t('total_attributes', 'Total Attributes')}</span>
-                                    <span className="info-box-number">
-                                        {attributeSet.attributes?.length || 0}
-                                    </span>
-                                </div>
+            <div className="max-w-7xl mx-auto">
+                {/* Page Header */}
+                <div className="mb-8">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                        <div>
+                            <div className="flex items-center mb-2">
+                                <Button
+                                    variant="outline-secondary"
+                                    size="sm"
+                                    onClick={onBack}
+                                    title={t('back_to_attribute_sets', 'Back to Attribute Sets')}
+                                    className="mr-3"
+                                >
+                                    <i className="fas fa-arrow-left mr-2"></i>
+                                    Back
+                                </Button>
+                                <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                                    <i className="fas fa-layer-group mr-3 text-blue-600"></i>
+                                    {attributeSet.name}
+                                </h1>
                             </div>
+                            <p className="mt-2 text-gray-600 max-w-2xl">
+                                {attributeSet.description || t('manage_attributes_assigned_to_set', 'Manage attributes assigned to this set.')}
+                            </p>
                         </div>
-                        <div className="col-md-6">
-                            <div className="info-box">
-                                <span className="info-box-icon bg-success">
-                                    <i className="fas fa-tag"></i>
-                                </span>
-                                <div className="info-box-content">
-                                    <span className="info-box-text">{t('set_type', 'Set Type')}</span>
-                                    <span className="info-box-number">
-                                        {attributeSet.isSystem ? t('system', 'System') : t('custom', 'Custom')}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="card">
-                        <div className="card-header">
-                            <h5 className="card-title mb-0">{t('assigned_attributes', 'Assigned Attributes')}</h5>
-                        </div>
-                        <div className="card-body">
-                            {!attributeSet.attributes || attributeSet.attributes.length === 0 ? (
-                                <div className="empty-state">
-                                    <h5>{t('no_attributes_assigned', 'No attributes assigned')}</h5>
-                                    <p className="mb-0 text-muted">{t('add_attributes_to_set', 'Add attributes to this set to get started.')}</p>
-                                </div>
-                            ) : (
-                                <div className="table-responsive">
-                                    <table className="table table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>{t('sort_order', 'Sort Order')}</th>
-                                                <th>{t('code', 'Code')}</th>
-                                                <th>{t('name', 'Name')}</th>
-                                                <th>{t('input_type', 'Input Type')}</th>
-                                                <th>{t('data_type', 'Data Type')}</th>
-                                                <th>{t('unit', 'Unit')}</th>
-                                                <th>{t('required', 'Required')}</th>
-                                                <th>{t('actions', 'Actions')}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {attributeSet.attributes
-                                                .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
-                                                .map((attribute) => (
-                                                    <tr key={attribute.id}>
-                                                        <td>{attribute.sortOrder || 0}</td>
-                                                        <td>
-                                                            <code>{attribute.code}</code>
-                                                        </td>
-                                                        <td>{attribute.name}</td>
-                                                        <td>
-                                                            <span className="badge badge-info">
-                                                                {getInputTypeLabel(attribute.inputType)}
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <span className="badge badge-secondary">
-                                                                {getDataTypeLabel(attribute.dataType)}
-                                                            </span>
-                                                        </td>
-                                                        <td>{attribute.unit || '-'}</td>
-                                                        <td>
-                                                            {attribute.isRequired ? (
-                                                                <span className="badge badge-danger">{t('required', 'Required')}</span>
-                                                            ) : (
-                                                                <span className="badge badge-light">{t('optional', 'Optional')}</span>
-                                                            )}
-                                                        </td>
-                                                        <td>
-                                                            <button
-                                                                className="btn btn-sm btn-danger"
-                                                                onClick={() => handleRemoveAttribute(attribute)}
-                                                                disabled={removeAttributeMutation.isPending || !can('attribute-sets:update')}
-                                                                title={!can('attribute-sets:update') ? t('not_allowed', 'Not allowed') : undefined}
-                                                            >
-                                                                <i className="fas fa-trash"></i> {t('remove', 'Remove')}
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                        </tbody>
-                                    </table>
-                                </div>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            {can('attribute-sets:update') && (
+                                <Button
+                                    variant="primary"
+                                    onClick={handleAddAttribute}
+                                    disabled={addAttributeMutation.isPending}
+                                >
+                                    <i className="fas fa-plus mr-2"></i>
+                                    {t('add_attribute', 'Add Attribute')}
+                                </Button>
                             )}
                         </div>
                     </div>
+                </div>
+
+                {/* Statistics Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <i className="fas fa-layer-group text-2xl"></i>
+                            </div>
+                            <div className="ml-4">
+                                <p className="text-blue-100 text-sm font-medium">{t('total_attributes', 'Total Attributes')}</p>
+                                <p className="text-3xl font-bold">{attributeSet.attributes?.length || 0}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <i className="fas fa-tag text-2xl"></i>
+                            </div>
+                            <div className="ml-4">
+                                <p className="text-green-100 text-sm font-medium">{t('set_type', 'Set Type')}</p>
+                                <p className="text-3xl font-bold">
+                                    {attributeSet.isSystem ? t('system', 'System') : t('custom', 'Custom')}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Main Content */}
+                <div className="space-y-6">
+                    <Card>
+                        <Card.Header>
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-medium text-gray-900 flex items-center">
+                                    <i className="fas fa-list mr-2 text-blue-600"></i>
+                                    {t('assigned_attributes', 'Assigned Attributes')}
+                                </h3>
+                            </div>
+                        </Card.Header>
+                        <Card.Body>
+                            {!attributeSet.attributes || attributeSet.attributes.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <i className="fas fa-tags text-4xl text-gray-300 mb-4"></i>
+                                    <h4 className="text-xl font-medium text-gray-900 mb-2">{t('no_attributes_assigned', 'No Attributes Assigned')}</h4>
+                                    <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                                        {t('add_attributes_to_set', 'Add attributes to this set to get started.')}
+                                    </p>
+                                    {can('attribute-sets:update') && (
+                                        <Button
+                                            variant="primary"
+                                            onClick={handleAddAttribute}
+                                        >
+                                            <i className="fas fa-plus mr-2"></i>
+                                            {t('add_first_attribute', 'Add First Attribute')}
+                                        </Button>
+                                    )}
+                                </div>
+                            ) : (
+                                <Table hover darkHeader>
+                                    <Table.Header>
+                                        <Table.HeaderCell>
+                                            <i className="fas fa-sort mr-2"></i>
+                                            {t('sort_order', 'Sort Order')}
+                                        </Table.HeaderCell>
+                                        <Table.HeaderCell>
+                                            <i className="fas fa-code mr-2"></i>
+                                            {t('code', 'Code')}
+                                        </Table.HeaderCell>
+                                        <Table.HeaderCell>
+                                            <i className="fas fa-tag mr-2"></i>
+                                            {t('name', 'Name')}
+                                        </Table.HeaderCell>
+                                        <Table.HeaderCell>
+                                            <i className="fas fa-keyboard mr-2"></i>
+                                            {t('input_type', 'Input Type')}
+                                        </Table.HeaderCell>
+                                        <Table.HeaderCell>
+                                            <i className="fas fa-database mr-2"></i>
+                                            {t('data_type', 'Data Type')}
+                                        </Table.HeaderCell>
+                                        <Table.HeaderCell>
+                                            <i className="fas fa-ruler mr-2"></i>
+                                            {t('unit', 'Unit')}
+                                        </Table.HeaderCell>
+                                        <Table.HeaderCell>
+                                            <i className="fas fa-exclamation-circle mr-2"></i>
+                                            {t('required', 'Required')}
+                                        </Table.HeaderCell>
+                                        <Table.HeaderCell className="text-center">
+                                            <i className="fas fa-cogs mr-2"></i>
+                                            {t('actions', 'Actions')}
+                                        </Table.HeaderCell>
+                                    </Table.Header>
+                                    <Table.Body>
+                                        {attributeSet.attributes
+                                            .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+                                            .map((attribute) => (
+                                                <Table.Row key={attribute.id}>
+                                                    <Table.Cell>
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                            {attribute.sortOrder || 0}
+                                                        </span>
+                                                    </Table.Cell>
+                                                    <Table.Cell>
+                                                        <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono text-gray-800">
+                                                            {attribute.code}
+                                                        </code>
+                                                    </Table.Cell>
+                                                    <Table.Cell>
+                                                        <span className="font-medium text-gray-900">{attribute.name}</span>
+                                                    </Table.Cell>
+                                                    <Table.Cell>
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                            {getInputTypeLabel(attribute.inputType)}
+                                                        </span>
+                                                    </Table.Cell>
+                                                    <Table.Cell>
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                            {getDataTypeLabel(attribute.dataType)}
+                                                        </span>
+                                                    </Table.Cell>
+                                                    <Table.Cell>
+                                                        <span className="text-gray-500">{attribute.unit || '-'}</span>
+                                                    </Table.Cell>
+                                                    <Table.Cell>
+                                                        {attribute.isRequired ? (
+                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                                <i className="fas fa-exclamation-circle mr-1"></i>
+                                                                {t('required', 'Required')}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                                                <i className="fas fa-check-circle mr-1"></i>
+                                                                {t('optional', 'Optional')}
+                                                            </span>
+                                                        )}
+                                                    </Table.Cell>
+                                                    <Table.Cell className="whitespace-nowrap">
+                                                        <div className="flex justify-center gap-2">
+                                                            {can('attribute-sets:update') && (
+                                                                <Button
+                                                                    variant="danger"
+                                                                    size="sm"
+                                                                    onClick={() => handleRemoveAttribute(attribute)}
+                                                                    disabled={removeAttributeMutation.isPending}
+                                                                    title={t('remove_attribute_from_set', 'Remove attribute from set')}
+                                                                >
+                                                                    <i className="fas fa-trash mr-1"></i>
+                                                                    {t('remove', 'Remove')}
+                                                                </Button>
+                                                            )}
+                                                        </div>
+                                                    </Table.Cell>
+                                                </Table.Row>
+                                            ))}
+                                    </Table.Body>
+                                </Table>
+                            )}
+                        </Card.Body>
+                    </Card>
                 </div>
             </div>
 
