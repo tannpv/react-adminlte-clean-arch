@@ -46,7 +46,7 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
                   <Table.Cell>
                     <div className="flex flex-col">
                       <div className="flex items-center">
-                        <span className="font-medium text-gray-900">{category.name}</span>
+                        <span className="font-semibold text-gray-900 text-base">{category.name}</span>
                         {isRootCategory && (
                           <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                             <i className="fas fa-folder mr-1"></i>
@@ -54,7 +54,7 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
                           </span>
                         )}
                       </div>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-xs text-gray-400 mt-1">
                         {isRootCategory ? t('top_level_category', 'Top-level category') : t('subcategory_level', 'Subcategory (Level {{depth}})', { depth })}
                       </span>
                     </div>
