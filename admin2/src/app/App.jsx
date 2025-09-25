@@ -2,6 +2,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import React, { useState } from 'react'
 import { AttributeSetsPage } from '../features/attributes/pages/AttributeSetsPage'
+import { AttributeSetDetailsPage } from '../features/attributes/pages/AttributeSetDetailsPage'
 import { AttributesPage } from '../features/attributes/pages/AttributesPage'
 import { AttributeValuesPage } from '../features/attributes/pages/AttributeValuesPage'
 import { AuthProvider } from '../features/auth/context/AuthProvider'
@@ -24,6 +25,15 @@ function AppContent() {
     const [authScreen, setAuthScreen] = useState('login')
     const [currentUser, setCurrentUser] = useState(null)
     const [currentPage, setCurrentPage] = useState('users')
+    const [attributeSetDetailsId, setAttributeSetDetailsId] = useState(null)
+
+    const handleViewAttributeSetDetails = (id) => {
+        setAttributeSetDetailsId(id)
+    }
+
+    const handleBackFromAttributeSetDetails = () => {
+        setAttributeSetDetailsId(null)
+    }
 
     if (!currentUser) {
         return authScreen === 'login' ? (
@@ -91,7 +101,14 @@ function AppContent() {
                         ) : currentPage === 'attribute-values' ? (
                             <AttributeValuesPage />
                         ) : currentPage === 'attribute-sets' ? (
-                            <AttributeSetsPage />
+                            attributeSetDetailsId ? (
+                                <AttributeSetDetailsPage 
+                                    id={attributeSetDetailsId} 
+                                    onBack={handleBackFromAttributeSetDetails}
+                                />
+                            ) : (
+                                <AttributeSetsPage onViewDetails={handleViewAttributeSetDetails} />
+                            )
                         ) : currentPage === 'translations' ? (
                             <TranslationsPage />
                         ) : null}
