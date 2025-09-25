@@ -119,8 +119,8 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
               </Table.Cell>
               <Table.Cell>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isActive
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
                   }`}>
                   <i className={`fas ${isActive ? 'fa-check-circle' : 'fa-times-circle'} mr-1`}></i>
                   {isActive ? t('active', 'Active') : t('inactive', 'Inactive')}
