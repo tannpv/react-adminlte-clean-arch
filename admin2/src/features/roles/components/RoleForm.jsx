@@ -178,8 +178,8 @@ export function RoleForm({ onSubmit, initialRole, errors = {}, submitting = fals
                                 <span className="text-sm font-medium text-gray-900">{action.label}</span>
                                 <div className="flex items-center mt-1">
                                   <span className={`permission-status-badge ${action.selected
-                                      ? 'permission-status-enabled'
-                                      : 'permission-status-disabled'
+                                    ? 'permission-status-enabled'
+                                    : 'permission-status-disabled'
                                     }`}>
                                     <i className={`fas ${action.selected ? 'fa-check' : 'fa-times'} mr-1`}></i>
                                     {action.selected ? 'Enabled' : 'Disabled'}
