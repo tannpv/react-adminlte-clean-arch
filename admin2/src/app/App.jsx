@@ -5,6 +5,7 @@ import { AuthProvider } from '../features/auth/context/AuthProvider'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
 import { UsersPage } from '../features/users/pages/UsersPage'
+import { RolesPage } from '../features/roles/pages/RolesPage'
 import { queryClient } from '../shared/lib/queryClient'
 
 function AppContent() {
@@ -83,15 +84,8 @@ function AppContent() {
                          {currentPage === 'users' ? (
                              <UsersPage />
                          ) : currentPage === 'roles' ? (
-                            <div className="bg-white shadow rounded-lg">
-                                <div className="px-6 py-4 border-b border-gray-200">
-                                    <h2 className="text-lg font-medium text-gray-900">Roles Management</h2>
-                                </div>
-                                <div className="px-6 py-4">
-                                    <p className="text-gray-600">Roles page content will be here...</p>
-                                </div>
-                            </div>
-                        ) : null}
+                             <RolesPage />
+                         ) : null}
                     </div>
                 </main>
             </div>
