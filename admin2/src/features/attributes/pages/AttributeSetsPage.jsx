@@ -280,8 +280,8 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                                     {new Date(attributeSet.createdAt).toLocaleDateString()}
                                                 </span>
                                             </Table.Cell>
-                                            <Table.Cell>
-                                                <div className="flex justify-center space-x-2">
+                                            <Table.Cell className="whitespace-nowrap">
+                                                <div className="flex justify-center gap-2">
                                                     {can('attribute-sets:read') && (
                                                         <Button
                                                             variant="info"

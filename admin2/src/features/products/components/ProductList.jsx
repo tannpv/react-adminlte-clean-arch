@@ -138,8 +138,8 @@ export function ProductList({ products, onEdit, onDelete }) {
                     </span>
                   </div>
                 </Table.Cell>
-                <Table.Cell>
-                  <div className="flex justify-center space-x-2">
+                <Table.Cell className="whitespace-nowrap">
+                  <div className="flex justify-center gap-2">
                     <Button
                       variant="primary"
                       size="sm"
