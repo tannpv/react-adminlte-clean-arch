@@ -13,6 +13,11 @@ import { RolesPage } from '../features/roles/pages/RolesPage'
 import { TranslationsPage } from '../features/translations/pages/TranslationsPage'
 import { UsersPage } from '../features/users/pages/UsersPage'
 import { LanguageSwitcher } from '../shared/components/LanguageSwitcher'
+import { Sidebar } from '../shared/components/layout/Sidebar'
+import { FloatingToggle } from '../shared/components/ui/FloatingToggle'
+import { NavigationStatus } from '../shared/components/ui/NavigationStatus'
+import { NavigationToggle } from '../shared/components/ui/NavigationToggle'
+import { NavigationProvider } from '../shared/context/NavigationContext'
 import { queryClient } from '../shared/lib/queryClient'
 
 function AppContent() {
@@ -45,7 +50,9 @@ function AppContent() {
             {/* Header */}
             <header className="bg-white shadow-sm border-b border-gray-200">
                 <div className="px-6 py-4 flex justify-between items-center">
-                    <div className="flex items-center">
+                    <div className="flex items-center space-x-4">
+                        <NavigationToggle variant="header" />
+                        <NavigationStatus />
                         <h1 className="text-xl font-semibold text-gray-900">Admin Dashboard</h1>
                     </div>
                     <div className="flex items-center space-x-4">
@@ -62,77 +69,11 @@ function AppContent() {
             </header>
 
             <div className="flex">
-                {/* Sidebar */}
-                <aside className="w-64 bg-gray-800 text-white min-h-screen">
-                    <nav className="p-4">
-                        <div className="space-y-2">
-                            <button
-                                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'users' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                                    }`}
-                                onClick={() => setCurrentPage('users')}
-                            >
-                                <i className="fas fa-users mr-3 text-lg" />
-                                <span className="font-medium">Users</span>
-                            </button>
-                            <button
-                                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'roles' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                                    }`}
-                                onClick={() => setCurrentPage('roles')}
-                            >
-                                <i className="fas fa-user-shield mr-3 text-lg" />
-                                <span className="font-medium">Roles</span>
-                            </button>
-                            <button
-                                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'categories' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                                    }`}
-                                onClick={() => setCurrentPage('categories')}
-                            >
-                                <i className="fas fa-tags mr-3 text-lg" />
-                                <span className="font-medium">Categories</span>
-                            </button>
-                            <button
-                                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'products' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                                    }`}
-                                onClick={() => setCurrentPage('products')}
-                            >
-                                <i className="fas fa-box mr-3 text-lg" />
-                                <span className="font-medium">Products</span>
-                            </button>
-                            <button
-                                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'attributes' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                                    }`}
-                                onClick={() => setCurrentPage('attributes')}
-                            >
-                                <i className="fas fa-list mr-3 text-lg" />
-                                <span className="font-medium">Attributes</span>
-                            </button>
-                            <button
-                                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'attribute-values' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                                    }`}
-                                onClick={() => setCurrentPage('attribute-values')}
-                            >
-                                <i className="fas fa-list-alt mr-3 text-lg" />
-                                <span className="font-medium">Attribute Values</span>
-                            </button>
-                            <button
-                                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'attribute-sets' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                                    }`}
-                                onClick={() => setCurrentPage('attribute-sets')}
-                            >
-                                <i className="fas fa-layer-group mr-3 text-lg" />
-                                <span className="font-medium">Attribute Sets</span>
-                            </button>
-                            <button
-                                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'translations' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                                    }`}
-                                onClick={() => setCurrentPage('translations')}
-                            >
-                                <i className="fas fa-language mr-3 text-lg" />
-                                <span className="font-medium">Translations</span>
-                            </button>
-                        </div>
-                    </nav>
-                </aside>
+                {/* Enhanced Sidebar */}
+                <Sidebar
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                />
 
                 {/* Main Content */}
                 <main className="flex-1 p-6">
@@ -157,6 +98,9 @@ function AppContent() {
                     </div>
                 </main>
             </div>
+
+            {/* Floating Toggle Button */}
+            <FloatingToggle />
         </div>
     )
 }
@@ -165,7 +109,9 @@ export default function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <AuthProvider>
-                <AppContent />
+                <NavigationProvider>
+                    <AppContent />
+                </NavigationProvider>
             </AuthProvider>
             <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
         </QueryClientProvider>

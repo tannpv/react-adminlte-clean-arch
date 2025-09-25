@@ -258,4 +258,174 @@
 .tab-button:not([aria-selected="true"]):has(.hasError) {
   @apply border-transparent text-red-500 hover:text-red-700 hover:border-red-300 bg-red-50;
 }
+
+/* Navigation Components */
+.sidebar {
+  @apply bg-white border-r border-gray-200 shadow-sm transition-all duration-300 ease-in-out;
+  @apply flex flex-col h-full flex-shrink-0;
+}
+
+.sidebar.expanded {
+  @apply w-64 min-w-64 max-w-64;
+  width: 16rem !important;
+  min-width: 16rem !important;
+  max-width: 16rem !important;
+}
+
+.sidebar.collapsed {
+  @apply w-16 min-w-16 max-w-16;
+  width: 4rem !important;
+  min-width: 4rem !important;
+  max-width: 4rem !important;
+}
+
+.sidebar.mobile {
+  @apply fixed inset-y-0 left-0 z-50;
+}
+
+.sidebar-header {
+  @apply p-4 border-b border-gray-200;
+}
+
+.sidebar-brand {
+  @apply flex items-center text-lg font-semibold text-gray-900;
+}
+
+.sidebar-brand-collapsed {
+  @apply flex items-center justify-center;
+}
+
+.brand-text {
+  @apply ml-2;
+}
+
+.sidebar-toggle-container {
+  @apply absolute top-4 right-4;
+}
+
+.nav-toggle {
+  @apply p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+.nav-toggle:hover {
+  @apply bg-gray-100;
+}
+
+.sidebar-nav {
+  @apply flex-1 overflow-y-auto;
+}
+
+.nav-list {
+  @apply space-y-1 p-2 overflow-hidden;
+}
+
+.nav-list-item {
+  @apply list-none;
+}
+
+.nav-item {
+  @apply flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-lg;
+  @apply hover:bg-gray-100 hover:text-gray-900 transition-all duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  @apply w-full text-left min-w-0;
+}
+
+.nav-item.active {
+  @apply bg-blue-50 text-blue-700 border-r-2 border-blue-500;
+}
+
+.nav-item.disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+.nav-item.collapsed {
+  @apply justify-center px-2;
+}
+
+.nav-item.expanded {
+  @apply justify-start;
+}
+
+.nav-item-icon {
+  @apply w-5 h-5 flex-shrink-0;
+}
+
+.nav-item-label {
+  @apply ml-3 transition-all duration-300 truncate flex-1;
+}
+
+.sidebar.collapsed .nav-item-label {
+  @apply opacity-0 w-0 overflow-hidden;
+}
+
+.sidebar.expanded .nav-item-label {
+  @apply opacity-100;
+}
+
+.sidebar-footer {
+  @apply p-4 border-t border-gray-200;
+}
+
+.sidebar-footer-content {
+  @apply text-center;
+}
+
+/* Floating Toggle Button */
+.floating-toggle {
+  @apply fixed bottom-6 left-6 z-50 w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg;
+  @apply hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  @apply transition-all duration-200 flex items-center justify-center;
+  @apply hover:scale-105 active:scale-95;
+}
+
+.floating-toggle i {
+  @apply text-lg;
+}
+
+/* Header Toggle Button */
+.nav-toggle-header {
+  @apply inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700;
+  @apply bg-white border border-gray-300 rounded-lg shadow-sm;
+  @apply hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  @apply transition-all duration-200;
+}
+
+/* Navigation Status Indicator */
+.navigation-status {
+  @apply flex items-center;
+}
+
+.status-indicator {
+  @apply w-6 h-6 rounded-full flex items-center justify-center text-xs;
+  @apply transition-all duration-200;
+}
+
+.status-indicator.collapsed {
+  @apply bg-orange-100 text-orange-600;
+}
+
+.status-indicator.expanded {
+  @apply bg-green-100 text-green-600;
+}
+
+/* Layout fixes */
+.flex {
+  @apply min-w-0;
+}
+
+/* Mobile overlay */
+@media (max-width: 767px) {
+  .sidebar.mobile.collapsed {
+    @apply -translate-x-full;
+  }
+  
+  .sidebar.mobile.expanded {
+    @apply translate-x-0;
+  }
+  
+  .floating-toggle {
+    @apply hidden;
+  }
+}
 }
