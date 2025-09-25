@@ -131,53 +131,53 @@ export function UsersPage() {
         {/* Statistics Cards */}
         {!loading && !isError && users.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
               <div className="flex items-center">
-                <div className="p-3 rounded-full bg-white bg-opacity-20">
+                <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                   <i className="fas fa-users text-2xl"></i>
                 </div>
                 <div className="ml-4">
-                  <p className="text-blue-100 text-sm font-medium">{t('total_users', 'Total Users')}</p>
-                  <p className="text-2xl font-bold">{totalUsers}</p>
+                  <div className="text-3xl font-bold">{totalUsers}</div>
+                  <div className="text-blue-100">{t('total_users', 'Total Users')}</div>
                 </div>
               </div>
-            </Card>
+            </div>
 
-            <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
               <div className="flex items-center">
-                <div className="p-3 rounded-full bg-white bg-opacity-20">
+                <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                   <i className="fas fa-user-check text-2xl"></i>
                 </div>
                 <div className="ml-4">
-                  <p className="text-green-100 text-sm font-medium">{t('active_users', 'Active Users')}</p>
-                  <p className="text-2xl font-bold">{activeUsers}</p>
+                  <div className="text-3xl font-bold">{activeUsers}</div>
+                  <div className="text-green-100">{t('active_users', 'Active Users')}</div>
                 </div>
               </div>
-            </Card>
+            </div>
 
-            <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+            <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white">
               <div className="flex items-center">
-                <div className="p-3 rounded-full bg-white bg-opacity-20">
+                <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                   <i className="fas fa-crown text-2xl"></i>
                 </div>
                 <div className="ml-4">
-                  <p className="text-purple-100 text-sm font-medium">{t('administrators', 'Administrators')}</p>
-                  <p className="text-2xl font-bold">{adminUsers}</p>
+                  <div className="text-3xl font-bold">{adminUsers}</div>
+                  <div className="text-purple-100">{t('administrators', 'Administrators')}</div>
                 </div>
               </div>
-            </Card>
+            </div>
 
-            <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white">
               <div className="flex items-center">
-                <div className="p-3 rounded-full bg-white bg-opacity-20">
+                <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                   <i className="fas fa-id-card text-2xl"></i>
                 </div>
                 <div className="ml-4">
-                  <p className="text-orange-100 text-sm font-medium">{t('with_profiles', 'With Profiles')}</p>
-                  <p className="text-2xl font-bold">{usersWithProfile}</p>
+                  <div className="text-3xl font-bold">{usersWithProfile}</div>
+                  <div className="text-orange-100">{t('with_profiles', 'With Profiles')}</div>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
         )}
 

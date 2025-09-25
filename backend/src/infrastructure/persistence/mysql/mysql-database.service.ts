@@ -1170,6 +1170,17 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
           ('attributes', 'Attribute management messages', true)
         `);
       }
+
+      // Ensure translations namespace exists (for existing databases)
+      const [translationsNamespace] = await this.execute<RowDataPacket[]>(
+        "SELECT id FROM translation_namespaces WHERE name = 'translations'"
+      );
+      if (translationsNamespace.length === 0) {
+        await this.execute(`
+          INSERT INTO translation_namespaces (name, description, isActive) VALUES
+          ('translations', 'Translation management messages', true)
+        `);
+      }
     }
 
     // Get language and namespace IDs (after ensuring all namespaces exist)

@@ -7,6 +7,7 @@ import { HealthModule } from "./modules/health/health.module";
 import { ProductsModule } from "./modules/products/products.module";
 import { RolesModule } from "./modules/roles/roles.module";
 import { StorageModule } from "./modules/storage/storage.module";
+import { TranslationsModule } from "./modules/translations/translations.module";
 import { UsersModule } from "./modules/users/users.module";
 
 @Module({
@@ -20,6 +21,7 @@ import { UsersModule } from "./modules/users/users.module";
     ProductsModule,
     StorageModule,
     AttributesModule,
+    TranslationsModule,
   ],
 })
 export class AppModule {}
