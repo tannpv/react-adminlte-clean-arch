@@ -200,20 +200,62 @@
     @apply bg-gray-300 rounded hover:bg-gray-400;
   }
 
-  /* Variant Generation Section Styling */
-  .variant-generation-section {
-    @apply bg-white border border-gray-200 rounded-lg shadow-sm p-6;
-  }
+/* Variant Generation Section Styling */
+.variant-generation-section {
+  @apply bg-white border border-gray-200 rounded-lg shadow-sm p-6;
+}
 
-  .variant-generation-section .variant-preview {
-    @apply flex flex-wrap gap-2;
-  }
+.variant-generation-section .variant-preview {
+  @apply flex flex-wrap gap-2;
+}
 
-  .variant-generation-section .variant-badge {
-    @apply inline-flex items-center px-3 py-1.5 text-xs font-medium text-purple-800 bg-purple-100 border border-purple-200 rounded-md;
-  }
+.variant-generation-section .variant-badge {
+  @apply inline-flex items-center px-3 py-1.5 text-xs font-medium text-purple-800 bg-purple-100 border border-purple-200 rounded-md;
+}
 
-  .variant-generation-section .variant-badge i {
-    @apply mr-1.5;
-  }
+.variant-generation-section .variant-badge i {
+  @apply mr-1.5;
+}
+
+/* Tabs Component Styling */
+.tabs-container {
+  @apply bg-white border border-gray-200 rounded-xl shadow-sm;
+}
+
+.tabs-nav {
+  @apply bg-white border-b border-gray-200 rounded-t-xl;
+}
+
+.tab-button {
+  @apply py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200;
+}
+
+.tab-button:hover {
+  @apply text-gray-700 border-gray-300;
+}
+
+.tab-button[aria-selected="true"] {
+  @apply border-indigo-500 text-indigo-600;
+}
+
+.tabs-content {
+  @apply bg-white rounded-b-xl;
+}
+
+.tabs-content .p-6 {
+  padding: 1.5rem;
+}
+
+/* Tab error highlighting */
+.tab-button[aria-selected="true"] {
+  @apply border-indigo-500 text-indigo-600;
+}
+
+.tab-button[aria-selected="true"]:has(.hasError) {
+  @apply border-red-500 text-red-600 bg-red-50;
+}
+
+.tab-button:not([aria-selected="true"]):has(.hasError) {
+  @apply border-transparent text-red-500 hover:text-red-700 hover:border-red-300 bg-red-50;
+}
 }
