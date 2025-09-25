@@ -84,8 +84,8 @@ export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = 
                     )}
                   </div>
                 </Table.Cell>
-                <Table.Cell>
-                  <div className="flex justify-center space-x-2">
+                <Table.Cell className="whitespace-nowrap">
+                  <div className="flex justify-center gap-2">
                     <Button
                       variant="primary"
                       size="sm"

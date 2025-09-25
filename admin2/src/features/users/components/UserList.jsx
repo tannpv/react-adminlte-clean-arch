@@ -126,8 +126,8 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
                   {isActive ? t('active', 'Active') : t('inactive', 'Inactive')}
                 </span>
               </Table.Cell>
-              <Table.Cell>
-                <div className="flex justify-center space-x-2">
+              <Table.Cell className="whitespace-nowrap">
+                <div className="flex justify-center gap-2">
                   <Button
                     variant="primary"
                     size="sm"

@@ -2,7 +2,7 @@ import React from 'react';
 
 const Table = ({ children, className = '', ...props }) => {
     return (
-        <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+        <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
             <table className={`min-w-full divide-y divide-gray-300 ${className}`} {...props}>
                 {children}
             </table>
