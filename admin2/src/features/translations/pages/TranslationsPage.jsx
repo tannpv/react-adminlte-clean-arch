@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Button from '../../../shared/components/ui/Button';
+import Card from '../../../shared/components/ui/Card';
 import { useTranslation } from '../../../shared/hooks/useTranslation';
 import CacheManagementTab from '../components/CacheManagementTab';
 import EditableTranslationsTab from '../components/EditableTranslationsTab';
@@ -27,20 +28,21 @@ const TranslationsPage = () => {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-                <div className="flex justify-between items-start">
+        <div className="max-w-7xl mx-auto">
+            {/* Page Header */}
+            <div className="mb-8">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div>
-                        <h2 className="text-2xl font-semibold text-gray-900 flex items-center">
-                            <i className="fas fa-language mr-3 text-blue-600"></i>
+                        <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                            <i className="fas fa-globe mr-3 text-blue-600"></i>
                             {t('title', 'Translation Management')}
-                        </h2>
-                        <p className="mt-2 text-sm text-gray-600">
+                        </h1>
+                        <p className="mt-2 text-gray-600 max-w-2xl">
                             Manage multi-language support for your application.
                             Add new languages, manage translations, and optimize performance with caching.
                         </p>
                     </div>
-                    <div className="flex items-center space-x-3">
+                    <div className="flex flex-col sm:flex-row gap-3">
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i className="fas fa-search text-gray-400"></i>
@@ -53,7 +55,7 @@ const TranslationsPage = () => {
                             />
                         </div>
                         <Button
-                            variant="secondary"
+                            variant="outline-secondary"
                             onClick={() => window.location.reload()}
                             title="Refresh translations"
                         >
@@ -64,21 +66,24 @@ const TranslationsPage = () => {
                 </div>
             </div>
 
-            <div className="p-6">
+            {/* Translations Content */}
+            <div className="space-y-6">
                 {languagesLoading && (
-                    <div className="flex items-center justify-center py-12">
-                        <div className="text-center">
-                            <i className="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
-                            <h4 className="text-lg font-medium text-gray-900 mb-2">Loading Translations</h4>
-                            <p className="text-gray-600">Please wait while we fetch the translation data...</p>
-                        </div>
-                    </div>
+                    <Card>
+                        <Card.Body>
+                            <div className="text-center py-12">
+                                <i className="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+                                <h4 className="text-lg font-medium text-gray-900 mb-2">Loading Translations</h4>
+                                <p className="text-gray-600">Please wait while we fetch the translation data...</p>
+                            </div>
+                        </Card.Body>
+                    </Card>
                 )}
 
                 {!languagesLoading && (
-                    <div>
-                        {/* Statistics Dashboard */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <>
+                        {/* Statistics Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
                                 <div className="flex items-center">
                                     <div className="p-3 bg-white bg-opacity-20 rounded-lg">
@@ -126,18 +131,21 @@ const TranslationsPage = () => {
                         </div>
 
                         {/* Translation Management Section */}
-                        <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-                            <div className="px-6 py-4 border-b border-gray-200">
-                                <h5 className="text-lg font-medium text-gray-900 flex items-center">
-                                    <i className="fas fa-list mr-2 text-blue-600"></i>
-                                    Translation Management
-                                </h5>
-                                <p className="mt-1 text-sm text-gray-600">
-                                    Manage languages, translations, and cache settings for optimal performance.
-                                </p>
-                            </div>
-
-                            <div className="p-6">
+                        <Card>
+                            <Card.Header>
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                                            <i className="fas fa-list mr-2 text-blue-600"></i>
+                                            Translation Management
+                                        </h3>
+                                        <p className="mt-1 text-sm text-gray-600">
+                                            Manage languages, translations, and cache settings for optimal performance.
+                                        </p>
+                                    </div>
+                                </div>
+                            </Card.Header>
+                            <Card.Body>
                                 <div className="border-b border-gray-200">
                                     <nav className="-mb-px flex space-x-8">
                                         <button
@@ -208,9 +216,9 @@ const TranslationsPage = () => {
                                         </div>
                                     )}
                                 </div>
-                            </div>
-                        </div>
-                    </div>
+                            </Card.Body>
+                        </Card>
+                    </>
                 )}
             </div>
         </div>
