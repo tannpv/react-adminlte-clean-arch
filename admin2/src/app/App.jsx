@@ -1,7 +1,35 @@
 import React, { useState } from 'react'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { AuthProvider } from '../features/auth/context/AuthProvider'
+import { queryClient } from '../shared/lib/queryClient'
+import { LoginPage } from '../features/auth/pages/LoginPage'
+import { RegisterPage } from '../features/auth/pages/RegisterPage'
 
-export default function App() {
+function AppContent() {
   const [currentPage, setCurrentPage] = useState('users')
+  const [authScreen, setAuthScreen] = useState('login')
+  const [currentUser, setCurrentUser] = useState(null)
+
+  if (!currentUser) {
+    return authScreen === 'login' ? (
+      <LoginPage
+        onLoggedIn={(user) => {
+          setCurrentUser(user)
+          setAuthScreen('login')
+        }}
+        onSwitchToRegister={() => setAuthScreen('register')}
+      />
+    ) : (
+      <RegisterPage
+        onRegistered={(user) => {
+          setCurrentUser(user)
+          setAuthScreen('login')
+        }}
+        onSwitchToLogin={() => setAuthScreen('login')}
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -12,8 +40,13 @@ export default function App() {
             <h1 className="text-xl font-semibold text-gray-900">Admin Dashboard</h1>
           </div>
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-500">Welcome, Admin</span>
-            <button className="btn btn-secondary">Logout</button>
+            <span className="text-sm text-gray-500">Welcome, {currentUser?.name || 'Admin'}</span>
+            <button 
+              className="btn btn-secondary"
+              onClick={() => setCurrentUser(null)}
+            >
+              Logout
+            </button>
           </div>
         </div>
       </header>
@@ -71,5 +104,16 @@ export default function App() {
         </main>
       </div>
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+    </QueryClientProvider>
   )
 }
