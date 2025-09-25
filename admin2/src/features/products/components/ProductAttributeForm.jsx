@@ -76,9 +76,9 @@ export function ProductAttributeForm({
 
     if (attributeSetsLoading) {
         return (
-            <div className="form-group">
-                <label>Product Attributes</label>
-                <div className="text-muted">Loading attribute sets...</div>
+            <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Product Attributes</label>
+                <div className="text-gray-500">Loading attribute sets...</div>
             </div>
         );
     }

@@ -167,15 +167,13 @@ export function CategoryTreeSelector({
     return (
         <div className="category-tree-selector">
             <div className="tree-search mb-2">
-                <div className="input-group">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text">
-                            <i className="fas fa-search"></i>
-                        </span>
+                <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i className="fas fa-search text-gray-400"></i>
                     </div>
                     <input
                         type="text"
-                        className="form-control"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                         placeholder="Search categories..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -185,11 +183,11 @@ export function CategoryTreeSelector({
             </div>
 
             <div className="tree-container">
-                <div className="tree-header d-flex justify-content-between align-items-center mb-2">
-                    <small className="text-muted">Select parent category:</small>
+                <div className="tree-header flex justify-between items-center mb-2">
+                    <small className="text-gray-500">Select parent category:</small>
                     <button
                         type="button"
-                        className="btn btn-sm btn-outline-secondary"
+                        className="px-2 py-1 text-xs border border-gray-300 rounded text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={handleClearSelection}
                         disabled={disabled || !value}
                     >
@@ -198,9 +196,9 @@ export function CategoryTreeSelector({
                     </button>
                 </div>
 
-                <div className={`tree-list ${error ? 'is-invalid' : ''}`}>
+                <div className={`tree-list ${error ? 'border-red-300' : ''}`}>
                     {filteredTree.length === 0 ? (
-                        <div className="text-muted text-center py-3">
+                        <div className="text-gray-500 text-center py-3">
                             <i className="fas fa-folder-open fa-2x mb-2"></i>
                             <div>{searchTerm ? 'No categories match your search' : 'No categories available'}</div>
                         </div>

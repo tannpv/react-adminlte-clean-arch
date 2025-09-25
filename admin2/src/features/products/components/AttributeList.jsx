@@ -100,16 +100,16 @@ export function AttributeList({
                 <div className="row">
                     {selectedAttributeSet.attributes.map(attribute => (
                         <div key={attribute.id} className="col-md-6 mb-3">
-                            <div className="form-group">
-                                <label htmlFor={`attribute_${attribute.id}`}>
+                            <div className="mb-4">
+                                <label htmlFor={`attribute_${attribute.id}`} className="block text-sm font-medium text-gray-700 mb-2">
                                     {attribute.name}
                                     {attribute.unit && (
-                                        <span className="text-muted ml-1">({attribute.unit})</span>
+                                        <span className="text-gray-500 ml-1">({attribute.unit})</span>
                                     )}
                                 </label>
                                 {renderAttributeInput(attribute)}
                                 {errors[`attribute_${attribute.id}`] && (
-                                    <div className="invalid-feedback">
+                                    <div className="mt-1 text-sm text-red-600">
                                         <i className="fas fa-exclamation-triangle mr-1"></i>
                                         {errors[`attribute_${attribute.id}`]}
                                     </div>
