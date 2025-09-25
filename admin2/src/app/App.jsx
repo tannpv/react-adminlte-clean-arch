@@ -1,8 +1,8 @@
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import React, { useState } from 'react'
-import { AttributeSetsPage } from '../features/attributes/pages/AttributeSetsPage'
 import { AttributeSetDetailsPage } from '../features/attributes/pages/AttributeSetDetailsPage'
+import { AttributeSetsPage } from '../features/attributes/pages/AttributeSetsPage'
 import { AttributesPage } from '../features/attributes/pages/AttributesPage'
 import { AttributeValuesPage } from '../features/attributes/pages/AttributeValuesPage'
 import { AuthProvider } from '../features/auth/context/AuthProvider'
@@ -102,8 +102,8 @@ function AppContent() {
                             <AttributeValuesPage />
                         ) : currentPage === 'attribute-sets' ? (
                             attributeSetDetailsId ? (
-                                <AttributeSetDetailsPage 
-                                    id={attributeSetDetailsId} 
+                                <AttributeSetDetailsPage
+                                    id={attributeSetDetailsId}
                                     onBack={handleBackFromAttributeSetDetails}
                                 />
                             ) : (
