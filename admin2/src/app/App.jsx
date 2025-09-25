@@ -6,6 +6,7 @@ import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
 import { UsersPage } from '../features/users/pages/UsersPage'
 import { RolesPage } from '../features/roles/pages/RolesPage'
+import { CategoriesPage } from '../features/categories/pages/CategoriesPage'
 import { queryClient } from '../shared/lib/queryClient'
 
 function AppContent() {
@@ -66,14 +67,22 @@ function AppContent() {
                                 <i className="fas fa-users mr-3 text-lg" />
                                 <span className="font-medium">Users</span>
                             </button>
-                            <button
-                                className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'roles' ? 'bg-blue-600' : 'hover:bg-gray-700'
-                                    }`}
-                                onClick={() => setCurrentPage('roles')}
-                            >
-                                <i className="fas fa-user-shield mr-3 text-lg" />
-                                <span className="font-medium">Roles</span>
-                            </button>
+                             <button
+                                 className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'roles' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                                     }`}
+                                 onClick={() => setCurrentPage('roles')}
+                             >
+                                 <i className="fas fa-user-shield mr-3 text-lg" />
+                                 <span className="font-medium">Roles</span>
+                             </button>
+                             <button
+                                 className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'categories' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                                     }`}
+                                 onClick={() => setCurrentPage('categories')}
+                             >
+                                 <i className="fas fa-tags mr-3 text-lg" />
+                                 <span className="font-medium">Categories</span>
+                             </button>
                         </div>
                     </nav>
                 </aside>
@@ -85,6 +94,8 @@ function AppContent() {
                              <UsersPage />
                          ) : currentPage === 'roles' ? (
                              <RolesPage />
+                         ) : currentPage === 'categories' ? (
+                             <CategoriesPage />
                          ) : null}
                     </div>
                 </main>
