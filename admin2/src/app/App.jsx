@@ -8,6 +8,9 @@ import { UsersPage } from '../features/users/pages/UsersPage'
 import { RolesPage } from '../features/roles/pages/RolesPage'
 import { CategoriesPage } from '../features/categories/pages/CategoriesPage'
 import { ProductsPage } from '../features/products/pages/ProductsPage'
+import { AttributesPage } from '../features/attributes/pages/AttributesPage'
+import { AttributeValuesPage } from '../features/attributes/pages/AttributeValuesPage'
+import { AttributeSetsPage } from '../features/attributes/pages/AttributeSetsPage'
 import { queryClient } from '../shared/lib/queryClient'
 
 function AppContent() {
@@ -92,6 +95,30 @@ function AppContent() {
                                  <i className="fas fa-box mr-3 text-lg" />
                                  <span className="font-medium">Products</span>
                              </button>
+                             <button
+                                 className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'attributes' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                                     }`}
+                                 onClick={() => setCurrentPage('attributes')}
+                             >
+                                 <i className="fas fa-list mr-3 text-lg" />
+                                 <span className="font-medium">Attributes</span>
+                             </button>
+                             <button
+                                 className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'attribute-values' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                                     }`}
+                                 onClick={() => setCurrentPage('attribute-values')}
+                             >
+                                 <i className="fas fa-list-alt mr-3 text-lg" />
+                                 <span className="font-medium">Attribute Values</span>
+                             </button>
+                             <button
+                                 className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'attribute-sets' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                                     }`}
+                                 onClick={() => setCurrentPage('attribute-sets')}
+                             >
+                                 <i className="fas fa-layer-group mr-3 text-lg" />
+                                 <span className="font-medium">Attribute Sets</span>
+                             </button>
                         </div>
                     </nav>
                 </aside>
@@ -107,6 +134,12 @@ function AppContent() {
                              <CategoriesPage />
                          ) : currentPage === 'products' ? (
                              <ProductsPage />
+                         ) : currentPage === 'attributes' ? (
+                             <AttributesPage />
+                         ) : currentPage === 'attribute-values' ? (
+                             <AttributeValuesPage />
+                         ) : currentPage === 'attribute-sets' ? (
+                             <AttributeSetsPage />
                          ) : null}
                     </div>
                 </main>
