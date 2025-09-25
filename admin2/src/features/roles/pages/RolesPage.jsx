@@ -100,59 +100,59 @@ export function RolesPage() {
         {/* Statistics Cards */}
         {canViewRoles && !loading && !isError && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
               <div className="flex items-center">
-                <div className="p-3 rounded-full bg-white bg-opacity-20">
+                <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                   <i className="fas fa-users text-2xl"></i>
                 </div>
                 <div className="ml-4">
-                  <p className="text-blue-100 text-sm font-medium">{t('total_roles', 'Total Roles')}</p>
-                  <p className="text-2xl font-bold">{roles.length}</p>
+                  <div className="text-3xl font-bold">{roles.length}</div>
+                  <div className="text-blue-100">{t('total_roles', 'Total Roles')}</div>
                 </div>
               </div>
-            </Card>
+            </div>
 
-            <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
               <div className="flex items-center">
-                <div className="p-3 rounded-full bg-white bg-opacity-20">
+                <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                   <i className="fas fa-shield-alt text-2xl"></i>
                 </div>
                 <div className="ml-4">
-                  <p className="text-green-100 text-sm font-medium">{t('total_permissions', 'Total Permissions')}</p>
-                  <p className="text-2xl font-bold">
+                  <div className="text-3xl font-bold">
                     {roles.reduce((acc, role) => acc + (role.permissions?.length || 0), 0)}
-                  </p>
+                  </div>
+                  <div className="text-green-100">{t('total_permissions', 'Total Permissions')}</div>
                 </div>
               </div>
-            </Card>
+            </div>
 
-            <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+            <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white">
               <div className="flex items-center">
-                <div className="p-3 rounded-full bg-white bg-opacity-20">
+                <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                   <i className="fas fa-lock text-2xl"></i>
                 </div>
                 <div className="ml-4">
-                  <p className="text-purple-100 text-sm font-medium">{t('system_roles', 'System Roles')}</p>
-                  <p className="text-2xl font-bold">
+                  <div className="text-3xl font-bold">
                     {roles.filter(role => role.name === 'Administrator' || role.name === 'User').length}
-                  </p>
+                  </div>
+                  <div className="text-purple-100">{t('system_roles', 'System Roles')}</div>
                 </div>
               </div>
-            </Card>
+            </div>
 
-            <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white">
               <div className="flex items-center">
-                <div className="p-3 rounded-full bg-white bg-opacity-20">
+                <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                   <i className="fas fa-user-plus text-2xl"></i>
                 </div>
                 <div className="ml-4">
-                  <p className="text-orange-100 text-sm font-medium">{t('custom_roles', 'Custom Roles')}</p>
-                  <p className="text-2xl font-bold">
+                  <div className="text-3xl font-bold">
                     {roles.filter(role => role.name !== 'Administrator' && role.name !== 'User').length}
-                  </p>
+                  </div>
+                  <div className="text-orange-100">{t('custom_roles', 'Custom Roles')}</div>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
         )}
 

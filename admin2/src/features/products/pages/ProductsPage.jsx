@@ -181,53 +181,53 @@ export function ProductsPage() {
           <div className="space-y-6">
             {/* Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
                 <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                  <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                     <i className="fas fa-box text-2xl"></i>
                   </div>
                   <div className="ml-4">
-                    <p className="text-blue-100 text-sm font-medium">{t('total_products', 'Total Products')}</p>
-                    <p className="text-2xl font-bold">{totalProducts}</p>
+                    <div className="text-3xl font-bold">{totalProducts}</div>
+                    <div className="text-blue-100">{t('total_products', 'Total Products')}</div>
                   </div>
                 </div>
-              </Card>
+              </div>
 
-              <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+              <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
                 <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                  <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                     <i className="fas fa-eye text-2xl"></i>
                   </div>
                   <div className="ml-4">
-                    <p className="text-green-100 text-sm font-medium">{t('published', 'Published')}</p>
-                    <p className="text-2xl font-bold">{publishedProducts}</p>
+                    <div className="text-3xl font-bold">{publishedProducts}</div>
+                    <div className="text-green-100">{t('published', 'Published')}</div>
                   </div>
                 </div>
-              </Card>
+              </div>
 
-              <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+              <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white">
                 <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                  <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                     <i className="fas fa-cogs text-2xl"></i>
                   </div>
                   <div className="ml-4">
-                    <p className="text-purple-100 text-sm font-medium">{t('variable_products', 'Variable Products')}</p>
-                    <p className="text-2xl font-bold">{variableProducts}</p>
+                    <div className="text-3xl font-bold">{variableProducts}</div>
+                    <div className="text-purple-100">{t('variable_products', 'Variable Products')}</div>
                   </div>
                 </div>
-              </Card>
+              </div>
 
-              <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white">
                 <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                  <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                     <i className="fas fa-dollar-sign text-2xl"></i>
                   </div>
                   <div className="ml-4">
-                    <p className="text-orange-100 text-sm font-medium">{t('total_value', 'Total Value')}</p>
-                    <p className="text-2xl font-bold">{formatCurrency(totalValue)}</p>
+                    <div className="text-3xl font-bold">{formatCurrency(totalValue)}</div>
+                    <div className="text-orange-100">{t('total_value', 'Total Value')}</div>
                   </div>
                 </div>
-              </Card>
+              </div>
             </div>
 
             {/* Products List Section */}
