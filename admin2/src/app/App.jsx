@@ -7,6 +7,7 @@ import { RegisterPage } from '../features/auth/pages/RegisterPage'
 import { UsersPage } from '../features/users/pages/UsersPage'
 import { RolesPage } from '../features/roles/pages/RolesPage'
 import { CategoriesPage } from '../features/categories/pages/CategoriesPage'
+import { ProductsPage } from '../features/products/pages/ProductsPage'
 import { queryClient } from '../shared/lib/queryClient'
 
 function AppContent() {
@@ -83,6 +84,14 @@ function AppContent() {
                                  <i className="fas fa-tags mr-3 text-lg" />
                                  <span className="font-medium">Categories</span>
                              </button>
+                             <button
+                                 className={`w-full flex items-center py-3 px-4 rounded-lg text-white transition-all duration-200 ${currentPage === 'products' ? 'bg-blue-600' : 'hover:bg-gray-700'
+                                     }`}
+                                 onClick={() => setCurrentPage('products')}
+                             >
+                                 <i className="fas fa-box mr-3 text-lg" />
+                                 <span className="font-medium">Products</span>
+                             </button>
                         </div>
                     </nav>
                 </aside>
@@ -96,6 +105,8 @@ function AppContent() {
                              <RolesPage />
                          ) : currentPage === 'categories' ? (
                              <CategoriesPage />
+                         ) : currentPage === 'products' ? (
+                             <ProductsPage />
                          ) : null}
                     </div>
                 </main>
