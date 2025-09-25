@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { AuthProvider } from '../features/auth/context/AuthProvider'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
+import { UsersPage } from '../features/users/pages/UsersPage'
 import { queryClient } from '../shared/lib/queryClient'
 
 function AppContent() {
@@ -41,12 +42,12 @@ function AppContent() {
                     </div>
                     <div className="flex items-center space-x-4">
                         <span className="text-sm text-gray-500">Welcome, {currentUser?.name || 'Admin'}</span>
-                         <button
-                             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                             onClick={() => setCurrentUser(null)}
-                         >
-                             Logout
-                         </button>
+                        <button
+                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={() => setCurrentUser(null)}
+                        >
+                            Logout
+                        </button>
                     </div>
                 </div>
             </header>
@@ -80,24 +81,17 @@ function AppContent() {
                 <main className="flex-1 p-6">
                     <div className="max-w-7xl mx-auto">
                          {currentPage === 'users' ? (
-                             <div className="bg-white shadow rounded-lg">
-                                 <div className="px-6 py-4 border-b border-gray-200">
-                                     <h2 className="text-lg font-medium text-gray-900">Users Management</h2>
-                                 </div>
-                                 <div className="px-6 py-4">
-                                     <p className="text-gray-600">Users page content will be here...</p>
-                                 </div>
-                             </div>
+                             <UsersPage />
                          ) : currentPage === 'roles' ? (
-                             <div className="bg-white shadow rounded-lg">
-                                 <div className="px-6 py-4 border-b border-gray-200">
-                                     <h2 className="text-lg font-medium text-gray-900">Roles Management</h2>
-                                 </div>
-                                 <div className="px-6 py-4">
-                                     <p className="text-gray-600">Roles page content will be here...</p>
-                                 </div>
-                             </div>
-                         ) : null}
+                            <div className="bg-white shadow rounded-lg">
+                                <div className="px-6 py-4 border-b border-gray-200">
+                                    <h2 className="text-lg font-medium text-gray-900">Roles Management</h2>
+                                </div>
+                                <div className="px-6 py-4">
+                                    <p className="text-gray-600">Roles page content will be here...</p>
+                                </div>
+                            </div>
+                        ) : null}
                     </div>
                 </main>
             </div>
