@@ -281,8 +281,8 @@ export const AttributesPage = () => {
                                                     {new Date(attribute.createdAt).toLocaleDateString()}
                                                 </span>
                                             </Table.Cell>
-                                            <Table.Cell>
-                                                <div className="flex justify-center space-x-2">
+                                            <Table.Cell className="whitespace-nowrap">
+                                                <div className="flex justify-center gap-2">
                                                     {can('attributes:update') && (
                                                         <Button
                                                             variant="primary"
