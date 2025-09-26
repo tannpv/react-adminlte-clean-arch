@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "React AdminLTE API",
+    "name": "Modern Admin Dashboard API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": "Local API for Users, Roles, Categories, Products, Storage, Attributes, Attribute Sets, Attribute Values, and Auth (JWT)."
   },

@@ -1,10 +1,10 @@
 # Postman Collection Guide
 
-This guide provides comprehensive documentation for the React AdminLTE API Postman collection, including all endpoints, authentication, and testing workflows.
+This guide provides comprehensive documentation for the Modern Admin Dashboard API Postman collection, including all endpoints, authentication, and testing workflows.
 
 ## Collection Overview
 
-**Collection Name**: React AdminLTE API  
+**Collection Name**: Modern Admin Dashboard API  
 **Description**: Local API for Users, Roles, Categories, Products, Storage and Auth (JWT)  
 **Base URL**: `http://localhost:3001`  
 **Authentication**: Bearer Token (JWT)
@@ -507,7 +507,7 @@ The collection automatically populates environment variables when creating resou
 
 ## Import Instructions
 
-1. **Import Collection**: Import `ReactAdminLTE.postman_collection.json`
+1. **Import Collection**: Import `ModernAdminDashboard.postman_collection.json`
 2. **Import Environment**: Import `Local.postman_environment.json`
 3. **Set Environment**: Select "Local" environment in Postman
 4. **Start Backend**: Ensure backend is running on `http://localhost:3001`
