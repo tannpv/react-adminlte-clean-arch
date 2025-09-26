@@ -43,9 +43,9 @@ export function RegisterPage({ onRegistered, onSwitchToLogin }) {
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center mb-6">
-            <img 
-              src="/company-logo.svg" 
-              alt="Company Logo" 
+            <img
+              src="/company-logo.svg"
+              alt="Company Logo"
               className="w-16 h-16 object-contain"
             />
           </div>
