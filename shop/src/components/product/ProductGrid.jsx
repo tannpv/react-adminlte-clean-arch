@@ -1,5 +1,6 @@
 import React from 'react';
 import ProductCard from './ProductCard';
+import ProductList from './ProductList';
 
 const ProductGrid = ({ 
     products = [], 
@@ -8,6 +9,7 @@ const ProductGrid = ({
     className = '',
     showQuickView = true,
     showWishlist = true,
+    viewMode = 'grid',
     ...props 
 }) => {
     const gridClasses = {
@@ -40,6 +42,21 @@ const ProductGrid = ({
             <div className="text-center py-12">
                 <div className="text-gray-500 text-lg mb-4">No products found</div>
                 <p className="text-gray-400">Try adjusting your search or filter criteria</p>
+            </div>
+        );
+    }
+
+    if (viewMode === 'list') {
+        return (
+            <div className={`space-y-6 ${className}`} {...props}>
+                {products.map((product) => (
+                    <ProductList
+                        key={product.id}
+                        product={product}
+                        showQuickView={showQuickView}
+                        showWishlist={showWishlist}
+                    />
+                ))}
             </div>
         );
     }

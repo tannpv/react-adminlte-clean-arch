@@ -180,3 +180,89 @@ export const sampleFeatures = [
         description: "24/7 customer support to help with any questions"
     }
 ];
+
+export const sampleOffers = [
+    {
+        id: 1,
+        title: "Summer Sale",
+        subtitle: "Up to 50% Off",
+        description: "Get ready for summer with our amazing deals",
+        image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop",
+        badge: "50% OFF",
+        price: "$29.99",
+        originalPrice: "$59.99",
+        buttonText: "Shop Now",
+        link: "/products?category=clothing"
+    },
+    {
+        id: 2,
+        title: "New Arrivals",
+        subtitle: "Latest Collection",
+        description: "Discover the newest trends in fashion",
+        image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop",
+        badge: "NEW",
+        price: "From $19.99",
+        buttonText: "Explore",
+        link: "/products?filter=new"
+    },
+    {
+        id: 3,
+        title: "Electronics",
+        subtitle: "Tech Deals",
+        description: "Cutting-edge technology at unbeatable prices",
+        image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=300&fit=crop",
+        badge: "30% OFF",
+        price: "From $99.99",
+        originalPrice: "$149.99",
+        buttonText: "View Deals",
+        link: "/products?category=electronics"
+    }
+];
+
+export const sampleTestimonials = [
+    {
+        id: 1,
+        name: "Sarah Johnson",
+        location: "New York, USA",
+        rating: 5,
+        text: "Amazing quality and fast shipping! I've been shopping here for months and never disappointed.",
+        avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face"
+    },
+    {
+        id: 2,
+        name: "Michael Chen",
+        location: "Los Angeles, USA",
+        rating: 5,
+        text: "Great customer service and excellent product selection. Highly recommended!",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
+    },
+    {
+        id: 3,
+        name: "Emily Davis",
+        location: "Chicago, USA",
+        rating: 4,
+        text: "Love the variety of products and the competitive prices. Will definitely shop again!",
+        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face"
+    }
+];
+
+export const sampleBanners = [
+    {
+        id: 1,
+        title: "New Collection",
+        subtitle: "Spring 2024",
+        description: "Discover the latest trends in fashion and lifestyle",
+        backgroundImage: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=600&fit=crop",
+        buttonText: "Shop Collection",
+        buttonLink: "/products?collection=spring-2024"
+    },
+    {
+        id: 2,
+        title: "Electronics Sale",
+        subtitle: "Limited Time",
+        description: "Up to 40% off on all electronics and gadgets",
+        backgroundImage: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=1200&h=600&fit=crop",
+        buttonText: "View Deals",
+        buttonLink: "/products?category=electronics&sale=true"
+    }
+];

@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
 import { EnvelopeIcon } from '@heroicons/react/24/outline';
+import React, { useState } from 'react';
 import Button from './Button';
 
-const Newsletter = ({ 
+const Newsletter = ({
     title = "Stay Updated",
     subtitle = "Subscribe to our newsletter for the latest updates and exclusive offers",
     placeholder = "Enter your email address",
     buttonText = "Subscribe",
     className = '',
     onSubmit,
-    ...props 
+    ...props
 }) => {
     const [email, setEmail] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,7 +58,7 @@ const Newsletter = ({
                 <p className="text-gray-600 mb-6">
                     {subtitle}
                 </p>
-                
+
                 <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
                     <div className="flex-1">
                         <input
