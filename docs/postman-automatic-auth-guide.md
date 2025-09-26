@@ -2,7 +2,7 @@
 
 ## 🎯 Overview
 
-The React AdminLTE Postman collection includes **automatic JWT token handling** that eliminates the need to manually copy and paste tokens between requests. Once you login, all subsequent requests are automatically authenticated.
+The Modern Admin Dashboard Postman collection includes **automatic JWT token handling** that eliminates the need to manually copy and paste tokens between requests. Once you login, all subsequent requests are automatically authenticated.
 
 ## 🔄 How Automatic Authentication Works
 

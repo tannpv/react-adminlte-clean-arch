@@ -1,5 +1,5 @@
 {
-  "name": "react-adminlte-clean-arch",
+  "name": "modern-admin-dashboard",
   "private": true,
   "scripts": {
     "dev:client": "npm --prefix admin run dev",
