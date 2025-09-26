@@ -1,24 +1,24 @@
 import React from 'react';
 
-const Card = ({ 
-    children, 
-    className = '', 
-    hover = false, 
+const Card = ({
+    children,
+    className = '',
+    hover = false,
     padding = 'default',
-    ...props 
+    ...props
 }) => {
     const baseClasses = 'bg-white rounded-lg border border-gray-200 overflow-hidden';
     const hoverClasses = hover ? 'hover:shadow-lg hover:border-gray-300 transition-all duration-200' : '';
-    
+
     const paddingClasses = {
         none: '',
         sm: 'p-4',
         default: 'p-6',
         lg: 'p-8',
     };
-    
+
     const classes = `${baseClasses} ${hoverClasses} ${paddingClasses[padding]} ${className}`;
-    
+
     return (
         <div className={classes} {...props}>
             {children}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Button from './Button';
 
-const Hero = ({ 
+const Hero = ({
     title,
     subtitle,
     description,
@@ -28,7 +28,7 @@ const Hero = ({
     } : {};
 
     return (
-        <section 
+        <section
             className={`relative ${heightClasses[height]} ${className}`}
             style={backgroundStyle}
         >
@@ -36,7 +36,7 @@ const Hero = ({
             {overlay && (
                 <div className="absolute inset-0 bg-black bg-opacity-40" />
             )}
-            
+
             {/* Content */}
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
@@ -45,17 +45,17 @@ const Hero = ({
                             {subtitle}
                         </p>
                     )}
-                    
+
                     <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
                         {title}
                     </h1>
-                    
+
                     {description && (
                         <p className="text-xl md:text-2xl text-primary-100 mb-8 max-w-3xl mx-auto">
                             {description}
                         </p>
                     )}
-                    
+
                     {/* Buttons */}
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         {primaryButton && (
@@ -68,7 +68,7 @@ const Hero = ({
                                 {primaryButton.text}
                             </Button>
                         )}
-                        
+
                         {secondaryButton && (
                             <Button
                                 as={Link}

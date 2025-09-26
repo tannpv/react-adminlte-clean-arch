@@ -6,12 +6,22 @@ import {
 } from '@heroicons/react/24/outline';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Hero from '../../components/ui/Hero';
-import Section from '../../components/ui/Section';
-import ProductGrid from '../../components/product/ProductGrid';
 import CategoryCard from '../../components/product/CategoryCard';
+import ProductGrid from '../../components/product/ProductGrid';
+import Banner from '../../components/ui/Banner';
+import Hero from '../../components/ui/Hero';
 import Newsletter from '../../components/ui/Newsletter';
-import { sampleProducts, sampleCategories, sampleFeatures } from '../../data/sampleData';
+import OfferCard from '../../components/ui/OfferCard';
+import Section from '../../components/ui/Section';
+import TestimonialCard from '../../components/ui/TestimonialCard';
+import { 
+    sampleBanners, 
+    sampleCategories, 
+    sampleFeatures, 
+    sampleOffers, 
+    sampleProducts, 
+    sampleTestimonials 
+} from '../../data/sampleData';
 
 const HomePage = () => {
     const features = sampleFeatures.map(feature => ({
@@ -26,14 +36,16 @@ const HomePage = () => {
 
     return (
         <div className="min-h-screen">
-            {/* Hero Section */}
-            <Hero
-                title="Welcome to Our Shop"
-                subtitle="Discover Amazing Products"
-                description="Find the perfect products at unbeatable prices with fast shipping and excellent customer service"
-                primaryButton={{ text: "Shop Now", to: "/products" }}
-                secondaryButton={{ text: "Learn More", to: "/about" }}
-                background="gradient-to-r from-primary-600 to-primary-800"
+            {/* Main Hero Banner */}
+            <Banner
+                title="New Collection 2024"
+                subtitle="Spring Fashion"
+                description="Discover the latest trends in fashion and lifestyle with our exclusive collection"
+                buttonText="Shop Now"
+                buttonLink="/products?collection=spring-2024"
+                backgroundImage={sampleBanners[0].backgroundImage}
+                height="large"
+                textAlign="left"
             />
 
             {/* Features Section */}
@@ -41,6 +53,7 @@ const HomePage = () => {
                 title="Why Choose Us?"
                 subtitle="We're committed to providing the best shopping experience"
                 background="white"
+                padding="lg"
             >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {features.map((feature, index) => (
@@ -59,23 +72,21 @@ const HomePage = () => {
                 </div>
             </Section>
 
-            {/* Featured Products Section */}
+            {/* Special Offers Section */}
             <Section
-                title="Featured Products"
-                subtitle="Discover our most popular items"
+                title="Special Offers"
+                subtitle="Don't miss out on these amazing deals"
                 background="gray"
+                padding="lg"
             >
-                <ProductGrid 
-                    products={sampleProducts.filter(product => product.isFeatured)}
-                    columns={4}
-                />
-                <div className="text-center mt-8">
-                    <Link
-                        to="/products"
-                        className="btn-primary text-lg px-8 py-3"
-                    >
-                        View All Products
-                    </Link>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {sampleOffers.map((offer) => (
+                        <OfferCard
+                            key={offer.id}
+                            offer={offer}
+                            size="default"
+                        />
+                    ))}
                 </div>
             </Section>
 
@@ -84,6 +95,7 @@ const HomePage = () => {
                 title="Shop by Category"
                 subtitle="Find exactly what you're looking for"
                 background="white"
+                padding="lg"
             >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {sampleCategories.slice(0, 6).map((category) => (
@@ -95,6 +107,77 @@ const HomePage = () => {
                     ))}
                 </div>
             </Section>
+
+            {/* New Arrivals Section */}
+            <Section
+                title="New Arrivals"
+                subtitle="Fresh products just added to our collection"
+                background="gray"
+                padding="lg"
+            >
+                <ProductGrid
+                    products={sampleProducts.filter(product => product.isNew)}
+                    columns={4}
+                />
+                <div className="text-center mt-8">
+                    <Link
+                        to="/products?filter=new"
+                        className="btn-primary text-lg px-8 py-3"
+                    >
+                        View All New Arrivals
+                    </Link>
+                </div>
+            </Section>
+
+            {/* Best Sellers Section */}
+            <Section
+                title="Best Sellers"
+                subtitle="Our most popular products"
+                background="white"
+                padding="lg"
+            >
+                <ProductGrid
+                    products={sampleProducts.filter(product => product.rating >= 4.5)}
+                    columns={4}
+                />
+                <div className="text-center mt-8">
+                    <Link
+                        to="/products?sort=rating"
+                        className="btn-primary text-lg px-8 py-3"
+                    >
+                        View All Best Sellers
+                    </Link>
+                </div>
+            </Section>
+
+            {/* Testimonials Section */}
+            <Section
+                title="What Our Customers Say"
+                subtitle="Real reviews from satisfied customers"
+                background="gray"
+                padding="lg"
+            >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {sampleTestimonials.map((testimonial) => (
+                        <TestimonialCard
+                            key={testimonial.id}
+                            testimonial={testimonial}
+                        />
+                    ))}
+                </div>
+            </Section>
+
+            {/* Secondary Banner */}
+            <Banner
+                title="Electronics Sale"
+                subtitle="Limited Time Offer"
+                description="Up to 40% off on all electronics and gadgets. Don't miss out!"
+                buttonText="Shop Electronics"
+                buttonLink="/products?category=electronics&sale=true"
+                backgroundImage={sampleBanners[1].backgroundImage}
+                height="medium"
+                textAlign="center"
+            />
 
             {/* Newsletter Section */}
             <Section

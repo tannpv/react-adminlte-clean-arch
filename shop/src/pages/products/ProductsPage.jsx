@@ -63,11 +63,10 @@ const ProductsPage = () => {
                             <button
                                 key={category}
                                 onClick={() => setFilterCategory(category)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                    filterCategory === category
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filterCategory === category
                                         ? 'bg-primary-600 text-white'
                                         : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                }`}
+                                    }`}
                             >
                                 {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
                             </button>
@@ -115,7 +114,8 @@ const ProductsPage = () => {
             {/* Products Grid/List */}
             <ProductGrid 
                 products={filteredProducts}
-                columns={viewMode === 'grid' ? 4 : 1}
+                columns={4}
+                viewMode={viewMode}
                 showQuickView={true}
                 showWishlist={true}
             />
