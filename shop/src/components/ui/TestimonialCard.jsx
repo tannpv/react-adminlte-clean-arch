@@ -1,7 +1,7 @@
-import React from 'react';
 import { StarIcon } from '@heroicons/react/24/solid';
+import React from 'react';
 
-const TestimonialCard = ({ 
+const TestimonialCard = ({
     testimonial,
     className = ''
 }) => {
@@ -9,11 +9,10 @@ const TestimonialCard = ({
         const stars = [];
         for (let i = 0; i < 5; i++) {
             stars.push(
-                <StarIcon 
-                    key={i} 
-                    className={`h-5 w-5 ${
-                        i < rating ? 'text-yellow-400' : 'text-gray-300'
-                    }`} 
+                <StarIcon
+                    key={i}
+                    className={`h-5 w-5 ${i < rating ? 'text-yellow-400' : 'text-gray-300'
+                        }`}
                 />
             );
         }

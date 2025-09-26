@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Badge from './Badge';
 import Button from './Button';
 
-const OfferCard = ({ 
+const OfferCard = ({
     offer,
     className = '',
     size = 'default'
@@ -30,10 +30,10 @@ const OfferCard = ({
                         alt={offer.title}
                         className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                     />
-                    
+
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-black bg-opacity-30" />
-                    
+
                     {/* Badge */}
                     {offer.badge && (
                         <div className="absolute top-4 left-4">
@@ -49,19 +49,19 @@ const OfferCard = ({
                     <h3 className="text-xl font-bold text-gray-900 mb-2">
                         {offer.title}
                     </h3>
-                    
+
                     {offer.subtitle && (
                         <p className="text-gray-600 mb-4">
                             {offer.subtitle}
                         </p>
                     )}
-                    
+
                     {offer.description && (
                         <p className="text-sm text-gray-500 mb-4">
                             {offer.description}
                         </p>
                     )}
-                    
+
                     {offer.price && (
                         <div className="mb-4">
                             <span className="text-2xl font-bold text-primary-600">
@@ -74,7 +74,7 @@ const OfferCard = ({
                             )}
                         </div>
                     )}
-                    
+
                     {offer.buttonText && (
                         <Button
                             variant="outline"
