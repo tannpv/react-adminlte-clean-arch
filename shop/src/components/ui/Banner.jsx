@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Button from './Button';
 
-const Banner = ({ 
+const Banner = ({
     title,
     subtitle,
     description,
@@ -35,7 +35,7 @@ const Banner = ({
     } : {};
 
     return (
-        <div 
+        <div
             className={`relative ${heightClasses[height]} ${className}`}
             style={backgroundStyle}
         >
@@ -43,7 +43,7 @@ const Banner = ({
             {overlay && (
                 <div className="absolute inset-0 bg-black bg-opacity-50" />
             )}
-            
+
             {/* Content */}
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
                 <div className={`${textAlignClasses[textAlign]} max-w-2xl`}>
@@ -52,17 +52,17 @@ const Banner = ({
                             {subtitle}
                         </p>
                     )}
-                    
+
                     <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
                         {title}
                     </h2>
-                    
+
                     {description && (
                         <p className="text-lg text-gray-200 mb-8">
                             {description}
                         </p>
                     )}
-                    
+
                     {buttonText && buttonLink && (
                         <Button
                             as={Link}

@@ -9,18 +9,17 @@ import { Link } from 'react-router-dom';
 import CategoryCard from '../../components/product/CategoryCard';
 import ProductGrid from '../../components/product/ProductGrid';
 import Banner from '../../components/ui/Banner';
-import Hero from '../../components/ui/Hero';
 import Newsletter from '../../components/ui/Newsletter';
 import OfferCard from '../../components/ui/OfferCard';
 import Section from '../../components/ui/Section';
 import TestimonialCard from '../../components/ui/TestimonialCard';
-import { 
-    sampleBanners, 
-    sampleCategories, 
-    sampleFeatures, 
-    sampleOffers, 
-    sampleProducts, 
-    sampleTestimonials 
+import {
+    sampleBanners,
+    sampleCategories,
+    sampleFeatures,
+    sampleOffers,
+    sampleProducts,
+    sampleTestimonials
 } from '../../data/sampleData';
 
 const HomePage = () => {

@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { 
-    HeartIcon, 
-    ShoppingCartIcon, 
+import {
     EyeIcon,
-    StarIcon 
+    HeartIcon,
+    ShoppingCartIcon,
+    StarIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import Badge from '../ui/Badge';
 import Button from '../ui/Button';
 
-const ProductList = ({ 
-    product, 
+const ProductList = ({
+    product,
     showQuickView = true,
     showWishlist = true,
-    className = '' 
+    className = ''
 }) => {
     const [isWishlisted, setIsWishlisted] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
@@ -79,12 +79,11 @@ const ProductList = ({
                         <img
                             src={product.image || '/placeholder-product.jpg'}
                             alt={product.name}
-                            className={`w-full h-full object-cover transition-transform duration-300 hover:scale-105 ${
-                                imageLoaded ? 'opacity-100' : 'opacity-0'
-                            }`}
+                            className={`w-full h-full object-cover transition-transform duration-300 hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'
+                                }`}
                             onLoad={() => setImageLoaded(true)}
                         />
-                        
+
                         {/* Badges */}
                         <div className="absolute top-2 left-2 flex flex-col gap-1">
                             {product.isNew && (
@@ -112,7 +111,7 @@ const ProductList = ({
                                     )}
                                 </button>
                             )}
-                            
+
                             {showQuickView && (
                                 <button
                                     onClick={handleQuickView}
@@ -131,17 +130,17 @@ const ProductList = ({
                             {product.category && (
                                 <p className="text-sm text-gray-500 mb-2">{product.category}</p>
                             )}
-                            
+
                             {/* Product Name */}
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">
                                 {product.name}
                             </h3>
-                            
+
                             {/* Description */}
                             <p className="text-gray-600 mb-4 flex-1">
                                 {product.description}
                             </p>
-                            
+
                             {/* Rating */}
                             {product.rating && (
                                 <div className="flex items-center gap-1 mb-4">
@@ -153,7 +152,7 @@ const ProductList = ({
                                     </span>
                                 </div>
                             )}
-                            
+
                             {/* Price and Actions */}
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
@@ -166,7 +165,7 @@ const ProductList = ({
                                         </span>
                                     )}
                                 </div>
-                                
+
                                 <div className="flex items-center gap-2">
                                     <Button
                                         onClick={handleAddToCart}
