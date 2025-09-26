@@ -161,14 +161,14 @@ export const AttributeForm = ({ attribute, onClose }) => {
                                 className={errors.code ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
                             />
                             {errors.code && (
-                                <Form.ErrorText>
+                                <Form.Error>
                                     <i className="fas fa-exclamation-triangle mr-1"></i>
                                     {errors.code}
-                                </Form.ErrorText>
+                                </Form.Error>
                             )}
-                            <Form.HelpText>
+                            <Form.Help>
                                 {t('code_help_text', 'Unique identifier for the attribute (lowercase, numbers, underscores only)')}
-                            </Form.HelpText>
+                            </Form.Help>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label htmlFor="name">
@@ -186,10 +186,10 @@ export const AttributeForm = ({ attribute, onClose }) => {
                                 className={errors.name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
                             />
                             {errors.name && (
-                                <Form.ErrorText>
+                                <Form.Error>
                                     <i className="fas fa-exclamation-triangle mr-1"></i>
                                     {errors.name}
-                                </Form.ErrorText>
+                                </Form.Error>
                             )}
                         </Form.Group>
                     </div>
@@ -215,10 +215,10 @@ export const AttributeForm = ({ attribute, onClose }) => {
                                 <option value="boolean">{t('boolean_yes_no', 'Boolean (Yes/No)')}</option>
                             </Form.Select>
                             {errors.inputType && (
-                                <Form.ErrorText>
+                                <Form.Error>
                                     <i className="fas fa-exclamation-triangle mr-1"></i>
                                     {errors.inputType}
-                                </Form.ErrorText>
+                                </Form.Error>
                             )}
                         </Form.Group>
                         <Form.Group>
@@ -239,10 +239,10 @@ export const AttributeForm = ({ attribute, onClose }) => {
                                 <option value="boolean">{t('boolean', 'Boolean')}</option>
                             </Form.Select>
                             {errors.dataType && (
-                                <Form.ErrorText>
+                                <Form.Error>
                                     <i className="fas fa-exclamation-triangle mr-1"></i>
                                     {errors.dataType}
-                                </Form.ErrorText>
+                                </Form.Error>
                             )}
                         </Form.Group>
                     </div>
@@ -261,9 +261,9 @@ export const AttributeForm = ({ attribute, onClose }) => {
                             placeholder={t('unit_placeholder', 'e.g., kg, cm, ml')}
                             disabled={isLoading}
                         />
-                        <Form.HelpText>
+                        <Form.Help>
                             {t('unit_help_text', 'Optional unit of measurement')}
-                        </Form.HelpText>
+                        </Form.Help>
                     </Form.Group>
                 </form>
             </Modal.Body>
@@ -308,3 +308,5 @@ export const AttributeForm = ({ attribute, onClose }) => {
         </Modal>
     );
 };
+
+export default AttributeForm;

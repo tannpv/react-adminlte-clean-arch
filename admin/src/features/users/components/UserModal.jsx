@@ -89,3 +89,5 @@ export function UserModal({ show, title, initialUser, onClose, onSubmit, errors,
     </Modal>
   )
 }
+
+export default UserModal;

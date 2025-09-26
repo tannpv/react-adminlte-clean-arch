@@ -166,14 +166,14 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
                                 ))}
                             </Form.Select>
                             {errors.attributeId && (
-                                <Form.ErrorText>
+                                <Form.Error>
                                     <i className="fas fa-exclamation-triangle mr-1"></i>
                                     {errors.attributeId}
-                                </Form.ErrorText>
+                                </Form.Error>
                             )}
-                            <Form.HelpText>
+                            <Form.Help>
                                 {t('choose_attribute_help_text', 'Choose the attribute this value belongs to')}
-                            </Form.HelpText>
+                            </Form.Help>
                         </Form.Group>
 
                         <Form.Group>
@@ -193,14 +193,14 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
                                 className={errors.value ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
                             />
                             {errors.value && (
-                                <Form.ErrorText>
+                                <Form.Error>
                                     <i className="fas fa-exclamation-triangle mr-1"></i>
                                     {errors.value}
-                                </Form.ErrorText>
+                                </Form.Error>
                             )}
-                            <Form.HelpText>
+                            <Form.Help>
                                 {t('value_help_text', 'The actual value (e.g., "Red" for Color attribute)')}
-                            </Form.HelpText>
+                            </Form.Help>
                         </Form.Group>
                     </div>
 
@@ -218,9 +218,9 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
                             min="0"
                             disabled={isLoading}
                         />
-                        <Form.HelpText>
+                        <Form.Help>
                             {t('sort_order_help_text', 'Lower numbers appear first in dropdowns')}
-                        </Form.HelpText>
+                        </Form.Help>
                     </Form.Group>
 
                     {errors.submit && (
@@ -274,3 +274,4 @@ export const AttributeValueForm = ({ show, attributeValue, onClose }) => {
     );
 };
 
+export default AttributeValueForm;

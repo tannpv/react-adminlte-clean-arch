@@ -44,7 +44,7 @@ export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = 
                 <Table.Cell>
                   <div className="flex flex-col">
                     <div className="flex items-center">
-                      <span className="font-medium text-gray-900">{role.name}</span>
+                      <span className="font-semibold text-gray-900 text-base">{role.name}</span>
                       {isSystemRole && (
                         <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                           <i className="fas fa-lock mr-1"></i>
@@ -52,7 +52,7 @@ export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = 
                         </span>
                       )}
                     </div>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-xs text-gray-400 mt-1">
                       {t('permission_count', '{{count}} permission', { count: permissionCount })}
                     </span>
                   </div>
@@ -84,8 +84,8 @@ export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = 
                     )}
                   </div>
                 </Table.Cell>
-                <Table.Cell>
-                  <div className="flex justify-center space-x-2">
+                <Table.Cell className="whitespace-nowrap">
+                  <div className="flex justify-center gap-2">
                     <Button
                       variant="primary"
                       size="sm"
@@ -133,3 +133,5 @@ export function RoleList({ roles, onEdit, onDelete, canEdit = true, canDelete = 
     </>
   )
 }
+
+export default RoleList;

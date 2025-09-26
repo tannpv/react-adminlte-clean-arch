@@ -49,8 +49,8 @@ const LanguageSwitcher = () => {
                             <button
                                 key={language.id}
                                 className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 flex items-center transition-colors duration-150 ${language.code === languageCode
-                                        ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-500'
-                                        : 'text-gray-700'
+                                    ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-500'
+                                    : 'text-gray-700'
                                     }`}
                                 onClick={() => handleLanguageChange(language.code)}
                             >
@@ -79,4 +79,5 @@ const LanguageSwitcher = () => {
     );
 };
 
+export { LanguageSwitcher };
 export default LanguageSwitcher;
