@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Button from '../../../shared/components/ui/Button';
+import Modal from '../../../shared/components/ui/Modal';
 
 export const AttributeAssignmentModal = ({ availableAttributes, onSubmit, onClose, isLoading }) => {
     const [formData, setFormData] = useState({
@@ -48,181 +50,143 @@ export const AttributeAssignmentModal = ({ availableAttributes, onSubmit, onClos
         }
 
         const submitData = {
-            sortOrder: parseInt(formData.sortOrder) || 0,
-            isRequired: formData.isRequired,
+            ...formData,
+            sortOrder: parseInt(formData.sortOrder, 10),
         };
 
-        onSubmit(parseInt(formData.attributeId), submitData);
-    };
-
-    const getInputTypeLabel = (inputType) => {
-        const labels = {
-            select: 'Select',
-            multiselect: 'Multi-select',
-            text: 'Text',
-            number: 'Number',
-            boolean: 'Boolean',
-        };
-        return labels[inputType] || inputType;
-    };
-
-    const getDataTypeLabel = (dataType) => {
-        const labels = {
-            string: 'String',
-            number: 'Number',
-            boolean: 'Boolean',
-        };
-        return labels[dataType] || dataType;
+        onSubmit(submitData);
     };
 
     return (
-        <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
-            <div className="modal-dialog modal-lg">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h4 className="modal-title">Add Attribute to Set</h4>
-                        <button
-                            type="button"
-                            className="close"
+        <Modal isOpen={true} onClose={onClose} className="max-w-2xl">
+            <Modal.Header onClose={onClose}>
+                <div className="flex items-center">
+                    <i className="fas fa-plus mr-3 text-blue-600"></i>
+                    Add Attribute to Set
+                </div>
+            </Modal.Header>
+
+            <Modal.Body>
+                <div className="mb-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-start">
+                            <i className="fas fa-info-circle text-blue-600 mr-2 mt-0.5"></i>
+                            <div>
+                                <strong className="text-blue-800">Attribute Assignment:</strong>
+                                <span className="text-blue-700 ml-1">
+                                    Select an attribute to add to this attribute set and configure its settings.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form onSubmit={handleSubmit} id="attribute-assignment-form">
+                    <div className="space-y-4">
+                        <div>
+                            <label htmlFor="attributeId" className="block text-sm font-medium text-gray-700 mb-2">
+                                Select Attribute *
+                            </label>
+                            <select
+                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${errors.attributeId ? 'border-red-300' : 'border-gray-300'
+                                    }`}
+                                name="attributeId"
+                                id="attributeId"
+                                value={formData.attributeId}
+                                onChange={handleChange}
+                            >
+                                <option value="">Choose an attribute...</option>
+                                {availableAttributes.map((attr) => (
+                                    <option key={attr.id} value={attr.id}>
+                                        {attr.name} ({attr.code})
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.attributeId && <p className="mt-1 text-sm text-red-600">{errors.attributeId}</p>}
+                            <p className="mt-1 text-sm text-gray-500">
+                                Select an attribute to add to this attribute set
+                            </p>
+                        </div>
+
+                        <div>
+                            <label htmlFor="sortOrder" className="block text-sm font-medium text-gray-700 mb-2">
+                                Sort Order
+                            </label>
+                            <input
+                                type="number"
+                                className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${errors.sortOrder ? 'border-red-300' : 'border-gray-300'
+                                    }`}
+                                name="sortOrder"
+                                id="sortOrder"
+                                value={formData.sortOrder}
+                                onChange={handleChange}
+                                min="0"
+                            />
+                            {errors.sortOrder && <p className="mt-1 text-sm text-red-600">{errors.sortOrder}</p>}
+                            <p className="mt-1 text-sm text-gray-500">
+                                Order in which this attribute appears in the set (0 = first)
+                            </p>
+                        </div>
+
+                        <div>
+                            <div className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    name="isRequired"
+                                    id="isRequired"
+                                    checked={formData.isRequired}
+                                    onChange={handleChange}
+                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <label htmlFor="isRequired" className="ml-2 block text-sm text-gray-900">
+                                    Required Attribute
+                                </label>
+                            </div>
+                            <p className="mt-1 text-sm text-gray-500">
+                                Mark this attribute as required for products in this set
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </Modal.Body>
+
+            <Modal.Footer>
+                <div className="flex justify-between items-center w-full">
+                    <div className="text-gray-500 text-sm">
+                        <i className="fas fa-list mr-1"></i>
+                        Attribute will be added to the current set
+                    </div>
+                    <div className="flex space-x-2">
+                        <Button
+                            variant="secondary"
+                            outline
                             onClick={onClose}
                             disabled={isLoading}
                         >
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                    <form onSubmit={handleSubmit}>
-                        <div className="modal-body">
-                            <div className="row">
-                                <div className="col-md-12">
-                                    <div className="form-group">
-                                        <label htmlFor="attributeId">Select Attribute *</label>
-                                        <select
-                                            className={`form-control ${errors.attributeId ? 'is-invalid' : ''}`}
-                                            id="attributeId"
-                                            name="attributeId"
-                                            value={formData.attributeId}
-                                            onChange={handleChange}
-                                            disabled={isLoading}
-                                        >
-                                            <option value="">Choose an attribute...</option>
-                                            {availableAttributes.map((attribute) => (
-                                                <option key={attribute.id} value={attribute.id}>
-                                                    {attribute.name} ({attribute.code}) - {getInputTypeLabel(attribute.inputType)} / {getDataTypeLabel(attribute.dataType)}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        {errors.attributeId && (
-                                            <div className="invalid-feedback">{errors.attributeId}</div>
-                                        )}
-                                        <small className="form-text text-muted">
-                                            Select an attribute to add to this attribute set
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <div className="form-group">
-                                        <label htmlFor="sortOrder">Sort Order</label>
-                                        <input
-                                            type="number"
-                                            className={`form-control ${errors.sortOrder ? 'is-invalid' : ''}`}
-                                            id="sortOrder"
-                                            name="sortOrder"
-                                            value={formData.sortOrder}
-                                            onChange={handleChange}
-                                            min="0"
-                                            disabled={isLoading}
-                                        />
-                                        {errors.sortOrder && (
-                                            <div className="invalid-feedback">{errors.sortOrder}</div>
-                                        )}
-                                        <small className="form-text text-muted">
-                                            Order in which this attribute appears in the set (0 = first)
-                                        </small>
-                                    </div>
-                                </div>
-                                <div className="col-md-6">
-                                    <div className="form-group">
-                                        <div className="form-check mt-4">
-                                            <input
-                                                type="checkbox"
-                                                className="form-check-input"
-                                                id="isRequired"
-                                                name="isRequired"
-                                                checked={formData.isRequired}
-                                                onChange={handleChange}
-                                                disabled={isLoading}
-                                            />
-                                            <label className="form-check-label" htmlFor="isRequired">
-                                                Required Attribute
-                                            </label>
-                                        </div>
-                                        <small className="form-text text-muted">
-                                            Mark this attribute as required for products using this set
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {formData.attributeId && (
-                                <div className="row">
-                                    <div className="col-md-12">
-                                        <div className="alert alert-info">
-                                            <h6>Selected Attribute Details:</h6>
-                                            {(() => {
-                                                const selectedAttribute = availableAttributes.find(
-                                                    attr => attr.id === parseInt(formData.attributeId)
-                                                );
-                                                if (!selectedAttribute) return null;
-
-                                                return (
-                                                    <div>
-                                                        <strong>Name:</strong> {selectedAttribute.name}<br />
-                                                        <strong>Code:</strong> <code>{selectedAttribute.code}</code><br />
-                                                        <strong>Input Type:</strong> {getInputTypeLabel(selectedAttribute.inputType)}<br />
-                                                        <strong>Data Type:</strong> {getDataTypeLabel(selectedAttribute.dataType)}<br />
-                                                        {selectedAttribute.unit && (
-                                                            <>
-                                                                <strong>Unit:</strong> {selectedAttribute.unit}<br />
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })()}
-                                        </div>
-                                    </div>
-                                </div>
+                            <i className="fas fa-times mr-1"></i>
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="success"
+                            type="submit"
+                            form="attribute-assignment-form"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <>
+                                    <i className="fas fa-spinner fa-spin mr-1"></i>
+                                    Adding...
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fas fa-plus mr-1"></i>
+                                    Add Attribute
+                                </>
                             )}
-                        </div>
-                        <div className="modal-footer">
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={onClose}
-                                disabled={isLoading}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                className="btn btn-primary"
-                                disabled={isLoading || !formData.attributeId}
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
-                                        Adding...
-                                    </>
-                                ) : (
-                                    'Add Attribute to Set'
-                                )}
-                            </button>
-                        </div>
-                    </form>
+                        </Button>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </Modal.Footer>
+        </Modal>
     );
 };

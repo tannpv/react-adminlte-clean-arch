@@ -75,7 +75,7 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
               <Table.Cell>
                 <div className="flex flex-col">
                   <div className="flex items-center">
-                    <span className="font-medium text-gray-900">{displayName}</span>
+                    <span className="font-semibold text-gray-900 text-base">{displayName}</span>
                     {isAdmin && (
                       <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                         <i className="fas fa-crown mr-1"></i>
@@ -83,7 +83,7 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
                       </span>
                     )}
                   </div>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-xs text-gray-400 mt-1">
                     {hasProfile ? t('profile_complete', 'Profile Complete') : t('basic_info_only', 'Basic Info Only')}
                   </span>
                 </div>
@@ -119,15 +119,15 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
               </Table.Cell>
               <Table.Cell>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isActive
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
                   }`}>
                   <i className={`fas ${isActive ? 'fa-check-circle' : 'fa-times-circle'} mr-1`}></i>
                   {isActive ? t('active', 'Active') : t('inactive', 'Inactive')}
                 </span>
               </Table.Cell>
-              <Table.Cell>
-                <div className="flex justify-center space-x-2">
+              <Table.Cell className="whitespace-nowrap">
+                <div className="flex justify-center gap-2">
                   <Button
                     variant="primary"
                     size="sm"
@@ -155,3 +155,5 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
     </Table>
   )
 }
+
+export default UserList;

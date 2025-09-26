@@ -87,7 +87,7 @@ export function RoleForm({ onSubmit, initialRole, errors = {}, submitting = fals
             disabled={submitting}
             className={showNameInvalid ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
           />
-          {showNameInvalid && <Form.ErrorText>{nameError}</Form.ErrorText>}
+          {showNameInvalid && <Form.Error>{nameError}</Form.Error>}
         </Form.Group>
       </div>
 
@@ -98,114 +98,114 @@ export function RoleForm({ onSubmit, initialRole, errors = {}, submitting = fals
             <i className="fas fa-shield-alt mr-2 text-blue-600"></i>
             Permissions
           </Form.Label>
-          <div className="permissions-container">
-            <div className="permissions-header mb-3">
-              <div className="row">
-                <div className="col-md-6">
-                  <h6 className="mb-0 text-muted">
-                    <i className="fas fa-info-circle mr-1"></i>
-                    Select the permissions for this role
-                  </h6>
-                </div>
-                <div className="col-md-6 text-right">
-                  <small className="text-muted">
-                    {permissions.length} permission{permissions.length !== 1 ? 's' : ''} selected
-                  </small>
-                </div>
+
+          {/* Permissions Header */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <i className="fas fa-info-circle text-blue-600 mr-2"></i>
+                <span className="text-blue-800 font-medium">Select the permissions for this role</span>
+              </div>
+              <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                <i className="fas fa-check-circle mr-1"></i>
+                {permissions.length} permission{permissions.length !== 1 ? 's' : ''} selected
               </div>
             </div>
+          </div>
 
-            <div className="permissions-table-container">
-              <div className="table-responsive">
-                <table className="table table-hover permissions-table">
-                  <thead className="table-dark">
-                    <tr>
-                      <th className="module-column">
-                        <i className="fas fa-layer-group mr-1"></i>
-                        Module
-                      </th>
-                      <th className="select-all-column text-center">
-                        <i className="fas fa-check-double mr-1"></i>
-                        All
-                      </th>
-                      {allActions.map((action) => (
-                        <th key={`header-${action.key}`} className="text-center action-column">
-                          <span className="action-label">{action.label}</span>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {hydratedGroups.map((group) => {
-                      const groupSelectedCount = group.actions.filter((action) => action.selected).length
-                      const allSelected = groupSelectedCount === group.actions.length && group.actions.length > 0
-                      const someSelected = groupSelectedCount > 0 && !allSelected
-                      const groupSelectId = `perm-${group.entity}-all`
-                      return (
-                        <tr key={group.entity} className="permission-row">
-                          <td className="module-cell">
-                            <div className="module-info">
-                              <strong>{group.label}</strong>
-                              <small className="d-block text-muted">
-                                {groupSelectedCount}/{group.actions.length} selected
-                              </small>
-                            </div>
-                          </td>
-                          <td className="select-all-cell text-center">
-                            <div className="custom-control custom-checkbox d-inline-flex align-items-center justify-content-center">
+          {/* Permissions Grid */}
+          <div className="role-permissions-container">
+            {hydratedGroups.map((group) => {
+              const groupSelectedCount = group.actions.filter((action) => action.selected).length
+              const allSelected = groupSelectedCount === group.actions.length && group.actions.length > 0
+              const someSelected = groupSelectedCount > 0 && !allSelected
+              const groupSelectId = `perm-${group.entity}-all`
+
+              return (
+                <div key={group.entity} className="permission-group-card">
+                  {/* Group Header */}
+                  <div className="permission-group-header">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                          <i className="fas fa-layer-group text-blue-600"></i>
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">{group.label}</h3>
+                          <p className="text-sm text-gray-600">
+                            {groupSelectedCount}/{group.actions.length} permissions selected
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center">
+                        <label className="flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                            id={groupSelectId}
+                            checked={allSelected}
+                            ref={(input) => {
+                              if (input) input.indeterminate = someSelected
+                            }}
+                            onChange={(e) => toggleGroup(group, e.target.checked)}
+                            disabled={submitting}
+                          />
+                          <span className="ml-2 text-sm font-medium text-gray-700">
+                            {allSelected ? 'All Selected' : someSelected ? 'Partial' : 'Select All'}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Permissions Grid */}
+                  <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {group.actions.map((action) => {
+                        const inputId = `perm-${group.entity}-${action.key.replace(/[:]/g, '-')}`
+                        return (
+                          <div key={action.key} className="permission-item">
+                            <label className="flex items-center cursor-pointer w-full">
                               <input
                                 type="checkbox"
-                                className="custom-control-input"
-                                id={groupSelectId}
-                                checked={allSelected}
-                                ref={(input) => {
-                                  if (input) input.indeterminate = someSelected
-                                }}
-                                onChange={(e) => toggleGroup(group, e.target.checked)}
+                                className="permission-checkbox"
+                                id={inputId}
+                                checked={action.selected}
+                                onChange={(e) => togglePermission(action.key, e.target.checked)}
                                 disabled={submitting}
                               />
-                              <label className="custom-control-label" htmlFor={groupSelectId}>
-                                <span className="sr-only">Toggle all {group.label} permissions</span>
-                              </label>
-                            </div>
-                          </td>
-                          {group.actions.map((action) => {
-                            const inputId = `perm-${group.entity}-${action.key.replace(/[:]/g, '-')}`
-                            return (
-                              <td key={action.key} className="text-center action-cell">
-                                <div className="custom-control custom-checkbox d-inline-flex align-items-center">
-                                  <input
-                                    type="checkbox"
-                                    className="custom-control-input"
-                                    id={inputId}
-                                    checked={action.selected}
-                                    onChange={(e) => togglePermission(action.key, e.target.checked)}
-                                    disabled={submitting}
-                                  />
-                                  <label className="custom-control-label" htmlFor={inputId}>
-                                    <span className="sr-only">{`${group.label} ${action.label}`}</span>
-                                  </label>
+                              <div className="ml-3 flex-1">
+                                <span className="text-sm font-medium text-gray-900">{action.label}</span>
+                                <div className="flex items-center mt-1">
+                                  <span className={`permission-status-badge ${action.selected
+                                    ? 'permission-status-enabled'
+                                    : 'permission-status-disabled'
+                                    }`}>
+                                    <i className={`fas ${action.selected ? 'fa-check' : 'fa-times'} mr-1`}></i>
+                                    {action.selected ? 'Enabled' : 'Disabled'}
+                                  </span>
                                 </div>
-                              </td>
-                            )
-                          })}
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
+                              </div>
+                            </label>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Error Message */}
+          {permissionsError && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+              <div className="flex items-start">
+                <i className="fas fa-exclamation-triangle text-red-600 mr-2 mt-0.5"></i>
+                <span className="text-red-800">{permissionsError}</span>
               </div>
             </div>
-
-            {permissionsError && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-                <div className="flex items-start">
-                  <i className="fas fa-exclamation-triangle text-red-600 mr-2 mt-0.5"></i>
-                  <span className="text-red-800">{permissionsError}</span>
-                </div>
-              </div>
-            )}
-          </div>
+          )}
         </Form.Group>
       </div>
     </form>

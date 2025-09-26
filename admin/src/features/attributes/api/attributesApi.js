@@ -1,19 +1,19 @@
-import { ApiClient } from '../../../shared/lib/ApiClient';
+import { ApiClient } from '../../../shared/lib/apiClient';
 
 // Attributes API
 export const attributesApi = {
     // Get all attributes
     getAll: () => ApiClient.get('/attributes'),
-    
+
     // Get attribute by ID
     getById: (id) => ApiClient.get(`/attributes/${id}`),
-    
+
     // Create new attribute
     create: (data) => ApiClient.post('/attributes', data),
-    
+
     // Update attribute
     update: (id, data) => ApiClient.put(`/attributes/${id}`, data),
-    
+
     // Delete attribute
     delete: (id) => ApiClient.delete(`/attributes/${id}`),
 };
@@ -22,19 +22,19 @@ export const attributesApi = {
 export const attributeValuesApi = {
     // Get all attribute values
     getAll: () => ApiClient.get('/attribute-values'),
-    
+
     // Get attribute values by attribute ID
     getByAttributeId: (attributeId) => ApiClient.get(`/attribute-values/by-attribute/${attributeId}`),
-    
+
     // Get attribute value by ID
     getById: (id) => ApiClient.get(`/attribute-values/${id}`),
-    
+
     // Create new attribute value
     create: (data) => ApiClient.post('/attribute-values', data),
-    
+
     // Update attribute value
     update: (id, data) => ApiClient.put(`/attribute-values/${id}`, data),
-    
+
     // Delete attribute value
     delete: (id) => ApiClient.delete(`/attribute-values/${id}`),
 };

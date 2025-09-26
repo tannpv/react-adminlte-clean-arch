@@ -1,9 +1,10 @@
+import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-// Minimal Vite config with a dev proxy to avoid CORS and extension blocking
 export default defineConfig({
+  plugins: [react()],
   server: {
-    port: 5174,
+    port: 5177,
     proxy: {
       '/api': {
         target: 'http://localhost:3001',

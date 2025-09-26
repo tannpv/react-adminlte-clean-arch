@@ -88,3 +88,5 @@ export function CategoryModal({ show, title, initialCategory, onClose, onSubmit,
     </Modal>
   )
 }
+
+export default CategoryModal;
