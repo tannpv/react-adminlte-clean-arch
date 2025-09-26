@@ -1,14 +1,14 @@
 import React from 'react';
 
-const Section = ({ 
-    children, 
+const Section = ({
+    children,
     title,
     subtitle,
     className = '',
     container = true,
     background = 'white',
     padding = 'default',
-    ...props 
+    ...props
 }) => {
     const backgroundClasses = {
         white: 'bg-white',
@@ -37,11 +37,10 @@ const Section = ({
                         </p>
                     )}
                     {title && (
-                        <h2 className={`text-3xl md:text-4xl font-bold ${
-                            background === 'primary' || background === 'dark' 
-                                ? 'text-white' 
+                        <h2 className={`text-3xl md:text-4xl font-bold ${background === 'primary' || background === 'dark'
+                                ? 'text-white'
                                 : 'text-gray-900'
-                        }`}>
+                            }`}>
                             {title}
                         </h2>
                     )}
