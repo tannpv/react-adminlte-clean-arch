@@ -81,3 +81,5 @@ export function RoleModal({ show, title, initialRole, onClose, onSubmit, errors,
     </Modal>
   )
 }
+
+export default RoleModal;

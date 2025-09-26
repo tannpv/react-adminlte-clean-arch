@@ -156,53 +156,53 @@ export function CategoriesPage() {
           <div className="space-y-6">
             {/* Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
                 <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                  <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                     <i className="fas fa-tags text-2xl"></i>
                   </div>
                   <div className="ml-4">
-                    <p className="text-blue-100 text-sm font-medium">{t('total_categories', 'Total Categories')}</p>
-                    <p className="text-2xl font-bold">{totalCategories}</p>
+                    <div className="text-3xl font-bold">{totalCategories}</div>
+                    <div className="text-blue-100">{t('total_categories', 'Total Categories')}</div>
                   </div>
                 </div>
-              </Card>
+              </div>
 
-              <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+              <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
                 <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                  <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                     <i className="fas fa-folder text-2xl"></i>
                   </div>
                   <div className="ml-4">
-                    <p className="text-green-100 text-sm font-medium">{t('root_categories', 'Root Categories')}</p>
-                    <p className="text-2xl font-bold">{rootCategories}</p>
+                    <div className="text-3xl font-bold">{rootCategories}</div>
+                    <div className="text-green-100">{t('root_categories', 'Root Categories')}</div>
                   </div>
                 </div>
-              </Card>
+              </div>
 
-              <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+              <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white">
                 <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                  <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                     <i className="fas fa-sitemap text-2xl"></i>
                   </div>
                   <div className="ml-4">
-                    <p className="text-purple-100 text-sm font-medium">{t('subcategories', 'Subcategories')}</p>
-                    <p className="text-2xl font-bold">{childCategories}</p>
+                    <div className="text-3xl font-bold">{childCategories}</div>
+                    <div className="text-purple-100">{t('subcategories', 'Subcategories')}</div>
                   </div>
                 </div>
-              </Card>
+              </div>
 
-              <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white">
                 <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-white bg-opacity-20">
+                  <div className="p-3 bg-white bg-opacity-20 rounded-lg">
                     <i className="fas fa-layer-group text-2xl"></i>
                   </div>
                   <div className="ml-4">
-                    <p className="text-orange-100 text-sm font-medium">{t('max_depth', 'Max Depth')}</p>
-                    <p className="text-2xl font-bold">{maxDepth}</p>
+                    <div className="text-3xl font-bold">{maxDepth}</div>
+                    <div className="text-orange-100">{t('max_depth', 'Max Depth')}</div>
                   </div>
                 </div>
-              </Card>
+              </div>
             </div>
 
             {/* Categories List Section */}
@@ -290,3 +290,5 @@ export function CategoriesPage() {
     </>
   )
 }
+
+export default CategoriesPage;

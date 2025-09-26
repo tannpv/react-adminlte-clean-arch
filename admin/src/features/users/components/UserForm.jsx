@@ -108,7 +108,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
               disabled={submitting}
               className={firstNameError ? 'border-red-500' : ''}
             />
-            {firstNameError && <Form.ErrorText>{firstNameError}</Form.ErrorText>}
+            {firstNameError && <Form.Error>{firstNameError}</Form.Error>}
           </Form.Group>
           <Form.Group>
             <Form.Label htmlFor="lastName">
@@ -124,7 +124,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
               disabled={submitting}
               className={lastNameError ? 'border-red-500' : ''}
             />
-            {lastNameError && <Form.ErrorText>{lastNameError}</Form.ErrorText>}
+            {lastNameError && <Form.Error>{lastNameError}</Form.Error>}
           </Form.Group>
         </div>
 
@@ -144,7 +144,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
               disabled={submitting}
               className={emailError ? 'border-red-500' : ''}
             />
-            {emailError && <Form.ErrorText>{emailError}</Form.ErrorText>}
+            {emailError && <Form.Error>{emailError}</Form.Error>}
           </Form.Group>
           <Form.Group>
             <Form.Label htmlFor="dateOfBirth">
@@ -159,7 +159,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
               disabled={submitting}
               className={dobError ? 'border-red-500' : ''}
             />
-            {dobError && <Form.ErrorText>{dobError}</Form.ErrorText>}
+            {dobError && <Form.Error>{dobError}</Form.Error>}
           </Form.Group>
         </div>
       </div>
@@ -320,7 +320,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
               )}
             </div>
           </div>
-          {rolesError && <Form.ErrorText>{rolesError}</Form.ErrorText>}
+          {rolesError && <Form.Error>{rolesError}</Form.Error>}
         </Form.Group>
       </div>
 
@@ -349,7 +349,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                 disabled={submitting}
                 className={passwordError ? 'border-red-500' : ''}
               />
-              {passwordError && <Form.ErrorText>{passwordError}</Form.ErrorText>}
+              {passwordError && <Form.Error>{passwordError}</Form.Error>}
             </Form.Group>
             <Form.Group>
               <Form.Label htmlFor="confirmPassword">
@@ -375,3 +375,5 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
     </form>
   )
 }
+
+export default UserForm;
