@@ -72,13 +72,21 @@ export const Sidebar = ({ currentPage, onPageChange }) => {
             <div className="sidebar-header">
                 {!isCollapsed && (
                     <div className="sidebar-brand">
-                        <i className="fas fa-cube text-blue-600 mr-2" />
+                        <img 
+                            src="/company-logo.svg" 
+                            alt="Company Logo" 
+                            className="w-8 h-8 mr-2 object-contain"
+                        />
                         <span className="brand-text">Admin Panel</span>
                     </div>
                 )}
                 {isCollapsed && (
                     <div className="sidebar-brand-collapsed">
-                        <i className="fas fa-cube text-blue-600" />
+                        <img 
+                            src="/company-logo.svg" 
+                            alt="Company Logo" 
+                            className="w-6 h-6 object-contain"
+                        />
                     </div>
                 )}
             </div>
