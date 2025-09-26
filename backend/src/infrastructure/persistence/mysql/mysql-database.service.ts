@@ -47,7 +47,7 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         ? process.env.DB_PASSWORD
         : "password";
     const database =
-      process.env.DB_NAME !== undefined ? process.env.DB_NAME : "adminlte";
+      process.env.DB_NAME !== undefined ? process.env.DB_NAME : "admin_dashboard";
 
     this.config = {
       host,

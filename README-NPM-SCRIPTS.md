@@ -1,6 +1,6 @@
 # NPM Scripts Guide
 
-This document describes all available npm scripts for managing the React AdminLTE Clean Architecture project.
+This document describes all available npm scripts for managing the Modern Admin Dashboard project.
 
 ## 🚀 Quick Start
 
@@ -145,7 +145,7 @@ bash ./scripts/stop-all.sh
 ## 📁 Project Structure
 
 ```
-react-adminlte-clean-arch/
+modern-admin-dashboard/
 ├── admin/                 # Frontend React application
 ├── backend/              # Backend NestJS application
 ├── scripts/

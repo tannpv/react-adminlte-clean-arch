@@ -73,7 +73,7 @@ export const Sidebar = ({ currentPage, onPageChange }) => {
                 {!isCollapsed && (
                     <div className="sidebar-brand">
                         <i className="fas fa-cube text-blue-600 mr-2" />
-                        <span className="brand-text">AdminLTE</span>
+                        <span className="brand-text">Admin Panel</span>
                     </div>
                 )}
                 {isCollapsed && (
@@ -109,7 +109,7 @@ export const Sidebar = ({ currentPage, onPageChange }) => {
                 {!isCollapsed && (
                     <div className="sidebar-footer-content">
                         <div className="text-xs text-gray-500">
-                            AdminLTE v3.0
+                            Admin Panel v1.0
                         </div>
                     </div>
                 )}

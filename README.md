@@ -1,8 +1,8 @@
-React AdminLTE Clean Architecture Starter
+Modern Admin Dashboard - Clean Architecture
 =========================================
 
 Overview
-- React 18 + Vite frontend styled with AdminLTE 3 (Bootstrap 4 + Font Awesome)
+- React 18 + Vite frontend with modern Tailwind CSS styling
 - Clean architecture layering across presentation, application, domain, and infrastructure
 - NestJS 10 backend with JWT authentication and file-based persistence (db.json)
 - Seamless local dev workflow with Vite proxying API requests to NestJS
@@ -26,8 +26,8 @@ Prerequisites
 - MySQL 8+ available on port 7777 (defaults can be overridden via env vars)
 
 Quick Start
-1. Start MySQL (default expects localhost:7777 with user `root` / password `password` and database `adminlte`).
-   Example Docker command: docker run -p 7777:3306 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=adminlte mysql:8
+1. Start MySQL (default expects localhost:7777 with user `root` / password `password` and database `admin_dashboard`).
+   Example Docker command: docker run -p 7777:3306 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=admin_dashboard mysql:8
 2. Install dependencies
    npm run install:all
    (or run npm --prefix admin install && npm --prefix backend install)
@@ -70,7 +70,7 @@ Backend (backend/.env or process env vars)
 - DB_PORT: Defaults to 7777.
 - DB_USER: Defaults to root.
 - DB_PASSWORD: Defaults to password.
-- DB_NAME: Defaults to adminlte (created automatically if missing).
+- DB_NAME: Defaults to admin_dashboard (created automatically if missing).
 
 API Endpoints (Base: /api)
 Auth

@@ -1,6 +1,6 @@
 # Search Features Overview
 
-This document provides a quick overview of all search functionality implemented in the React AdminLTE Clean Architecture application.
+This document provides a quick overview of all search functionality implemented in the Modern Admin Dashboard application.
 
 ## Available Search Features
 
