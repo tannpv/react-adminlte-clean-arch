@@ -2,15 +2,15 @@ import React from 'react';
 import ProductCard from './ProductCard';
 import ProductList from './ProductList';
 
-const ProductGrid = ({ 
-    products = [], 
+const ProductGrid = ({
+    products = [],
     columns = 4,
     loading = false,
     className = '',
     showQuickView = true,
     showWishlist = true,
     viewMode = 'grid',
-    ...props 
+    ...props
 }) => {
     const gridClasses = {
         2: 'grid-cols-1 md:grid-cols-2',
