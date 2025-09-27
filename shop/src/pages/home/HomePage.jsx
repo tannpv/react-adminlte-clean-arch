@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import React from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 
 // Components
@@ -19,7 +18,6 @@ import HeroSlideshow from '../../components/slideshow/HeroSlideshow';
  */
 const HomePage = () => {
     const { addToCart } = useCart();
-    const { user } = useAuth();
 
     // Handle add to cart
     const handleAddToCart = (product) => {
