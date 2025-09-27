@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GreenLife Organic Store - Fresh Vegetables & Healthy Products</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Belle Vie Organic - Romantic Organic Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,10 +13,17 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: #2d3748;
-            background-color: #f7fafc;
+            font-family: 'Crimson Text', serif;
+            line-height: 1.7;
+            color: #5a4a3a;
+            background: linear-gradient(135deg, #fef7f0 0%, #f8f4f0 100%);
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Dancing Script', cursive;
+            color: #8b4513;
+            font-weight: 600;
         }
 
         .container {
@@ -27,14 +34,15 @@
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            background: linear-gradient(135deg, #d4a574 0%, #c49660 50%, #b8864b 100%);
             color: white;
             padding: 1rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(180, 134, 75, 0.3);
+            border-bottom: 3px solid #8b4513;
         }
 
         .header-top {
-            background: #2f855a;
+            background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
             padding: 0.5rem 0;
             font-size: 0.9rem;
         }
@@ -156,9 +164,10 @@
 
         /* Navigation */
         .nav {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
+            background: linear-gradient(135deg, #f5e6d3 0%, #f0d9c7 100%);
+            border-bottom: 2px solid #d4a574;
             padding: 0;
+            box-shadow: 0 2px 10px rgba(180, 134, 75, 0.1);
         }
 
         .nav .container {
@@ -193,17 +202,38 @@
 
         /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, #68d391 0%, #48bb78 50%, #38a169 100%);
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.9), rgba(196, 150, 96, 0.9)), url('https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: white;
-            padding: 4rem 0;
+            padding: 6rem 0;
             text-align: center;
+            position: relative;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.3), rgba(160, 82, 45, 0.3));
+            z-index: 1;
+        }
+        
+        .hero .container {
+            position: relative;
+            z-index: 2;
         }
 
         .hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3.5rem;
-            font-weight: 600;
+            font-family: 'Dancing Script', cursive;
+            font-size: 4.5rem;
+            font-weight: 700;
             margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .hero p {
@@ -231,19 +261,26 @@
         }
 
         .btn-primary {
-            background: white;
-            color: #38a169;
+            background: linear-gradient(135deg, #d4a574 0%, #c49660 100%);
+            color: white;
+            border: 2px solid #8b4513;
+            font-family: 'Crimson Text', serif;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(180, 134, 75, 0.3);
         }
 
         .btn-primary:hover {
-            background: #f7fafc;
+            background: linear-gradient(135deg, #c49660 0%, #b8864b 100%);
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(180, 134, 75, 0.4);
         }
 
         .btn-secondary {
             background: transparent;
             color: white;
             border: 2px solid white;
+            font-family: 'Crimson Text', serif;
+            font-weight: 600;
         }
 
         .btn-secondary:hover {
@@ -320,14 +357,17 @@
 
         .category-card {
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
+            box-shadow: 0 8px 25px rgba(180, 134, 75, 0.15);
+            transition: all 0.3s ease;
+            border: 2px solid #f5e6d3;
         }
 
         .category-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(180, 134, 75, 0.25);
+            border-color: #d4a574;
         }
 
         .category-image {
@@ -432,14 +472,17 @@
 
         .product-card {
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
+            box-shadow: 0 8px 25px rgba(180, 134, 75, 0.15);
+            transition: all 0.3s ease;
+            border: 2px solid #f5e6d3;
         }
 
         .product-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(180, 134, 75, 0.25);
+            border-color: #d4a574;
         }
 
         .product-image {
@@ -733,8 +776,8 @@
         <div class="header-main">
             <div class="container">
                 <div class="logo">
-                    <div class="logo-icon">🌿</div>
-                    <span>GreenLife</span>
+                    <div class="logo-icon">🌹</div>
+                    <span style="font-family: 'Dancing Script', cursive; font-size: 1.5rem; color: #8b4513;">Belle Vie</span>
                 </div>
                 <div class="search-bar">
                     <span class="search-icon">🔍</span>
@@ -770,8 +813,8 @@
     <!-- Hero Section -->
     <section class="hero" style="background: linear-gradient(135deg, rgba(72,187,120,0.8), rgba(56,161,105,0.8)), url('https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; background-attachment: fixed;">
         <div class="container">
-            <h1>Fresh Organic Products</h1>
-            <p>Discover the finest selection of organic vegetables, fruits, and healthy products delivered fresh to your door</p>
+            <h1>Love in Every Bite</h1>
+            <p>Discover our romantic collection of organic treasures, lovingly grown and carefully selected for your beautiful life</p>
             <div class="hero-buttons">
                 <a href="#" class="btn btn-primary">Shop Now</a>
                 <a href="#" class="btn btn-secondary">Learn More</a>
@@ -810,7 +853,7 @@
     <!-- Categories Section -->
     <section class="categories">
         <div class="container">
-            <h2 class="section-title">Shop by Category</h2>
+            <h2 class="section-title">Our Romantic Collections</h2>
             <div class="categories-grid">
                 <div class="category-card">
                     <div class="category-image" style="background: linear-gradient(135deg, rgba(72,187,120,0.9), rgba(56,161,105,0.9)), url('https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; position: relative;">
@@ -910,7 +953,7 @@
     <section class="products">
         <div class="container">
             <div class="products-header">
-                <h2 class="section-title">Featured Products</h2>
+                <h2 class="section-title">Romantic Featured Products</h2>
                 <div class="products-filter">
                     <div class="filter-btn active">All</div>
                     <div class="filter-btn">Vegetables</div>
@@ -1043,8 +1086,8 @@
     <!-- Newsletter Section -->
     <section class="newsletter" style="background: linear-gradient(135deg, rgba(72,187,120,0.9), rgba(56,161,105,0.9)), url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; background-attachment: fixed;">
         <div class="container">
-            <h2>Stay Healthy, Stay Informed</h2>
-            <p>Subscribe to our newsletter for the latest organic products, health tips, and exclusive offers</p>
+            <h2>Join Our Romantic Journey</h2>
+            <p>Subscribe to our newsletter for the latest organic treasures, romantic recipes, and exclusive offers</p>
             <form class="newsletter-form">
                 <input type="email" placeholder="Enter your email address">
                 <button type="submit">Subscribe</button>
@@ -1057,8 +1100,8 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>GreenLife</h3>
-                    <p>Your trusted source for fresh, organic products. We're committed to bringing you the healthiest options while supporting sustainable farming practices.</p>
+                    <h3>Belle Vie</h3>
+                    <p>Your romantic destination for fresh, organic treasures. We're committed to bringing you the most beautiful and healthiest options while supporting sustainable farming practices.</p>
                     <div class="social-links">
                         <a href="#" class="social-link">📘</a>
                         <a href="#" class="social-link">📷</a>
@@ -1098,7 +1141,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 GreenLife Organic Store. All rights reserved. | Privacy Policy | Terms of Service</p>
+                <p>&copy; 2024 Belle Vie Organic Store. All rights reserved. | Privacy Policy | Terms of Service</p>
             </div>
         </div>
     </footer>
