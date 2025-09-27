@@ -1,6 +1,6 @@
-# Shop Templates
+# Website Templates
 
-This directory contains HTML templates for different types of e-commerce shops that can be used as starting points for new projects.
+This directory contains HTML templates for different types of websites that can be used as starting points for new projects.
 
 ## Available Templates
 
@@ -31,6 +31,21 @@ This directory contains HTML templates for different types of e-commerce shops t
   - Contact information
   - Footer with social media links
 
+### 3. `dj-wedding-service.html` - Elite DJ Wedding Services
+- **Theme**: Professional DJ services for weddings
+- **Brand**: Elite DJ Services
+- **Colors**: Dark navy, accent pink, and gold
+- **Typography**: Playfair Display (headings), Inter (body)
+- **Features**:
+  - Modern dark theme with glassmorphism design
+  - Hero section with animated floating elements
+  - Services showcase (Wedding DJ, MC, Sound & Lighting)
+  - Portfolio section with event examples
+  - Customer testimonials
+  - Contact form with validation
+  - Responsive mobile-first design
+  - Interactive animations and hover effects
+
 ## Usage Instructions
 
 1. **Choose a template** that matches your desired theme and functionality
@@ -52,6 +67,7 @@ This directory contains HTML templates for different types of e-commerce shops t
 - **Romantic**: Use warm browns (#8b4513), golds (#d4a574), and creams (#f5e6d3)
 - **Organic**: Use greens (#48bb78), earth tones, and natural colors
 - **Modern**: Use clean whites, grays, and accent colors
+- **Professional**: Use dark navy (#1a1a2e), accent pink (#e94560), and gold (#ffd700)
 
 ### Typography
 - **Elegant**: Dancing Script + Crimson Text
@@ -70,7 +86,8 @@ shop-templates/
 ├── README.md              # This documentation
 ├── index.html             # Template gallery preview
 ├── organic-shop.html      # Romantic organic boutique template
-└── prototype.html         # Original handmade shop template
+├── prototype.html         # Original handmade shop template
+└── dj-wedding-service.html # Professional DJ wedding services template
 ```
 
 ## Dependencies
