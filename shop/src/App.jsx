@@ -4,6 +4,10 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 
+// Layout Components
+import Footer from './components/layout/Footer';
+import Header from './components/layout/Header';
+
 // Pages
 import LoginPage from './pages/account/LoginPage';
 import RegisterPage from './pages/account/RegisterPage';
@@ -30,6 +34,7 @@ function App() {
         <CartProvider>
           <Router>
             <div className="min-h-screen">
+              <Header />
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/products" element={<ProductsPage />} />
@@ -39,6 +44,7 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
               </Routes>
+              <Footer />
             </div>
           </Router>
         </CartProvider>
