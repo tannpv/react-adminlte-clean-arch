@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite DJ Services - Premium Wedding Entertainment</title>
+    <title>Alabama Elite DJ Services - Premium Wedding Entertainment</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary: #1a1a2e;
-            --secondary: #16213e;
-            --accent: #e94560;
-            --gold: #ffd700;
-            --text-light: #f5f5f5;
+            --primary: #ffffff;
+            --secondary: #f8fafc;
+            --accent: #dc2626;
+            --gold: #f59e0b;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
         }
         
         * {
@@ -25,7 +27,7 @@
         body {
             font-family: 'Inter', sans-serif;
             line-height: 1.6;
-            color: var(--text-light);
+            color: var(--text-dark);
             background: var(--primary);
         }
         
@@ -34,7 +36,11 @@
         }
         
         .hero {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, rgba(248, 250, 252, 0.85) 0%, rgba(226, 232, 240, 0.85) 100%), 
+                        url('https://images.unsplash.com/photo-1571266028243-e68f8570c9e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -49,8 +55,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-            opacity: 0.3;
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+            opacity: 0.8;
         }
         
         .hero-content {
@@ -59,7 +65,7 @@
         }
         
         .btn-primary {
-            background: linear-gradient(45deg, var(--accent), #ff6b7a);
+            background: linear-gradient(45deg, var(--accent), #ef4444);
             color: white;
             padding: 15px 30px;
             border: none;
@@ -75,7 +81,7 @@
         
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(233, 69, 96, 0.4);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
         }
         
         .section {
@@ -87,17 +93,18 @@
         }
         
         .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: white;
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 30px;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         
         .card:hover {
             transform: translateY(-10px);
-            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent);
         }
         
         .service-icon {
@@ -150,35 +157,44 @@
         .form-input {
             width: 100%;
             padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--border);
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            background: white;
+            color: var(--text-dark);
             margin-bottom: 20px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
         }
         
         .form-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--text-light);
         }
         
         .navbar {
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(26, 26, 46, 0.95);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             z-index: 1000;
             padding: 15px 0;
             transition: all 0.3s ease;
+            border-bottom: 1px solid var(--border);
         }
         
         .navbar.scrolled {
-            background: rgba(26, 26, 46, 0.98);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
         }
         
         .nav-link {
-            color: white;
+            color: var(--text-dark);
             text-decoration: none;
             margin: 0 20px;
             font-weight: 500;
@@ -245,22 +261,22 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar" id="navbar">
+    <nav class="navbar" id="navbar" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center">
-                <div class="font-display text-2xl font-bold text-white">
-                    <i class="fas fa-music text-yellow-400 mr-2"></i>
-                    Elite DJ
+                <div class="font-display text-2xl font-bold text-gray-800">
+                    <i class="fas fa-music text-red-600 mr-2"></i>
+                    Alabama Elite DJ
                 </div>
                 <div class="desktop-menu">
-                    <a href="#home" class="nav-link">Home</a>
-                    <a href="#services" class="nav-link">Services</a>
-                    <a href="#portfolio" class="nav-link">Portfolio</a>
-                    <a href="#testimonials" class="nav-link">Reviews</a>
-                    <a href="#contact" class="nav-link">Contact</a>
+                    <a href="#home" class="nav-link" style="color: var(--text-dark);">Home</a>
+                    <a href="#services" class="nav-link" style="color: var(--text-dark);">Services</a>
+                    <a href="#portfolio" class="nav-link" style="color: var(--text-dark);">Portfolio</a>
+                    <a href="#testimonials" class="nav-link" style="color: var(--text-dark);">Reviews</a>
+                    <a href="#contact" class="nav-link" style="color: var(--text-dark);">Contact</a>
                 </div>
                 <div class="mobile-menu">
-                    <button id="mobile-menu-btn" class="text-white text-2xl">
+                    <button id="mobile-menu-btn" class="text-gray-800 text-2xl">
                         <i class="fas fa-bars"></i>
                     </button>
                 </div>
@@ -277,19 +293,19 @@
         </div>
         <div class="container mx-auto px-4">
             <div class="hero-content text-center">
-                <h1 class="font-display text-6xl md:text-7xl font-bold mb-6">
-                    Your Perfect <span class="text-yellow-400">Wedding</span><br>
-                    <span class="text-pink-500">Soundtrack</span>
+                <h1 class="font-display text-6xl md:text-7xl font-bold mb-6 text-gray-800">
+                    Your Perfect <span class="text-red-600">Southern</span><br>
+                    <span class="text-amber-600">Wedding</span>
                 </h1>
-                <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
-                    Professional DJ services that create unforgettable moments and keep your guests dancing all night long
+                <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-gray-600">
+                    Alabama's premier wedding DJ service. From country classics to modern hits, we'll make your special day unforgettable with music that gets everyone on the dance floor!
                 </p>
                 <div class="flex flex-col md:flex-row gap-4 justify-center">
                     <a href="#contact" class="btn-primary pulse">
                         <i class="fas fa-calendar-alt mr-2"></i>
                         Book Your Event
                     </a>
-                    <a href="#portfolio" class="btn-primary" style="background: transparent; border: 2px solid var(--accent);">
+                    <a href="#portfolio" class="btn-primary" style="background: transparent; border: 2px solid var(--accent); color: var(--accent);">
                         <i class="fas fa-play mr-2"></i>
                         View Our Work
                     </a>
@@ -299,14 +315,14 @@
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="section section-dark">
+    <section id="services" class="section" style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.9) 0%, rgba(226, 232, 240, 0.9) 100%), url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'); background-size: cover; background-position: center; background-attachment: fixed;">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">
-                    Premium <span class="text-yellow-400">Services</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4 text-gray-800">
+                    Complete <span class="text-red-600">Wedding</span> Packages
                 </h2>
-                <p class="text-xl opacity-80 max-w-2xl mx-auto">
-                    From intimate ceremonies to grand celebrations, we provide complete audio solutions
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    From intimate backyard ceremonies to grand ballroom receptions, we provide everything you need for your perfect Alabama wedding
                 </p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -314,64 +330,144 @@
                     <div class="service-icon">
                         <i class="fas fa-music"></i>
                     </div>
-                    <h3 class="text-2xl font-bold mb-4">Wedding DJ</h3>
-                    <p class="opacity-80">
-                        Complete wedding entertainment with ceremony music, cocktail hour, and reception dancing
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Ceremony & Reception</h3>
+                    <p class="text-gray-600">
+                        Complete wedding entertainment from your "I do" moment through the last dance. Includes ceremony music, cocktail hour, dinner music, and reception dancing with country, pop, rock, and R&B hits.
                     </p>
                 </div>
                 <div class="card text-center">
                     <div class="service-icon">
                         <i class="fas fa-microphone"></i>
                     </div>
-                    <h3 class="text-2xl font-bold mb-4">MC Services</h3>
-                    <p class="opacity-80">
-                        Professional emcee to guide your event flow and keep guests engaged throughout the celebration
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Master of Ceremonies</h3>
+                    <p class="text-gray-600">
+                        Professional MC to announce your grand entrance, coordinate the cake cutting, bouquet toss, garter toss, and keep your guests entertained throughout the celebration with Southern charm.
                     </p>
                 </div>
                 <div class="card text-center">
                     <div class="service-icon">
                         <i class="fas fa-volume-up"></i>
                     </div>
-                    <h3 class="text-2xl font-bold mb-4">Sound & Lighting</h3>
-                    <p class="opacity-80">
-                        Premium audio equipment and dynamic lighting to create the perfect atmosphere
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Sound & Lighting</h3>
+                    <p class="text-gray-600">
+                        Professional sound system with wireless microphones for vows and toasts, plus uplighting and dance floor lighting to create the perfect romantic atmosphere for your special day.
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Portfolio Section -->
-    <section id="portfolio" class="section">
+    <!-- Pricing Section -->
+    <section class="section" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%), 
+                url('https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">
-                    Recent <span class="text-yellow-400">Events</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4 text-gray-800">
+                    Wedding <span class="text-red-600">Packages</span>
                 </h2>
-                <p class="text-xl opacity-80 max-w-2xl mx-auto">
-                    See how we've made special moments even more memorable
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Choose the perfect package for your Alabama wedding. All packages include setup, breakdown, and consultation.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Basic Package -->
+                <div class="card text-center relative">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Sweet Home Package</h3>
+                    <div class="text-4xl font-bold text-red-600 mb-4">$899</div>
+                    <ul class="text-left text-gray-600 space-y-2 mb-6">
+                        <li>✓ 4 hours of DJ service</li>
+                        <li>✓ Basic sound system</li>
+                        <li>✓ Wireless microphone</li>
+                        <li>✓ Music consultation</li>
+                        <li>✓ Setup & breakdown</li>
+                    </ul>
+                    <button class="btn-primary w-full">Choose Package</button>
+                </div>
+                
+                <!-- Premium Package -->
+                <div class="card text-center relative border-2 border-red-600">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-1 rounded-full text-sm font-bold">
+                        Most Popular
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Roll Tide Package</h3>
+                    <div class="text-4xl font-bold text-red-600 mb-4">$1,299</div>
+                    <ul class="text-left text-gray-600 space-y-2 mb-6">
+                        <li>✓ 6 hours of DJ service</li>
+                        <li>✓ Professional sound system</li>
+                        <li>✓ Wireless microphones (2)</li>
+                        <li>✓ Master of Ceremonies</li>
+                        <li>✓ Basic uplighting</li>
+                        <li>✓ Music consultation</li>
+                        <li>✓ Setup & breakdown</li>
+                    </ul>
+                    <button class="btn-primary w-full">Choose Package</button>
+                </div>
+                
+                <!-- Deluxe Package -->
+                <div class="card text-center relative">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Southern Belle Package</h3>
+                    <div class="text-4xl font-bold text-red-600 mb-4">$1,799</div>
+                    <ul class="text-left text-gray-600 space-y-2 mb-6">
+                        <li>✓ 8 hours of DJ service</li>
+                        <li>✓ Premium sound system</li>
+                        <li>✓ Wireless microphones (3)</li>
+                        <li>✓ Master of Ceremonies</li>
+                        <li>✓ Full uplighting package</li>
+                        <li>✓ Dance floor lighting</li>
+                        <li>✓ Photo booth music</li>
+                        <li>✓ Music consultation</li>
+                        <li>✓ Setup & breakdown</li>
+                    </ul>
+                    <button class="btn-primary w-full">Choose Package</button>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <p class="text-gray-600">* All prices include travel within 50 miles of Birmingham. Additional travel fees may apply.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="section" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%), 
+                url('https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4 text-gray-800">
+                    Recent <span class="text-red-600">Alabama</span> Weddings
+                </h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    See how we've made Alabama couples' special moments even more memorable
                 </p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="portfolio-item">
+                <div class="card text-center">
                     <div class="text-center">
-                        <i class="fas fa-heart text-4xl mb-4"></i>
-                        <h3>Sarah & Michael</h3>
-                        <p>Garden Wedding</p>
+                        <i class="fas fa-heart text-4xl mb-4 text-red-600"></i>
+                        <h3 class="text-gray-800">Sarah & Michael</h3>
+                        <p class="text-gray-600">Birmingham Botanical Gardens</p>
+                        <p class="text-sm text-gray-500 mt-2">"The perfect mix of country and pop had everyone dancing!"</p>
                     </div>
                 </div>
-                <div class="portfolio-item">
+                <div class="card text-center">
                     <div class="text-center">
-                        <i class="fas fa-ring text-4xl mb-4"></i>
-                        <h3>Emma & James</h3>
-                        <p>Beach Ceremony</p>
+                        <i class="fas fa-ring text-4xl mb-4 text-red-600"></i>
+                        <h3 class="text-gray-800">Emma & James</h3>
+                        <p class="text-gray-600">Gulf Shores Beach Wedding</p>
+                        <p class="text-sm text-gray-500 mt-2">"Our beach ceremony was absolutely magical!"</p>
                     </div>
                 </div>
-                <div class="portfolio-item">
+                <div class="card text-center">
                     <div class="text-center">
-                        <i class="fas fa-champagne-glasses text-4xl mb-4"></i>
-                        <h3>Lisa & David</h3>
-                        <p>Ballroom Reception</p>
+                        <i class="fas fa-champagne-glasses text-4xl mb-4 text-red-600"></i>
+                        <h3 class="text-gray-800">Lisa & David</h3>
+                        <p class="text-gray-600">Montgomery Country Club</p>
+                        <p class="text-sm text-gray-500 mt-2">"The uplighting made our reception look incredible!"</p>
                     </div>
                 </div>
             </div>
@@ -379,115 +475,124 @@
     </section>
 
     <!-- Testimonials Section -->
-    <section id="testimonials" class="section section-dark">
+    <section id="testimonials" class="section" style="background: linear-gradient(135deg, rgba(248, 250, 252, 0.9) 0%, rgba(226, 232, 240, 0.9) 100%), 
+                url('https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">
-                    Happy <span class="text-yellow-400">Couples</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4 text-gray-800">
+                    Happy <span class="text-red-600">Alabama</span> Couples
                 </h2>
-                <p class="text-xl opacity-80 max-w-2xl mx-auto">
-                    What our clients say about their experience
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    What our Alabama couples say about their wedding experience
                 </p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="testimonial">
+                <div class="card">
                     <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-4">
-                            <i class="fas fa-user text-gray-800"></i>
+                        <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-white"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold">Sarah & Michael</h4>
-                            <p class="text-sm opacity-70">Garden Wedding</p>
+                            <h4 class="font-bold text-gray-800">Sarah & Michael</h4>
+                            <p class="text-sm text-gray-600">Birmingham Botanical Gardens</p>
                         </div>
                     </div>
-                    <p class="italic">"Elite DJ made our wedding absolutely perfect! The music was flawless and kept everyone dancing all night."</p>
+                    <p class="italic text-gray-600">"Alabama Elite DJ made our wedding absolutely perfect! The mix of country classics and modern hits had everyone from Grandma to our college friends dancing all night. Roll Tide!"</p>
                 </div>
-                <div class="testimonial">
+                <div class="card">
                     <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-4">
-                            <i class="fas fa-user text-gray-800"></i>
+                        <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-white"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold">Emma & James</h4>
-                            <p class="text-sm opacity-70">Beach Ceremony</p>
+                            <h4 class="font-bold text-gray-800">Emma & James</h4>
+                            <p class="text-sm text-gray-600">Gulf Shores Beach Wedding</p>
                         </div>
                     </div>
-                    <p class="italic">"Professional, reliable, and incredibly talented. Our guests are still talking about the amazing music!"</p>
+                    <p class="italic text-gray-600">"Professional, reliable, and incredibly talented! Our beach ceremony was magical, and the reception had everyone on their feet. Our guests are still talking about the amazing music and Southern hospitality!"</p>
                 </div>
-                <div class="testimonial">
+                <div class="card">
                     <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-4">
-                            <i class="fas fa-user text-gray-800"></i>
+                        <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-white"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold">Lisa & David</h4>
-                            <p class="text-sm opacity-70">Ballroom Reception</p>
+                            <h4 class="font-bold text-gray-800">Lisa & David</h4>
+                            <p class="text-sm text-gray-600">Montgomery Country Club</p>
                         </div>
                     </div>
-                    <p class="italic">"From ceremony to last dance, everything was perfect. Highly recommend Elite DJ for any special event!"</p>
+                    <p class="italic text-gray-600">"From our ceremony to the last dance, everything was perfect! The uplighting made our reception look incredible, and the MC kept everything running smoothly. Highly recommend for any Alabama wedding!"</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="section">
+    <section id="contact" class="section" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%), 
+                url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">
-                    Let's Create <span class="text-yellow-400">Magic</span>
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4 text-gray-800">
+                    Let's Make Your <span class="text-red-600">Dream</span> Wedding
                 </h2>
-                <p class="text-xl opacity-80 max-w-2xl mx-auto">
-                    Ready to make your wedding unforgettable? Get in touch today!
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Ready to make your Alabama wedding unforgettable? Contact us today for a free consultation and let's plan the perfect soundtrack for your special day!
                 </p>
             </div>
             <div class="max-w-4xl mx-auto">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     <div class="contact-form">
-                        <h3 class="text-2xl font-bold mb-6">Send us a message</h3>
+                        <h3 class="text-2xl font-bold mb-6 text-gray-800">Send us a message</h3>
                         <form id="contactForm">
-                            <input type="text" class="form-input" placeholder="Your Name" required>
-                            <input type="email" class="form-input" placeholder="Your Email" required>
-                            <input type="tel" class="form-input" placeholder="Phone Number">
-                            <input type="date" class="form-input" placeholder="Event Date">
-                            <textarea class="form-input" rows="5" placeholder="Tell us about your event..." required></textarea>
+                            <input type="text" class="form-input" placeholder="Bride & Groom Names" required>
+                            <input type="email" class="form-input" placeholder="Your Email Address" required>
+                            <input type="tel" class="form-input" placeholder="Phone Number (205) 555-0123">
+                            <input type="date" class="form-input" placeholder="Wedding Date">
+                            <input type="text" class="form-input" placeholder="Wedding Venue Location">
+                            <textarea class="form-input" rows="5" placeholder="Tell us about your wedding vision, guest count, and any special songs or traditions..." required></textarea>
                             <button type="submit" class="btn-primary w-full">
                                 <i class="fas fa-paper-plane mr-2"></i>
-                                Send Message
+                                Get Free Quote
                             </button>
                         </form>
                     </div>
                     <div class="space-y-8">
                         <div class="card">
                             <div class="flex items-center mb-4">
-                                <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-4">
-                                    <i class="fas fa-phone text-gray-800"></i>
+                                <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-phone text-white"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold">Call Us</h4>
-                                    <p class="opacity-70">(555) 123-4567</p>
+                                    <h4 class="font-bold text-gray-800">Call Us</h4>
+                                    <p class="text-gray-600">(205) 555-0123</p>
                                 </div>
                             </div>
                         </div>
                         <div class="card">
                             <div class="flex items-center mb-4">
-                                <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-4">
-                                    <i class="fas fa-envelope text-gray-800"></i>
+                                <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-envelope text-white"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold">Email Us</h4>
-                                    <p class="opacity-70">info@elitedj.com</p>
+                                    <h4 class="font-bold text-gray-800">Email Us</h4>
+                                    <p class="text-gray-600">info@alabamaelitedj.com</p>
                                 </div>
                             </div>
                         </div>
                         <div class="card">
                             <div class="flex items-center mb-4">
-                                <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mr-4">
-                                    <i class="fas fa-map-marker-alt text-gray-800"></i>
+                                <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-map-marker-alt text-white"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold">Service Area</h4>
-                                    <p class="opacity-70">Greater Metro Area</p>
+                                    <h4 class="font-bold text-gray-800">Service Area</h4>
+                                    <p class="text-gray-600">Birmingham, Montgomery, Huntsville & Surrounding Areas</p>
                                 </div>
                             </div>
                         </div>
@@ -498,26 +603,26 @@
     </section>
 
     <!-- Footer -->
-    <footer class="section-dark text-center">
+    <footer class="text-center" style="background: var(--text-dark); color: white; padding: 60px 0;">
         <div class="container mx-auto px-4">
             <div class="font-display text-2xl font-bold mb-4">
-                <i class="fas fa-music text-yellow-400 mr-2"></i>
-                Elite DJ Services
+                <i class="fas fa-music text-red-600 mr-2"></i>
+                Alabama Elite DJ
             </div>
-            <p class="opacity-70 mb-6">Creating unforgettable wedding experiences through music</p>
+            <p class="text-gray-300 mb-6">Creating unforgettable Alabama wedding experiences through music</p>
             <div class="flex justify-center space-x-6 mb-6">
-                <a href="#" class="text-2xl hover:text-yellow-400 transition-colors">
+                <a href="#" class="text-2xl hover:text-red-600 transition-colors">
                     <i class="fab fa-facebook"></i>
                 </a>
-                <a href="#" class="text-2xl hover:text-yellow-400 transition-colors">
+                <a href="#" class="text-2xl hover:text-red-600 transition-colors">
                     <i class="fab fa-instagram"></i>
                 </a>
-                <a href="#" class="text-2xl hover:text-yellow-400 transition-colors">
+                <a href="#" class="text-2xl hover:text-red-600 transition-colors">
                     <i class="fab fa-youtube"></i>
                 </a>
             </div>
-            <p class="opacity-50 text-sm">
-                &copy; 2024 Elite DJ Services. All rights reserved.
+            <p class="text-gray-400 text-sm">
+                &copy; 2024 Alabama Elite DJ Services. All rights reserved.
             </p>
         </div>
     </footer>

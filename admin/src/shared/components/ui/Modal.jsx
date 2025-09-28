@@ -36,10 +36,10 @@ const Modal = ({ isOpen, show, onClose, children, className = '', ...props }) =>
 
     const modalContent = (
         <div
-            className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center p-4"
             onClick={handleBackdropClick}
         >
-            <div className="relative bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200">
+            <div className="relative bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200 mt-8">
                 <div className="p-6">
                     {children}
                 </div>
