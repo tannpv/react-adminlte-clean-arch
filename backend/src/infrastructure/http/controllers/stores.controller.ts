@@ -52,7 +52,7 @@ export class StoresController {
   }
 
   @Get()
-  @RequirePermissions({ any: ["stores:read"] })
+  @RequirePermissions("stores:read")
   @UseGuards(PermissionsGuard)
   async findAllStores(
     @Query("limit") limit?: string,
