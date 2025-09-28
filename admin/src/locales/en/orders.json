@@ -1,0 +1,34 @@
+{
+  "orders": "Orders",
+  "order": "Order",
+  "ordersDescription": "Manage customer orders and order processing",
+  "noOrdersFound": "No orders found",
+  "noOrdersDescription": "Orders will appear here when customers make purchases",
+  "searchOrders": "Search orders...",
+  "errorLoadingOrders": "Error loading orders",
+  "unknownError": "An unknown error occurred",
+  "accessDenied": "Access Denied",
+  "accessDeniedMessage": "You don't have permission to view orders",
+  
+  "orderNumber": "Order Number",
+  "customer": "Customer",
+  "store": "Store",
+  "status": "Status",
+  "total": "Total",
+  "createdAt": "Created At",
+  "actions": "Actions",
+  
+  "status.pending": "Pending",
+  "status.processing": "Processing",
+  "status.completed": "Completed",
+  "status.cancelled": "Cancelled",
+  
+  "process": "Process",
+  "complete": "Complete",
+  "view": "View",
+  
+  "totalOrders": "Total Orders",
+  "pendingOrders": "Pending",
+  "processingOrders": "Processing",
+  "completedOrders": "Completed"
+}

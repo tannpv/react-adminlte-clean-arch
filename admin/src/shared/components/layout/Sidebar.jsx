@@ -54,6 +54,16 @@ export const Sidebar = ({ currentPage, onPageChange }) => {
             page: 'attribute-sets',
         },
         {
+            icon: 'fas fa-store',
+            label: 'Stores',
+            page: 'stores',
+        },
+        {
+            icon: 'fas fa-shopping-cart',
+            label: 'Orders',
+            page: 'orders',
+        },
+        {
             icon: 'fas fa-globe',
             label: 'Translations',
             page: 'translations',

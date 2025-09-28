@@ -1,0 +1,72 @@
+{
+  "stores": "Stores",
+  "store": "Store",
+  "createStore": "Create Store",
+  "editStore": "Edit Store",
+  "deleteStore": "Delete Store",
+  "storesDescription": "Manage multi-seller stores and their settings",
+  "noStoresFound": "No stores found",
+  "noStoresDescription": "Create your first store to get started with the multi-seller marketplace",
+  "searchStores": "Search stores...",
+  "errorLoadingStores": "Error loading stores",
+  "unknownError": "An unknown error occurred",
+  "accessDenied": "Access Denied",
+  "accessDeniedMessage": "You don't have permission to view stores",
+  
+  "storeName": "Store Name",
+  "storeNameRequired": "Store name is required",
+  "storeNameMinLength": "Store name must be at least 2 characters",
+  "storeNamePlaceholder": "Enter store name",
+  
+  "storeSlug": "Store Slug",
+  "storeSlugRequired": "Store slug is required",
+  "storeSlugPattern": "Store slug can only contain lowercase letters, numbers, and hyphens",
+  "storeSlugPlaceholder": "store-slug",
+  "storeSlugHelp": "This will be used in the store URL (e.g., /store/your-slug)",
+  
+  "description": "Description",
+  "descriptionPlaceholder": "Enter store description",
+  
+  "logoUrl": "Logo URL",
+  "logoUrlPattern": "Please enter a valid URL",
+  "logoUrlPlaceholder": "https://example.com/logo.png",
+  
+  "bannerUrl": "Banner URL",
+  "bannerUrlPattern": "Please enter a valid URL",
+  "bannerUrlPlaceholder": "https://example.com/banner.png",
+  
+  "commissionRate": "Commission Rate",
+  "commissionRateRequired": "Commission rate is required",
+  "commissionRateMin": "Commission rate must be at least 0%",
+  "commissionRateMax": "Commission rate cannot exceed 100%",
+  
+  "owner": "Owner",
+  "status": "Status",
+  "commission": "Commission",
+  "createdAt": "Created At",
+  "actions": "Actions",
+  
+  "status.pending": "Pending",
+  "status.approved": "Approved",
+  "status.suspended": "Suspended",
+  "status.rejected": "Rejected",
+  
+  "approve": "Approve",
+  "reject": "Reject",
+  "suspend": "Suspend",
+  "reactivate": "Reactivate",
+  "edit": "Edit",
+  "delete": "Delete",
+  
+  "totalStores": "Total Stores",
+  "pendingStores": "Pending",
+  "approvedStores": "Approved",
+  "suspendedStores": "Suspended",
+  
+  "cancel": "Cancel",
+  "create": "Create",
+  "update": "Update",
+  "saving": "Saving...",
+  
+  "deleteStoreConfirm": "Are you sure you want to delete the store \"{{name}}\"? This action cannot be undone."
+}

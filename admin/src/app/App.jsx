@@ -10,7 +10,9 @@ import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
 import { CategoriesPage } from '../features/categories/pages/CategoriesPage'
 import { ProductsPage } from '../features/products/pages/ProductsPage'
+import { OrdersPage } from '../features/orders/pages/OrdersPage'
 import { RolesPage } from '../features/roles/pages/RolesPage'
+import { StoresPage } from '../features/stores/pages/StoresPage'
 import { TranslationsPage } from '../features/translations/pages/TranslationsPage'
 import { UsersPage } from '../features/users/pages/UsersPage'
 import { LanguageSwitcher } from '../shared/components/LanguageSwitcher'
@@ -109,6 +111,10 @@ function AppContent() {
                             ) : (
                                 <AttributeSetsPage onViewDetails={handleViewAttributeSetDetails} />
                             )
+                        ) : currentPage === 'stores' ? (
+                            <StoresPage />
+                        ) : currentPage === 'orders' ? (
+                            <OrdersPage />
                         ) : currentPage === 'translations' ? (
                             <TranslationsPage />
                         ) : null}
