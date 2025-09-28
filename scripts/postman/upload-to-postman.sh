@@ -1,667 +1,585 @@
 #!/bin/bash
 
-# Upload All Postman Assets Script
-# This script uploads both the collection and environment to Postman
+# Postman Upload Script
+# Uploads collection and environment to Postman cloud workspace
+# Author: Clean Code Refactor
+# Version: 2.0
 
-set -e
+set -euo pipefail
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# =============================================================================
+# CONSTANTS AND CONFIGURATION
+# =============================================================================
 
-echo -e "${BLUE}🚀 Postman Complete Upload${NC}"
-echo "=========================="
-echo "This will upload both the collection and environment to Postman"
-echo ""
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+readonly API_KEY_FILE="$HOME/.postman-api-key"
 
-# Ensure jq is installed
-if ! command -v jq &> /dev/null; then
-    echo -e "${RED}❌ 'jq' is not installed. Please install it to proceed (e.g., sudo apt-get install jq or brew install jq).${NC}"
-    exit 1
-fi
+# Postman API endpoints
+readonly POSTMAN_API_BASE="https://api.getpostman.com"
+readonly COLLECTIONS_ENDPOINT="$POSTMAN_API_BASE/collections"
+readonly ENVIRONMENTS_ENDPOINT="$POSTMAN_API_BASE/environments"
 
-# API key file location
-API_KEY_FILE="$HOME/.postman-api-key"
+# File paths
+readonly COLLECTION_FILE_NAME="ReactAdminLTE.postman_collection.json"
+readonly ENVIRONMENT_FILE_NAME="Local.postman_environment.json"
 
-# Get project name
+# Color codes for output
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly NC='\033[0m' # No Color
+
+# =============================================================================
+# UTILITY FUNCTIONS
+# =============================================================================
+
+# Print colored output
+print_info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
+print_success() { echo -e "${GREEN}✅ $1${NC}"; }
+print_warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
+print_error() { echo -e "${RED}❌ $1${NC}"; }
+
+# Check if required tools are installed
+check_dependencies() {
+    local missing_tools=()
+    
+    if ! command -v jq &> /dev/null; then
+        missing_tools+=("jq")
+    fi
+    
+    if ! command -v curl &> /dev/null; then
+        missing_tools+=("curl")
+    fi
+    
+    if [ ${#missing_tools[@]} -gt 0 ]; then
+        print_error "Missing required tools: ${missing_tools[*]}"
+        print_info "Please install them to proceed:"
+        for tool in "${missing_tools[@]}"; do
+            case "$tool" in
+                "jq") echo "  - jq: sudo apt-get install jq or brew install jq" ;;
+                "curl") echo "  - curl: sudo apt-get install curl or brew install curl" ;;
+            esac
+        done
+        exit 1
+    fi
+}
+
+# =============================================================================
+# PROJECT NAME DETECTION
+# =============================================================================
+
 get_project_name() {
+    local project_name=""
+    
     # Try to get project name from package.json
-    if [ -f "package.json" ]; then
-        PROJECT_NAME=$(cat package.json | jq -r '.name' 2>/dev/null)
-    elif [ -f "../../package.json" ]; then
-        PROJECT_NAME=$(cat ../../package.json | jq -r '.name' 2>/dev/null)
-    else
-        # Fallback to directory name
-        PROJECT_NAME=$(basename "$(pwd)")
+    for package_file in "package.json" "../../package.json"; do
+        if [ -f "$package_file" ]; then
+            project_name=$(jq -r '.name // empty' "$package_file" 2>/dev/null)
+            [ -n "$project_name" ] && break
+        fi
+    done
+    
+    # Fallback to directory name
+    if [ -z "$project_name" ] || [ "$project_name" = "null" ]; then
+        project_name=$(basename "$(pwd)")
     fi
     
     # Clean up project name (remove special characters, convert to title case)
-    PROJECT_NAME=$(echo "$PROJECT_NAME" | sed 's/[^a-zA-Z0-9-]//g' | sed 's/-/ /g' | sed 's/\b\w/\U&/g' | sed 's/ //g')
+    project_name=$(echo "$project_name" | sed 's/[^a-zA-Z0-9-]//g' | sed 's/-/ /g' | sed 's/\b\w/\U&/g' | sed 's/ //g')
     
     # Default fallback
-    if [ -z "$PROJECT_NAME" ] || [ "$PROJECT_NAME" = "null" ]; then
-        PROJECT_NAME="ReactAdminLTE"
+    if [ -z "$project_name" ]; then
+        project_name="ReactAdminLTE"
     fi
     
-    echo "$PROJECT_NAME"
+    echo "$project_name"
 }
 
-# Function to get stored API key
+# =============================================================================
+# API KEY MANAGEMENT
+# =============================================================================
+
 get_stored_api_key() {
     if [ -f "$API_KEY_FILE" ]; then
-        cat "$API_KEY_FILE" | base64 -d 2>/dev/null
+        base64 -d "$API_KEY_FILE" 2>/dev/null || return 1
     fi
 }
 
-# Function to store API key
 store_api_key() {
     local api_key="$1"
     echo "$api_key" | base64 > "$API_KEY_FILE"
     chmod 600 "$API_KEY_FILE"
-    echo -e "${GREEN}✅ API key stored securely for future use${NC}"
+    print_success "API key stored securely for future use"
 }
 
-# Function to check if collection exists
+# =============================================================================
+# FILE PATH RESOLUTION
+# =============================================================================
+
+find_file() {
+    local filename="$1"
+    local search_paths=(
+        "postman/$filename"
+        "../../postman/$filename"
+        "$PROJECT_ROOT/postman/$filename"
+    )
+    
+    for path in "${search_paths[@]}"; do
+        if [ -f "$path" ]; then
+            echo "$path"
+            return 0
+        fi
+    done
+    
+    return 1
+}
+
+# =============================================================================
+# POSTMAN API FUNCTIONS
+# =============================================================================
+
+# Make API request with error handling
+make_api_request() {
+    local method="$1"
+    local url="$2"
+    local api_key="$3"
+    local data="${4:-}"
+    local headers=(-H "X-API-Key: $api_key")
+    
+    if [ -n "$data" ]; then
+        headers+=(-H "Content-Type: application/json")
+    fi
+    
+    local response
+    if [ -n "$data" ]; then
+        response=$(curl -s -X "$method" "$url" "${headers[@]}" -d "$data")
+    else
+        response=$(curl -s -X "$method" "$url" "${headers[@]}")
+    fi
+    
+    # Check for curl errors
+    if [ $? -ne 0 ]; then
+        print_error "API request failed"
+        return 1
+    fi
+    
+    echo "$response"
+}
+
+# Check if resource exists by name
+resource_exists() {
+    local api_key="$1"
+    local resource_name="$2"
+    local endpoint="$3"
+    
+    local response
+    response=$(make_api_request "GET" "$endpoint" "$api_key")
+    
+    if echo "$response" | jq -e ".${endpoint##*/}[] | select(.name == \"$resource_name\")" >/dev/null 2>&1; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Get resource UID by name
+get_resource_uid() {
+    local api_key="$1"
+    local resource_name="$2"
+    local endpoint="$3"
+    
+    local response
+    response=$(make_api_request "GET" "$endpoint" "$api_key")
+    
+    echo "$response" | jq -r ".${endpoint##*/}[] | select(.name == \"$resource_name\") | .uid" 2>/dev/null
+}
+
+# Get resource info by name
+get_resource_info() {
+    local api_key="$1"
+    local resource_name="$2"
+    local endpoint="$3"
+    
+    local response
+    response=$(make_api_request "GET" "$endpoint" "$api_key")
+    
+    echo "$response" | jq -r ".${endpoint##*/}[] | select(.name == \"$resource_name\") | {name: .name, uid: .uid, id: .id, updatedAt: .updatedAt}" 2>/dev/null
+}
+
+# =============================================================================
+# COLLECTION FUNCTIONS
+# =============================================================================
+
 check_collection_exists() {
-    local api_key="$1"
-    local collection_name="$2"
-    local response=$(curl -s -X GET "https://api.getpostman.com/collections" -H "X-API-Key: $api_key")
-    if echo "$response" | grep -q "\"name\":\"$collection_name\""; then
-        return 0
-    else
-        return 1
-    fi
+    resource_exists "$1" "$2" "$COLLECTIONS_ENDPOINT"
 }
 
-# Function to get existing collection info
-get_existing_collection_info() {
-    local api_key="$1"
-    local collection_name="$2"
-    local response=$(curl -s -X GET "https://api.getpostman.com/collections" -H "X-API-Key: $api_key")
-    echo "$response" | jq -r ".collections[] | select(.name == \"$collection_name\") | {name: .name, uid: .uid, id: .id, updatedAt: .updatedAt}" 2>/dev/null
+get_collection_uid() {
+    get_resource_uid "$1" "$2" "$COLLECTIONS_ENDPOINT"
 }
 
-# Function to handle collection conflict
-handle_collection_conflict() {
-    local api_key="$1"
-    local method="$2"
-    local collection_name="$3"
-    
-    echo -e "${YELLOW}⚠️  Collection '$collection_name' already exists!${NC}"
-    echo ""
-    
-    # Get existing collection info
-    local existing_info=$(get_existing_collection_info "$api_key" "$collection_name")
-    if [ -n "$existing_info" ]; then
-        echo -e "${BLUE}📋 Existing collection details:${NC}"
-        echo "$existing_info"
-        echo ""
-    fi
-    
-    echo -e "${BLUE}🔧 Choose an action:${NC}"
-    echo "1. Create a copy with timestamp (recommended)"
-    echo "2. Override existing collection"
-    echo "3. Cancel upload"
-    echo ""
-    
-    # For now, always default to creating a copy to avoid infinite loops
-    echo -e "${BLUE}📋 Creating a copy with timestamp (auto-selected)...${NC}"
-    upload_collection_copy "$api_key" "$method" "$collection_name"
-    return $?
+get_collection_info() {
+    get_resource_info "$1" "$2" "$COLLECTIONS_ENDPOINT"
 }
 
-# Function to upload collection copy
-upload_collection_copy() {
-    local api_key="$1"
-    local method="$2"
-    local original_name="$3"
-    
-    # Create timestamped name
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    local new_name="${original_name} - ${timestamp}"
-    
-    echo -e "${BLUE}📝 Creating copy: $new_name${NC}"
-    
-    # Get collection file
-    if [ -f "postman/ReactAdminLTE.postman_collection.json" ]; then
-        COLLECTION_FILE="postman/ReactAdminLTE.postman_collection.json"
-    elif [ -f "../../postman/ReactAdminLTE.postman_collection.json" ]; then
-        COLLECTION_FILE="../../postman/ReactAdminLTE.postman_collection.json"
-    else
-        COLLECTION_FILE="postman/ReactAdminLTE.postman_collection.json"
-    fi
-    
-    # Read the collection file and modify the name
-    COLLECTION_DATA=$(cat "$COLLECTION_FILE" | jq ".info.name = \"$new_name\"")
-    WRAPPED_DATA="{\"collection\": $COLLECTION_DATA}"
-    
-    # Upload collection
-    RESPONSE=$(curl -s -X POST \
-        "https://api.getpostman.com/collections" \
-        -H "X-API-Key: $api_key" \
-        -H "Content-Type: application/json" \
-        -d "$WRAPPED_DATA")
-    
-    # Check if upload was successful
-    if echo "$RESPONSE" | grep -q '"uid"'; then
-        COLLECTION_UID=$(echo "$RESPONSE" | jq -r '.collection.uid')
-        COLLECTION_NAME=$(echo "$RESPONSE" | jq -r '.collection.name')
-        echo -e "${GREEN}✅ Collection copy uploaded successfully!${NC}"
-        echo -e "${GREEN}   Name: $COLLECTION_NAME${NC}"
-        echo -e "${GREEN}   UID: $COLLECTION_UID${NC}"
-        echo -e "${GREEN}   Method: $method${NC}"
-        return 0
-    else
-        echo -e "${RED}❌ Collection copy upload failed${NC}"
-        echo -e "${RED}   Response: $RESPONSE${NC}"
-        return 1
-    fi
-}
-
-# Function to override existing collection
-upload_collection_override() {
-    local api_key="$1"
-    local method="$2"
-    local collection_name="$3"
-    
-    # Get existing collection UID
-    local response=$(curl -s -X GET "https://api.getpostman.com/collections" -H "X-API-Key: $api_key")
-    local existing_uid=$(echo "$response" | jq -r ".collections[] | select(.name == \"$collection_name\") | .uid" 2>/dev/null)
-    
-    if [ -z "$existing_uid" ] || [ "$existing_uid" = "null" ]; then
-        echo -e "${RED}❌ Could not find existing collection UID${NC}"
-        return 1
-    fi
-    
-    echo -e "${BLUE}📝 Overriding collection with UID: $existing_uid${NC}"
-    
-    # Get collection file
-    if [ -f "postman/ReactAdminLTE.postman_collection.json" ]; then
-        COLLECTION_FILE="postman/ReactAdminLTE.postman_collection.json"
-    elif [ -f "../../postman/ReactAdminLTE.postman_collection.json" ]; then
-        COLLECTION_FILE="../../postman/ReactAdminLTE.postman_collection.json"
-    else
-        COLLECTION_FILE="postman/ReactAdminLTE.postman_collection.json"
-    fi
-    
-    # Read the collection file and modify the name
-    COLLECTION_DATA=$(cat "$COLLECTION_FILE" | jq ".info.name = \"$collection_name\"")
-    WRAPPED_DATA="{\"collection\": $COLLECTION_DATA}"
-    
-    # Update collection using PUT
-    RESPONSE=$(curl -s -X PUT \
-        "https://api.getpostman.com/collections/$existing_uid" \
-        -H "X-API-Key: $api_key" \
-        -H "Content-Type: application/json" \
-        -d "$WRAPPED_DATA")
-    
-    # Check if update was successful
-    if echo "$RESPONSE" | grep -q '"uid"'; then
-        COLLECTION_UID=$(echo "$RESPONSE" | jq -r '.collection.uid')
-        COLLECTION_NAME=$(echo "$RESPONSE" | jq -r '.collection.name')
-        echo -e "${GREEN}✅ Collection overridden successfully!${NC}"
-        echo -e "${GREEN}   Name: $COLLECTION_NAME${NC}"
-        echo -e "${GREEN}   UID: $COLLECTION_UID${NC}"
-        echo -e "${GREEN}   Method: $method${NC}"
-        return 0
-    else
-        echo -e "${RED}❌ Collection override failed${NC}"
-        echo -e "${RED}   Response: $RESPONSE${NC}"
-        return 1
-    fi
-}
-
-# Function to upload collection
 upload_collection() {
     local api_key="$1"
-    local method="$2"
+    local collection_name="$2"
+    local collection_file="$3"
     
-    echo -e "${BLUE}📤 Uploading collection using $method...${NC}"
+    local collection_data
+    collection_data=$(jq ".info.name = \"$collection_name\"" "$collection_file")
+    local wrapped_data="{\"collection\": $collection_data}"
     
-    # Check collection file (adjust path based on current directory)
-    if [ -f "postman/ReactAdminLTE.postman_collection.json" ]; then
-        COLLECTION_FILE="postman/ReactAdminLTE.postman_collection.json"
-    elif [ -f "../../postman/ReactAdminLTE.postman_collection.json" ]; then
-        COLLECTION_FILE="../../postman/ReactAdminLTE.postman_collection.json"
+    local response
+    response=$(make_api_request "POST" "$COLLECTIONS_ENDPOINT" "$api_key" "$wrapped_data")
+    
+    if echo "$response" | jq -e '.collection.uid' >/dev/null 2>&1; then
+        local uid name
+        uid=$(echo "$response" | jq -r '.collection.uid')
+        name=$(echo "$response" | jq -r '.collection.name')
+        print_success "Collection uploaded successfully!"
+        print_info "  Name: $name"
+        print_info "  UID: $uid"
+        return 0
     else
-        COLLECTION_FILE="postman/ReactAdminLTE.postman_collection.json"
+        print_error "Collection upload failed"
+        print_error "  Response: $response"
+        return 1
+    fi
+}
+
+update_collection() {
+    local api_key="$1"
+    local collection_uid="$2"
+    local collection_name="$3"
+    local collection_file="$4"
+    
+    local collection_data
+    collection_data=$(jq ".info.name = \"$collection_name\"" "$collection_file")
+    local wrapped_data="{\"collection\": $collection_data}"
+    
+    local response
+    response=$(make_api_request "PUT" "$COLLECTIONS_ENDPOINT/$collection_uid" "$api_key" "$wrapped_data")
+    
+    if echo "$response" | jq -e '.collection.uid' >/dev/null 2>&1; then
+        local uid name
+        uid=$(echo "$response" | jq -r '.collection.uid')
+        name=$(echo "$response" | jq -r '.collection.name')
+        print_success "Collection updated successfully!"
+        print_info "  Name: $name"
+        print_info "  UID: $uid"
+        return 0
+    else
+        print_error "Collection update failed"
+        print_error "  Response: $response"
+        return 1
+    fi
+}
+
+handle_collection_conflict() {
+    local api_key="$1"
+    local collection_name="$2"
+    local collection_file="$3"
+    
+    print_warning "Collection '$collection_name' already exists!"
+    
+    # Get existing collection info
+    local existing_info
+    existing_info=$(get_collection_info "$api_key" "$collection_name")
+    if [ -n "$existing_info" ]; then
+        print_info "Existing collection details:"
+        echo "$existing_info"
     fi
     
-    if [ ! -f "$COLLECTION_FILE" ]; then
-        echo -e "${RED}❌ Collection file not found: $COLLECTION_FILE${NC}"
+    # Auto-select creating a copy to avoid interactive loops
+    print_info "Creating a copy with timestamp (auto-selected)..."
+    
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local new_name="${collection_name} - ${timestamp}"
+    
+    upload_collection "$api_key" "$new_name" "$collection_file"
+}
+
+process_collection() {
+    local api_key="$1"
+    
+    print_info "Processing collection..."
+    
+    # Find collection file
+    local collection_file
+    if ! collection_file=$(find_file "$COLLECTION_FILE_NAME"); then
+        print_error "Collection file not found: $COLLECTION_FILE_NAME"
         return 1
     fi
     
-    echo -e "${BLUE}📁 Using collection file: $COLLECTION_FILE${NC}"
+    print_info "Using collection file: $collection_file"
     
     # Get project name and create collection name
-    PROJECT_NAME=$(get_project_name)
-    COLLECTION_NAME="Development-$PROJECT_NAME"
+    local project_name collection_name
+    project_name=$(get_project_name)
+    collection_name="Development-$project_name"
     
-    echo -e "${BLUE}📝 Collection will be named: $COLLECTION_NAME${NC}"
+    print_info "Collection will be named: $collection_name"
     
     # Check if collection already exists
-    if check_collection_exists "$api_key" "$COLLECTION_NAME"; then
-        handle_collection_conflict "$api_key" "$method" "$COLLECTION_NAME"
-        return $?
-    fi
-    
-    # Read the collection file and modify the name
-    COLLECTION_DATA=$(cat "$COLLECTION_FILE" | jq ".info.name = \"$COLLECTION_NAME\"")
-    WRAPPED_DATA="{\"collection\": $COLLECTION_DATA}"
-    
-    # Upload collection
-    RESPONSE=$(curl -s -X POST \
-        "https://api.getpostman.com/collections" \
-        -H "X-API-Key: $api_key" \
-        -H "Content-Type: application/json" \
-        -d "$WRAPPED_DATA")
-    
-    # Check if upload was successful
-    if echo "$RESPONSE" | grep -q '"uid"'; then
-        COLLECTION_UID=$(echo "$RESPONSE" | jq -r '.collection.uid')
-        COLLECTION_NAME=$(echo "$RESPONSE" | jq -r '.collection.name')
-        echo -e "${GREEN}✅ Collection uploaded successfully!${NC}"
-        echo -e "${GREEN}   Name: $COLLECTION_NAME${NC}"
-        echo -e "${GREEN}   UID: $COLLECTION_UID${NC}"
-        echo -e "${GREEN}   Method: $method${NC}"
-        return 0
+    if check_collection_exists "$api_key" "$collection_name"; then
+        handle_collection_conflict "$api_key" "$collection_name" "$collection_file"
     else
-        echo -e "${RED}❌ Collection upload failed${NC}"
-        echo -e "${RED}   Response: $RESPONSE${NC}"
-        return 1
+        upload_collection "$api_key" "$collection_name" "$collection_file"
     fi
 }
 
-# Function to check if environment exists
+# =============================================================================
+# ENVIRONMENT FUNCTIONS
+# =============================================================================
+
 check_environment_exists() {
-    local api_key="$1"
-    local environment_name="$2"
-    local response=$(curl -s -X GET "https://api.getpostman.com/environments" -H "X-API-Key: $api_key")
-    if echo "$response" | grep -q "\"name\":\"$environment_name\""; then
-        return 0
-    else
-        return 1
-    fi
+    resource_exists "$1" "$2" "$ENVIRONMENTS_ENDPOINT"
 }
 
-# Function to get existing environment info
-get_existing_environment_info() {
-    local api_key="$1"
-    local environment_name="$2"
-    local response=$(curl -s -X GET "https://api.getpostman.com/environments" -H "X-API-Key: $api_key")
-    echo "$response" | jq -r ".environments[] | select(.name == \"$environment_name\") | {name: .name, uid: .uid, id: .id, updatedAt: .updatedAt}" 2>/dev/null
+get_environment_uid() {
+    get_resource_uid "$1" "$2" "$ENVIRONMENTS_ENDPOINT"
 }
 
-# Function to handle environment conflict
-handle_environment_conflict() {
-    local api_key="$1"
-    local method="$2"
-    local environment_name="$3"
-    
-    echo -e "${YELLOW}⚠️  Environment '$environment_name' already exists!${NC}"
-    echo ""
-    
-    # Get existing environment info
-    local existing_info=$(get_existing_environment_info "$api_key" "$environment_name")
-    if [ -n "$existing_info" ]; then
-        echo -e "${BLUE}📋 Existing environment details:${NC}"
-        echo "$existing_info"
-        echo ""
-    fi
-    
-    echo -e "${BLUE}🔧 Choose an action:${NC}"
-    echo "1. Create a copy with timestamp (recommended)"
-    echo "2. Override existing environment"
-    echo "3. Cancel upload"
-    echo ""
-    
-    # For now, always default to creating a copy to avoid infinite loops
-    echo -e "${BLUE}📋 Creating a copy with timestamp (auto-selected)...${NC}"
-    upload_environment_copy "$api_key" "$method" "$environment_name"
-    return $?
+get_environment_info() {
+    get_resource_info "$1" "$2" "$ENVIRONMENTS_ENDPOINT"
 }
 
-# Function to upload environment copy
-upload_environment_copy() {
-    local api_key="$1"
-    local method="$2"
-    local original_name="$3"
-    
-    # Create timestamped name
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    local new_name="${original_name} - ${timestamp}"
-    
-    echo -e "${BLUE}📝 Creating copy: $new_name${NC}"
-    
-    # Get environment file
-    if [ -f "postman/Local.postman_environment.json" ]; then
-        ENVIRONMENT_FILE="postman/Local.postman_environment.json"
-    elif [ -f "../../postman/Local.postman_environment.json" ]; then
-        ENVIRONMENT_FILE="../../postman/Local.postman_environment.json"
-    else
-        ENVIRONMENT_FILE="postman/Local.postman_environment.json"
-    fi
-    
-    # Read the environment file and modify the name
-    ENVIRONMENT_DATA=$(cat "$ENVIRONMENT_FILE" | jq ".name = \"$new_name\"")
-    WRAPPED_DATA="{\"environment\": $ENVIRONMENT_DATA}"
-    
-    # Upload environment
-    RESPONSE=$(curl -s -X POST \
-        "https://api.getpostman.com/environments" \
-        -H "X-API-Key: $api_key" \
-        -H "Content-Type: application/json" \
-        -d "$WRAPPED_DATA")
-    
-    # Check if upload was successful
-    if echo "$RESPONSE" | grep -q '"uid"'; then
-        ENVIRONMENT_UID=$(echo "$RESPONSE" | jq -r '.environment.uid')
-        ENVIRONMENT_NAME=$(echo "$RESPONSE" | jq -r '.environment.name')
-        echo -e "${GREEN}✅ Environment copy uploaded successfully!${NC}"
-        echo -e "${GREEN}   Name: $ENVIRONMENT_NAME${NC}"
-        echo -e "${GREEN}   UID: $ENVIRONMENT_UID${NC}"
-        echo -e "${GREEN}   Method: $method${NC}"
-        return 0
-    else
-        echo -e "${RED}❌ Environment copy upload failed${NC}"
-        echo -e "${RED}   Response: $RESPONSE${NC}"
-        return 1
-    fi
-}
-
-# Function to override existing environment
-upload_environment_override() {
-    local api_key="$1"
-    local method="$2"
-    local environment_name="$3"
-    
-    # Get existing environment UID
-    local response=$(curl -s -X GET "https://api.getpostman.com/environments" -H "X-API-Key: $api_key")
-    local existing_uid=$(echo "$response" | jq -r ".environments[] | select(.name == \"$environment_name\") | .uid" 2>/dev/null)
-    
-    if [ -z "$existing_uid" ] || [ "$existing_uid" = "null" ]; then
-        echo -e "${RED}❌ Could not find existing environment UID${NC}"
-        return 1
-    fi
-    
-    echo -e "${BLUE}📝 Overriding environment with UID: $existing_uid${NC}"
-    
-    # Get environment file
-    if [ -f "postman/Local.postman_environment.json" ]; then
-        ENVIRONMENT_FILE="postman/Local.postman_environment.json"
-    elif [ -f "../../postman/Local.postman_environment.json" ]; then
-        ENVIRONMENT_FILE="../../postman/Local.postman_environment.json"
-    else
-        ENVIRONMENT_FILE="postman/Local.postman_environment.json"
-    fi
-    
-    # Read the environment file and modify the name
-    ENVIRONMENT_DATA=$(cat "$ENVIRONMENT_FILE" | jq ".name = \"$environment_name\"")
-    WRAPPED_DATA="{\"environment\": $ENVIRONMENT_DATA}"
-    
-    # Update environment using PUT
-    RESPONSE=$(curl -s -X PUT \
-        "https://api.getpostman.com/environments/$existing_uid" \
-        -H "X-API-Key: $api_key" \
-        -H "Content-Type: application/json" \
-        -d "$WRAPPED_DATA")
-    
-    # Check if update was successful
-    if echo "$RESPONSE" | grep -q '"uid"'; then
-        ENVIRONMENT_UID=$(echo "$RESPONSE" | jq -r '.environment.uid')
-        ENVIRONMENT_NAME=$(echo "$RESPONSE" | jq -r '.environment.name')
-        echo -e "${GREEN}✅ Environment overridden successfully!${NC}"
-        echo -e "${GREEN}   Name: $ENVIRONMENT_NAME${NC}"
-        echo -e "${GREEN}   UID: $ENVIRONMENT_UID${NC}"
-        echo -e "${GREEN}   Method: $method${NC}"
-        return 0
-    else
-        echo -e "${RED}❌ Environment override failed${NC}"
-        echo -e "${RED}   Response: $RESPONSE${NC}"
-        return 1
-    fi
-}
-
-# Function to upload environment
 upload_environment() {
     local api_key="$1"
-    local method="$2"
+    local environment_name="$2"
+    local environment_file="$3"
     
-    echo -e "${BLUE}📤 Uploading environment using $method...${NC}"
+    local environment_data
+    environment_data=$(jq ".name = \"$environment_name\"" "$environment_file")
+    local wrapped_data="{\"environment\": $environment_data}"
     
-    # Check environment file (adjust path based on current directory)
-    if [ -f "postman/Local.postman_environment.json" ]; then
-        ENVIRONMENT_FILE="postman/Local.postman_environment.json"
-    elif [ -f "../../postman/Local.postman_environment.json" ]; then
-        ENVIRONMENT_FILE="../../postman/Local.postman_environment.json"
-    else
-        ENVIRONMENT_FILE="postman/Local.postman_environment.json"
-    fi
+    local response
+    response=$(make_api_request "POST" "$ENVIRONMENTS_ENDPOINT" "$api_key" "$wrapped_data")
     
-    if [ ! -f "$ENVIRONMENT_FILE" ]; then
-        echo -e "${RED}❌ Environment file not found: $ENVIRONMENT_FILE${NC}"
-        return 1
-    fi
-    
-    echo -e "${BLUE}📁 Using environment file: $ENVIRONMENT_FILE${NC}"
-    
-    # Get project name and create environment name
-    PROJECT_NAME=$(get_project_name)
-    ENVIRONMENT_NAME="Development-$PROJECT_NAME"
-    
-    echo -e "${BLUE}📝 Environment will be named: $ENVIRONMENT_NAME${NC}"
-    
-    # Check if environment already exists
-    if check_environment_exists "$api_key" "$ENVIRONMENT_NAME"; then
-        handle_environment_conflict "$api_key" "$method" "$ENVIRONMENT_NAME"
-        return $?
-    fi
-    
-    # Read the environment file and modify the name
-    ENVIRONMENT_DATA=$(cat "$ENVIRONMENT_FILE" | jq ".name = \"$ENVIRONMENT_NAME\"")
-    WRAPPED_DATA="{\"environment\": $ENVIRONMENT_DATA}"
-    
-    # Upload environment
-    RESPONSE=$(curl -s -X POST \
-        "https://api.getpostman.com/environments" \
-        -H "X-API-Key: $api_key" \
-        -H "Content-Type: application/json" \
-        -d "$WRAPPED_DATA")
-    
-    # Check if upload was successful
-    if echo "$RESPONSE" | grep -q '"uid"'; then
-        ENVIRONMENT_UID=$(echo "$RESPONSE" | jq -r '.environment.uid')
-        ENVIRONMENT_NAME=$(echo "$RESPONSE" | jq -r '.environment.name')
-        echo -e "${GREEN}✅ Environment uploaded successfully!${NC}"
-        echo -e "${GREEN}   Name: $ENVIRONMENT_NAME${NC}"
-        echo -e "${GREEN}   UID: $ENVIRONMENT_UID${NC}"
-        echo -e "${GREEN}   Method: $method${NC}"
+    if echo "$response" | jq -e '.environment.uid' >/dev/null 2>&1; then
+        local uid name
+        uid=$(echo "$response" | jq -r '.environment.uid')
+        name=$(echo "$response" | jq -r '.environment.name')
+        print_success "Environment uploaded successfully!"
+        print_info "  Name: $name"
+        print_info "  UID: $uid"
         return 0
     else
-        echo -e "${RED}❌ Environment upload failed${NC}"
-        echo -e "${RED}   Response: $RESPONSE${NC}"
+        print_error "Environment upload failed"
+        print_error "  Response: $response"
         return 1
     fi
 }
 
-# Main logic
-echo -e "${BLUE}🔍 Checking for stored API key...${NC}"
+update_environment() {
+    local api_key="$1"
+    local environment_uid="$2"
+    local environment_name="$3"
+    local environment_file="$4"
+    
+    local environment_data
+    environment_data=$(jq ".name = \"$environment_name\"" "$environment_file")
+    local wrapped_data="{\"environment\": $environment_data}"
+    
+    local response
+    response=$(make_api_request "PUT" "$ENVIRONMENTS_ENDPOINT/$environment_uid" "$api_key" "$wrapped_data")
+    
+    if echo "$response" | jq -e '.environment.uid' >/dev/null 2>&1; then
+        local uid name
+        uid=$(echo "$response" | jq -r '.environment.uid')
+        name=$(echo "$response" | jq -r '.environment.name')
+        print_success "Environment updated successfully!"
+        print_info "  Name: $name"
+        print_info "  UID: $uid"
+        return 0
+    else
+        print_error "Environment update failed"
+        print_error "  Response: $response"
+        return 1
+    fi
+}
 
-# Try stored API key first
-STORED_API_KEY=$(get_stored_api_key)
-if [ -n "$STORED_API_KEY" ]; then
-    echo -e "${GREEN}✅ Found stored API key${NC}"
+handle_environment_conflict() {
+    local api_key="$1"
+    local environment_name="$2"
+    local environment_file="$3"
+    
+    print_warning "Environment '$environment_name' already exists!"
+    
+    # Get existing environment info
+    local existing_info
+    existing_info=$(get_environment_info "$api_key" "$environment_name")
+    if [ -n "$existing_info" ]; then
+        print_info "Existing environment details:"
+        echo "$existing_info"
+    fi
+    
+    # Auto-select creating a copy to avoid interactive loops
+    print_info "Creating a copy with timestamp (auto-selected)..."
+    
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local new_name="${environment_name} - ${timestamp}"
+    
+    upload_environment "$api_key" "$new_name" "$environment_file"
+}
+
+process_environment() {
+    local api_key="$1"
+    
+    print_info "Processing environment..."
+    
+    # Find environment file
+    local environment_file
+    if ! environment_file=$(find_file "$ENVIRONMENT_FILE_NAME"); then
+        print_error "Environment file not found: $ENVIRONMENT_FILE_NAME"
+        return 1
+    fi
+    
+    print_info "Using environment file: $environment_file"
+    
+    # Get project name and create environment name
+    local project_name environment_name
+    project_name=$(get_project_name)
+    environment_name="Development-$project_name"
+    
+    print_info "Environment will be named: $environment_name"
+    
+    # Check if environment already exists
+    if check_environment_exists "$api_key" "$environment_name"; then
+        handle_environment_conflict "$api_key" "$environment_name" "$environment_file"
+    else
+        upload_environment "$api_key" "$environment_name" "$environment_file"
+    fi
+}
+
+# =============================================================================
+# MAIN EXECUTION FUNCTIONS
+# =============================================================================
+
+show_usage() {
+    echo "Usage: $0 [API_KEY]"
+    echo ""
+    echo "Upload Postman collection and environment to cloud workspace."
+    echo ""
+    echo "Arguments:"
+    echo "  API_KEY    Optional Postman API key. If not provided, uses stored key."
+    echo ""
+    echo "Examples:"
+    echo "  $0                                    # Use stored API key"
+    echo "  $0 PMAK-xxxxxxxxxxxxxxxxxxxxxxxxx    # Use provided API key"
+    echo ""
+    echo "To get your API key:"
+    echo "  1. Go to: https://web.postman.co/settings/me/api-keys"
+    echo "  2. Click 'Generate API Key'"
+    echo "  3. Copy the generated key"
+}
+
+upload_assets() {
+    local api_key="$1"
+    local method="$2"
+    
+    print_info "Starting upload process using $method..."
+    echo ""
     
     # Upload Collection
-    echo -e "${BLUE}📦 Step 1: Uploading Collection...${NC}"
+    print_info "Step 1: Uploading Collection..."
     echo "=================================="
-    if upload_collection "$STORED_API_KEY" "stored API key"; then
-        COLLECTION_SUCCESS=true
-    else
-        COLLECTION_SUCCESS=false
+    local collection_success=false
+    if process_collection "$api_key"; then
+        collection_success=true
     fi
     
     echo ""
     
     # Upload Environment
-    echo -e "${BLUE}🌍 Step 2: Uploading Environment...${NC}"
+    print_info "Step 2: Uploading Environment..."
     echo "===================================="
-    if upload_environment "$STORED_API_KEY" "stored API key"; then
-        ENVIRONMENT_SUCCESS=true
-    else
-        ENVIRONMENT_SUCCESS=false
+    local environment_success=false
+    if process_environment "$api_key"; then
+        environment_success=true
     fi
     
     echo ""
-    echo -e "${BLUE}📊 Upload Summary${NC}"
+    print_info "Upload Summary"
     echo "================"
     
-    if [ "$COLLECTION_SUCCESS" = true ]; then
-        echo -e "${GREEN}✅ Collection: Uploaded successfully${NC}"
+    if [ "$collection_success" = true ]; then
+        print_success "Collection: Uploaded successfully"
     else
-        echo -e "${RED}❌ Collection: Upload failed${NC}"
+        print_error "Collection: Upload failed"
     fi
     
-    if [ "$ENVIRONMENT_SUCCESS" = true ]; then
-        echo -e "${GREEN}✅ Environment: Uploaded successfully${NC}"
+    if [ "$environment_success" = true ]; then
+        print_success "Environment: Uploaded successfully"
     else
-        echo -e "${RED}❌ Environment: Upload failed${NC}"
+        print_error "Environment: Upload failed"
     fi
     
     echo ""
-    if [ "$COLLECTION_SUCCESS" = true ] && [ "$ENVIRONMENT_SUCCESS" = true ]; then
-        echo -e "${GREEN}🎉 All uploads completed successfully!${NC}"
-        echo -e "${BLUE}💡 You can now use both the collection and environment in your Postman desktop app${NC}"
+    if [ "$collection_success" = true ] && [ "$environment_success" = true ]; then
+        print_success "All uploads completed successfully!"
+        print_info "You can now use both the collection and environment in your Postman desktop app"
+        return 0
+    else
+        print_warning "Some uploads failed. Check the output above for details."
+        return 1
+    fi
+}
+
+main() {
+    # Show header
+    print_info "Postman Upload Script v2.0"
+    echo "=============================="
+    echo "This will upload both the collection and environment to Postman"
+    echo ""
+    
+    # Check dependencies
+    check_dependencies
+    
+    # Handle help flag
+    if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
+        show_usage
         exit 0
-    else
-        echo -e "${YELLOW}⚠️  Some uploads failed. Check the output above for details.${NC}"
-        exit 1
-    fi
-fi
-
-# Try provided API key if available
-if [ -n "$1" ]; then
-    echo -e "${BLUE}🔑 Using provided API key...${NC}"
-    
-    # Upload Collection
-    echo -e "${BLUE}📦 Step 1: Uploading Collection...${NC}"
-    echo "=================================="
-    if upload_collection "$1" "provided API key"; then
-        COLLECTION_SUCCESS=true
-    else
-        COLLECTION_SUCCESS=false
     fi
     
+    # Try stored API key first
+    local stored_api_key
+    if stored_api_key=$(get_stored_api_key); then
+        print_success "Found stored API key"
+        upload_assets "$stored_api_key" "stored API key"
+        exit $?
+    fi
+    
+    # Try provided API key
+    if [ -n "${1:-}" ]; then
+        print_info "Using provided API key..."
+        upload_assets "$1" "provided API key"
+        local exit_code=$?
+        
+        # Store API key for future use if upload was successful
+        if [ $exit_code -eq 0 ]; then
+            store_api_key "$1"
+        fi
+        exit $exit_code
+    fi
+    
+    # No API key available
+    print_warning "No API key available"
+    print_info "Please provide an API key as an argument or run the script interactively first"
     echo ""
-    
-    # Upload Environment
-    echo -e "${BLUE}🌍 Step 2: Uploading Environment...${NC}"
-    echo "===================================="
-    if upload_environment "$1" "provided API key"; then
-        ENVIRONMENT_SUCCESS=true
-    else
-        ENVIRONMENT_SUCCESS=false
-    fi
-    
-    echo ""
-    echo -e "${BLUE}📊 Upload Summary${NC}"
-    echo "================"
-    
-    if [ "$COLLECTION_SUCCESS" = true ]; then
-        echo -e "${GREEN}✅ Collection: Uploaded successfully${NC}"
-    else
-        echo -e "${RED}❌ Collection: Upload failed${NC}"
-    fi
-    
-    if [ "$ENVIRONMENT_SUCCESS" = true ]; then
-        echo -e "${GREEN}✅ Environment: Uploaded successfully${NC}"
-    else
-        echo -e "${RED}❌ Environment: Upload failed${NC}"
-    fi
-    
-    echo ""
-    if [ "$COLLECTION_SUCCESS" = true ] && [ "$ENVIRONMENT_SUCCESS" = true ]; then
-        store_api_key "$1"
-        echo -e "${GREEN}🎉 All uploads completed successfully!${NC}"
-        echo -e "${BLUE}💡 You can now use both the collection and environment in your Postman desktop app${NC}"
-        exit 0
-    else
-        echo -e "${YELLOW}⚠️  Some uploads failed. Check the output above for details.${NC}"
-        exit 1
-    fi
-fi
-
-# Interactive API key input
-echo -e "${YELLOW}⚠️  No stored API key found${NC}"
-echo -e "${BLUE}📋 To get your Postman API key:${NC}"
-echo "1. Go to: https://web.postman.co/settings/me/api-keys"
-echo "2. Click 'Generate API Key'"
-echo "3. Copy the generated key"
-echo ""
-
-# Check if API key is already stored
-if [ -f "$API_KEY_FILE" ]; then
-    echo -e "${BLUE}🔑 Using stored API key...${NC}"
-    USER_API_KEY=$(get_stored_api_key)
-else
-    echo -e "${YELLOW}⚠️  No stored API key found.${NC}"
-    echo -e "${YELLOW}   Please run the script interactively first to store your API key.${NC}"
-    echo -e "${YELLOW}   Or manually create the file: $API_KEY_FILE${NC}"
+    show_usage
     exit 1
-fi
+}
 
-if [ -z "$USER_API_KEY" ]; then
-    echo -e "${RED}❌ No API key available. Aborting upload.${NC}"
-    exit 1
-fi
+# =============================================================================
+# SCRIPT ENTRY POINT
+# =============================================================================
 
-# Upload Collection
-echo -e "${BLUE}📦 Step 1: Uploading Collection...${NC}"
-echo "=================================="
-if upload_collection "$USER_API_KEY" "interactive API key"; then
-    COLLECTION_SUCCESS=true
-else
-    COLLECTION_SUCCESS=false
-fi
-
-echo ""
-
-# Upload Environment
-echo -e "${BLUE}🌍 Step 2: Uploading Environment...${NC}"
-echo "===================================="
-if upload_environment "$USER_API_KEY" "interactive API key"; then
-    ENVIRONMENT_SUCCESS=true
-else
-    ENVIRONMENT_SUCCESS=false
-fi
-
-echo ""
-echo -e "${BLUE}📊 Upload Summary${NC}"
-echo "================"
-
-if [ "$COLLECTION_SUCCESS" = true ]; then
-    echo -e "${GREEN}✅ Collection: Uploaded successfully${NC}"
-else
-    echo -e "${RED}❌ Collection: Upload failed${NC}"
-fi
-
-if [ "$ENVIRONMENT_SUCCESS" = true ]; then
-    echo -e "${GREEN}✅ Environment: Uploaded successfully${NC}"
-else
-    echo -e "${RED}❌ Environment: Upload failed${NC}"
-fi
-
-echo ""
-if [ "$COLLECTION_SUCCESS" = true ] && [ "$ENVIRONMENT_SUCCESS" = true ]; then
-    store_api_key "$USER_API_KEY"
-    echo -e "${GREEN}🎉 All uploads completed successfully!${NC}"
-    echo -e "${BLUE}💡 You can now use both the collection and environment in your Postman desktop app${NC}"
-    exit 0
-else
-    echo -e "${YELLOW}⚠️  Some uploads failed. Check the output above for details.${NC}"
-    exit 1
-fi
+# Run main function with all arguments
+main "$@"
