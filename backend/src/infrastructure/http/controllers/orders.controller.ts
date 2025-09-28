@@ -16,7 +16,7 @@ import {
   CreateOrderDto,
   OrdersService,
 } from "../../../application/services/orders.service";
-import { RequirePermissions } from "../decorators/permissions.decorator";
+import { RequirePermissions, RequireAnyPermission } from "../decorators/permissions.decorator";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { PermissionsGuard } from "../guards/permissions.guard";
 import { AuthenticatedRequest } from "../interfaces/authenticated-request";
@@ -28,7 +28,7 @@ export class OrdersController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @RequirePermissions({ any: ["orders:create"] })
+  @RequirePermissions("orders:create")
   @UseGuards(PermissionsGuard)
   async createOrder(
     @Body() createOrderDto: CreateOrderDto,
@@ -58,7 +58,7 @@ export class OrdersController {
   }
 
   @Get()
-  @RequirePermissions({ any: ["orders:read"] })
+  @RequirePermissions("orders:read")
   @UseGuards(PermissionsGuard)
   async findAllOrders(
     @Req() req: AuthenticatedRequest,
@@ -81,7 +81,7 @@ export class OrdersController {
   }
 
   @Get("my-orders")
-  @RequirePermissions({ any: ["orders:read"] })
+  @RequirePermissions("orders:read")
   @UseGuards(PermissionsGuard)
   async findMyOrders(
     @Req() req: AuthenticatedRequest,
@@ -104,7 +104,7 @@ export class OrdersController {
   }
 
   @Get("store/:storeId")
-  @RequirePermissions({ any: ["orders:read"] })
+  @RequirePermissions("orders:read")
   @UseGuards(PermissionsGuard)
   async findStoreOrders(
     @Param("storeId", ParseIntPipe) storeId: number,
@@ -133,7 +133,7 @@ export class OrdersController {
   }
 
   @Get("stats")
-  @RequirePermissions({ any: ["orders:read", "analytics:read"] })
+  @RequireAnyPermission("orders:read", "analytics:read")
   @UseGuards(PermissionsGuard)
   async getOrderStats() {
     const stats = await this.ordersService.getOrderStats();
@@ -145,7 +145,7 @@ export class OrdersController {
   }
 
   @Get("number/:orderNumber")
-  @RequirePermissions({ any: ["orders:read"] })
+  @RequirePermissions("orders:read")
   @UseGuards(PermissionsGuard)
   async findOrderByNumber(@Param("orderNumber") orderNumber: string) {
     const order = await this.ordersService.findOrderByNumber(orderNumber);
@@ -173,7 +173,7 @@ export class OrdersController {
   }
 
   @Get(":id")
-  @RequirePermissions({ any: ["orders:read"] })
+  @RequirePermissions("orders:read")
   @UseGuards(PermissionsGuard)
   async findOrderById(@Param("id", ParseIntPipe) id: number) {
     const order = await this.ordersService.findOrderById(id);
@@ -201,7 +201,7 @@ export class OrdersController {
   }
 
   @Put(":id/status")
-  @RequirePermissions({ any: ["orders:update"] })
+  @RequirePermissions("orders:update")
   @UseGuards(PermissionsGuard)
   async updateOrderStatus(
     @Param("id", ParseIntPipe) id: number,
@@ -226,7 +226,7 @@ export class OrdersController {
   }
 
   @Put("store/:storeOrderId/status")
-  @RequirePermissions({ any: ["orders:update"] })
+  @RequirePermissions("orders:update")
   @UseGuards(PermissionsGuard)
   async updateStoreOrderStatus(
     @Param("storeOrderId", ParseIntPipe) storeOrderId: number,
