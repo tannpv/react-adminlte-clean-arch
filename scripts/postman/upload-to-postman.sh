@@ -86,8 +86,8 @@ get_project_name() {
         project_name=$(basename "$(pwd)")
     fi
     
-    # Clean up project name (remove special characters, convert to title case)
-    project_name=$(echo "$project_name" | sed 's/[^a-zA-Z0-9-]//g' | sed 's/-/ /g' | sed 's/\b\w/\U&/g' | sed 's/ //g')
+    # Clean up project name (remove special characters except hyphens, convert to title case)
+    project_name=$(echo "$project_name" | sed 's/[^a-zA-Z0-9-]//g' | sed 's/-/ /g' | sed 's/\b\w/\U&/g' | sed 's/ /-/g')
     
     # Default fallback
     if [ -z "$project_name" ]; then
