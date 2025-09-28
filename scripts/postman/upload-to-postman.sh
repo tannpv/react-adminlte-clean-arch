@@ -294,14 +294,59 @@ handle_collection_conflict() {
         echo "$existing_info"
     fi
     
-    # Auto-select creating a copy to avoid interactive loops
-    print_info "Creating a copy with timestamp (auto-selected)..."
+    echo ""
+    print_info "Choose an action:"
+    echo "1. Create a copy with timestamp (recommended)"
+    echo "2. Override existing collection"
+    echo "3. Cancel upload"
+    echo ""
     
-    local timestamp
-    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    local new_name="${collection_name} - ${timestamp}"
-    
-    upload_collection "$api_key" "$new_name" "$collection_file"
+    # Get user choice with timeout to avoid infinite loops
+    local choice
+    if [ -t 0 ]; then
+        # Interactive mode - read from stdin
+        while true; do
+            printf "${GREEN}Enter your choice (1-3): ${NC}"
+            read -r choice
+            case "$choice" in
+                1)
+                    local timestamp
+                    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+                    local new_name="${collection_name} - ${timestamp}"
+                    print_info "Creating a copy: $new_name"
+                    upload_collection "$api_key" "$new_name" "$collection_file"
+                    return $?
+                    ;;
+                2)
+                    local existing_uid
+                    existing_uid=$(get_collection_uid "$api_key" "$collection_name")
+                    if [ -n "$existing_uid" ] && [ "$existing_uid" != "null" ]; then
+                        print_info "Overriding existing collection (UID: $existing_uid)"
+                        update_collection "$api_key" "$existing_uid" "$collection_name" "$collection_file"
+                        return $?
+                    else
+                        print_error "Could not find existing collection UID"
+                        return 1
+                    fi
+                    ;;
+                3)
+                    print_info "Collection upload cancelled"
+                    return 1
+                    ;;
+                *)
+                    print_error "Invalid choice: '$choice'. Please enter 1, 2, or 3."
+                    ;;
+            esac
+        done
+    else
+        # Non-interactive mode - default to creating a copy
+        print_info "Non-interactive mode detected. Creating a copy with timestamp (auto-selected)..."
+        local timestamp
+        timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+        local new_name="${collection_name} - ${timestamp}"
+        upload_collection "$api_key" "$new_name" "$collection_file"
+        return $?
+    fi
 }
 
 process_collection() {
@@ -419,14 +464,59 @@ handle_environment_conflict() {
         echo "$existing_info"
     fi
     
-    # Auto-select creating a copy to avoid interactive loops
-    print_info "Creating a copy with timestamp (auto-selected)..."
+    echo ""
+    print_info "Choose an action:"
+    echo "1. Create a copy with timestamp (recommended)"
+    echo "2. Override existing environment"
+    echo "3. Cancel upload"
+    echo ""
     
-    local timestamp
-    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    local new_name="${environment_name} - ${timestamp}"
-    
-    upload_environment "$api_key" "$new_name" "$environment_file"
+    # Get user choice with timeout to avoid infinite loops
+    local choice
+    if [ -t 0 ]; then
+        # Interactive mode - read from stdin
+        while true; do
+            printf "${GREEN}Enter your choice (1-3): ${NC}"
+            read -r choice
+            case "$choice" in
+                1)
+                    local timestamp
+                    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+                    local new_name="${environment_name} - ${timestamp}"
+                    print_info "Creating a copy: $new_name"
+                    upload_environment "$api_key" "$new_name" "$environment_file"
+                    return $?
+                    ;;
+                2)
+                    local existing_uid
+                    existing_uid=$(get_environment_uid "$api_key" "$environment_name")
+                    if [ -n "$existing_uid" ] && [ "$existing_uid" != "null" ]; then
+                        print_info "Overriding existing environment (UID: $existing_uid)"
+                        update_environment "$api_key" "$existing_uid" "$environment_name" "$environment_file"
+                        return $?
+                    else
+                        print_error "Could not find existing environment UID"
+                        return 1
+                    fi
+                    ;;
+                3)
+                    print_info "Environment upload cancelled"
+                    return 1
+                    ;;
+                *)
+                    print_error "Invalid choice: '$choice'. Please enter 1, 2, or 3."
+                    ;;
+            esac
+        done
+    else
+        # Non-interactive mode - default to creating a copy
+        print_info "Non-interactive mode detected. Creating a copy with timestamp (auto-selected)..."
+        local timestamp
+        timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+        local new_name="${environment_name} - ${timestamp}"
+        upload_environment "$api_key" "$new_name" "$environment_file"
+        return $?
+    fi
 }
 
 process_environment() {
