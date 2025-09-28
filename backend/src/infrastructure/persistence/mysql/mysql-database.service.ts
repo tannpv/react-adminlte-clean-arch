@@ -725,6 +725,23 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       const [roles] = await this.execute<RowDataPacket[]>(
         "SELECT id, name FROM roles"
       );
+      
+      // Check for missing roles and create them
+      const existingRoleNames = roles.map(role => role.name.toLowerCase());
+      const requiredRoles = [
+        { name: "Admin", permissions: DEFAULT_ADMIN_PERMISSIONS },
+        { name: "User", permissions: DEFAULT_USER_PERMISSIONS },
+        { name: "Translator", permissions: DEFAULT_TRANSLATOR_PERMISSIONS },
+        { name: "Seller", permissions: DEFAULT_SELLER_PERMISSIONS }
+      ];
+      
+      for (const requiredRole of requiredRoles) {
+        if (!existingRoleNames.includes(requiredRole.name.toLowerCase())) {
+          const roleId = await this.insertRole(requiredRole.name, requiredRole.permissions);
+          this.logger.log(`Created missing role: ${requiredRole.name} (ID: ${roleId})`);
+        }
+      }
+      
       for (const role of roles) {
         const [existingPermissions] = await this.execute<RowDataPacket[]>(
           "SELECT permission FROM role_permissions WHERE role_id = ?",
@@ -740,6 +757,8 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
             ? DEFAULT_USER_PERMISSIONS
             : role.name.toLowerCase() === "translator"
             ? DEFAULT_TRANSLATOR_PERMISSIONS
+            : role.name.toLowerCase() === "seller"
+            ? DEFAULT_SELLER_PERMISSIONS
             : ["users:read"];
         const missing = desired.filter((perm) => !existingSet.has(perm));
         if (missing.length) {
@@ -784,6 +803,7 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
     await this.seedDefaultAttributes();
     await this.seedDefaultTranslations();
     await this.seedMultiSellerData();
+    await this.ensureSellerUsersHaveRoles();
   }
 
   private async ensureUsersHavePasswords(): Promise<void> {
@@ -5186,9 +5206,26 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         let userId;
         if (existingUser.length > 0) {
           userId = existingUser[0].id;
-          this.logger.log(`Seller user already exists: ${seller.email} (ID: ${userId})`);
+          this.logger.log(
+            `Seller user already exists: ${seller.email} (ID: ${userId})`
+          );
+          
+          // Ensure seller role is assigned
+          const [existingRole] = await this.execute<RowDataPacket[]>(
+            "SELECT id FROM user_roles WHERE user_id = ? AND role_id = ?",
+            [userId, sellerRoleId]
+          );
+          if (existingRole.length === 0) {
+            await this.execute<ResultSetHeader>(
+              `INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)`,
+              [userId, sellerRoleId]
+            );
+            this.logger.log(`Assigned seller role to existing user: ${seller.email}`);
+          }
         } else {
-          const hashedPassword = await this.passwordService.hash(seller.password);
+          const hashedPassword = await this.passwordService.hash(
+            seller.password
+          );
           const [result] = await this.execute<ResultSetHeader>(
             `INSERT INTO users (email, password_hash) VALUES (?, ?)`,
             [seller.email, hashedPassword]
@@ -5207,7 +5244,9 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
             [userId, sellerRoleId]
           );
 
-          this.logger.log(`Created seller user: ${seller.email} (ID: ${userId})`);
+          this.logger.log(
+            `Created seller user: ${seller.email} (ID: ${userId})`
+          );
         }
 
         sellerUserIds.push(userId);
@@ -5280,7 +5319,9 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         let storeId;
         if (existingStore.length > 0) {
           storeId = existingStore[0].id;
-          this.logger.log(`Store already exists: ${store.name} (ID: ${storeId})`);
+          this.logger.log(
+            `Store already exists: ${store.name} (ID: ${storeId})`
+          );
         } else {
           const [result] = await this.execute<ResultSetHeader>(
             `INSERT INTO stores (name, slug, description, logo_url, banner_url, commission_rate, status, user_id, created_at, updated_at) 
@@ -5500,6 +5541,76 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       this.logger.log(`Created ${orderIds.length} commissions`);
     } else {
       this.logger.log("Multi-seller data already exists, skipping seeding");
+    }
+  }
+
+  private async ensureSellerUsersHaveRoles(): Promise<void> {
+    // Get seller role ID
+    const [sellerRole] = await this.execute<RowDataPacket[]>(
+      "SELECT id FROM roles WHERE name = 'Seller'"
+    );
+    
+    if (sellerRole.length === 0) {
+      this.logger.log("Seller role not found, skipping seller user role assignment");
+      return;
+    }
+    
+    const sellerRoleId = sellerRole[0].id;
+    const sellerEmails = ["seller1@example.com", "seller2@example.com", "seller3@example.com"];
+    
+    for (const email of sellerEmails) {
+      // Get user ID
+      const [user] = await this.execute<RowDataPacket[]>(
+        "SELECT id FROM users WHERE email = ?",
+        [email]
+      );
+      
+      if (user.length === 0) {
+        this.logger.log(`Seller user not found: ${email}`);
+        continue;
+      }
+      
+      const userId = user[0].id;
+      
+      // Check if user has seller role
+      const [existingRole] = await this.execute<RowDataPacket[]>(
+        "SELECT user_id FROM user_roles WHERE user_id = ? AND role_id = ?",
+        [userId, sellerRoleId]
+      );
+      
+      if (existingRole.length === 0) {
+        // Assign seller role
+        await this.execute<ResultSetHeader>(
+          `INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)`,
+          [userId, sellerRoleId]
+        );
+        this.logger.log(`Assigned seller role to user: ${email}`);
+      }
+      
+      // Check if user has profile and update if needed
+      const [profile] = await this.execute<RowDataPacket[]>(
+        "SELECT user_id, first_name, last_name FROM user_profiles WHERE user_id = ?",
+        [userId]
+      );
+      
+      const firstName = email.includes("seller1") ? "John" : email.includes("seller2") ? "Sarah" : "Mike";
+      const lastName = email.includes("seller1") ? "Smith" : email.includes("seller2") ? "Johnson" : "Wilson";
+      
+      if (profile.length === 0) {
+        // Create user profile with default values
+        await this.execute<ResultSetHeader>(
+          `INSERT INTO user_profiles (user_id, first_name, last_name, picture_url) VALUES (?, ?, ?, ?)`,
+          [userId, firstName, lastName, null]
+        );
+        this.logger.log(`Created profile for seller user: ${email}`);
+      } else if (!profile[0].first_name || !profile[0].last_name) {
+        // Update existing profile if names are missing
+        await this.execute<ResultSetHeader>(
+          `UPDATE user_profiles SET first_name = ?, last_name = ? WHERE user_id = ?`,
+          [firstName, lastName, userId]
+        );
+        this.logger.log(`Updated profile for seller user: ${email}`);
+      }
     }
   }
 }
