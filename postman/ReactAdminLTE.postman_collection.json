@@ -1,0 +1,1715 @@
+{
+  "info": {
+    "name": "Modern Admin Dashboard API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Local API for Users, Roles, Categories, Products, Storage, Attributes, Attribute Sets, Attribute Values, Multi-Seller Stores, Orders, and Auth (JWT)."
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "health"]
+        }
+      }
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"secret123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Check if response is successful",
+                  "pm.test('Login successful', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "// Parse response and store token",
+                  "const json = pm.response.json();",
+                  "if (json && json.token) {",
+                  "    pm.environment.set('token', json.token);",
+                  "    console.log('✅ JWT token stored successfully');",
+                  "    pm.test('Token received', function () {",
+                  "        pm.expect(json.token).to.be.a('string');",
+                  "    });",
+                  "} else {",
+                  "    console.log('❌ No token received in response');",
+                  "}",
+                  "",
+                  "// Store user ID if available",
+                  "if (json && json.user && json.user.id) {",
+                  "    pm.environment.set('userId', json.user.id);",
+                  "    console.log('✅ User ID stored:', json.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User{{$randomInt}}\",\n  \"email\": \"test.user{{$randomInt}}@example.com\",\n  \"password\": \"secret123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Check if response is successful or user already exists",
+                  "pm.test('Registration successful or user exists', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([201, 409]);",
+                  "});",
+                  "",
+                  "// Parse response and store token",
+                  "const json = pm.response.json();",
+                  "if (json && json.token) {",
+                  "    pm.environment.set('token', json.token);",
+                  "    console.log('✅ JWT token stored successfully');",
+                  "    pm.test('Token received', function () {",
+                  "        pm.expect(json.token).to.be.a('string');",
+                  "    });",
+                  "} else {",
+                  "    console.log('❌ No token received in response');",
+                  "}",
+                  "",
+                  "// Store user ID if available",
+                  "if (json && json.user && json.user.id) {",
+                  "    pm.environment.set('userId', json.user.id);",
+                  "    console.log('✅ User ID stored:', json.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Search Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users?search=admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "admin",
+                  "description": "Search term for user name or email"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"email\": \"test.user@example.com\",\n  \"roles\": [2]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastUserId', json.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get User By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{lastUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{lastUserId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated User\",\n  \"roles\": [1, 2]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{lastUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{lastUserId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{lastUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{lastUserId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "List Roles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles"]
+            }
+          }
+        },
+        {
+          "name": "Create Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Manager\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastRoleId', json.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Role",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Supervisor\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{lastRoleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles", "{{lastRoleId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Role",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/roles/{{lastRoleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "roles", "{{lastRoleId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories"]
+            }
+          }
+        },
+        {
+          "name": "Search Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categories?search=electronics",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "electronics",
+                  "description": "Search term for category name"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Electronics\",\n  \"parentId\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastCategoryId', json.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Subcategory",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Smartphones\",\n  \"parentId\": {{lastCategoryId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastSubcategoryId', json.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Electronics & Gadgets\",\n  \"parentId\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/categories/{{lastCategoryId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories", "{{lastCategoryId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categories/{{lastSubcategoryId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories", "{{lastSubcategoryId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attributes",
+      "item": [
+        {
+          "name": "List Attributes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attributes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attributes"]
+            }
+          }
+        },
+        {
+          "name": "Get Attribute By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attributes/{{lastAttributeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attributes", "{{lastAttributeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Attribute",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"screen_size\",\n  \"name\": \"Screen Size\",\n  \"inputType\": \"select\",\n  \"dataType\": \"string\",\n  \"unit\": \"inches\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attributes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attributes"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastAttributeId', json.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Attribute",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"screen_size\",\n  \"name\": \"Screen Size\",\n  \"inputType\": \"multiselect\",\n  \"dataType\": \"string\",\n  \"unit\": \"inches\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attributes/{{lastAttributeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attributes", "{{lastAttributeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Attribute",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attributes/{{lastAttributeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attributes", "{{lastAttributeId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attribute Values",
+      "item": [
+        {
+          "name": "List Attribute Values",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-values",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-values"]
+            }
+          }
+        },
+        {
+          "name": "Get Attribute Values By Attribute",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-values/by-attribute/{{lastAttributeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "attribute-values",
+                "by-attribute",
+                "{{lastAttributeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attribute Value By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-values/{{lastAttributeValueId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-values", "{{lastAttributeValueId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Attribute Value",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"attributeId\": {{lastAttributeId}},\n  \"label\": \"6.1 inches\",\n  \"valueCode\": \"6_1_inch\",\n  \"sortOrder\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-values",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-values"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastAttributeValueId', json.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Attribute Value",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"attributeId\": {{lastAttributeId}},\n  \"label\": \"6.1 inches (Updated)\",\n  \"valueCode\": \"6_1_inch_updated\",\n  \"sortOrder\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-values/{{lastAttributeValueId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-values", "{{lastAttributeValueId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Attribute Value",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-values/{{lastAttributeValueId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-values", "{{lastAttributeValueId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attribute Sets",
+      "item": [
+        {
+          "name": "List Attribute Sets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-sets"]
+            }
+          }
+        },
+        {
+          "name": "Get Attribute Set By Name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets/by-name/Clothing Set",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-sets", "by-name", "Clothing Set"]
+            }
+          }
+        },
+        {
+          "name": "Get Attribute Set By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets/{{lastAttributeSetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-sets", "{{lastAttributeSetId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Attribute Set",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Electronics Set\",\n  \"description\": \"Attributes for electronic products\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-sets"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastAttributeSetId', json.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Attribute Set",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Electronics Set (Updated)\",\n  \"description\": \"Updated attributes for electronic products\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets/{{lastAttributeSetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-sets", "{{lastAttributeSetId}}"]
+            }
+          }
+        },
+        {
+          "name": "Assign Attribute to Set",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets/{{lastAttributeSetId}}/attributes/{{lastAttributeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "attribute-sets",
+                "{{lastAttributeSetId}}",
+                "attributes",
+                "{{lastAttributeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remove Attribute from Set",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets/{{lastAttributeSetId}}/attributes/{{lastAttributeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "attribute-sets",
+                "{{lastAttributeSetId}}",
+                "attributes",
+                "{{lastAttributeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Attribute Set",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/attribute-sets/{{lastAttributeSetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attribute-sets", "{{lastAttributeSetId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"]
+            }
+          }
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products?search=iPhone",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "iPhone",
+                  "description": "Search term for product name, SKU, or description"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Product By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{lastProductId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{lastProductId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Product (Simple)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"IPH15PRO-256\",\n  \"name\": \"iPhone 15 Pro\",\n  \"description\": \"Latest iPhone with advanced features\",\n  \"price\": 999.99,\n  \"currency\": \"USD\",\n  \"status\": \"published\",\n  \"categories\": [{{lastCategoryId}}],\n  \"type\": \"simple\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastProductId', json.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Product (With Attributes)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"TSHIRT-001\",\n  \"name\": \"Premium T-Shirt\",\n  \"description\": \"High quality cotton t-shirt with multiple color and size options\",\n  \"price\": 29.99,\n  \"currency\": \"USD\",\n  \"status\": \"published\",\n  \"categories\": [{{lastCategoryId}}],\n  \"type\": \"variable\",\n  \"attributeValues\": {\n    \"1\": {\n      \"valueText\": \"Blue,Red,Black\"\n    },\n    \"2\": {\n      \"valueText\": \"S,M,L,XL\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastProductId', json.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Product (With Attributes)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"TSHIRT-001\",\n  \"name\": \"Premium T-Shirt (Updated)\",\n  \"description\": \"High quality cotton t-shirt with multiple color and size options - Updated\",\n  \"price\": 34.99,\n  \"currency\": \"USD\",\n  \"status\": \"published\",\n  \"categories\": [{{lastCategoryId}}],\n  \"type\": \"variable\",\n  \"attributeValues\": {\n    \"1\": {\n      \"valueText\": \"Blue,Green,Black,White\"\n    },\n    \"2\": {\n      \"valueText\": \"S,M,L,XL,XXL\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{lastProductId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{lastProductId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Product (Simple)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"IPH15PRO-256\",\n  \"name\": \"iPhone 15 Pro Max\",\n  \"description\": \"Latest iPhone with advanced features and larger screen\",\n  \"price\": 1099.99,\n  \"currency\": \"USD\",\n  \"status\": \"published\",\n  \"categories\": [{{lastCategoryId}}],\n  \"type\": \"simple\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{lastProductId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{lastProductId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{lastProductId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{lastProductId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Storage",
+      "item": [
+        {
+          "name": "List Root Directory",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/storage",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage"]
+            }
+          }
+        },
+        {
+          "name": "Create Directory",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Project Assets\",\n  \"parentId\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/storage/directories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "directories"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastDirectoryId', json.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Directory Contents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/storage?directoryId={{lastDirectoryId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage"],
+              "query": [
+                {
+                  "key": "directoryId",
+                  "value": "{{lastDirectoryId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Directory",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Project Assets (Renamed)\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/storage/directories/{{lastDirectoryId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "directories", "{{lastDirectoryId}}"]
+            }
+          }
+        },
+        {
+          "name": "Set Directory Grants",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grants\": [\n    { \"roleId\": 2, \"access\": \"read\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/storage/directories/{{lastDirectoryId}}/grants",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "storage",
+                "directories",
+                "{{lastDirectoryId}}",
+                "grants"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upload File",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "directoryId",
+                  "value": "{{lastDirectoryId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "displayName",
+                  "value": "design-spec.pdf",
+                  "type": "text"
+                },
+                {
+                  "key": "visibility",
+                  "value": "private",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "path/to/local/file.pdf"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/storage/files",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "files"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) { pm.environment.set('lastFileId', json.id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update File",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"design-spec-v2.pdf\",\n  \"visibility\": \"public\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/storage/files/{{lastFileId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "files", "{{lastFileId}}"]
+            }
+          }
+        },
+        {
+          "name": "Set File Grants",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grants\": [\n    { \"roleId\": 2, \"access\": \"read\" },\n    { \"roleId\": 3, \"access\": \"write\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/storage/files/{{lastFileId}}/grants",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "files", "{{lastFileId}}", "grants"]
+            }
+          }
+        },
+        {
+          "name": "Delete File",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/storage/files/{{lastFileId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "files", "{{lastFileId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Directory",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/storage/directories/{{lastDirectoryId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "storage", "directories", "{{lastDirectoryId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stores",
+      "item": [
+        {
+          "name": "List All Stores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stores",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores"]
+            }
+          }
+        },
+        {
+          "name": "List Pending Stores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stores/pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores", "pending"]
+            }
+          }
+        },
+        {
+          "name": "List Approved Stores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stores/approved",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores", "approved"]
+            }
+          }
+        },
+        {
+          "name": "Get Store Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stores/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get My Stores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stores/my-stores",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores", "my-stores"]
+            }
+          }
+        },
+        {
+          "name": "Get Store By Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stores/slug/my-awesome-store",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores", "slug", "my-awesome-store"]
+            }
+          }
+        },
+        {
+          "name": "Get Store By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stores/{{lastStoreId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores", "{{lastStoreId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Store",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My Awesome Store\",\n  \"slug\": \"my-awesome-store\",\n  \"description\": \"A store selling amazing products\",\n  \"logoUrl\": \"https://example.com/logo.png\",\n  \"bannerUrl\": \"https://example.com/banner.png\",\n  \"commissionRate\": 10.0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/stores",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.id) { pm.environment.set('lastStoreId', json.data.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Store",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My Awesome Store (Updated)\",\n  \"description\": \"An updated store selling amazing products\",\n  \"commissionRate\": 12.0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/stores/{{lastStoreId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores", "{{lastStoreId}}"]
+            }
+          }
+        },
+        {
+          "name": "Approve Store",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/stores/{{lastStoreId}}/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores", "{{lastStoreId}}", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Suspend Store",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"suspended\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/stores/{{lastStoreId}}/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores", "{{lastStoreId}}", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Reject Store",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"rejected\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/stores/{{lastStoreId}}/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores", "{{lastStoreId}}", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Delete Store",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stores/{{lastStoreId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores", "{{lastStoreId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "List All Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Get My Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/my-orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "my-orders"]
+            }
+          }
+        },
+        {
+          "name": "Get Store Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/store/{{lastStoreId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "store", "{{lastStoreId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Order Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Order By Number",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/number/{{lastOrderNumber}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "number", "{{lastOrderNumber}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Order By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{lastOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "{{lastOrderId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Multi-Seller Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"productId\": {{lastProductId}},\n      \"quantity\": 2\n    },\n    {\n      \"productId\": {{lastProductId}},\n      \"quantity\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.parentOrder && json.data.parentOrder.id) {",
+                  "    pm.environment.set('lastOrderId', json.data.parentOrder.id);",
+                  "    pm.environment.set('lastOrderNumber', json.data.parentOrder.orderNumber);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"processing\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{lastOrderId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "{{lastOrderId}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Update Store Order Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"shipped\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/store/{{lastStoreOrderId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "orders",
+                "store",
+                "{{lastStoreOrderId}}",
+                "status"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Check if token exists for authenticated requests",
+          "const token = pm.environment.get('token');",
+          "const requestUrl = pm.request.url.toString();",
+          "",
+          "// Skip token check for auth endpoints",
+          "if (requestUrl.includes('/auth/') || requestUrl.includes('/health')) {",
+          "    return;",
+          "}",
+          "",
+          "// Check token for other endpoints",
+          "if (!token || token === '') {",
+          "    console.log('⚠️  No JWT token found. Please login first using the Auth > Login request.');",
+          "    console.log('   The token will be automatically stored after successful login.');",
+          "} else {",
+          "    console.log('✅ JWT token found and will be sent with this request');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "lastUserId",
+      "value": ""
+    },
+    {
+      "key": "lastRoleId",
+      "value": ""
+    },
+    {
+      "key": "lastCategoryId",
+      "value": ""
+    },
+    {
+      "key": "lastSubcategoryId",
+      "value": ""
+    },
+    {
+      "key": "lastProductId",
+      "value": ""
+    },
+    {
+      "key": "lastDirectoryId",
+      "value": ""
+    },
+    {
+      "key": "lastFileId",
+      "value": ""
+    },
+    {
+      "key": "lastAttributeId",
+      "value": ""
+    },
+    {
+      "key": "lastAttributeValueId",
+      "value": ""
+    },
+    {
+      "key": "lastAttributeSetId",
+      "value": ""
+    },
+    {
+      "key": "lastStoreId",
+      "value": ""
+    },
+    {
+      "key": "lastOrderId",
+      "value": ""
+    },
+    {
+      "key": "lastOrderNumber",
+      "value": ""
+    },
+    {
+      "key": "lastStoreOrderId",
+      "value": ""
+    }
+  ]
+}
