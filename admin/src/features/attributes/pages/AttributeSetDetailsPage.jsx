@@ -84,7 +84,7 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
 
     if (setLoading) {
         return (
-            <div className="max-w-7xl mx-auto">
+            <div>
                 <Card>
                     <Card.Body>
                         <div className="text-center py-12">
@@ -99,7 +99,7 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
 
     if (setError) {
         return (
-            <div className="max-w-7xl mx-auto">
+            <div>
                 <Card>
                     <Card.Body>
                         <div className="text-center py-12">
@@ -117,7 +117,7 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
 
     if (!attributeSet) {
         return (
-            <div className="max-w-7xl mx-auto">
+            <div>
                 <Card>
                     <Card.Body>
                         <div className="text-center py-12">
@@ -135,7 +135,7 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
 
     return (
         <>
-            <div className="max-w-7xl mx-auto">
+            <div>
                 {/* Page Header */}
                 <div className="mb-8">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">

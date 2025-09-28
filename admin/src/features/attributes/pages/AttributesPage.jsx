@@ -67,7 +67,7 @@ export const AttributesPage = () => {
 
     if (isLoading) {
         return (
-            <div className="max-w-7xl mx-auto">
+            <div>
                 <Card>
                     <Card.Body>
                         <div className="text-center py-12">
@@ -83,7 +83,7 @@ export const AttributesPage = () => {
 
     if (error) {
         return (
-            <div className="max-w-7xl mx-auto">
+            <div>
                 <Card>
                     <Card.Body>
                         <div className="text-center py-12">
@@ -108,7 +108,7 @@ export const AttributesPage = () => {
 
     return (
         <>
-            <div className="max-w-7xl mx-auto">
+            <div>
                 {/* Page Header */}
                 <div className="mb-8">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
