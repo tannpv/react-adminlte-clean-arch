@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import Button from '../../../shared/components/ui/Button'
-import Input from '../../../shared/components/ui/Input'
+import Form from '../../../shared/components/ui/Form'
 import Card from '../../../shared/components/ui/Card'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
@@ -274,7 +274,7 @@ export function StoresPage() {
             <div className="p-4">
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
-                  <Input
+                  <Form.Control
                     type="text"
                     placeholder={t('searchStores')}
                     value={searchTerm}

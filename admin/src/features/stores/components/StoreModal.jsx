@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import Button from '../../../shared/components/ui/Button'
-import Input from '../../../shared/components/ui/Input'
-import Textarea from '../../../shared/components/ui/Textarea'
+import Form from '../../../shared/components/ui/Form'
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 
 const StoreModal = ({ 
@@ -124,7 +123,7 @@ const StoreModal = ({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t('storeName')} *
               </label>
-              <Input
+              <Form.Control
                 {...register('name', { 
                   required: t('storeNameRequired'),
                   minLength: { value: 2, message: t('storeNameMinLength') }
@@ -146,7 +145,7 @@ const StoreModal = ({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t('storeSlug')} *
               </label>
-              <Input
+              <Form.Control
                 {...register('slug', { 
                   required: t('storeSlugRequired'),
                   pattern: {
@@ -174,7 +173,7 @@ const StoreModal = ({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t('description')}
               </label>
-              <Textarea
+              <Form.Textarea
                 {...register('description')}
                 placeholder={t('descriptionPlaceholder')}
                 rows={3}
@@ -194,7 +193,7 @@ const StoreModal = ({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t('logoUrl')}
               </label>
-              <Input
+              <Form.Control
                 {...register('logoUrl', {
                   pattern: {
                     value: /^https?:\/\/.+/,
@@ -218,7 +217,7 @@ const StoreModal = ({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t('bannerUrl')}
               </label>
-              <Input
+              <Form.Control
                 {...register('bannerUrl', {
                   pattern: {
                     value: /^https?:\/\/.+/,
@@ -242,7 +241,7 @@ const StoreModal = ({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t('commissionRate')} (%)
               </label>
-              <Input
+              <Form.Control
                 type="number"
                 step="0.01"
                 min="0"

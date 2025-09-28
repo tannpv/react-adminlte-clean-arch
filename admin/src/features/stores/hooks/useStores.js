@@ -1,43 +1,43 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { apiClient } from '../../../shared/lib/apiClient'
+import { ApiClient } from '../../../shared/lib/ApiClient'
 
 // API endpoints
 const STORES_ENDPOINT = '/stores'
 
 // Fetch all stores
 export const fetchStores = async (params = {}) => {
-  const response = await apiClient.get(STORES_ENDPOINT, { params })
+  const response = await ApiClient.get(STORES_ENDPOINT, { params })
   return response.data
 }
 
 // Fetch single store
 export const fetchStore = async (id) => {
-  const response = await apiClient.get(`${STORES_ENDPOINT}/${id}`)
+  const response = await ApiClient.get(`${STORES_ENDPOINT}/${id}`)
   return response.data
 }
 
 // Create store
 export const createStore = async (storeData) => {
-  const response = await apiClient.post(STORES_ENDPOINT, storeData)
+  const response = await ApiClient.post(STORES_ENDPOINT, storeData)
   return response.data
 }
 
 // Update store
 export const updateStore = async ({ id, ...storeData }) => {
-  const response = await apiClient.put(`${STORES_ENDPOINT}/${id}`, storeData)
+  const response = await ApiClient.put(`${STORES_ENDPOINT}/${id}`, storeData)
   return response.data
 }
 
 // Delete store
 export const deleteStore = async (id) => {
-  const response = await apiClient.delete(`${STORES_ENDPOINT}/${id}`)
+  const response = await ApiClient.delete(`${STORES_ENDPOINT}/${id}`)
   return response.data
 }
 
 // Approve/reject store
 export const updateStoreStatus = async ({ id, status, reason }) => {
-  const response = await apiClient.patch(`${STORES_ENDPOINT}/${id}/status`, {
+  const response = await ApiClient.patch(`${STORES_ENDPOINT}/${id}/status`, {
     status,
     reason
   })

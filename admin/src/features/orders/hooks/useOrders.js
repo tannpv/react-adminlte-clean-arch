@@ -1,25 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { apiClient } from '../../../shared/lib/apiClient'
+import { ApiClient } from '../../../shared/lib/ApiClient'
 
 // API endpoints
 const ORDERS_ENDPOINT = '/orders'
 
 // Fetch all orders
 export const fetchOrders = async (params = {}) => {
-  const response = await apiClient.get(ORDERS_ENDPOINT, { params })
+  const response = await ApiClient.get(ORDERS_ENDPOINT, { params })
   return response.data
 }
 
 // Fetch single order
 export const fetchOrder = async (id) => {
-  const response = await apiClient.get(`${ORDERS_ENDPOINT}/${id}`)
+  const response = await ApiClient.get(`${ORDERS_ENDPOINT}/${id}`)
   return response.data
 }
 
 // Update order status
 export const updateOrderStatus = async ({ id, status, reason }) => {
-  const response = await apiClient.patch(`${ORDERS_ENDPOINT}/${id}/status`, {
+  const response = await ApiClient.patch(`${ORDERS_ENDPOINT}/${id}/status`, {
     status,
     reason
   })
