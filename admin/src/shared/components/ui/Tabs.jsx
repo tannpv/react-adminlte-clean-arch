@@ -17,7 +17,10 @@ const Tabs = ({ children, defaultTab = 0, className = '' }) => {
                         return (
                             <button
                                 key={index}
-                                onClick={() => setActiveTab(index)}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setActiveTab(index);
+                                }}
                                 className={`tab-button py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${isActive
                                     ? hasError
                                         ? 'border-red-500 text-red-600 bg-red-50'
