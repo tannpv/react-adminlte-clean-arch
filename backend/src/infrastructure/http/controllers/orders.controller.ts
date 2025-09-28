@@ -12,11 +12,15 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
+import { AuthorizationService } from "../../../application/services/authorization.service";
 import {
   CreateOrderDto,
   OrdersService,
 } from "../../../application/services/orders.service";
-import { RequirePermissions, RequireAnyPermission } from "../decorators/permissions.decorator";
+import {
+  RequireAnyPermission,
+  RequirePermissions,
+} from "../decorators/permissions.decorator";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { PermissionsGuard } from "../guards/permissions.guard";
 import { AuthenticatedRequest } from "../interfaces/authenticated-request";
@@ -24,7 +28,10 @@ import { AuthenticatedRequest } from "../interfaces/authenticated-request";
 @Controller("orders")
 @UseGuards(JwtAuthGuard)
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(
+    private readonly ordersService: OrdersService,
+    private readonly authorizationService: AuthorizationService
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -34,6 +41,10 @@ export class OrdersController {
     @Body() createOrderDto: CreateOrderDto,
     @Req() req: AuthenticatedRequest
   ) {
+    if (!req.userId) {
+      throw new Error("User ID not found in request");
+    }
+
     // Set the customer ID from the authenticated request
     const orderData = {
       ...createOrderDto,
@@ -68,11 +79,27 @@ export class OrdersController {
     const limitNum = limit ? parseInt(limit, 10) : undefined;
     const offsetNum = offset ? parseInt(offset, 10) : undefined;
 
-    const orders = await this.ordersService.findOrdersByCustomerId(
+    if (!req.userId) {
+      throw new Error("User ID not found in request");
+    }
+
+    // Check if user has admin permissions - if so, show all orders
+    const isAdmin = await this.authorizationService.hasPermission(
       req.userId,
-      limitNum,
-      offsetNum
+      "users:read"
     );
+
+    let orders;
+    if (isAdmin) {
+      orders = await this.ordersService.findAllOrders(limitNum, offsetNum);
+    } else {
+      orders = await this.ordersService.findOrdersByCustomerId(
+        req.userId,
+        limitNum,
+        offsetNum
+      );
+    }
+
     return {
       success: true,
       data: orders.map((order) => order.toPublic()),
@@ -88,6 +115,10 @@ export class OrdersController {
     @Query("limit") limit?: string,
     @Query("offset") offset?: string
   ) {
+    if (!req.userId) {
+      throw new Error("User ID not found in request");
+    }
+
     const limitNum = limit ? parseInt(limit, 10) : undefined;
     const offsetNum = offset ? parseInt(offset, 10) : undefined;
 

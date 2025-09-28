@@ -1,14 +1,13 @@
-import React, { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import Button from '../../../shared/components/ui/Button'
-import Form from '../../../shared/components/ui/Form'
-import Card from '../../../shared/components/ui/Card'
+import React, { useState } from 'react'
 import { ConfirmModal } from '../../../shared/components/ConfirmModal'
+import Button from '../../../shared/components/ui/Button'
+import Card from '../../../shared/components/ui/Card'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
-import { useStores } from '../hooks/useStores'
 import StoreList from '../components/StoreList'
 import StoreModal from '../components/StoreModal'
+import { useStores } from '../hooks/useStores'
 
 const isValidationErrorMap = (err) => {
   if (!err || typeof err !== 'object' || Array.isArray(err)) return false
@@ -94,7 +93,7 @@ export function StoresPage() {
   const handleStoreSubmit = async (storeData) => {
     try {
       setFormErrors({})
-      
+
       let result
       if (editingStore) {
         result = await handleUpdateStore(editingStore.id, storeData)
@@ -157,167 +156,166 @@ export function StoresPage() {
 
   return (
     <>
-      <div className="p-6">
+      <div>
         {/* Page Header */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center">
+        <div className="mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {t('stores')}
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                <i className="fas fa-store mr-3 text-blue-600"></i>
+                {t('stores', 'Stores')}
               </h1>
-              <p className="text-gray-600 mt-1">
-                {t('storesDescription')}
+              <p className="mt-2 text-gray-600 max-w-2xl">
+                {t('storesDescription', 'Manage multi-seller stores, approve applications, and monitor store performance.')}
               </p>
             </div>
-            {canCreateStore && (
-              <Button onClick={handleCreateStoreClick}>
-                {t('createStore')}
-              </Button>
-            )}
+            <div className="flex flex-col sm:flex-row gap-3">
+              {canCreateStore && (
+                <Button
+                  variant="primary"
+                  onClick={handleCreateStoreClick}
+                >
+                  <i className="fas fa-plus mr-2"></i>
+                  {t('createStore', 'Add New Store')}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        {/* Loading State */}
+        {isLoading && (
           <Card>
-            <div className="p-4">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-blue-600 font-semibold text-sm">
-                      {totalStores}
-                    </span>
+            <Card.Body>
+              <div className="text-center py-12">
+                <i className="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('loading_title', 'Loading Stores')}</h4>
+                <p className="text-gray-600">{t('loading_description', 'Please wait while we fetch your stores...')}</p>
+              </div>
+            </Card.Body>
+          </Card>
+        )}
+
+        {/* Error State */}
+        {!isLoading && isError && (
+          <Card>
+            <Card.Body>
+              <div className="text-center py-12">
+                <i className="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('failed_to_load_stores', 'Failed to Load Stores')}</h4>
+                <p className="text-gray-600 mb-6">
+                  {error?.message || t('unexpected_error_loading_stores', 'An unexpected error occurred while loading stores.')}
+                </p>
+                <Button
+                  variant="outline-primary"
+                  onClick={() => window.location.reload()}
+                >
+                  <i className="fas fa-redo mr-2"></i>
+                  {t('try_again', 'Try Again')}
+                </Button>
+              </div>
+            </Card.Body>
+          </Card>
+        )}
+
+        {/* Stores Content */}
+        {!isLoading && !isError && (
+          <div className="space-y-6">
+            {/* Statistics Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+                <div className="flex items-center">
+                  <div className="p-3 bg-white bg-opacity-20 rounded-lg">
+                    <i className="fas fa-store text-2xl"></i>
+                  </div>
+                  <div className="ml-4">
+                    <div className="text-3xl font-bold">{totalStores}</div>
+                    <div className="text-blue-100">{t('totalStores', 'Total Stores')}</div>
                   </div>
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-500">
-                    {t('totalStores')}
-                  </p>
-                  <p className="text-lg font-semibold text-gray-900">
-                    {totalStores}
-                  </p>
-                </div>
               </div>
-            </div>
-          </Card>
 
-          <Card>
-            <div className="p-4">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <span className="text-yellow-600 font-semibold text-sm">
-                      {pendingStores}
-                    </span>
+              <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg p-6 text-white">
+                <div className="flex items-center">
+                  <div className="p-3 bg-white bg-opacity-20 rounded-lg">
+                    <i className="fas fa-clock text-2xl"></i>
+                  </div>
+                  <div className="ml-4">
+                    <div className="text-3xl font-bold">{pendingStores}</div>
+                    <div className="text-yellow-100">{t('pendingStores', 'Pending')}</div>
                   </div>
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-500">
-                    {t('pendingStores')}
-                  </p>
-                  <p className="text-lg font-semibold text-gray-900">
-                    {pendingStores}
-                  </p>
-                </div>
               </div>
-            </div>
-          </Card>
 
-          <Card>
-            <div className="p-4">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-green-600 font-semibold text-sm">
-                      {approvedStores}
-                    </span>
+              <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+                <div className="flex items-center">
+                  <div className="p-3 bg-white bg-opacity-20 rounded-lg">
+                    <i className="fas fa-check-circle text-2xl"></i>
+                  </div>
+                  <div className="ml-4">
+                    <div className="text-3xl font-bold">{approvedStores}</div>
+                    <div className="text-green-100">{t('approvedStores', 'Approved')}</div>
                   </div>
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-500">
-                    {t('approvedStores')}
-                  </p>
-                  <p className="text-lg font-semibold text-gray-900">
-                    {approvedStores}
-                  </p>
-                </div>
               </div>
-            </div>
-          </Card>
 
-          <Card>
-            <div className="p-4">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                    <span className="text-red-600 font-semibold text-sm">
-                      {suspendedStores}
-                    </span>
+              <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-6 text-white">
+                <div className="flex items-center">
+                  <div className="p-3 bg-white bg-opacity-20 rounded-lg">
+                    <i className="fas fa-ban text-2xl"></i>
+                  </div>
+                  <div className="ml-4">
+                    <div className="text-3xl font-bold">{suspendedStores}</div>
+                    <div className="text-red-100">{t('suspendedStores', 'Suspended')}</div>
                   </div>
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-500">
-                    {t('suspendedStores')}
-                  </p>
-                  <p className="text-lg font-semibold text-gray-900">
-                    {suspendedStores}
-                  </p>
-                </div>
               </div>
             </div>
-          </Card>
-        </div>
 
-        {/* Search and Filters */}
-        <div className="mb-6">
-          <Card>
-            <div className="p-4">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
-                  <Form.Control
-                    type="text"
-                    placeholder={t('searchStores')}
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    className="w-full"
-                  />
+            {/* Search Section */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div className="relative flex-1 max-w-md">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i className="fas fa-search text-gray-400"></i>
                 </div>
+                <input
+                  type="search"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder={t('searchStores', 'Search stores by name...')}
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
               </div>
             </div>
-          </Card>
-        </div>
 
-        {/* Error Display */}
-        {isError && (
-          <div className="mb-6">
+            {/* Stores List Section */}
             <Card>
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <span className="text-red-400">⚠️</span>
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">
-                      {t('errorLoadingStores')}
+              <Card.Header>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                      <i className="fas fa-list mr-2 text-blue-600"></i>
+                      {t('store_management', 'Store Management')}
                     </h3>
-                    <div className="mt-2 text-sm text-red-700">
-                      {error?.message || t('unknownError')}
-                    </div>
+                    <p className="mt-1 text-sm text-gray-600">
+                      {t('store_management_description', 'Manage your multi-seller stores, approve applications, and monitor performance.')}
+                      {searchTerm && ` ${t('showing_results_for', 'Showing results for')} "${searchTerm}"`}
+                    </p>
                   </div>
                 </div>
-              </div>
+              </Card.Header>
+              <Card.Body>
+                <StoreList
+                  stores={stores}
+                  onEdit={handleEditStore}
+                  onDelete={handleDeleteStoreClick}
+                  onStatusChange={handleStatusChange}
+                  isLoading={isLoading}
+                />
+              </Card.Body>
             </Card>
           </div>
         )}
-
-        {/* Stores List */}
-        <StoreList
-          stores={stores}
-          onEdit={handleEditStore}
-          onDelete={handleDeleteStoreClick}
-          onStatusChange={handleStatusChange}
-          isLoading={isLoading}
-        />
       </div>
 
       {/* Store Modal */}

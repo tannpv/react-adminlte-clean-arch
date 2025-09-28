@@ -103,9 +103,9 @@ export const useStores = ({ enabled = true, search = '' } = {}) => {
       const result = await createStoreMutation.mutateAsync(storeData)
       return { success: true, data: result }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.message || 'Failed to create store' 
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Failed to create store'
       }
     }
   }
@@ -115,9 +115,9 @@ export const useStores = ({ enabled = true, search = '' } = {}) => {
       const result = await updateStoreMutation.mutateAsync({ id, ...storeData })
       return { success: true, data: result }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.message || 'Failed to update store' 
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Failed to update store'
       }
     }
   }
@@ -127,9 +127,9 @@ export const useStores = ({ enabled = true, search = '' } = {}) => {
       await deleteStoreMutation.mutateAsync(id)
       return { success: true }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.message || 'Failed to delete store' 
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Failed to delete store'
       }
     }
   }
@@ -139,9 +139,9 @@ export const useStores = ({ enabled = true, search = '' } = {}) => {
       const result = await updateStoreStatusMutation.mutateAsync({ id, status, reason })
       return { success: true, data: result }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.message || 'Failed to update store status' 
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Failed to update store status'
       }
     }
   }

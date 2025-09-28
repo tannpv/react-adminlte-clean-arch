@@ -308,6 +308,10 @@ export class OrdersService {
     );
   }
 
+  async findAllOrders(limit?: number, offset?: number): Promise<ParentOrder[]> {
+    return await this.parentOrderRepository.findAll(limit, offset);
+  }
+
   async findStoreOrdersByStoreId(
     storeId: number,
     limit?: number,

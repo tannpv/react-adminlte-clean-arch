@@ -61,9 +61,9 @@ export const useOrders = ({ enabled = true, search = '' } = {}) => {
       const result = await updateOrderStatusMutation.mutateAsync({ id, status, reason })
       return { success: true, data: result }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.message || 'Failed to update order status' 
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Failed to update order status'
       }
     }
   }

@@ -725,23 +725,28 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       const [roles] = await this.execute<RowDataPacket[]>(
         "SELECT id, name FROM roles"
       );
-      
+
       // Check for missing roles and create them
-      const existingRoleNames = roles.map(role => role.name.toLowerCase());
+      const existingRoleNames = roles.map((role) => role.name.toLowerCase());
       const requiredRoles = [
         { name: "Admin", permissions: DEFAULT_ADMIN_PERMISSIONS },
         { name: "User", permissions: DEFAULT_USER_PERMISSIONS },
         { name: "Translator", permissions: DEFAULT_TRANSLATOR_PERMISSIONS },
-        { name: "Seller", permissions: DEFAULT_SELLER_PERMISSIONS }
+        { name: "Seller", permissions: DEFAULT_SELLER_PERMISSIONS },
       ];
-      
+
       for (const requiredRole of requiredRoles) {
         if (!existingRoleNames.includes(requiredRole.name.toLowerCase())) {
-          const roleId = await this.insertRole(requiredRole.name, requiredRole.permissions);
-          this.logger.log(`Created missing role: ${requiredRole.name} (ID: ${roleId})`);
+          const roleId = await this.insertRole(
+            requiredRole.name,
+            requiredRole.permissions
+          );
+          this.logger.log(
+            `Created missing role: ${requiredRole.name} (ID: ${roleId})`
+          );
         }
       }
-      
+
       for (const role of roles) {
         const [existingPermissions] = await this.execute<RowDataPacket[]>(
           "SELECT permission FROM role_permissions WHERE role_id = ?",
@@ -5158,8 +5163,20 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
     );
     const storeCount = Number(storeCountRows[0]?.count ?? 0);
 
-    if (storeCount === 0) {
-      this.logger.log("Seeding multi-seller data...");
+    // Check if orders already exist
+    const [orderCountRows] = await this.execute<RowDataPacket[]>(
+      "SELECT COUNT(*) as count FROM store_orders"
+    );
+    const orderCount = Number(orderCountRows[0]?.count ?? 0);
+
+    if (storeCount === 0 || orderCount === 0) {
+      if (storeCount === 0) {
+        this.logger.log("Seeding multi-seller data...");
+      } else {
+        this.logger.log(
+          "Stores exist but orders missing, seeding orders and related data..."
+        );
+      }
 
       // Get seller role ID
       const [sellerRole] = await this.execute<RowDataPacket[]>(
@@ -5209,10 +5226,10 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
           this.logger.log(
             `Seller user already exists: ${seller.email} (ID: ${userId})`
           );
-          
+
           // Ensure seller role is assigned
           const [existingRole] = await this.execute<RowDataPacket[]>(
-            "SELECT id FROM user_roles WHERE user_id = ? AND role_id = ?",
+            "SELECT user_id FROM user_roles WHERE user_id = ? AND role_id = ?",
             [userId, sellerRoleId]
           );
           if (existingRole.length === 0) {
@@ -5220,7 +5237,9 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
               `INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)`,
               [userId, sellerRoleId]
             );
-            this.logger.log(`Assigned seller role to existing user: ${seller.email}`);
+            this.logger.log(
+              `Assigned seller role to existing user: ${seller.email}`
+            );
           }
         } else {
           const hashedPassword = await this.passwordService.hash(
@@ -5309,38 +5328,53 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       ];
 
       const storeIds = [];
-      for (const store of stores) {
-        // Check if store already exists
-        const [existingStore] = await this.execute<RowDataPacket[]>(
-          "SELECT id FROM stores WHERE slug = ?",
-          [store.slug]
-        );
 
-        let storeId;
-        if (existingStore.length > 0) {
-          storeId = existingStore[0].id;
-          this.logger.log(
-            `Store already exists: ${store.name} (ID: ${storeId})`
+      // If stores already exist, get their IDs
+      if (storeCount > 0) {
+        const [existingStores] = await this.execute<RowDataPacket[]>(
+          "SELECT id, slug FROM stores ORDER BY id"
+        );
+        storeIds.push(...existingStores.map((store) => store.id));
+        this.logger.log(
+          `Using existing stores: ${existingStores
+            .map((s) => s.slug)
+            .join(", ")}`
+        );
+      } else {
+        // Create stores if they don't exist
+        for (const store of stores) {
+          // Check if store already exists
+          const [existingStore] = await this.execute<RowDataPacket[]>(
+            "SELECT id FROM stores WHERE slug = ?",
+            [store.slug]
           );
-        } else {
-          const [result] = await this.execute<ResultSetHeader>(
-            `INSERT INTO stores (name, slug, description, logo_url, banner_url, commission_rate, status, user_id, created_at, updated_at) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
-            [
-              store.name,
-              store.slug,
-              store.description,
-              store.logoUrl,
-              store.bannerUrl,
-              store.commissionRate,
-              store.status,
-              store.userId,
-            ]
-          );
-          storeId = result.insertId;
-          this.logger.log(`Created store: ${store.name} (ID: ${storeId})`);
+
+          let storeId;
+          if (existingStore.length > 0) {
+            storeId = existingStore[0].id;
+            this.logger.log(
+              `Store already exists: ${store.name} (ID: ${storeId})`
+            );
+          } else {
+            const [result] = await this.execute<ResultSetHeader>(
+              `INSERT INTO stores (name, slug, description, logo_url, banner_url, commission_rate, status, user_id, created_at, updated_at) 
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+              [
+                store.name,
+                store.slug,
+                store.description,
+                store.logoUrl,
+                store.bannerUrl,
+                store.commissionRate,
+                store.status,
+                store.userId,
+              ]
+            );
+            storeId = result.insertId;
+            this.logger.log(`Created store: ${store.name} (ID: ${storeId})`);
+          }
+          storeIds.push(storeId);
         }
-        storeIds.push(storeId);
       }
 
       // Create sample products for stores
@@ -5349,90 +5383,160 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
           name: "Wireless Bluetooth Headphones",
           description:
             "High-quality wireless headphones with noise cancellation",
-          price: 199.99,
+          sku: "TECH-HEADPHONES-001",
           storeId: storeIds[0], // Tech Gadgets Store
-          categoryId: 1,
         },
         {
           name: "Smart Fitness Watch",
           description: "Advanced fitness tracking with heart rate monitor",
-          price: 299.99,
+          sku: "TECH-WATCH-002",
           storeId: storeIds[0], // Tech Gadgets Store
-          categoryId: 1,
         },
         {
           name: "Designer T-Shirt",
           description: "Premium cotton t-shirt with modern design",
-          price: 49.99,
+          sku: "FASHION-TSHIRT-003",
           storeId: storeIds[1], // Fashion Forward
-          categoryId: 1,
         },
         {
           name: "Garden Tool Set",
           description: "Complete set of professional garden tools",
-          price: 89.99,
+          sku: "GARDEN-TOOLS-004",
           storeId: storeIds[2], // Home & Garden
-          categoryId: 1,
         },
         {
           name: "Yoga Mat Pro",
           description: "Non-slip premium yoga mat for all fitness levels",
-          price: 79.99,
+          sku: "SPORTS-YOGAMAT-005",
           storeId: storeIds[3], // Sports & Fitness
-          categoryId: 1,
         },
       ];
 
       const productIds = [];
       for (const product of products) {
-        const [result] = await this.execute<ResultSetHeader>(
-          `INSERT INTO products (name, description, price, store_id, seller_id, category_id, created_at, updated_at) 
-           VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
-          [
-            product.name,
-            product.description,
-            product.price,
-            product.storeId,
-            product.storeId, // seller_id same as store_id for simplicity
-            product.categoryId,
-          ]
+        // Check if product already exists by SKU
+        const [existingProduct] = await this.execute<RowDataPacket[]>(
+          "SELECT id FROM products WHERE sku = ?",
+          [product.sku]
         );
-        productIds.push(result.insertId);
-        this.logger.log(
-          `Created product: ${product.name} (ID: ${result.insertId})`
+
+        let productId;
+        if (existingProduct.length > 0) {
+          productId = existingProduct[0].id;
+          this.logger.log(
+            `Product already exists: ${product.name} (ID: ${productId})`
+          );
+        } else {
+          const [result] = await this.execute<ResultSetHeader>(
+            `INSERT INTO products (name, description, sku, store_id, seller_id, created_at, updated_at) 
+                VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
+            [
+              product.name,
+              product.description,
+              product.sku,
+              product.storeId,
+              sellerUserIds[product.storeId - 1] || sellerUserIds[0], // Use corresponding seller user ID
+            ]
+          );
+          productId = result.insertId;
+          this.logger.log(
+            `Created product: ${product.name} (ID: ${productId})`
+          );
+        }
+        productIds.push(productId);
+      }
+
+      // Create sample customer users
+      const customers = [
+        {
+          email: "customer1@example.com",
+          firstName: "Alice",
+          lastName: "Johnson",
+          password: "password123",
+        },
+        {
+          email: "customer2@example.com",
+          firstName: "Bob",
+          lastName: "Smith",
+          password: "password123",
+        },
+        {
+          email: "customer3@example.com",
+          firstName: "Carol",
+          lastName: "Davis",
+          password: "password123",
+        },
+        {
+          email: "customer4@example.com",
+          firstName: "David",
+          lastName: "Wilson",
+          password: "password123",
+        },
+      ];
+
+      const customerIds = [];
+      for (const customer of customers) {
+        // Check if customer already exists
+        const [existingCustomer] = await this.execute<RowDataPacket[]>(
+          "SELECT id FROM users WHERE email = ?",
+          [customer.email]
         );
+
+        let customerId;
+        if (existingCustomer.length > 0) {
+          customerId = existingCustomer[0].id;
+          this.logger.log(
+            `Customer already exists: ${customer.email} (ID: ${customerId})`
+          );
+        } else {
+          const hashedPassword = await this.passwordService.hash(
+            customer.password
+          );
+          const [result] = await this.execute<ResultSetHeader>(
+            `INSERT INTO users (email, password_hash) VALUES (?, ?)`,
+            [customer.email, hashedPassword]
+          );
+          customerId = result.insertId;
+
+          // Create user profile
+          await this.execute<ResultSetHeader>(
+            `INSERT INTO user_profiles (user_id, first_name, last_name, picture_url) VALUES (?, ?, ?, ?)`,
+            [customerId, customer.firstName, customer.lastName, null]
+          );
+
+          this.logger.log(
+            `Created customer: ${customer.email} (ID: ${customerId})`
+          );
+        }
+        customerIds.push(customerId);
       }
 
       // Create sample orders
       const orders = [
         {
           orderNumber: "ORD-001",
-          customerEmail: "customer1@example.com",
-          customerName: "Alice Johnson",
+          customerId: customerIds[0],
           totalAmount: 249.98,
           status: "completed",
           storeId: storeIds[0],
         },
         {
           orderNumber: "ORD-002",
-          customerEmail: "customer2@example.com",
-          customerName: "Bob Smith",
+          customerId: customerIds[1],
           totalAmount: 49.99,
           status: "processing",
           storeId: storeIds[1],
         },
         {
           orderNumber: "ORD-003",
-          customerEmail: "customer3@example.com",
-          customerName: "Carol Davis",
+          customerId: customerIds[2],
           totalAmount: 89.99,
           status: "pending",
           storeId: storeIds[2],
         },
         {
           orderNumber: "ORD-004",
-          customerEmail: "customer4@example.com",
-          customerName: "David Wilson",
+          customerId: customerIds[3],
           totalAmount: 79.99,
           status: "completed",
           storeId: storeIds[3],
@@ -5443,28 +5547,21 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       for (const order of orders) {
         // Create parent order
         const [parentResult] = await this.execute<ResultSetHeader>(
-          `INSERT INTO parent_orders (order_number, customer_email, customer_name, total_amount, status, created_at, updated_at) 
-           VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
-          [
-            order.orderNumber,
-            order.customerEmail,
-            order.customerName,
-            order.totalAmount,
-            order.status,
-          ]
+          `INSERT INTO parent_orders (order_number, customer_id, total_amount, status, created_at, updated_at) 
+           VALUES (?, ?, ?, ?, NOW(), NOW())`,
+          [order.orderNumber, order.customerId, order.totalAmount, order.status]
         );
         const parentOrderId = parentResult.insertId;
 
         // Create store order
         const [storeOrderResult] = await this.execute<ResultSetHeader>(
-          `INSERT INTO store_orders (parent_order_id, store_id, order_number, customer_email, customer_name, total_amount, status, created_at, updated_at) 
-           VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+          `INSERT INTO store_orders (parent_order_id, store_id, customer_id, order_number, total_amount, status, created_at, updated_at) 
+           VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
           [
             parentOrderId,
             order.storeId,
+            order.customerId,
             order.orderNumber,
-            order.customerEmail,
-            order.customerName,
             order.totalAmount,
             order.status,
           ]
@@ -5533,9 +5630,11 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       }
 
       this.logger.log("Multi-seller data seeded successfully!");
-      this.logger.log(`Created ${sellerUsers.length} seller users`);
-      this.logger.log(`Created ${stores.length} stores`);
-      this.logger.log(`Created ${products.length} products`);
+      if (storeCount === 0) {
+        this.logger.log(`Created ${sellerUsers.length} seller users`);
+        this.logger.log(`Created ${stores.length} stores`);
+        this.logger.log(`Created ${products.length} products`);
+      }
       this.logger.log(`Created ${orders.length} orders`);
       this.logger.log(`Created ${orderItems.length} order items`);
       this.logger.log(`Created ${orderIds.length} commissions`);
@@ -5549,35 +5648,41 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
     const [sellerRole] = await this.execute<RowDataPacket[]>(
       "SELECT id FROM roles WHERE name = 'Seller'"
     );
-    
+
     if (sellerRole.length === 0) {
-      this.logger.log("Seller role not found, skipping seller user role assignment");
+      this.logger.log(
+        "Seller role not found, skipping seller user role assignment"
+      );
       return;
     }
-    
+
     const sellerRoleId = sellerRole[0].id;
-    const sellerEmails = ["seller1@example.com", "seller2@example.com", "seller3@example.com"];
-    
+    const sellerEmails = [
+      "seller1@example.com",
+      "seller2@example.com",
+      "seller3@example.com",
+    ];
+
     for (const email of sellerEmails) {
       // Get user ID
       const [user] = await this.execute<RowDataPacket[]>(
         "SELECT id FROM users WHERE email = ?",
         [email]
       );
-      
+
       if (user.length === 0) {
         this.logger.log(`Seller user not found: ${email}`);
         continue;
       }
-      
+
       const userId = user[0].id;
-      
+
       // Check if user has seller role
       const [existingRole] = await this.execute<RowDataPacket[]>(
         "SELECT user_id FROM user_roles WHERE user_id = ? AND role_id = ?",
         [userId, sellerRoleId]
       );
-      
+
       if (existingRole.length === 0) {
         // Assign seller role
         await this.execute<ResultSetHeader>(
@@ -5586,16 +5691,24 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         );
         this.logger.log(`Assigned seller role to user: ${email}`);
       }
-      
+
       // Check if user has profile and update if needed
       const [profile] = await this.execute<RowDataPacket[]>(
         "SELECT user_id, first_name, last_name FROM user_profiles WHERE user_id = ?",
         [userId]
       );
-      
-      const firstName = email.includes("seller1") ? "John" : email.includes("seller2") ? "Sarah" : "Mike";
-      const lastName = email.includes("seller1") ? "Smith" : email.includes("seller2") ? "Johnson" : "Wilson";
-      
+
+      const firstName = email.includes("seller1")
+        ? "John"
+        : email.includes("seller2")
+        ? "Sarah"
+        : "Mike";
+      const lastName = email.includes("seller1")
+        ? "Smith"
+        : email.includes("seller2")
+        ? "Johnson"
+        : "Wilson";
+
       if (profile.length === 0) {
         // Create user profile with default values
         await this.execute<ResultSetHeader>(

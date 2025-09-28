@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import Button from '../../../shared/components/ui/Button'
-import Form from '../../../shared/components/ui/Form'
 import Card from '../../../shared/components/ui/Card'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
 import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
+import OrderModal from '../components/OrderModal'
 import { useOrders } from '../hooks/useOrders'
 
 export function OrdersPage() {
@@ -13,6 +13,8 @@ export function OrdersPage() {
 
   // State management
   const [searchTerm, setSearchTerm] = useState('')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [selectedOrder, setSelectedOrder] = useState(null)
 
   // Permissions
   const canViewOrders = can('orders:read')
@@ -66,6 +68,27 @@ export function OrdersPage() {
     }).format(amount)
   }
 
+  const handleViewOrder = (order) => {
+    setSelectedOrder(order)
+    setModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setModalOpen(false)
+    setSelectedOrder(null)
+  }
+
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      const result = await handleUpdateOrderStatus(orderId, newStatus)
+      if (result.success) {
+        // Success handled by mutation
+      }
+    } catch (error) {
+      console.error('Failed to update order status:', error)
+    }
+  }
+
   if (!canViewOrders) {
     return (
       <div className="p-6">
@@ -84,275 +107,266 @@ export function OrdersPage() {
   }
 
   return (
-    <div className="p-6">
+    <div>
       {/* Page Header */}
-      <div className="mb-6">
-        <div className="flex justify-between items-center">
+      <div className="mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              {t('orders')}
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+              <i className="fas fa-shopping-cart mr-3 text-blue-600"></i>
+              {t('orders', 'Orders')}
             </h1>
-            <p className="text-gray-600 mt-1">
-              {t('ordersDescription')}
+            <p className="mt-2 text-gray-600 max-w-2xl">
+              {t('ordersDescription', 'Manage orders across all stores, track fulfillment, and monitor order status.')}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      {/* Loading State */}
+      {isLoading && (
         <Card>
-          <div className="p-4">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-semibold text-sm">
-                    {totalOrders}
-                  </span>
+          <Card.Body>
+            <div className="text-center py-12">
+              <i className="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
+              <h4 className="text-lg font-medium text-gray-900 mb-2">{t('loading_title', 'Loading Orders')}</h4>
+              <p className="text-gray-600">{t('loading_description', 'Please wait while we fetch your orders...')}</p>
+            </div>
+          </Card.Body>
+        </Card>
+      )}
+
+      {/* Error State */}
+      {!isLoading && isError && (
+        <Card>
+          <Card.Body>
+            <div className="text-center py-12">
+              <i className="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
+              <h4 className="text-lg font-medium text-gray-900 mb-2">{t('failed_to_load_orders', 'Failed to Load Orders')}</h4>
+              <p className="text-gray-600 mb-6">
+                {error?.message || t('unexpected_error_loading_orders', 'An unexpected error occurred while loading orders.')}
+              </p>
+              <Button
+                variant="outline-primary"
+                onClick={() => window.location.reload()}
+              >
+                <i className="fas fa-redo mr-2"></i>
+                {t('try_again', 'Try Again')}
+              </Button>
+            </div>
+          </Card.Body>
+        </Card>
+      )}
+
+      {/* Orders Content */}
+      {!isLoading && !isError && (
+        <div className="space-y-6">
+          {/* Statistics Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+              <div className="flex items-center">
+                <div className="p-3 bg-white bg-opacity-20 rounded-lg">
+                  <i className="fas fa-shopping-cart text-2xl"></i>
+                </div>
+                <div className="ml-4">
+                  <div className="text-3xl font-bold">{totalOrders}</div>
+                  <div className="text-blue-100">{t('totalOrders', 'Total Orders')}</div>
                 </div>
               </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">
-                  {t('totalOrders')}
-                </p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {totalOrders}
-                </p>
-              </div>
             </div>
-          </div>
-        </Card>
 
-        <Card>
-          <div className="p-4">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                  <span className="text-yellow-600 font-semibold text-sm">
-                    {pendingOrders}
-                  </span>
+            <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg p-6 text-white">
+              <div className="flex items-center">
+                <div className="p-3 bg-white bg-opacity-20 rounded-lg">
+                  <i className="fas fa-clock text-2xl"></i>
+                </div>
+                <div className="ml-4">
+                  <div className="text-3xl font-bold">{pendingOrders}</div>
+                  <div className="text-yellow-100">{t('pendingOrders', 'Pending')}</div>
                 </div>
               </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">
-                  {t('pendingOrders')}
-                </p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {pendingOrders}
-                </p>
-              </div>
             </div>
-          </div>
-        </Card>
 
-        <Card>
-          <div className="p-4">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-semibold text-sm">
-                    {processingOrders}
-                  </span>
+            <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white">
+              <div className="flex items-center">
+                <div className="p-3 bg-white bg-opacity-20 rounded-lg">
+                  <i className="fas fa-cogs text-2xl"></i>
+                </div>
+                <div className="ml-4">
+                  <div className="text-3xl font-bold">{processingOrders}</div>
+                  <div className="text-purple-100">{t('processingOrders', 'Processing')}</div>
                 </div>
               </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">
-                  {t('processingOrders')}
-                </p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {processingOrders}
-                </p>
-              </div>
             </div>
-          </div>
-        </Card>
 
-        <Card>
-          <div className="p-4">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="text-green-600 font-semibold text-sm">
-                    {completedOrders}
-                  </span>
+            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+              <div className="flex items-center">
+                <div className="p-3 bg-white bg-opacity-20 rounded-lg">
+                  <i className="fas fa-check-circle text-2xl"></i>
+                </div>
+                <div className="ml-4">
+                  <div className="text-3xl font-bold">{completedOrders}</div>
+                  <div className="text-green-100">{t('completedOrders', 'Completed')}</div>
                 </div>
               </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-500">
-                  {t('completedOrders')}
-                </p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {completedOrders}
-                </p>
-              </div>
             </div>
           </div>
-        </Card>
-      </div>
 
-      {/* Search */}
-      <div className="mb-6">
-        <Card>
-          <div className="p-4">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <Form.Control
-                  type="text"
-                  placeholder={t('searchOrders')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full"
-                />
+          {/* Search Section */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="relative flex-1 max-w-md">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i className="fas fa-search text-gray-400"></i>
               </div>
+              <input
+                type="search"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder={t('searchOrders', 'Search orders by number...')}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
           </div>
-        </Card>
-      </div>
 
-      {/* Error Display */}
-      {isError && (
-        <div className="mb-6">
+          {/* Orders List Section */}
           <Card>
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <span className="text-red-400">⚠️</span>
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">
-                    {t('errorLoadingOrders')}
+            <Card.Header>
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <i className="fas fa-list mr-2 text-blue-600"></i>
+                    {t('order_management', 'Order Management')}
                   </h3>
-                  <div className="mt-2 text-sm text-red-700">
-                    {error?.message || t('unknownError')}
-                  </div>
+                  <p className="mt-1 text-sm text-gray-600">
+                    {t('order_management_description', 'Manage orders across all stores, track fulfillment, and monitor order status.')}
+                    {searchTerm && ` ${t('showing_results_for', 'Showing results for')} "${searchTerm}"`}
+                  </p>
                 </div>
               </div>
-            </div>
+            </Card.Header>
+            <Card.Body>
+              {orders.length === 0 ? (
+                <div className="text-center py-12">
+                  <i className="fas fa-shopping-cart text-4xl text-gray-400 mb-4"></i>
+                  <h4 className="text-lg font-medium text-gray-900 mb-2">
+                    {t('noOrdersFound', 'No Orders Found')}
+                  </h4>
+                  <p className="text-gray-600">
+                    {t('noOrdersDescription', 'No orders match your current search criteria.')}
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          {t('orderNumber', 'Order Number')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          {t('customer', 'Customer')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          {t('store', 'Store')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          {t('status', 'Status')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          {t('total', 'Total')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          {t('createdAt', 'Created')}
+                        </th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          {t('actions', 'Actions')}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {orders.map((order) => (
+                        <tr key={order.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              {order.orderNumber}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">
+                              {order.customer?.name || order.customer?.email || '-'}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              ID: {order.customerId}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">
+                              {order.store?.name || '-'}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {getStatusBadge(order.status)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {formatCurrency(order.totalAmount, order.currency)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {formatDate(order.createdAt)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div className="flex justify-end space-x-2">
+                              {canManageOrders && order.status === 'pending' && (
+                                <Button
+                                  size="sm"
+                                  variant="success"
+                                  onClick={() => handleUpdateOrderStatus(order.id, 'processing')}
+                                  className="text-xs"
+                                >
+                                  {t('process', 'Process')}
+                                </Button>
+                              )}
+
+                              {canManageOrders && order.status === 'processing' && (
+                                <Button
+                                  size="sm"
+                                  variant="success"
+                                  onClick={() => handleUpdateOrderStatus(order.id, 'completed')}
+                                  className="text-xs"
+                                >
+                                  {t('complete', 'Complete')}
+                                </Button>
+                              )}
+
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                onClick={() => handleViewOrder(order)}
+                                className="text-xs"
+                              >
+                                <i className="fas fa-eye mr-1"></i>
+                                {t('view', 'View')}
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card.Body>
           </Card>
         </div>
       )}
 
-      {/* Orders List */}
-      <Card>
-        {isLoading ? (
-          <div className="p-6">
-            <div className="animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-              <div className="space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-4 bg-gray-200 rounded"></div>
-                ))}
-              </div>
-            </div>
-          </div>
-        ) : orders.length === 0 ? (
-          <div className="p-6 text-center">
-            <div className="text-gray-500 text-lg mb-2">
-              {t('noOrdersFound')}
-            </div>
-            <p className="text-gray-400">
-              {t('noOrdersDescription')}
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('orderNumber')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('customer')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('store')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('status')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('total')}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('createdAt')}
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {orders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {order.orderNumber}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {order.customer?.name || order.customer?.email || '-'}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        ID: {order.customerId}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {order.store?.name || '-'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(order.status)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(order.totalAmount, order.currency)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(order.createdAt)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end space-x-2">
-                        {canManageOrders && order.status === 'pending' && (
-                          <Button
-                            size="sm"
-                            variant="success"
-                            onClick={() => handleUpdateOrderStatus(order.id, 'processing')}
-                            className="text-xs"
-                          >
-                            {t('process')}
-                          </Button>
-                        )}
-                        
-                        {canManageOrders && order.status === 'processing' && (
-                          <Button
-                            size="sm"
-                            variant="success"
-                            onClick={() => handleUpdateOrderStatus(order.id, 'completed')}
-                            className="text-xs"
-                          >
-                            {t('complete')}
-                          </Button>
-                        )}
-
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => {/* TODO: View order details */}}
-                          className="text-xs"
-                        >
-                          {t('view')}
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Card>
+      {/* Order Modal */}
+      <OrderModal
+        isOpen={modalOpen}
+        onClose={handleCloseModal}
+        order={selectedOrder}
+        onStatusChange={handleStatusChange}
+        canManageOrders={canManageOrders}
+      />
     </div>
   )
 }
