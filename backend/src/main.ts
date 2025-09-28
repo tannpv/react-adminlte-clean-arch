@@ -9,6 +9,15 @@ import { validationException } from './shared/validation-error'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+  
+  // Enable CORS
+  app.enableCors({
+    origin: ['http://localhost:5177', 'http://localhost:5178', 'http://localhost:5179'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true,
+  })
+  
   app.use(bodyParser.json({ limit: '10mb' }))
   app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
   const uploadRoot = process.env.FILE_STORAGE_ROOT
