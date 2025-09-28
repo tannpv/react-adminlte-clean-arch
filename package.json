@@ -17,7 +17,7 @@
     "start:simple": "npm run start:backend & npm run start:frontend",
     "start:backend": "npm run dev:server",
     "start:frontend": "npm run dev:client",
-    "stop-all": "bash ./scripts/stop-all.sh",
+    "stop-all": "bash ./scripts/devops/stop-all.sh",
     "stop:backend": "pkill -f 'ts-node-dev' && pkill -f 'node.*backend'",
     "stop:frontend": "pkill -f 'vite' && pkill -f 'node.*admin'",
     "restart": "npm run stop-all && sleep 2 && npm run start",
