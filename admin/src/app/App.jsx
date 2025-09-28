@@ -86,8 +86,8 @@ function AppContent() {
                 />
 
                 {/* Main Content */}
-                <main className="flex-1 p-6">
-                    <div className="max-w-7xl mx-auto">
+                <main className="main-content">
+                    <div className="main-content-container">
                         {currentPage === 'users' ? (
                             <UsersPage />
                         ) : currentPage === 'roles' ? (

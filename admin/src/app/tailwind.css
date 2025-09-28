@@ -263,6 +263,8 @@
 .sidebar {
   @apply bg-white border-r border-gray-200 shadow-sm transition-all duration-300 ease-in-out;
   @apply flex flex-col h-full flex-shrink-0;
+  position: relative;
+  z-index: 10;
 }
 
 .sidebar.expanded {
@@ -345,6 +347,20 @@
 
 .nav-item.expanded {
   @apply justify-start;
+}
+
+/* Main Content Area */
+.main-content {
+  @apply flex-1 p-6;
+  position: relative;
+  z-index: 1;
+  min-height: calc(100vh - 4rem);
+}
+
+.main-content-container {
+  @apply max-w-7xl mx-auto;
+  position: relative;
+  width: 100%;
 }
 
 .nav-item-icon {

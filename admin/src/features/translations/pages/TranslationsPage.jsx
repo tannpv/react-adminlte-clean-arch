@@ -28,7 +28,7 @@ const TranslationsPage = () => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto">
+        <div>
             {/* Page Header */}
             <div className="mb-8">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
