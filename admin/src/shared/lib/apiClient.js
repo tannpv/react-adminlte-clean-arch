@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-// Always prefer env; fallback to '/api' so we hit the local proxy/server.
-const baseURL = import.meta?.env?.VITE_API_BASE_URL || '/api'
+// Always prefer env; fallback to direct backend URL for development
+const baseURL = import.meta?.env?.VITE_API_BASE_URL || 'http://localhost:3001/api'
 
 export const ApiClient = axios.create({ baseURL })
 
