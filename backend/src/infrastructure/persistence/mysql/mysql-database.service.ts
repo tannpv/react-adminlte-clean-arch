@@ -783,6 +783,7 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
     await this.ensureSampleProduct();
     await this.seedDefaultAttributes();
     await this.seedDefaultTranslations();
+    await this.seedMultiSellerData();
   }
 
   private async ensureUsersHavePasswords(): Promise<void> {
@@ -2699,92 +2700,336 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       // Stores namespace
       { namespace: "stores", key: "stores", description: "Stores page title" },
       { namespace: "stores", key: "store", description: "Store singular" },
-      { namespace: "stores", key: "createStore", description: "Create store button" },
-      { namespace: "stores", key: "editStore", description: "Edit store button" },
-      { namespace: "stores", key: "deleteStore", description: "Delete store button" },
-      { namespace: "stores", key: "storesDescription", description: "Stores page description" },
-      { namespace: "stores", key: "noStoresFound", description: "No stores found message" },
-      { namespace: "stores", key: "noStoresDescription", description: "No stores description" },
-      { namespace: "stores", key: "searchStores", description: "Search stores placeholder" },
-      { namespace: "stores", key: "errorLoadingStores", description: "Error loading stores" },
-      { namespace: "stores", key: "unknownError", description: "Unknown error message" },
-      { namespace: "stores", key: "accessDenied", description: "Access denied title" },
-      { namespace: "stores", key: "accessDeniedMessage", description: "Access denied message" },
-      { namespace: "stores", key: "storeName", description: "Store name label" },
-      { namespace: "stores", key: "storeNameRequired", description: "Store name required error" },
-      { namespace: "stores", key: "storeNameMinLength", description: "Store name min length error" },
-      { namespace: "stores", key: "storeNamePlaceholder", description: "Store name placeholder" },
-      { namespace: "stores", key: "storeSlug", description: "Store slug label" },
-      { namespace: "stores", key: "storeSlugRequired", description: "Store slug required error" },
-      { namespace: "stores", key: "storeSlugPattern", description: "Store slug pattern error" },
-      { namespace: "stores", key: "storeSlugPlaceholder", description: "Store slug placeholder" },
-      { namespace: "stores", key: "storeSlugHelp", description: "Store slug help text" },
-      { namespace: "stores", key: "description", description: "Description label" },
-      { namespace: "stores", key: "descriptionPlaceholder", description: "Description placeholder" },
+      {
+        namespace: "stores",
+        key: "createStore",
+        description: "Create store button",
+      },
+      {
+        namespace: "stores",
+        key: "editStore",
+        description: "Edit store button",
+      },
+      {
+        namespace: "stores",
+        key: "deleteStore",
+        description: "Delete store button",
+      },
+      {
+        namespace: "stores",
+        key: "storesDescription",
+        description: "Stores page description",
+      },
+      {
+        namespace: "stores",
+        key: "noStoresFound",
+        description: "No stores found message",
+      },
+      {
+        namespace: "stores",
+        key: "noStoresDescription",
+        description: "No stores description",
+      },
+      {
+        namespace: "stores",
+        key: "searchStores",
+        description: "Search stores placeholder",
+      },
+      {
+        namespace: "stores",
+        key: "errorLoadingStores",
+        description: "Error loading stores",
+      },
+      {
+        namespace: "stores",
+        key: "unknownError",
+        description: "Unknown error message",
+      },
+      {
+        namespace: "stores",
+        key: "accessDenied",
+        description: "Access denied title",
+      },
+      {
+        namespace: "stores",
+        key: "accessDeniedMessage",
+        description: "Access denied message",
+      },
+      {
+        namespace: "stores",
+        key: "storeName",
+        description: "Store name label",
+      },
+      {
+        namespace: "stores",
+        key: "storeNameRequired",
+        description: "Store name required error",
+      },
+      {
+        namespace: "stores",
+        key: "storeNameMinLength",
+        description: "Store name min length error",
+      },
+      {
+        namespace: "stores",
+        key: "storeNamePlaceholder",
+        description: "Store name placeholder",
+      },
+      {
+        namespace: "stores",
+        key: "storeSlug",
+        description: "Store slug label",
+      },
+      {
+        namespace: "stores",
+        key: "storeSlugRequired",
+        description: "Store slug required error",
+      },
+      {
+        namespace: "stores",
+        key: "storeSlugPattern",
+        description: "Store slug pattern error",
+      },
+      {
+        namespace: "stores",
+        key: "storeSlugPlaceholder",
+        description: "Store slug placeholder",
+      },
+      {
+        namespace: "stores",
+        key: "storeSlugHelp",
+        description: "Store slug help text",
+      },
+      {
+        namespace: "stores",
+        key: "description",
+        description: "Description label",
+      },
+      {
+        namespace: "stores",
+        key: "descriptionPlaceholder",
+        description: "Description placeholder",
+      },
       { namespace: "stores", key: "logoUrl", description: "Logo URL label" },
-      { namespace: "stores", key: "logoUrlPattern", description: "Logo URL pattern error" },
-      { namespace: "stores", key: "logoUrlPlaceholder", description: "Logo URL placeholder" },
-      { namespace: "stores", key: "bannerUrl", description: "Banner URL label" },
-      { namespace: "stores", key: "bannerUrlPattern", description: "Banner URL pattern error" },
-      { namespace: "stores", key: "bannerUrlPlaceholder", description: "Banner URL placeholder" },
-      { namespace: "stores", key: "commissionRate", description: "Commission rate label" },
-      { namespace: "stores", key: "commissionRateRequired", description: "Commission rate required error" },
-      { namespace: "stores", key: "commissionRateMin", description: "Commission rate min error" },
-      { namespace: "stores", key: "commissionRateMax", description: "Commission rate max error" },
+      {
+        namespace: "stores",
+        key: "logoUrlPattern",
+        description: "Logo URL pattern error",
+      },
+      {
+        namespace: "stores",
+        key: "logoUrlPlaceholder",
+        description: "Logo URL placeholder",
+      },
+      {
+        namespace: "stores",
+        key: "bannerUrl",
+        description: "Banner URL label",
+      },
+      {
+        namespace: "stores",
+        key: "bannerUrlPattern",
+        description: "Banner URL pattern error",
+      },
+      {
+        namespace: "stores",
+        key: "bannerUrlPlaceholder",
+        description: "Banner URL placeholder",
+      },
+      {
+        namespace: "stores",
+        key: "commissionRate",
+        description: "Commission rate label",
+      },
+      {
+        namespace: "stores",
+        key: "commissionRateRequired",
+        description: "Commission rate required error",
+      },
+      {
+        namespace: "stores",
+        key: "commissionRateMin",
+        description: "Commission rate min error",
+      },
+      {
+        namespace: "stores",
+        key: "commissionRateMax",
+        description: "Commission rate max error",
+      },
       { namespace: "stores", key: "owner", description: "Owner label" },
       { namespace: "stores", key: "status", description: "Status label" },
-      { namespace: "stores", key: "commission", description: "Commission label" },
-      { namespace: "stores", key: "createdAt", description: "Created at label" },
+      {
+        namespace: "stores",
+        key: "commission",
+        description: "Commission label",
+      },
+      {
+        namespace: "stores",
+        key: "createdAt",
+        description: "Created at label",
+      },
       { namespace: "stores", key: "actions", description: "Actions label" },
-      { namespace: "stores", key: "status.pending", description: "Pending status" },
-      { namespace: "stores", key: "status.approved", description: "Approved status" },
-      { namespace: "stores", key: "status.suspended", description: "Suspended status" },
-      { namespace: "stores", key: "status.rejected", description: "Rejected status" },
+      {
+        namespace: "stores",
+        key: "status.pending",
+        description: "Pending status",
+      },
+      {
+        namespace: "stores",
+        key: "status.approved",
+        description: "Approved status",
+      },
+      {
+        namespace: "stores",
+        key: "status.suspended",
+        description: "Suspended status",
+      },
+      {
+        namespace: "stores",
+        key: "status.rejected",
+        description: "Rejected status",
+      },
       { namespace: "stores", key: "approve", description: "Approve action" },
       { namespace: "stores", key: "reject", description: "Reject action" },
       { namespace: "stores", key: "suspend", description: "Suspend action" },
-      { namespace: "stores", key: "reactivate", description: "Reactivate action" },
+      {
+        namespace: "stores",
+        key: "reactivate",
+        description: "Reactivate action",
+      },
       { namespace: "stores", key: "edit", description: "Edit action" },
       { namespace: "stores", key: "delete", description: "Delete action" },
-      { namespace: "stores", key: "totalStores", description: "Total stores label" },
-      { namespace: "stores", key: "pendingStores", description: "Pending stores label" },
-      { namespace: "stores", key: "approvedStores", description: "Approved stores label" },
-      { namespace: "stores", key: "suspendedStores", description: "Suspended stores label" },
+      {
+        namespace: "stores",
+        key: "totalStores",
+        description: "Total stores label",
+      },
+      {
+        namespace: "stores",
+        key: "pendingStores",
+        description: "Pending stores label",
+      },
+      {
+        namespace: "stores",
+        key: "approvedStores",
+        description: "Approved stores label",
+      },
+      {
+        namespace: "stores",
+        key: "suspendedStores",
+        description: "Suspended stores label",
+      },
       { namespace: "stores", key: "cancel", description: "Cancel button" },
       { namespace: "stores", key: "create", description: "Create button" },
       { namespace: "stores", key: "update", description: "Update button" },
       { namespace: "stores", key: "saving", description: "Saving state" },
-      { namespace: "stores", key: "deleteStoreConfirm", description: "Delete store confirmation" },
+      {
+        namespace: "stores",
+        key: "deleteStoreConfirm",
+        description: "Delete store confirmation",
+      },
 
       // Orders namespace
       { namespace: "orders", key: "orders", description: "Orders page title" },
       { namespace: "orders", key: "order", description: "Order singular" },
-      { namespace: "orders", key: "ordersDescription", description: "Orders page description" },
-      { namespace: "orders", key: "noOrdersFound", description: "No orders found message" },
-      { namespace: "orders", key: "noOrdersDescription", description: "No orders description" },
-      { namespace: "orders", key: "searchOrders", description: "Search orders placeholder" },
-      { namespace: "orders", key: "errorLoadingOrders", description: "Error loading orders" },
-      { namespace: "orders", key: "unknownError", description: "Unknown error message" },
-      { namespace: "orders", key: "accessDenied", description: "Access denied title" },
-      { namespace: "orders", key: "accessDeniedMessage", description: "Access denied message" },
-      { namespace: "orders", key: "orderNumber", description: "Order number label" },
+      {
+        namespace: "orders",
+        key: "ordersDescription",
+        description: "Orders page description",
+      },
+      {
+        namespace: "orders",
+        key: "noOrdersFound",
+        description: "No orders found message",
+      },
+      {
+        namespace: "orders",
+        key: "noOrdersDescription",
+        description: "No orders description",
+      },
+      {
+        namespace: "orders",
+        key: "searchOrders",
+        description: "Search orders placeholder",
+      },
+      {
+        namespace: "orders",
+        key: "errorLoadingOrders",
+        description: "Error loading orders",
+      },
+      {
+        namespace: "orders",
+        key: "unknownError",
+        description: "Unknown error message",
+      },
+      {
+        namespace: "orders",
+        key: "accessDenied",
+        description: "Access denied title",
+      },
+      {
+        namespace: "orders",
+        key: "accessDeniedMessage",
+        description: "Access denied message",
+      },
+      {
+        namespace: "orders",
+        key: "orderNumber",
+        description: "Order number label",
+      },
       { namespace: "orders", key: "customer", description: "Customer label" },
       { namespace: "orders", key: "store", description: "Store label" },
       { namespace: "orders", key: "status", description: "Status label" },
       { namespace: "orders", key: "total", description: "Total label" },
-      { namespace: "orders", key: "createdAt", description: "Created at label" },
+      {
+        namespace: "orders",
+        key: "createdAt",
+        description: "Created at label",
+      },
       { namespace: "orders", key: "actions", description: "Actions label" },
-      { namespace: "orders", key: "status.pending", description: "Pending status" },
-      { namespace: "orders", key: "status.processing", description: "Processing status" },
-      { namespace: "orders", key: "status.completed", description: "Completed status" },
-      { namespace: "orders", key: "status.cancelled", description: "Cancelled status" },
+      {
+        namespace: "orders",
+        key: "status.pending",
+        description: "Pending status",
+      },
+      {
+        namespace: "orders",
+        key: "status.processing",
+        description: "Processing status",
+      },
+      {
+        namespace: "orders",
+        key: "status.completed",
+        description: "Completed status",
+      },
+      {
+        namespace: "orders",
+        key: "status.cancelled",
+        description: "Cancelled status",
+      },
       { namespace: "orders", key: "process", description: "Process action" },
       { namespace: "orders", key: "complete", description: "Complete action" },
       { namespace: "orders", key: "view", description: "View action" },
-      { namespace: "orders", key: "totalOrders", description: "Total orders label" },
-      { namespace: "orders", key: "pendingOrders", description: "Pending orders label" },
-      { namespace: "orders", key: "processingOrders", description: "Processing orders label" },
-      { namespace: "orders", key: "completedOrders", description: "Completed orders label" },
+      {
+        namespace: "orders",
+        key: "totalOrders",
+        description: "Total orders label",
+      },
+      {
+        namespace: "orders",
+        key: "pendingOrders",
+        description: "Pending orders label",
+      },
+      {
+        namespace: "orders",
+        key: "processingOrders",
+        description: "Processing orders label",
+      },
+      {
+        namespace: "orders",
+        key: "completedOrders",
+        description: "Completed orders label",
+      },
     ];
 
     // Insert translation keys (skip if already exist)
@@ -3362,21 +3607,25 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         "stores.createStore": "Create Store",
         "stores.editStore": "Edit Store",
         "stores.deleteStore": "Delete Store",
-        "stores.storesDescription": "Manage stores and sellers in your marketplace",
+        "stores.storesDescription":
+          "Manage stores and sellers in your marketplace",
         "stores.noStoresFound": "No stores found",
-        "stores.noStoresDescription": "No stores have been created yet. Create your first store to get started.",
+        "stores.noStoresDescription":
+          "No stores have been created yet. Create your first store to get started.",
         "stores.searchStores": "Search stores...",
         "stores.errorLoadingStores": "Error loading stores",
         "stores.unknownError": "An unknown error occurred",
         "stores.accessDenied": "Access Denied",
-        "stores.accessDeniedMessage": "You don't have permission to access this page",
+        "stores.accessDeniedMessage":
+          "You don't have permission to access this page",
         "stores.storeName": "Store Name",
         "stores.storeNameRequired": "Store name is required",
         "stores.storeNameMinLength": "Store name must be at least 3 characters",
         "stores.storeNamePlaceholder": "Enter store name",
         "stores.storeSlug": "Store Slug",
         "stores.storeSlugRequired": "Store slug is required",
-        "stores.storeSlugPattern": "Store slug can only contain letters, numbers, and hyphens",
+        "stores.storeSlugPattern":
+          "Store slug can only contain letters, numbers, and hyphens",
         "stores.storeSlugPlaceholder": "store-slug",
         "stores.storeSlugHelp": "URL-friendly version of the store name",
         "stores.description": "Description",
@@ -3409,7 +3658,8 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         "stores.suspendedStores": "Suspended Stores",
         "stores.update": "Update",
         "stores.saving": "Saving...",
-        "stores.deleteStoreConfirm": "Are you sure you want to delete this store?",
+        "stores.deleteStoreConfirm":
+          "Are you sure you want to delete this store?",
 
         // Orders translations
         "orders.orders": "Orders",
@@ -3421,7 +3671,8 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         "orders.errorLoadingOrders": "Error loading orders",
         "orders.unknownError": "An unknown error occurred",
         "orders.accessDenied": "Access Denied",
-        "orders.accessDeniedMessage": "You don't have permission to access this page",
+        "orders.accessDeniedMessage":
+          "You don't have permission to access this page",
         "orders.orderNumber": "Order #",
         "orders.customer": "Customer",
         "orders.store": "Store",
@@ -4878,5 +5129,377 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
     }
 
     this.logger.log("Seeded default English translations");
+  }
+
+  private async seedMultiSellerData(): Promise<void> {
+    // Check if stores already exist
+    const [storeCountRows] = await this.execute<RowDataPacket[]>(
+      "SELECT COUNT(*) as count FROM stores"
+    );
+    const storeCount = Number(storeCountRows[0]?.count ?? 0);
+
+    if (storeCount === 0) {
+      this.logger.log("Seeding multi-seller data...");
+
+      // Get seller role ID
+      const [sellerRole] = await this.execute<RowDataPacket[]>(
+        "SELECT id FROM roles WHERE name = 'Seller'"
+      );
+      const sellerRoleId = sellerRole[0]?.id;
+
+      // Get admin user ID
+      const [adminUser] = await this.execute<RowDataPacket[]>(
+        "SELECT id FROM users WHERE email = 'tannpv@gmail.com'"
+      );
+      const adminUserId = adminUser[0]?.id;
+
+      // Create sample seller users
+      const sellerUsers = [
+        {
+          email: "seller1@example.com",
+          firstName: "John",
+          lastName: "Smith",
+          password: "password123",
+        },
+        {
+          email: "seller2@example.com",
+          firstName: "Sarah",
+          lastName: "Johnson",
+          password: "password123",
+        },
+        {
+          email: "seller3@example.com",
+          firstName: "Mike",
+          lastName: "Wilson",
+          password: "password123",
+        },
+      ];
+
+      const sellerUserIds = [];
+      for (const seller of sellerUsers) {
+        // Check if user already exists
+        const [existingUser] = await this.execute<RowDataPacket[]>(
+          "SELECT id FROM users WHERE email = ?",
+          [seller.email]
+        );
+
+        let userId;
+        if (existingUser.length > 0) {
+          userId = existingUser[0].id;
+          this.logger.log(`Seller user already exists: ${seller.email} (ID: ${userId})`);
+        } else {
+          const hashedPassword = await this.passwordService.hash(seller.password);
+          const [result] = await this.execute<ResultSetHeader>(
+            `INSERT INTO users (email, password_hash) VALUES (?, ?)`,
+            [seller.email, hashedPassword]
+          );
+          userId = result.insertId;
+
+          // Create user profile
+          await this.execute<ResultSetHeader>(
+            `INSERT INTO user_profiles (user_id, first_name, last_name, picture_url) VALUES (?, ?, ?, ?)`,
+            [userId, seller.firstName, seller.lastName, null]
+          );
+
+          // Assign seller role
+          await this.execute<ResultSetHeader>(
+            `INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)`,
+            [userId, sellerRoleId]
+          );
+
+          this.logger.log(`Created seller user: ${seller.email} (ID: ${userId})`);
+        }
+
+        sellerUserIds.push(userId);
+      }
+
+      // Create sample stores
+      const stores = [
+        {
+          name: "Tech Gadgets Store",
+          slug: "tech-gadgets-store",
+          description:
+            "Your one-stop shop for the latest technology gadgets and electronics.",
+          logoUrl:
+            "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop",
+          bannerUrl:
+            "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=300&fit=crop",
+          commissionRate: 8.5,
+          status: "approved",
+          userId: sellerUserIds[0],
+        },
+        {
+          name: "Fashion Forward",
+          slug: "fashion-forward",
+          description:
+            "Trendy fashion items for men and women. Stay stylish with our latest collection.",
+          logoUrl:
+            "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=200&h=200&fit=crop",
+          bannerUrl:
+            "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&h=300&fit=crop",
+          commissionRate: 12.0,
+          status: "approved",
+          userId: sellerUserIds[1],
+        },
+        {
+          name: "Home & Garden",
+          slug: "home-garden",
+          description:
+            "Everything you need to make your home beautiful and your garden flourish.",
+          logoUrl:
+            "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&h=200&fit=crop",
+          bannerUrl:
+            "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=300&fit=crop",
+          commissionRate: 10.0,
+          status: "pending",
+          userId: sellerUserIds[2],
+        },
+        {
+          name: "Sports & Fitness",
+          slug: "sports-fitness",
+          description:
+            "Premium sports equipment and fitness gear for athletes and fitness enthusiasts.",
+          logoUrl:
+            "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=200&fit=crop",
+          bannerUrl:
+            "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=300&fit=crop",
+          commissionRate: 9.5,
+          status: "approved",
+          userId: adminUserId, // Admin-owned store
+        },
+      ];
+
+      const storeIds = [];
+      for (const store of stores) {
+        // Check if store already exists
+        const [existingStore] = await this.execute<RowDataPacket[]>(
+          "SELECT id FROM stores WHERE slug = ?",
+          [store.slug]
+        );
+
+        let storeId;
+        if (existingStore.length > 0) {
+          storeId = existingStore[0].id;
+          this.logger.log(`Store already exists: ${store.name} (ID: ${storeId})`);
+        } else {
+          const [result] = await this.execute<ResultSetHeader>(
+            `INSERT INTO stores (name, slug, description, logo_url, banner_url, commission_rate, status, user_id, created_at, updated_at) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+            [
+              store.name,
+              store.slug,
+              store.description,
+              store.logoUrl,
+              store.bannerUrl,
+              store.commissionRate,
+              store.status,
+              store.userId,
+            ]
+          );
+          storeId = result.insertId;
+          this.logger.log(`Created store: ${store.name} (ID: ${storeId})`);
+        }
+        storeIds.push(storeId);
+      }
+
+      // Create sample products for stores
+      const products = [
+        {
+          name: "Wireless Bluetooth Headphones",
+          description:
+            "High-quality wireless headphones with noise cancellation",
+          price: 199.99,
+          storeId: storeIds[0], // Tech Gadgets Store
+          categoryId: 1,
+        },
+        {
+          name: "Smart Fitness Watch",
+          description: "Advanced fitness tracking with heart rate monitor",
+          price: 299.99,
+          storeId: storeIds[0], // Tech Gadgets Store
+          categoryId: 1,
+        },
+        {
+          name: "Designer T-Shirt",
+          description: "Premium cotton t-shirt with modern design",
+          price: 49.99,
+          storeId: storeIds[1], // Fashion Forward
+          categoryId: 1,
+        },
+        {
+          name: "Garden Tool Set",
+          description: "Complete set of professional garden tools",
+          price: 89.99,
+          storeId: storeIds[2], // Home & Garden
+          categoryId: 1,
+        },
+        {
+          name: "Yoga Mat Pro",
+          description: "Non-slip premium yoga mat for all fitness levels",
+          price: 79.99,
+          storeId: storeIds[3], // Sports & Fitness
+          categoryId: 1,
+        },
+      ];
+
+      const productIds = [];
+      for (const product of products) {
+        const [result] = await this.execute<ResultSetHeader>(
+          `INSERT INTO products (name, description, price, store_id, seller_id, category_id, created_at, updated_at) 
+           VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+          [
+            product.name,
+            product.description,
+            product.price,
+            product.storeId,
+            product.storeId, // seller_id same as store_id for simplicity
+            product.categoryId,
+          ]
+        );
+        productIds.push(result.insertId);
+        this.logger.log(
+          `Created product: ${product.name} (ID: ${result.insertId})`
+        );
+      }
+
+      // Create sample orders
+      const orders = [
+        {
+          orderNumber: "ORD-001",
+          customerEmail: "customer1@example.com",
+          customerName: "Alice Johnson",
+          totalAmount: 249.98,
+          status: "completed",
+          storeId: storeIds[0],
+        },
+        {
+          orderNumber: "ORD-002",
+          customerEmail: "customer2@example.com",
+          customerName: "Bob Smith",
+          totalAmount: 49.99,
+          status: "processing",
+          storeId: storeIds[1],
+        },
+        {
+          orderNumber: "ORD-003",
+          customerEmail: "customer3@example.com",
+          customerName: "Carol Davis",
+          totalAmount: 89.99,
+          status: "pending",
+          storeId: storeIds[2],
+        },
+        {
+          orderNumber: "ORD-004",
+          customerEmail: "customer4@example.com",
+          customerName: "David Wilson",
+          totalAmount: 79.99,
+          status: "completed",
+          storeId: storeIds[3],
+        },
+      ];
+
+      const orderIds = [];
+      for (const order of orders) {
+        // Create parent order
+        const [parentResult] = await this.execute<ResultSetHeader>(
+          `INSERT INTO parent_orders (order_number, customer_email, customer_name, total_amount, status, created_at, updated_at) 
+           VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
+          [
+            order.orderNumber,
+            order.customerEmail,
+            order.customerName,
+            order.totalAmount,
+            order.status,
+          ]
+        );
+        const parentOrderId = parentResult.insertId;
+
+        // Create store order
+        const [storeOrderResult] = await this.execute<ResultSetHeader>(
+          `INSERT INTO store_orders (parent_order_id, store_id, order_number, customer_email, customer_name, total_amount, status, created_at, updated_at) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+          [
+            parentOrderId,
+            order.storeId,
+            order.orderNumber,
+            order.customerEmail,
+            order.customerName,
+            order.totalAmount,
+            order.status,
+          ]
+        );
+        orderIds.push(storeOrderResult.insertId);
+        this.logger.log(
+          `Created order: ${order.orderNumber} (ID: ${storeOrderResult.insertId})`
+        );
+      }
+
+      // Create sample order items
+      const orderItems = [
+        {
+          storeOrderId: orderIds[0],
+          productId: productIds[0],
+          quantity: 1,
+          price: 199.99,
+        },
+        {
+          storeOrderId: orderIds[0],
+          productId: productIds[1],
+          quantity: 1,
+          price: 49.99,
+        },
+        {
+          storeOrderId: orderIds[1],
+          productId: productIds[2],
+          quantity: 1,
+          price: 49.99,
+        },
+        {
+          storeOrderId: orderIds[2],
+          productId: productIds[3],
+          quantity: 1,
+          price: 89.99,
+        },
+        {
+          storeOrderId: orderIds[3],
+          productId: productIds[4],
+          quantity: 1,
+          price: 79.99,
+        },
+      ];
+
+      for (const item of orderItems) {
+        await this.execute<ResultSetHeader>(
+          `INSERT INTO order_items (store_order_id, product_id, quantity, price, created_at, updated_at) 
+           VALUES (?, ?, ?, ?, NOW(), NOW())`,
+          [item.storeOrderId, item.productId, item.quantity, item.price]
+        );
+      }
+
+      // Create sample commissions
+      for (let i = 0; i < orderIds.length; i++) {
+        const orderId = orderIds[i];
+        const storeId = stores[i].userId;
+        const commissionRate = stores[i].commissionRate;
+        const orderAmount = orders[i].totalAmount;
+        const commissionAmount = (orderAmount * commissionRate) / 100;
+
+        await this.execute<ResultSetHeader>(
+          `INSERT INTO commissions (store_order_id, store_id, seller_id, amount, rate, status, created_at, updated_at) 
+           VALUES (?, ?, ?, ?, ?, 'pending', NOW(), NOW())`,
+          [orderId, storeId, storeId, commissionAmount, commissionRate]
+        );
+      }
+
+      this.logger.log("Multi-seller data seeded successfully!");
+      this.logger.log(`Created ${sellerUsers.length} seller users`);
+      this.logger.log(`Created ${stores.length} stores`);
+      this.logger.log(`Created ${products.length} products`);
+      this.logger.log(`Created ${orders.length} orders`);
+      this.logger.log(`Created ${orderItems.length} order items`);
+      this.logger.log(`Created ${orderIds.length} commissions`);
+    } else {
+      this.logger.log("Multi-seller data already exists, skipping seeding");
+    }
   }
 }
