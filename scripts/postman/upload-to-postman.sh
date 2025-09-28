@@ -103,7 +103,9 @@ get_project_name() {
 
 get_stored_api_key() {
     if [ -f "$API_KEY_FILE" ]; then
-        base64 -d "$API_KEY_FILE" 2>/dev/null || return 1
+        base64 -d < "$API_KEY_FILE" 2>/dev/null | tr -d '\n'
+    else
+        return 1
     fi
 }
 
