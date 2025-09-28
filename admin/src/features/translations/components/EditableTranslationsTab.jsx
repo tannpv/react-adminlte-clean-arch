@@ -21,7 +21,8 @@ const EditableTranslationsTab = ({ languages = [] }) => {
 
     const namespaces = [
         'common', 'auth', 'products', 'users', 'categories',
-        'roles', 'attributes', 'storage', 'validation', 'translations'
+        'roles', 'attributes', 'storage', 'validation', 'translations',
+        'stores', 'orders'
     ];
 
     const handleLanguageChange = (e) => {

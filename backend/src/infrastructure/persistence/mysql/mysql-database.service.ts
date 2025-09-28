@@ -1333,7 +1333,9 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         ('attributes', 'Attribute management messages', true),
         ('storage', 'File storage messages', true),
         ('validation', 'Form validation messages', true),
-        ('translations', 'Translation management messages', true)
+        ('translations', 'Translation management messages', true),
+        ('stores', 'Store management messages', true),
+        ('orders', 'Order management messages', true)
       `);
     } else {
       // Ensure attributes namespace exists (for existing databases)
@@ -1355,6 +1357,28 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
         await this.execute(`
           INSERT INTO translation_namespaces (name, description, isActive) VALUES
           ('translations', 'Translation management messages', true)
+        `);
+      }
+
+      // Ensure stores namespace exists (for existing databases)
+      const [storesNamespace] = await this.execute<RowDataPacket[]>(
+        "SELECT id FROM translation_namespaces WHERE name = 'stores'"
+      );
+      if (storesNamespace.length === 0) {
+        await this.execute(`
+          INSERT INTO translation_namespaces (name, description, isActive) VALUES
+          ('stores', 'Store management messages', true)
+        `);
+      }
+
+      // Ensure orders namespace exists (for existing databases)
+      const [ordersNamespace] = await this.execute<RowDataPacket[]>(
+        "SELECT id FROM translation_namespaces WHERE name = 'orders'"
+      );
+      if (ordersNamespace.length === 0) {
+        await this.execute(`
+          INSERT INTO translation_namespaces (name, description, isActive) VALUES
+          ('orders', 'Order management messages', true)
         `);
       }
     }
