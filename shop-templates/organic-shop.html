@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belle Vie Organic - Romantic Organic Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            line-height: 1.7;
+            color: #5a4a3a;
+            background: linear-gradient(135deg, #fef7f0 0%, #f8f4f0 100%);
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Dancing Script', cursive;
+            color: #8b4513;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #d4a574 0%, #c49660 50%, #b8864b 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 20px rgba(180, 134, 75, 0.3);
+            border-bottom: 3px solid #8b4513;
+        }
+
+        .header-top {
+            background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .header-top .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-top-left {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .header-top-right {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .header-main {
+            padding: 1rem 0;
+        }
+
+        .header-main .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #48bb78;
+            font-size: 1.5rem;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.9);
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .cart-icon, .user-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .cart-icon:hover, .user-icon:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e53e3e;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Navigation */
+        .nav {
+            background: linear-gradient(135deg, #f5e6d3 0%, #f0d9c7 100%);
+            border-bottom: 2px solid #d4a574;
+            padding: 0;
+            box-shadow: 0 2px 10px rgba(180, 134, 75, 0.1);
+        }
+
+        .nav .container {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-categories {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .nav-category {
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-category:hover {
+            background: #f0fff4;
+            color: #38a169;
+        }
+
+        .nav-category.active {
+            background: #48bb78;
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.9), rgba(196, 150, 96, 0.9)), url('https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            padding: 6rem 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.3), rgba(160, 82, 45, 0.3));
+            z-index: 1;
+        }
+        
+        .hero .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4a574 0%, #c49660 100%);
+            color: white;
+            border: 2px solid #8b4513;
+            font-family: 'Crimson Text', serif;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(180, 134, 75, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #c49660 0%, #b8864b 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(180, 134, 75, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            font-family: 'Crimson Text', serif;
+            font-weight: 600;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #38a169;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 0;
+            background: white;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 15px;
+            background: #f0fff4;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: #48bb78;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .feature-card p {
+            color: #4a5568;
+        }
+
+        /* Categories Section */
+        .categories {
+            padding: 4rem 0;
+            background: #f7fafc;
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #2d3748;
+            margin-bottom: 3rem;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(180, 134, 75, 0.15);
+            transition: all 0.3s ease;
+            border: 2px solid #f5e6d3;
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(180, 134, 75, 0.25);
+            border-color: #d4a574;
+        }
+
+        .category-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            border-radius: 8px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .category-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .category-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(72,187,120,0.8), rgba(56,161,105,0.8));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .category-card:hover .category-overlay {
+            opacity: 1;
+        }
+
+        .category-overlay h3 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .category-content {
+            padding: 1.5rem;
+        }
+
+        .category-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .category-content p {
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+
+        .category-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #48bb78;
+            font-weight: 500;
+        }
+
+        /* Products Section */
+        .products {
+            padding: 4rem 0;
+            background: white;
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .products-filter {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            border-color: #48bb78;
+            background: #48bb78;
+            color: white;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(180, 134, 75, 0.15);
+            transition: all 0.3s ease;
+            border: 2px solid #f5e6d3;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(180, 134, 75, 0.25);
+            border-color: #d4a574;
+        }
+
+        .product-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            border-radius: 8px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .product-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: #e53e3e;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .product-badge.organic {
+            background: #48bb78;
+        }
+
+        .product-badge.local {
+            background: #ed8936;
+        }
+
+        .product-content {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .product-description {
+            color: #4a5568;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .price {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #48bb78;
+        }
+
+        .price-old {
+            color: #a0aec0;
+            text-decoration: line-through;
+            font-size: 1rem;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stars {
+            color: #f6ad55;
+        }
+
+        .rating-text {
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            padding: 0.75rem;
+            background: #48bb78;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .add-to-cart:hover {
+            background: #38a169;
+        }
+
+        /* Newsletter Section */
+        .newsletter {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .newsletter h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .newsletter p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .newsletter-form {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto;
+            gap: 1rem;
+        }
+
+        .newsletter-form input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+        }
+
+        .newsletter-form input:focus {
+            outline: none;
+        }
+
+        .newsletter-form button {
+            padding: 0.75rem 2rem;
+            background: white;
+            color: #38a169;
+            border: none;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .newsletter-form button:hover {
+            background: #f7fafc;
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        .footer {
+            background: #2d3748;
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #48bb78;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: #a0aec0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #4a5568;
+            padding-top: 1rem;
+            text-align: center;
+            color: #a0aec0;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: #4a5568;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .social-link:hover {
+            background: #48bb78;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-main .container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-bar {
+                margin: 0;
+                max-width: 100%;
+            }
+
+            .nav .container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-categories {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .products-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .products-filter {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-top-left">
+                    <span>🌱 100% Organic Products</span>
+                    <span>🚚 Free Delivery on Orders Over $50</span>
+                </div>
+                <div class="header-top-right">
+                    <span>📞 (555) 123-4567</span>
+                    <span>✉️ hello@greenlife.com</span>
+                </div>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="container">
+                <div class="logo">
+                    <div class="logo-icon">🌹</div>
+                    <span style="font-family: 'Dancing Script', cursive; font-size: 1.5rem; color: #8b4513;">Belle Vie</span>
+                </div>
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search for organic products...">
+                </div>
+                <div class="header-actions">
+                    <div class="user-icon" style="position: relative;">
+                        👤
+                    </div>
+                    <div class="cart-icon" style="position: relative;">
+                        🛒
+                        <div class="cart-badge">3</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-categories">
+                <div class="nav-category active">Fresh Vegetables</div>
+                <div class="nav-category">Organic Fruits</div>
+                <div class="nav-category">Herbs & Spices</div>
+                <div class="nav-category">Dairy & Eggs</div>
+                <div class="nav-category">Supplements</div>
+                <div class="nav-category">Eco Products</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" style="background: linear-gradient(135deg, rgba(72,187,120,0.8), rgba(56,161,105,0.8)), url('https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; background-attachment: fixed;">
+        <div class="container">
+            <h1>Love in Every Bite</h1>
+            <p>Discover our romantic collection of organic treasures, lovingly grown and carefully selected for your beautiful life</p>
+            <div class="hero-buttons">
+                <a href="#" class="btn btn-primary">Shop Now</a>
+                <a href="#" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🚚</div>
+                    <h3>Free Delivery</h3>
+                    <p>Free delivery on orders over $50. Same-day delivery available in select areas.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌱</div>
+                    <h3>100% Organic</h3>
+                    <p>All our products are certified organic and sourced from trusted local farms.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💚</div>
+                    <h3>Eco-Friendly</h3>
+                    <p>We use sustainable packaging and support environmentally conscious practices.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⭐</div>
+                    <h3>Quality Guarantee</h3>
+                    <p>Not satisfied? We offer a 100% money-back guarantee on all our products.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories">
+        <div class="container">
+            <h2 class="section-title">Our Romantic Collections</h2>
+            <div class="categories-grid">
+                <div class="category-card">
+                    <div class="category-image" style="background: linear-gradient(135deg, rgba(72,187,120,0.9), rgba(56,161,105,0.9)), url('https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; position: relative;">
+                        <div class="category-overlay">
+                            <h3>Fresh Vegetables</h3>
+                        </div>
+                    </div>
+                    <div class="category-content">
+                        <h3>Fresh Vegetables</h3>
+                        <p>Locally grown, pesticide-free vegetables delivered fresh daily</p>
+                        <div class="category-stats">
+                            <span>150+ Products</span>
+                            <span>From $2.99</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image" style="background: linear-gradient(135deg, rgba(237,137,54,0.9), rgba(221,107,32,0.9)), url('https://images.unsplash.com/photo-1610832958506-aa56368176cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; position: relative;">
+                        <div class="category-overlay">
+                            <h3>Organic Fruits</h3>
+                        </div>
+                    </div>
+                    <div class="category-content">
+                        <h3>Organic Fruits</h3>
+                        <p>Sweet, juicy fruits grown without harmful chemicals</p>
+                        <div class="category-stats">
+                            <span>80+ Products</span>
+                            <span>From $3.99</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image" style="background: linear-gradient(135deg, rgba(104,211,145,0.9), rgba(72,187,120,0.9)), url('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; position: relative;">
+                        <div class="category-overlay">
+                            <h3>Herbs & Spices</h3>
+                        </div>
+                    </div>
+                    <div class="category-content">
+                        <h3>Herbs & Spices</h3>
+                        <p>Fresh and dried herbs, organic spices for your kitchen</p>
+                        <div class="category-stats">
+                            <span>60+ Products</span>
+                            <span>From $1.99</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image" style="background: linear-gradient(135deg, rgba(246,173,85,0.9), rgba(237,137,54,0.9)), url('https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; position: relative;">
+                        <div class="category-overlay">
+                            <h3>Dairy & Eggs</h3>
+                        </div>
+                    </div>
+                    <div class="category-content">
+                        <h3>Dairy & Eggs</h3>
+                        <p>Farm-fresh dairy products and free-range eggs</p>
+                        <div class="category-stats">
+                            <span>40+ Products</span>
+                            <span>From $4.99</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image" style="background: linear-gradient(135deg, rgba(229,62,62,0.9), rgba(197,48,48,0.9)), url('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; position: relative;">
+                        <div class="category-overlay">
+                            <h3>Supplements</h3>
+                        </div>
+                    </div>
+                    <div class="category-content">
+                        <h3>Supplements</h3>
+                        <p>Natural vitamins and supplements for your health</p>
+                        <div class="category-stats">
+                            <span>100+ Products</span>
+                            <span>From $9.99</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image" style="background: linear-gradient(135deg, rgba(56,161,105,0.9), rgba(47,133,90,0.9)), url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; position: relative;">
+                        <div class="category-overlay">
+                            <h3>Eco Products</h3>
+                        </div>
+                    </div>
+                    <div class="category-content">
+                        <h3>Eco Products</h3>
+                        <p>Sustainable and environmentally friendly products</p>
+                        <div class="category-stats">
+                            <span>50+ Products</span>
+                            <span>From $5.99</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products">
+        <div class="container">
+            <div class="products-header">
+                <h2 class="section-title">Romantic Featured Products</h2>
+                <div class="products-filter">
+                    <div class="filter-btn active">All</div>
+                    <div class="filter-btn">Vegetables</div>
+                    <div class="filter-btn">Fruits</div>
+                    <div class="filter-btn">Herbs</div>
+                    <div class="filter-btn">Dairy</div>
+                </div>
+            </div>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image" style="background: linear-gradient(135deg, rgba(72,187,120,0.2), rgba(56,161,105,0.2)), url('https://images.unsplash.com/photo-1576045057995-568f588f82fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); background-size: cover; background-position: center; position: relative;">
+                        <div class="product-badge organic">Organic</div>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Fresh Organic Spinach</h3>
+                        <p class="product-description">Locally grown, pesticide-free spinach leaves</p>
+                        <div class="product-price">
+                            <div>
+                                <span class="price">$3.99</span>
+                                <span class="price-old">$4.99</span>
+                            </div>
+                            <div class="product-rating">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating-text">(24)</span>
+                            </div>
+                        </div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image" style="background: linear-gradient(135deg, rgba(237,137,54,0.2), rgba(221,107,32,0.2)), url('https://images.unsplash.com/photo-1592924357228-91a4daadcfea?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); background-size: cover; background-position: center; position: relative;">
+                        <div class="product-badge local">Local</div>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Organic Cherry Tomatoes</h3>
+                        <p class="product-description">Sweet, juicy cherry tomatoes from local farms</p>
+                        <div class="product-price">
+                            <div>
+                                <span class="price">$4.99</span>
+                            </div>
+                            <div class="product-rating">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating-text">(18)</span>
+                            </div>
+                        </div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image" style="background: linear-gradient(135deg, rgba(104,211,145,0.2), rgba(72,187,120,0.2)), url('https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); background-size: cover; background-position: center; position: relative;">
+                        <div class="product-badge organic">Organic</div>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Organic Carrots</h3>
+                        <p class="product-description">Fresh, crunchy organic carrots</p>
+                        <div class="product-price">
+                            <div>
+                                <span class="price">$2.99</span>
+                            </div>
+                            <div class="product-rating">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating-text">(32)</span>
+                            </div>
+                        </div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image" style="background: linear-gradient(135deg, rgba(246,173,85,0.2), rgba(237,137,54,0.2)), url('https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); background-size: cover; background-position: center; position: relative;">
+                        <div class="product-badge organic">Organic</div>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Organic Apples</h3>
+                        <p class="product-description">Crisp, sweet organic apples</p>
+                        <div class="product-price">
+                            <div>
+                                <span class="price">$5.99</span>
+                                <span class="price-old">$6.99</span>
+                            </div>
+                            <div class="product-rating">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating-text">(28)</span>
+                            </div>
+                        </div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image" style="background: linear-gradient(135deg, rgba(229,62,62,0.2), rgba(197,48,48,0.2)), url('https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); background-size: cover; background-position: center; position: relative;">
+                        <div class="product-badge local">Local</div>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Organic Milk</h3>
+                        <p class="product-description">Fresh organic milk from grass-fed cows</p>
+                        <div class="product-price">
+                            <div>
+                                <span class="price">$4.99</span>
+                            </div>
+                            <div class="product-rating">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating-text">(15)</span>
+                            </div>
+                        </div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image" style="background: linear-gradient(135deg, rgba(56,161,105,0.2), rgba(47,133,90,0.2)), url('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); background-size: cover; background-position: center; position: relative;">
+                        <div class="product-badge organic">Organic</div>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Fresh Basil</h3>
+                        <p class="product-description">Aromatic fresh basil leaves</p>
+                        <div class="product-price">
+                            <div>
+                                <span class="price">$2.49</span>
+                            </div>
+                            <div class="product-rating">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating-text">(12)</span>
+                            </div>
+                        </div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter" style="background: linear-gradient(135deg, rgba(72,187,120,0.9), rgba(56,161,105,0.9)), url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; background-attachment: fixed;">
+        <div class="container">
+            <h2>Join Our Romantic Journey</h2>
+            <p>Subscribe to our newsletter for the latest organic treasures, romantic recipes, and exclusive offers</p>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Enter your email address">
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Belle Vie</h3>
+                    <p>Your romantic destination for fresh, organic treasures. We're committed to bringing you the most beautiful and healthiest options while supporting sustainable farming practices.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">📘</a>
+                        <a href="#" class="social-link">📷</a>
+                        <a href="#" class="social-link">🐦</a>
+                        <a href="#" class="social-link">📌</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Our Farms</a></li>
+                        <li><a href="#">Delivery Info</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Categories</h3>
+                    <ul>
+                        <li><a href="#">Fresh Vegetables</a></li>
+                        <li><a href="#">Organic Fruits</a></li>
+                        <li><a href="#">Herbs & Spices</a></li>
+                        <li><a href="#">Dairy & Eggs</a></li>
+                        <li><a href="#">Supplements</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Customer Service</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Returns</a></li>
+                        <li><a href="#">Shipping</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Track Order</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Belle Vie Organic Store. All rights reserved. | Privacy Policy | Terms of Service</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filter buttons
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Category navigation
+            const navCategories = document.querySelectorAll('.nav-category');
+            navCategories.forEach(category => {
+                category.addEventListener('click', function() {
+                    navCategories.forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Add to cart buttons
+            const addToCartBtns = document.querySelectorAll('.add-to-cart');
+            addToCartBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.textContent = 'Added!';
+                    this.style.background = '#38a169';
+                    setTimeout(() => {
+                        this.textContent = 'Add to Cart';
+                        this.style.background = '#48bb78';
+                    }, 2000);
+                });
+            });
+
+            // Newsletter form
+            const newsletterForm = document.querySelector('.newsletter-form');
+            newsletterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('input[type="email"]').value;
+                if (email) {
+                    alert('Thank you for subscribing! We\'ll keep you updated with our latest organic products.');
+                    this.querySelector('input[type="email"]').value = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
