@@ -307,8 +307,8 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                     <div
                       key={role.id}
                       className={`group relative border rounded-xl transition-all duration-200 ${isSelected
-                          ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg ring-2 ring-blue-200'
-                          : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'
+                        ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg ring-2 ring-blue-200'
+                        : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'
                         } ${rolesError ? 'border-red-300' : ''}`}
                     >
                       <label className="flex items-start p-5 cursor-pointer">
@@ -327,8 +327,8 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                             disabled={submitting}
                           />
                           <div className={`relative w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200 ${isSelected
-                              ? 'border-blue-600 bg-blue-600 shadow-sm'
-                              : 'border-gray-300 group-hover:border-blue-400'
+                            ? 'border-blue-600 bg-blue-600 shadow-sm'
+                            : 'border-gray-300 group-hover:border-blue-400'
                             }`}>
                             {isSelected && (
                               <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -342,8 +342,8 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
                               <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${isSelected
-                                  ? 'bg-blue-100 text-blue-600'
-                                  : 'bg-gray-100 text-gray-600 group-hover:bg-blue-50 group-hover:text-blue-600'
+                                ? 'bg-blue-100 text-blue-600'
+                                : 'bg-gray-100 text-gray-600 group-hover:bg-blue-50 group-hover:text-blue-600'
                                 } transition-colors duration-200`}>
                                 <i className="fas fa-user-shield text-lg"></i>
                               </div>
@@ -380,8 +380,8 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                                   <span
                                     key={idx}
                                     className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors duration-200 ${isSelected
-                                        ? 'bg-blue-200 text-blue-800'
-                                        : 'bg-gray-100 text-gray-700 group-hover:bg-blue-100 group-hover:text-blue-800'
+                                      ? 'bg-blue-200 text-blue-800'
+                                      : 'bg-gray-100 text-gray-700 group-hover:bg-blue-100 group-hover:text-blue-800'
                                       }`}
                                   >
                                     {permission}
