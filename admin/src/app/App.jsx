@@ -14,6 +14,7 @@ import { ProductsPage } from '../features/products/pages/ProductsPage'
 import { RolesPage } from '../features/roles/pages/RolesPage'
 import { StoresPage } from '../features/stores/pages/StoresPage'
 import { UsersPage } from '../features/users/pages/UsersPage'
+import TranslationsPage from '../features/translations/pages/TranslationsPage'
 import Sidebar from '../shared/components/layout/Sidebar'
 import FloatingToggle from '../shared/components/ui/FloatingToggle'
 import NavigationStatus from '../shared/components/ui/NavigationStatus'
@@ -112,6 +113,8 @@ function AppContent() {
                             <StoresPage />
                         ) : currentPage === 'orders' ? (
                             <OrdersPage />
+                        ) : currentPage === 'translations' ? (
+                            <TranslationsPage />
                         ) : null}
                     </div>
                 </main>
