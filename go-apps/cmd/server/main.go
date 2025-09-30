@@ -14,6 +14,7 @@ import (
 	"go-apps/internal/infrastructure/database"
 	"go-apps/internal/infrastructure/logger"
 	"go-apps/internal/modules/users/handler"
+	"go-apps/internal/modules/users/model"
 	"go-apps/internal/modules/users/repository"
 	"go-apps/internal/modules/users/service"
 
@@ -42,6 +43,11 @@ func main() {
 		logger.Fatal("Failed to connect to database", "error", err)
 	}
 	defer db.Close()
+
+	// Run database migrations
+	if err := runMigrations(db, logger); err != nil {
+		logger.Fatal("Failed to run migrations", "error", err)
+	}
 
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(db)
@@ -150,4 +156,24 @@ func setupRouter(userHandler *handler.UserHandler, roleHandler *handler.RoleHand
 	}
 
 	return router
+}
+
+// runMigrations runs database migrations
+func runMigrations(db *database.Database, logger *logger.Logger) error {
+	logger.Info("Running database migrations...")
+
+	// Auto-migrate all models
+	models := []interface{}{
+		&model.User{},
+		&model.Role{},
+	}
+
+	for _, model := range models {
+		if err := db.Migrate(model); err != nil {
+			return fmt.Errorf("failed to migrate %T: %w", model, err)
+		}
+		logger.Info("Migrated model", "model", fmt.Sprintf("%T", model))
+	}
+
+	return nil
 }

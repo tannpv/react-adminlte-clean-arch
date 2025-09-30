@@ -104,11 +104,35 @@ mocks:
 # Database migrations
 .PHONY: migrate-up
 migrate-up:
-	$(GOCMD) run cmd/migrate/main.go up
+	$(GOCMD) run cmd/migrate/main.go -action=up
 
 .PHONY: migrate-down
 migrate-down:
-	$(GOCMD) run cmd/migrate/main.go down
+	$(GOCMD) run cmd/migrate/main.go -action=down
+
+.PHONY: migrate-reset
+migrate-reset:
+	$(GOCMD) run cmd/migrate/main.go -action=reset
+
+# Database seeding
+.PHONY: seed
+seed:
+	$(GOCMD) run cmd/seed/main.go -action=seed
+
+.PHONY: seed-clear
+seed-clear:
+	$(GOCMD) run cmd/seed/main.go -action=clear
+
+.PHONY: seed-reset
+seed-reset:
+	$(GOCMD) run cmd/seed/main.go -action=reset
+
+# Setup database (migrate + seed)
+.PHONY: db-setup
+db-setup: migrate-up seed
+
+.PHONY: db-reset
+db-reset: migrate-reset seed-reset
 
 # Docker commands
 .PHONY: docker-build
@@ -197,6 +221,12 @@ help:
 	@echo "  mocks          - Generate mocks"
 	@echo "  migrate-up     - Run database migrations up"
 	@echo "  migrate-down   - Run database migrations down"
+	@echo "  migrate-reset  - Reset database migrations"
+	@echo "  seed           - Seed initial data"
+	@echo "  seed-clear     - Clear seed data"
+	@echo "  seed-reset     - Reset seed data"
+	@echo "  db-setup       - Setup database (migrate + seed)"
+	@echo "  db-reset       - Reset database (migrate + seed)"
 	@echo "  docker-build   - Build Docker image"
 	@echo "  docker-run     - Run Docker container"
 	@echo "  docker-push    - Push Docker image"
