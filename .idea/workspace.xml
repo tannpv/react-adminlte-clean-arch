@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="804cdd6d-ecb8-4726-bc91-51153866cd5d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/smoke.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/smoke.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/db.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/db.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/repositories/AuthRepositoryImpl.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/repositories/AuthRepositoryImpl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/repositories/UserRepositoryImpl.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/repositories/UserRepositoryImpl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/sources/UserApiDataSource.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/sources/UserApiDataSource.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/domain/entities/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/entities/User.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/domain/usecases/CreateUserUseCase.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/usecases/CreateUserUseCase.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/domain/usecases/UpdateUserUseCase.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/usecases/UpdateUserUseCase.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/http/ApiClient.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/http/ApiClient.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/query/client.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/query/client.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/presentation/components/UserForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/presentation/components/UserForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/presentation/components/UserList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/presentation/components/UserList.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/presentation/components/UserModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/presentation/components/UserModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/presentation/context/AuthContext.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/presentation/context/AuthContext.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/presentation/pages/LoginPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/presentation/pages/LoginPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/presentation/pages/RolesPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/presentation/pages/RolesPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/presentation/pages/UsersPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/presentation/pages/UsersPage.jsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="32or6Oym8jEitf9yAvqGEu3XESb" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/map-roles-to-user&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/tannguyen/Downloads/react-adminlte-clean-arch&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/tannguyen/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-b598e85cdad2-JavaScript-WS-252.25557.126" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="804cdd6d-ecb8-4726-bc91-51153866cd5d" name="Changes" comment="" />
+      <created>1758097590589</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1758097590589</updated>
+      <workItem from="1758097591984" duration="224000" />
+      <workItem from="1758098347103" duration="253000" />
+      <workItem from="1758098796534" duration="923000" />
+      <workItem from="1758100335015" duration="320000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
