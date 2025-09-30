@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Form from '../../../shared/components/ui/Form'
+import { formatPermissionsForDisplay } from '../../roles/constants/permissionDefinitions'
 
 const buildInitialProfile = (user) => {
   if (!user || !user.profile) {
@@ -269,55 +270,127 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
         </Form.Group>
       </div>
 
-      {/* Roles Section */}
+      {/* Roles & Permissions Section */}
       <div>
         <h6 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <i className="fas fa-shield-alt mr-2 text-blue-600"></i>
           Roles & Permissions
         </h6>
+        
         <Form.Group>
           <Form.Label>
-            <i className="fas fa-user-tag mr-2"></i>
+            <i className="fas fa-user-tag mr-2 text-blue-600"></i>
             Assign Roles
           </Form.Label>
-          <div className="border border-gray-300 rounded-md">
-            <Form.Select
-              multiple
-              value={roles}
-              size={Math.min(8, Math.max(3, roleOptions.length || 3))}
-              disabled={rolesLoading || submitting}
-              onChange={(e) => {
-                const values = Array.from(e.target.selectedOptions).map(o => o.value)
-                setRoles(values)
-              }}
-              className={`${rolesError ? 'border-red-500' : ''}`}
-            >
-              {roleOptions.map(r => (
-                <option key={r.id} value={String(r.id)}>{r.name}</option>
-              ))}
-            </Form.Select>
-            <div className="p-2 bg-gray-50 text-sm text-gray-600">
-              {rolesLoading && (
-                <div className="flex items-center">
-                  <i className="fas fa-spinner fa-spin mr-1"></i>
-                  Loading roles...
+          
+          <div className="space-y-3">
+            {rolesLoading ? (
+              <div className="flex items-center justify-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                <div className="text-center">
+                  <i className="fas fa-spinner fa-spin text-2xl text-blue-600 mb-2"></i>
+                  <p className="text-gray-600">Loading available roles...</p>
                 </div>
-              )}
-              {!rolesLoading && !roleOptions.length && (
-                <div className="flex items-center text-yellow-600">
-                  <i className="fas fa-exclamation-triangle mr-1"></i>
-                  No roles available or not authorized to view roles.
+              </div>
+            ) : !roleOptions.length ? (
+              <div className="flex items-center justify-center py-8 bg-yellow-50 rounded-lg border-2 border-dashed border-yellow-300">
+                <div className="text-center">
+                  <i className="fas fa-exclamation-triangle text-2xl text-yellow-600 mb-2"></i>
+                  <p className="text-yellow-800 font-medium">No roles available</p>
+                  <p className="text-yellow-600 text-sm">You may not have permission to view roles or no roles exist yet.</p>
                 </div>
-              )}
-              {!rolesLoading && roleOptions.length > 0 && (
-                <div className="flex items-center">
-                  <i className="fas fa-info-circle mr-1"></i>
-                  Hold Ctrl/Cmd to select multiple roles
-                </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-3">
+                {roleOptions.map(role => {
+                  const isSelected = roles.includes(String(role.id))
+                  return (
+                    <label
+                      key={role.id}
+                      className={`flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                        isSelected
+                          ? 'border-blue-500 bg-blue-50 shadow-md'
+                          : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                      } ${rolesError ? 'border-red-300' : ''}`}
+                    >
+                      <input
+                        type="checkbox"
+                        className="sr-only"
+                        checked={isSelected}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setRoles([...roles, String(role.id)])
+                          } else {
+                            setRoles(roles.filter(r => r !== String(role.id)))
+                          }
+                        }}
+                        disabled={submitting}
+                      />
+                      <div className="flex items-center w-full">
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-3 ${
+                          isSelected
+                            ? 'border-blue-500 bg-blue-500'
+                            : 'border-gray-300'
+                        }`}>
+                          {isSelected && (
+                            <i className="fas fa-check text-white text-xs"></i>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center">
+                            <i className="fas fa-user-shield mr-2 text-blue-600"></i>
+                            <span className="font-medium text-gray-900">{role.name}</span>
+                          </div>
+                          {role.permissions && role.permissions.length > 0 && (
+                            <div className="mt-2 ml-6">
+                              <div className="text-sm text-gray-600 mb-1">
+                                <i className="fas fa-key mr-1"></i>
+                                Permissions:
+                              </div>
+                              <div className="flex flex-wrap gap-1">
+                                {formatPermissionsForDisplay(role.permissions).map((permission, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                  >
+                                    {permission}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {(!role.permissions || role.permissions.length === 0) && (
+                            <p className="text-sm text-gray-500 mt-1 ml-6">
+                              <i className="fas fa-info-circle mr-1"></i>
+                              No specific permissions assigned
+                            </p>
+                          )}
+                        </div>
+                        {isSelected && (
+                          <div className="ml-2">
+                            <i className="fas fa-check-circle text-blue-600"></i>
+                          </div>
+                        )}
+                      </div>
+                    </label>
+                  )
+                })}
+              </div>
+            )}
           </div>
-          {rolesError && <Form.Error>{rolesError}</Form.Error>}
+          
+          {!rolesLoading && roleOptions.length > 0 && (
+            <Form.Help>
+              <i className="fas fa-lightbulb mr-1"></i>
+              Select one or more roles to assign to this user. Each role grants specific permissions.
+            </Form.Help>
+          )}
+          
+          {rolesError && (
+            <Form.Error>
+              <i className="fas fa-exclamation-triangle mr-1"></i>
+              {rolesError}
+            </Form.Error>
+          )}
         </Form.Group>
       </div>
 
