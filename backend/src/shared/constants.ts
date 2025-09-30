@@ -33,11 +33,6 @@ export const DEFAULT_ADMIN_PERMISSIONS: Permission[] = [
   "storage:create",
   "storage:update",
   "storage:delete",
-  "translations:read",
-  "translations:create",
-  "translations:update",
-  "translations:delete",
-  "translations:manage",
   // Multi-seller marketplace permissions
   "stores:read",
   "stores:create",
@@ -85,7 +80,6 @@ export const DEFAULT_SELLER_PERMISSIONS: Permission[] = [
   "storage:read",
   "storage:create",
   "storage:update",
-  "translations:read",
   // Seller-specific permissions
   "stores:read",
   "stores:create",
