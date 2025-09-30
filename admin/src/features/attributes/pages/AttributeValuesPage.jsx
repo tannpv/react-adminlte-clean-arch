@@ -5,7 +5,6 @@ import Card from '../../../shared/components/ui/Card';
 import Form from '../../../shared/components/ui/Form';
 import Table from '../../../shared/components/ui/Table';
 import { usePermissions } from '../../../shared/hooks/usePermissions';
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
 import { AttributeValueForm } from '../components/AttributeValueForm';
 import { useAttributeValues, useDeleteAttributeValue } from '../hooks/useAttributeValues';
 import { useAttributes } from '../hooks/useAttributes';
@@ -20,8 +19,6 @@ export const AttributeValuesPage = () => {
     const { data: attributes = [] } = useAttributes();
     const deleteAttributeValueMutation = useDeleteAttributeValue();
     const { can } = usePermissions();
-    const { languageCode } = useLanguage();
-    const { t } = useTranslation(languageCode, 'attributes');
 
     const handleEdit = (attributeValue) => {
         if (!can('attribute-values:update')) return;
@@ -65,8 +62,8 @@ export const AttributeValuesPage = () => {
                     <Card.Body>
                         <div className="text-center py-12">
                             <i className="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
-                            <h4 className="text-lg font-medium text-gray-900 mb-2">{t('loading_attribute_values', 'Loading Attribute Values')}</h4>
-                            <p className="text-gray-600">{t('loading_attribute_values_description', 'Please wait while we fetch the attribute values...')}</p>
+                            <h4 className="text-lg font-medium text-gray-900 mb-2">Loading Attribute Values</h4>
+                            <p className="text-gray-600">Please wait while we fetch the attribute values...</p>
                         </div>
                     </Card.Body>
                 </Card>
@@ -81,16 +78,16 @@ export const AttributeValuesPage = () => {
                     <Card.Body>
                         <div className="text-center py-12">
                             <i className="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
-                            <h4 className="text-lg font-medium text-gray-900 mb-2">{t('failed_to_load_attribute_values', 'Failed to Load Attribute Values')}</h4>
+                            <h4 className="text-lg font-medium text-gray-900 mb-2">Failed to Load Attribute Values</h4>
                             <p className="text-gray-600 mb-6">
-                                {error?.message || t('unexpected_error_loading_attribute_values', 'An unexpected error occurred while loading attribute values.')}
+                                {error?.message || 'An unexpected error occurred while loading attribute values.'}
                             </p>
                             <Button
                                 variant="outline-primary"
                                 onClick={() => window.location.reload()}
                             >
                                 <i className="fas fa-redo mr-2"></i>
-                                {t('try_again', 'Try Again')}
+                                Try Again
                             </Button>
                         </div>
                     </Card.Body>
@@ -108,10 +105,10 @@ export const AttributeValuesPage = () => {
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900 flex items-center">
                                 <i className="fas fa-list mr-3 text-blue-600"></i>
-                                {t('attribute_values', 'Attribute Values')}
+                                Attribute Values
                             </h1>
                             <p className="mt-2 text-gray-600 max-w-2xl">
-                                {t('manage_attribute_values_description', 'Manage attribute values like "Red", "Blue", "Small", "Large" for your attributes')}
+                                Manage attribute values like "Red", "Blue", "Small", "Large" for your attributes
                             </p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3">
@@ -121,7 +118,7 @@ export const AttributeValuesPage = () => {
                                     onClick={() => setShowForm(true)}
                                 >
                                     <i className="fas fa-plus mr-2"></i>
-                                    {t('add_new_value', 'Add New Value')}
+                                    Add New Value
                                 </Button>
                             )}
                         </div>
@@ -139,7 +136,7 @@ export const AttributeValuesPage = () => {
                                 </div>
                                 <div className="ml-4">
                                     <div className="text-3xl font-bold">{attributeValues.length}</div>
-                                    <div className="text-blue-100">{t('total_values', 'Total Values')}</div>
+                                    <div className="text-blue-100">Total Values</div>
                                 </div>
                             </div>
                         </div>
@@ -152,7 +149,7 @@ export const AttributeValuesPage = () => {
                                     <div className="text-3xl font-bold">
                                         {new Set(attributeValues.map(av => av.attributeId)).size}
                                     </div>
-                                    <div className="text-green-100">{t('unique_attributes', 'Unique Attributes')}</div>
+                                    <div className="text-green-100">Unique Attributes</div>
                                 </div>
                             </div>
                         </div>
@@ -165,7 +162,7 @@ export const AttributeValuesPage = () => {
                                     <div className="text-3xl font-bold">
                                         {filteredAttributeValues.length}
                                     </div>
-                                    <div className="text-purple-100">{t('filtered_values', 'Filtered Values')}</div>
+                                    <div className="text-purple-100">Filtered Values</div>
                                 </div>
                             </div>
                         </div>
@@ -178,7 +175,7 @@ export const AttributeValuesPage = () => {
                                     <div className="text-3xl font-bold">
                                         {attributeValues.filter(av => av.sortOrder > 0).length}
                                     </div>
-                                    <div className="text-orange-100">{t('sorted_values', 'Sorted Values')}</div>
+                                    <div className="text-orange-100">Sorted Values</div>
                                 </div>
                             </div>
                         </div>
@@ -191,10 +188,10 @@ export const AttributeValuesPage = () => {
                                 <div>
                                     <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                                         <i className="fas fa-list mr-2 text-blue-600"></i>
-                                        {t('attribute_value_management', 'Attribute Value Management')}
+                                        Attribute Value Management
                                     </h3>
                                     <p className="mt-1 text-sm text-gray-600">
-                                        {t('attribute_value_management_description', 'Manage attribute values and their sorting order. Filter by specific attributes to focus on relevant values.')}
+                                        Manage attribute values and their sorting order. Filter by specific attributes to focus on relevant values.
                                     </p>
                                 </div>
                             </div>
@@ -205,7 +202,7 @@ export const AttributeValuesPage = () => {
                                     onChange={(e) => setSelectedAttributeId(e.target.value)}
                                     className="max-w-xs"
                                 >
-                                    <option value="">{t('all_attributes', 'All Attributes')}</option>
+                                    <option value="">All Attributes</option>
                                     {attributes.map(attr => (
                                         <option key={attr.id} value={attr.id}>
                                             {attr.name}
@@ -220,23 +217,23 @@ export const AttributeValuesPage = () => {
                                 <Table.Header>
                                     <Table.HeaderCell>
                                         <i className="fas fa-hashtag mr-2"></i>
-                                        {t('id', 'ID')}
+                                        ID
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-tag mr-2"></i>
-                                        {t('attribute', 'Attribute')}
+                                        Attribute
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-list mr-2"></i>
-                                        {t('value', 'Value')}
+                                        Value
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-sort-numeric-up mr-2"></i>
-                                        {t('sort_order', 'Sort Order')}
+                                        Sort Order
                                     </Table.HeaderCell>
                                     <Table.HeaderCell className="text-center">
                                         <i className="fas fa-cogs mr-2"></i>
-                                        {t('actions', 'Actions')}
+                                        Actions
                                     </Table.HeaderCell>
                                 </Table.Header>
                                 <Table.Body>
@@ -273,10 +270,10 @@ export const AttributeValuesPage = () => {
                                                             size="sm"
                                                             outline
                                                             onClick={() => handleEdit(attributeValue)}
-                                                            title={t('edit_attribute_value', 'Edit Attribute Value')}
+                                                            title="Edit Attribute Value"
                                                         >
                                                             <i className="fas fa-edit mr-1"></i>
-                                                            {t('edit', 'Edit')}
+                                                            Edit
                                                         </Button>
                                                     )}
                                                     {can('attribute-values:delete') && (
@@ -285,10 +282,10 @@ export const AttributeValuesPage = () => {
                                                             size="sm"
                                                             outline
                                                             onClick={() => handleDelete(attributeValue)}
-                                                            title={t('delete_attribute_value', 'Delete Attribute Value')}
+                                                            title="Delete Attribute Value"
                                                         >
                                                             <i className="fas fa-trash mr-1"></i>
-                                                            {t('delete', 'Delete')}
+                                                            Delete
                                                         </Button>
                                                     )}
                                                 </div>
@@ -307,9 +304,9 @@ export const AttributeValuesPage = () => {
                         <Card.Body>
                             <div className="text-center py-12">
                                 <i className="fas fa-list-ul text-6xl text-gray-300 mb-4"></i>
-                                <h4 className="text-xl font-medium text-gray-900 mb-2">{t('no_attribute_values_yet', 'No Attribute Values Yet')}</h4>
+                                <h4 className="text-xl font-medium text-gray-900 mb-2">No Attribute Values Yet</h4>
                                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                    {t('get_started_add_attribute_value', 'Get started by adding your first attribute value to define product characteristics.')}
+                                    Get started by adding your first attribute value to define product characteristics.
                                 </p>
                                 {can('attribute-values:create') && (
                                     <Button
@@ -317,7 +314,7 @@ export const AttributeValuesPage = () => {
                                         onClick={() => setShowForm(true)}
                                     >
                                         <i className="fas fa-plus mr-2"></i>
-                                        {t('add_first_value', 'Add First Value')}
+                                        Add First Value
                                     </Button>
                                 )}
                             </div>
@@ -330,9 +327,9 @@ export const AttributeValuesPage = () => {
                         <Card.Body>
                             <div className="text-center py-12">
                                 <i className="fas fa-filter text-6xl text-gray-300 mb-4"></i>
-                                <h4 className="text-xl font-medium text-gray-900 mb-2">{t('no_values_for_attribute', 'No Values for This Attribute')}</h4>
+                                <h4 className="text-xl font-medium text-gray-900 mb-2">No Values for This Attribute</h4>
                                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                    {t('no_values_found_for_attribute', 'No attribute values found for {{attributeName}}. Try selecting a different attribute or add new values.', { attributeName: getAttributeName(parseInt(selectedAttributeId)) })}
+                                    No attribute values found for {getAttributeName(parseInt(selectedAttributeId))}. Try selecting a different attribute or add new values.
                                 </p>
                                 {can('attribute-values:create') && (
                                     <Button
@@ -340,7 +337,7 @@ export const AttributeValuesPage = () => {
                                         onClick={() => setShowForm(true)}
                                     >
                                         <i className="fas fa-plus mr-2"></i>
-                                        {t('add_value_for_attribute', 'Add Value for {{attributeName}}', { attributeName: getAttributeName(parseInt(selectedAttributeId)) })}
+                                        Add Value for {getAttributeName(parseInt(selectedAttributeId))}
                                     </Button>
                                 )}
                             </div>
@@ -364,11 +361,11 @@ export const AttributeValuesPage = () => {
             {/* Delete Confirmation Modal */}
             <ConfirmModal
                 show={!!deleteConfirm}
-                title={t('delete_attribute_value', 'Delete Attribute Value')}
-                message={t('confirm_delete_attribute_value', 'Are you sure you want to delete the value "{{label}}"? This action cannot be undone.', { label: deleteConfirm?.label })}
+                title="Delete Attribute Value"
+                message={`Are you sure you want to delete the value "${deleteConfirm?.label}"? This action cannot be undone.`}
                 onConfirm={confirmDelete}
                 onCancel={() => setDeleteConfirm(null)}
-                confirmText={t('delete', 'Delete')}
+                confirmText="Delete"
                 confirmClass="btn-danger"
                 loading={deleteAttributeValueMutation.isLoading}
             />

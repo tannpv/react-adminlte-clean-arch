@@ -9,13 +9,11 @@ import { AuthProvider } from '../features/auth/context/AuthProvider'
 import { LoginPage } from '../features/auth/pages/LoginPage'
 import { RegisterPage } from '../features/auth/pages/RegisterPage'
 import { CategoriesPage } from '../features/categories/pages/CategoriesPage'
-import { ProductsPage } from '../features/products/pages/ProductsPage'
 import { OrdersPage } from '../features/orders/pages/OrdersPage'
+import { ProductsPage } from '../features/products/pages/ProductsPage'
 import { RolesPage } from '../features/roles/pages/RolesPage'
 import { StoresPage } from '../features/stores/pages/StoresPage'
-import { TranslationsPage } from '../features/translations/pages/TranslationsPage'
 import { UsersPage } from '../features/users/pages/UsersPage'
-import { LanguageSwitcher } from '../shared/components/LanguageSwitcher'
 import Sidebar from '../shared/components/layout/Sidebar'
 import FloatingToggle from '../shared/components/ui/FloatingToggle'
 import NavigationStatus from '../shared/components/ui/NavigationStatus'
@@ -68,7 +66,6 @@ function AppContent() {
                         <h1 className="text-xl font-semibold text-gray-900">Admin Dashboard</h1>
                     </div>
                     <div className="flex items-center space-x-4">
-                        <LanguageSwitcher />
                         <span className="text-sm text-gray-500">Welcome, {currentUser?.name || 'Admin'}</span>
                         <button
                             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -115,8 +112,6 @@ function AppContent() {
                             <StoresPage />
                         ) : currentPage === 'orders' ? (
                             <OrdersPage />
-                        ) : currentPage === 'translations' ? (
-                            <TranslationsPage />
                         ) : null}
                     </div>
                 </main>

@@ -4,7 +4,6 @@ import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import Button from '../../../shared/components/ui/Button'
 import Card from '../../../shared/components/ui/Card'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { fetchCategories } from '../../categories/api/categoriesApi'
 import { ProductList } from '../components/ProductList'
 import { ProductModal } from '../components/ProductModal'
@@ -19,8 +18,6 @@ const isValidationErrorMap = (err) => {
 export function ProductsPage() {
   const qc = useQueryClient()
   const { can } = usePermissions()
-  const { languageCode } = useLanguage()
-  const { t } = useTranslation(languageCode, 'products')
 
   const {
     searchTerm,
@@ -76,7 +73,8 @@ export function ProductsPage() {
   }, 0)
 
   const formatCurrency = (amount, currency = 'USD') => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)
+    const validCurrency = currency && currency.trim() !== '' ? currency : 'USD'
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: validCurrency }).format(amount)
   }
 
   const openModal = (product = null) => {
@@ -100,10 +98,10 @@ export function ProductsPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center">
                 <i className="fas fa-box mr-3 text-blue-600"></i>
-                {t('title', 'Product Catalog')}
+                Product Catalog
               </h1>
               <p className="mt-2 text-gray-600 max-w-2xl">
-                {t('subtitle', 'Keep your catalog up to date and aligned with inventory. Manage products, pricing, and categories to drive sales.')}
+                Keep your catalog up to date and aligned with inventory. Manage products, pricing, and categories to drive sales.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -114,7 +112,7 @@ export function ProductsPage() {
                 <input
                   type="search"
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder={t('search_placeholder', 'Search products by name or SKU...')}
+                  placeholder="Search products by name or SKU..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -123,19 +121,19 @@ export function ProductsPage() {
                 variant="outline-secondary"
                 onClick={() => qc.invalidateQueries({ queryKey: ['categories'] })}
                 disabled={categoriesLoading}
-                title={categoriesLoading ? t('refreshing', 'Refreshing…') : t('refresh_categories_tooltip', 'Refresh categories')}
+                title={categoriesLoading ? 'Refreshing…' : 'Refresh categories'}
               >
                 <i className="fas fa-sync-alt mr-2"></i>
-                {t('refresh_categories', 'Refresh Categories')}
+                Refresh Categories
               </Button>
               <Button
                 variant="primary"
                 onClick={() => openModal({})}
                 disabled={!can('products:create')}
-                title={!can('products:create') ? t('not_allowed', 'Not allowed') : undefined}
+                title={!can('products:create') ? 'Not allowed' : undefined}
               >
                 <i className="fas fa-plus mr-2"></i>
-                {t('add_product', 'Add New Product')}
+                Add New Product
               </Button>
             </div>
           </div>
@@ -147,8 +145,8 @@ export function ProductsPage() {
             <Card.Body>
               <div className="text-center py-12">
                 <i className="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
-                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('loading_title', 'Loading Products')}</h4>
-                <p className="text-gray-600">{t('loading_description', 'Please wait while we fetch your product catalog...')}</p>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">Loading Products</h4>
+                <p className="text-gray-600">Please wait while we fetch your product catalog...</p>
               </div>
             </Card.Body>
           </Card>
@@ -160,16 +158,16 @@ export function ProductsPage() {
             <Card.Body>
               <div className="text-center py-12">
                 <i className="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
-                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('failed_to_load_products', 'Failed to Load Products')}</h4>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">Failed to Load Products</h4>
                 <p className="text-gray-600 mb-6">
-                  {error?.message || t('unexpected_error_loading_products', 'An unexpected error occurred while loading products.')}
+                  {error?.message || 'An unexpected error occurred while loading products.'}
                 </p>
                 <Button
                   variant="outline-primary"
                   onClick={() => window.location.reload()}
                 >
                   <i className="fas fa-redo mr-2"></i>
-                  {t('try_again', 'Try Again')}
+                  Try Again
                 </Button>
               </div>
             </Card.Body>
@@ -188,7 +186,7 @@ export function ProductsPage() {
                   </div>
                   <div className="ml-4">
                     <div className="text-3xl font-bold">{totalProducts}</div>
-                    <div className="text-blue-100">{t('total_products', 'Total Products')}</div>
+                    <div className="text-blue-100">Total Products</div>
                   </div>
                 </div>
               </div>
@@ -200,7 +198,7 @@ export function ProductsPage() {
                   </div>
                   <div className="ml-4">
                     <div className="text-3xl font-bold">{publishedProducts}</div>
-                    <div className="text-green-100">{t('published', 'Published')}</div>
+                    <div className="text-green-100">Published</div>
                   </div>
                 </div>
               </div>
@@ -212,7 +210,7 @@ export function ProductsPage() {
                   </div>
                   <div className="ml-4">
                     <div className="text-3xl font-bold">{variableProducts}</div>
-                    <div className="text-purple-100">{t('variable_products', 'Variable Products')}</div>
+                    <div className="text-purple-100">Variable Products</div>
                   </div>
                 </div>
               </div>
@@ -224,7 +222,7 @@ export function ProductsPage() {
                   </div>
                   <div className="ml-4">
                     <div className="text-3xl font-bold">{formatCurrency(totalValue)}</div>
-                    <div className="text-orange-100">{t('total_value', 'Total Value')}</div>
+                    <div className="text-orange-100">Total Value</div>
                   </div>
                 </div>
               </div>
@@ -237,11 +235,11 @@ export function ProductsPage() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                       <i className="fas fa-list mr-2 text-blue-600"></i>
-                      {t('product_management', 'Product Management')}
+                      Product Management
                     </h3>
                     <p className="mt-1 text-sm text-gray-600">
-                      {t('product_management_description', 'Manage your product catalog, pricing, and inventory.')}
-                      {searchTerm && ` ${t('showing_results_for', 'Showing results for')} "${searchTerm}"`}
+                      Manage your product catalog, pricing, and inventory.
+                      {searchTerm && ` Showing results for "${searchTerm}"`}
                     </p>
                   </div>
                 </div>
@@ -264,7 +262,7 @@ export function ProductsPage() {
 
       <ProductModal
         show={modalOpen}
-        title={editing?.id ? t('edit_product', 'Edit Product') : t('add_product', 'Add Product')}
+        title={editing?.id ? 'Edit Product' : 'Add Product'}
         initialProduct={editing}
         errors={formErrors}
         submitting={submitting}
@@ -291,10 +289,10 @@ export function ProductsPage() {
 
       <ConfirmModal
         show={confirmOpen}
-        title={t('delete_product', 'Delete Product')}
-        message={t('confirm_delete_product', `Are you sure you want to delete ${targetProduct?.name || 'this product'}?`)}
-        confirmText={t('delete', 'Delete')}
-        cancelText={t('cancel', 'Cancel')}
+        title='Delete Product'
+        message={`Are you sure you want to delete ${targetProduct?.name || 'this product'}?`}
+        confirmText='Delete'
+        cancelText='Cancel'
         onCancel={() => { setConfirmOpen(false); setTargetProduct(null) }}
         onConfirm={async () => {
           if (!targetProduct?.id) return

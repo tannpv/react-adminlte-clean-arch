@@ -4,14 +4,11 @@ import Button from '../../../shared/components/ui/Button';
 import Card from '../../../shared/components/ui/Card';
 import Table from '../../../shared/components/ui/Table';
 import { usePermissions } from '../../../shared/hooks/usePermissions';
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
 import { AttributeForm } from '../components/AttributeForm';
 import { useAttributes, useDeleteAttribute } from '../hooks/useAttributes';
 
 export const AttributesPage = () => {
     const { can } = usePermissions();
-    const { languageCode } = useLanguage();
-    const { t } = useTranslation(languageCode, 'attributes');
     const [showForm, setShowForm] = useState(false);
     const [editingAttribute, setEditingAttribute] = useState(null);
     const [deleteConfirm, setDeleteConfirm] = useState(null);
@@ -47,20 +44,20 @@ export const AttributesPage = () => {
 
     const getInputTypeLabel = (inputType) => {
         const labels = {
-            select: t('input_type_select', 'Select'),
-            multiselect: t('input_type_multiselect', 'Multi-select'),
-            text: t('input_type_text', 'Text'),
-            number: t('input_type_number', 'Number'),
-            boolean: t('input_type_boolean', 'Boolean'),
+            select: 'Select',
+            multiselect: 'Multi-select',
+            text: 'Text',
+            number: 'Number',
+            boolean: 'Boolean',
         };
         return labels[inputType] || inputType;
     };
 
     const getDataTypeLabel = (dataType) => {
         const labels = {
-            string: t('data_type_string', 'String'),
-            number: t('data_type_number', 'Number'),
-            boolean: t('data_type_boolean', 'Boolean'),
+            string: 'String',
+            number: 'Number',
+            boolean: 'Boolean',
         };
         return labels[dataType] || dataType;
     };
@@ -72,8 +69,8 @@ export const AttributesPage = () => {
                     <Card.Body>
                         <div className="text-center py-12">
                             <i className="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
-                            <h4 className="text-lg font-medium text-gray-900 mb-2">{t('loading_attributes', 'Loading Attributes')}</h4>
-                            <p className="text-gray-600">{t('loading_attributes_description', 'Please wait while we fetch the attributes...')}</p>
+                            <h4 className="text-lg font-medium text-gray-900 mb-2">Loading Attributes</h4>
+                            <p className="text-gray-600">Please wait while we fetch the attributes...</p>
                         </div>
                     </Card.Body>
                 </Card>
@@ -88,16 +85,16 @@ export const AttributesPage = () => {
                     <Card.Body>
                         <div className="text-center py-12">
                             <i className="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
-                            <h4 className="text-lg font-medium text-gray-900 mb-2">{t('failed_to_load_attributes', 'Failed to Load Attributes')}</h4>
+                            <h4 className="text-lg font-medium text-gray-900 mb-2">Failed to Load Attributes</h4>
                             <p className="text-gray-600 mb-6">
-                                {error?.message || t('unexpected_error_loading_attributes', 'An unexpected error occurred while loading attributes.')}
+                                {error?.message || 'An unexpected error occurred while loading attributes.'}
                             </p>
                             <Button
                                 variant="outline-primary"
                                 onClick={() => window.location.reload()}
                             >
                                 <i className="fas fa-redo mr-2"></i>
-                                {t('try_again', 'Try Again')}
+                                Try Again
                             </Button>
                         </div>
                     </Card.Body>
@@ -115,10 +112,10 @@ export const AttributesPage = () => {
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900 flex items-center">
                                 <i className="fas fa-sliders-h mr-3 text-blue-600"></i>
-                                {t('attributes', 'Attributes')}
+                                Attributes
                             </h1>
                             <p className="mt-2 text-gray-600 max-w-2xl">
-                                {t('page_subtitle', 'Manage product attributes and their properties. Define characteristics like color, size, and material for your products.')}
+                                Manage product attributes and their properties. Define characteristics like color, size, and material for your products.
                             </p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3">
@@ -128,7 +125,7 @@ export const AttributesPage = () => {
                                     onClick={() => setShowForm(true)}
                                 >
                                     <i className="fas fa-plus mr-2"></i>
-                                    {t('add_attribute', 'Add Attribute')}
+                                    Add Attribute
                                 </Button>
                             )}
                         </div>
@@ -146,7 +143,7 @@ export const AttributesPage = () => {
                                 </div>
                                 <div className="ml-4">
                                     <div className="text-3xl font-bold">{attributes.length}</div>
-                                    <div className="text-blue-100">{t('total_attributes', 'Total Attributes')}</div>
+                                    <div className="text-blue-100">Total Attributes</div>
                                 </div>
                             </div>
                         </div>
@@ -159,7 +156,7 @@ export const AttributesPage = () => {
                                     <div className="text-3xl font-bold">
                                         {attributes.filter(attr => attr.inputType === 'select' || attr.inputType === 'multiselect').length}
                                     </div>
-                                    <div className="text-green-100">{t('select_attributes', 'Select Attributes')}</div>
+                                    <div className="text-green-100">Select Attributes</div>
                                 </div>
                             </div>
                         </div>
@@ -172,7 +169,7 @@ export const AttributesPage = () => {
                                     <div className="text-3xl font-bold">
                                         {attributes.filter(attr => attr.inputType === 'text' || attr.inputType === 'number').length}
                                     </div>
-                                    <div className="text-purple-100">{t('input_attributes', 'Input Attributes')}</div>
+                                    <div className="text-purple-100">Input Attributes</div>
                                 </div>
                             </div>
                         </div>
@@ -185,7 +182,7 @@ export const AttributesPage = () => {
                                     <div className="text-3xl font-bold">
                                         {attributes.filter(attr => attr.unit).length}
                                     </div>
-                                    <div className="text-orange-100">{t('with_units', 'With Units')}</div>
+                                    <div className="text-orange-100">With Units</div>
                                 </div>
                             </div>
                         </div>
@@ -198,10 +195,10 @@ export const AttributesPage = () => {
                                 <div>
                                     <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                                         <i className="fas fa-list mr-2 text-blue-600"></i>
-                                        {t('attribute_management', 'Attribute Management')}
+                                        Attribute Management
                                     </h3>
                                     <p className="mt-1 text-sm text-gray-600">
-                                        {t('attribute_management_description', 'Manage existing attributes, their input types, and data types. Attributes define the characteristics that can be assigned to products.')}
+                                        Manage existing attributes, their input types, and data types. Attributes define the characteristics that can be assigned to products.
                                     </p>
                                 </div>
                             </div>
@@ -212,35 +209,35 @@ export const AttributesPage = () => {
                                 <Table.Header>
                                     <Table.HeaderCell>
                                         <i className="fas fa-hashtag mr-2"></i>
-                                        {t('id', 'ID')}
+                                        ID
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-code mr-2"></i>
-                                        {t('code', 'Code')}
+                                        Code
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-tag mr-2"></i>
-                                        {t('name', 'Name')}
+                                        Name
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-keyboard mr-2"></i>
-                                        {t('input_type', 'Input Type')}
+                                        Input Type
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-database mr-2"></i>
-                                        {t('data_type', 'Data Type')}
+                                        Data Type
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-ruler mr-2"></i>
-                                        {t('unit', 'Unit')}
+                                        Unit
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-calendar mr-2"></i>
-                                        {t('created', 'Created')}
+                                        Created
                                     </Table.HeaderCell>
                                     <Table.HeaderCell className="text-center">
                                         <i className="fas fa-cogs mr-2"></i>
-                                        {t('actions', 'Actions')}
+                                        Actions
                                     </Table.HeaderCell>
                                 </Table.Header>
                                 <Table.Body>
@@ -289,10 +286,10 @@ export const AttributesPage = () => {
                                                             size="sm"
                                                             outline
                                                             onClick={() => handleEdit(attribute)}
-                                                            title={t('edit_attribute', 'Edit Attribute')}
+                                                            title="Edit Attribute"
                                                         >
                                                             <i className="fas fa-edit mr-1"></i>
-                                                            {t('edit', 'Edit')}
+                                                            Edit
                                                         </Button>
                                                     )}
                                                     {can('attributes:delete') && (
@@ -301,10 +298,10 @@ export const AttributesPage = () => {
                                                             size="sm"
                                                             outline
                                                             onClick={() => handleDelete(attribute)}
-                                                            title={t('delete_attribute', 'Delete Attribute')}
+                                                            title="Delete Attribute"
                                                         >
                                                             <i className="fas fa-trash mr-1"></i>
-                                                            {t('delete', 'Delete')}
+                                                            Delete
                                                         </Button>
                                                     )}
                                                 </div>
@@ -323,9 +320,9 @@ export const AttributesPage = () => {
                         <Card.Body>
                             <div className="text-center py-12">
                                 <i className="fas fa-tags text-6xl text-gray-300 mb-4"></i>
-                                <h4 className="text-xl font-medium text-gray-900 mb-2">{t('no_attributes_yet', 'No Attributes Yet')}</h4>
+                                <h4 className="text-xl font-medium text-gray-900 mb-2">No Attributes Yet</h4>
                                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                    {t('get_started_add_attribute', 'Get started by adding your first attribute to define product characteristics like color, size, and material.')}
+                                    Get started by adding your first attribute to define product characteristics like color, size, and material.
                                 </p>
                                 {can('attributes:create') && (
                                     <Button
@@ -333,7 +330,7 @@ export const AttributesPage = () => {
                                         onClick={() => setShowForm(true)}
                                     >
                                         <i className="fas fa-plus mr-2"></i>
-                                        {t('add_first_attribute', 'Add First Attribute')}
+                                        Add First Attribute
                                     </Button>
                                 )}
                             </div>
@@ -352,8 +349,8 @@ export const AttributesPage = () => {
             {deleteConfirm && (
                 <ConfirmModal
                     show={!!deleteConfirm}
-                    title={t('delete_attribute', 'Delete Attribute')}
-                    message={`${t('confirm_delete_attribute', 'Are you sure you want to delete the attribute')} "${deleteConfirm.name}"? ${t('action_cannot_be_undone', 'This action cannot be undone.')}`}
+                    title="Delete Attribute"
+                    message={`Are you sure you want to delete the attribute "${deleteConfirm.name}"? This action cannot be undone.`}
                     onConfirm={confirmDelete}
                     onCancel={() => setDeleteConfirm(null)}
                     isLoading={deleteAttributeMutation.isPending}

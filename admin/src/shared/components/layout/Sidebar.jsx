@@ -63,11 +63,6 @@ export const Sidebar = ({ currentPage, onPageChange }) => {
             label: 'Orders',
             page: 'orders',
         },
-        {
-            icon: 'fas fa-globe',
-            label: 'Translations',
-            page: 'translations',
-        },
     ];
 
     const handleItemClick = (page) => {

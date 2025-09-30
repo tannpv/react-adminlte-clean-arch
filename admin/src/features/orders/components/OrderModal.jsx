@@ -1,7 +1,6 @@
 import React from 'react'
 import Button from '../../../shared/components/ui/Button'
 import Modal from '../../../shared/components/ui/Modal'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 
 const OrderModal = ({
     isOpen,
@@ -10,8 +9,6 @@ const OrderModal = ({
     onStatusChange,
     canManageOrders = false
 }) => {
-    const { languageCode } = useLanguage()
-    const { t } = useTranslation(languageCode, 'orders')
 
     const getStatusBadge = (status) => {
         const statusClasses = {
@@ -23,14 +20,14 @@ const OrderModal = ({
 
         return (
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClasses[status] || 'bg-gray-100 text-gray-800'}`}>
-                {t(`status.${status}`, status)}
+                {status}
             </span>
         )
     }
 
     const formatDate = (dateString) => {
         if (!dateString) return '-'
-        return new Date(dateString).toLocaleDateString(languageCode, {
+        return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
@@ -40,9 +37,10 @@ const OrderModal = ({
     }
 
     const formatCurrency = (amount, currency = 'USD') => {
-        return new Intl.NumberFormat(languageCode, {
+        const validCurrency = currency && currency.trim() !== '' ? currency : 'USD'
+        return new Intl.NumberFormat('en-US', {
             style: 'currency',
-            currency: currency
+            currency: validCurrency
         }).format(amount)
     }
 
@@ -53,7 +51,7 @@ const OrderModal = ({
             <Modal.Header onClose={onClose}>
                 <div className="flex items-center">
                     <i className="fas fa-shopping-cart mr-3 text-blue-600"></i>
-                    {t('orderDetails', 'Order Details')} - {order.orderNumber}
+                    Order Details - {order.orderNumber}
                 </div>
             </Modal.Header>
 
@@ -85,30 +83,30 @@ const OrderModal = ({
                         <div className="bg-white border border-gray-200 rounded-lg p-4">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                                 <i className="fas fa-receipt mr-2 text-blue-600"></i>
-                                {t('orderInformation', 'Order Information')}
+                                Order Information
                             </h3>
                             <div className="space-y-3">
                                 <div className="flex justify-between">
-                                    <span className="text-sm font-medium text-gray-500">{t('orderNumber', 'Order Number')}:</span>
+                                    <span className="text-sm font-medium text-gray-500">Order Number:</span>
                                     <span className="text-sm text-gray-900">{order.orderNumber}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-sm font-medium text-gray-500">{t('status', 'Status')}:</span>
+                                    <span className="text-sm font-medium text-gray-500">Status:</span>
                                     {getStatusBadge(order.status)}
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-sm font-medium text-gray-500">{t('total', 'Total')}:</span>
+                                    <span className="text-sm font-medium text-gray-500">Total:</span>
                                     <span className="text-sm font-semibold text-gray-900">
                                         {formatCurrency(order.totalAmount, order.currency)}
                                     </span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-sm font-medium text-gray-500">{t('createdAt', 'Created')}:</span>
+                                    <span className="text-sm font-medium text-gray-500">Created:</span>
                                     <span className="text-sm text-gray-900">{formatDate(order.createdAt)}</span>
                                 </div>
                                 {order.updatedAt && order.updatedAt !== order.createdAt && (
                                     <div className="flex justify-between">
-                                        <span className="text-sm font-medium text-gray-500">{t('updatedAt', 'Updated')}:</span>
+                                        <span className="text-sm font-medium text-gray-500">Updated:</span>
                                         <span className="text-sm text-gray-900">{formatDate(order.updatedAt)}</span>
                                     </div>
                                 )}
@@ -119,11 +117,11 @@ const OrderModal = ({
                         <div className="bg-white border border-gray-200 rounded-lg p-4">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                                 <i className="fas fa-user mr-2 text-blue-600"></i>
-                                {t('customerInformation', 'Customer Information')}
+                                Customer Information
                             </h3>
                             <div className="space-y-3">
                                 <div className="flex justify-between">
-                                    <span className="text-sm font-medium text-gray-500">{t('customer', 'Customer')}:</span>
+                                    <span className="text-sm font-medium text-gray-500">Customer:</span>
                                     <span className="text-sm text-gray-900">
                                         {order.customer?.name || order.customer?.email || '-'}
                                     </span>
@@ -134,7 +132,7 @@ const OrderModal = ({
                                 </div>
                                 {order.customer?.email && (
                                     <div className="flex justify-between">
-                                        <span className="text-sm font-medium text-gray-500">{t('email', 'Email')}:</span>
+                                        <span className="text-sm font-medium text-gray-500">Email:</span>
                                         <span className="text-sm text-gray-900">{order.customer.email}</span>
                                     </div>
                                 )}
@@ -147,11 +145,11 @@ const OrderModal = ({
                         <div className="bg-white border border-gray-200 rounded-lg p-4">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                                 <i className="fas fa-store mr-2 text-blue-600"></i>
-                                {t('storeInformation', 'Store Information')}
+                                Store Information
                             </h3>
                             <div className="space-y-3">
                                 <div className="flex justify-between">
-                                    <span className="text-sm font-medium text-gray-500">{t('store', 'Store')}:</span>
+                                    <span className="text-sm font-medium text-gray-500">Store:</span>
                                     <span className="text-sm text-gray-900">{order.store?.name || '-'}</span>
                                 </div>
                                 {order.store?.slug && (
@@ -162,7 +160,7 @@ const OrderModal = ({
                                 )}
                                 {order.store?.commissionRate && (
                                     <div className="flex justify-between">
-                                        <span className="text-sm font-medium text-gray-500">{t('commissionRate', 'Commission')}:</span>
+                                        <span className="text-sm font-medium text-gray-500">Commission:</span>
                                         <span className="text-sm text-gray-900">{order.store.commissionRate}%</span>
                                     </div>
                                 )}
@@ -174,7 +172,7 @@ const OrderModal = ({
                             <div className="bg-white border border-gray-200 rounded-lg p-4">
                                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                                     <i className="fas fa-box mr-2 text-blue-600"></i>
-                                    {t('orderItems', 'Order Items')}
+                                    Order Items
                                 </h3>
                                 <div className="space-y-2">
                                     {order.items.map((item, index) => (
@@ -217,7 +215,7 @@ const OrderModal = ({
                             onClick={onClose}
                         >
                             <i className="fas fa-times mr-1"></i>
-                            {t('close', 'Close')}
+                            Close
                         </Button>
 
                         {/* Status Change Actions */}
@@ -230,7 +228,7 @@ const OrderModal = ({
                                 }}
                             >
                                 <i className="fas fa-play mr-1"></i>
-                                {t('process', 'Process Order')}
+                                Process Order
                             </Button>
                         )}
 
@@ -243,7 +241,7 @@ const OrderModal = ({
                                 }}
                             >
                                 <i className="fas fa-check mr-1"></i>
-                                {t('complete', 'Complete Order')}
+                                Complete Order
                             </Button>
                         )}
 
@@ -256,7 +254,7 @@ const OrderModal = ({
                                 }}
                             >
                                 <i className="fas fa-times mr-1"></i>
-                                {t('cancel', 'Cancel Order')}
+                                Cancel Order
                             </Button>
                         )}
                     </div>

@@ -1,17 +1,14 @@
 import React from 'react'
 import Button from '../../../shared/components/ui/Button'
 import Card from '../../../shared/components/ui/Card'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 
-const StoreList = ({ 
-  stores = [], 
-  onEdit, 
-  onDelete, 
+const StoreList = ({
+  stores = [],
+  onEdit,
+  onDelete,
   onStatusChange,
-  isLoading = false 
+  isLoading = false
 }) => {
-  const { languageCode } = useLanguage()
-  const { t } = useTranslation(languageCode, 'stores')
 
   const getStatusBadge = (status) => {
     const statusClasses = {
@@ -23,14 +20,14 @@ const StoreList = ({
 
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClasses[status] || 'bg-gray-100 text-gray-800'}`}>
-        {t(`status.${status}`)}
+        {status}
       </span>
     )
   }
 
   const formatDate = (dateString) => {
     if (!dateString) return '-'
-    return new Date(dateString).toLocaleDateString(languageCode, {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -40,9 +37,10 @@ const StoreList = ({
   }
 
   const formatCurrency = (amount, currency = 'USD') => {
-    return new Intl.NumberFormat(languageCode, {
+    const validCurrency = currency && currency.trim() !== '' ? currency : 'USD'
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency
+      currency: validCurrency
     }).format(amount)
   }
 
@@ -68,10 +66,10 @@ const StoreList = ({
       <Card>
         <div className="p-6 text-center">
           <div className="text-gray-500 text-lg mb-2">
-            {t('noStoresFound')}
+            No stores found
           </div>
           <p className="text-gray-400">
-            {t('noStoresDescription')}
+            No stores found
           </p>
         </div>
       </Card>
@@ -85,22 +83,22 @@ const StoreList = ({
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t('store')}
+                Store
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t('owner')}
+                Owner
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t('status')}
+                Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t('commission')}
+                Commission
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t('createdAt')}
+                Created At
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t('actions')}
+                Actions
               </th>
             </tr>
           </thead>
@@ -159,7 +157,7 @@ const StoreList = ({
                           onClick={() => onStatusChange(store.id, 'approved')}
                           className="text-xs"
                         >
-                          {t('approve')}
+                          Approve
                         </Button>
                         <Button
                           size="sm"
@@ -167,11 +165,11 @@ const StoreList = ({
                           onClick={() => onStatusChange(store.id, 'rejected')}
                           className="text-xs"
                         >
-                          {t('reject')}
+                          Reject
                         </Button>
                       </>
                     )}
-                    
+
                     {store.status === 'approved' && (
                       <Button
                         size="sm"
@@ -179,7 +177,7 @@ const StoreList = ({
                         onClick={() => onStatusChange(store.id, 'suspended')}
                         className="text-xs"
                       >
-                        {t('suspend')}
+                        Suspend
                       </Button>
                     )}
 
@@ -190,7 +188,7 @@ const StoreList = ({
                         onClick={() => onStatusChange(store.id, 'approved')}
                         className="text-xs"
                       >
-                        {t('reactivate')}
+                        Reactivate
                       </Button>
                     )}
 
@@ -201,7 +199,7 @@ const StoreList = ({
                       onClick={() => onEdit(store)}
                       className="text-xs"
                     >
-                      {t('edit')}
+                      Edit
                     </Button>
 
                     {/* Delete Action */}
@@ -211,7 +209,7 @@ const StoreList = ({
                       onClick={() => onDelete(store)}
                       className="text-xs"
                     >
-                      {t('delete')}
+                      Delete
                     </Button>
                   </div>
                 </td>

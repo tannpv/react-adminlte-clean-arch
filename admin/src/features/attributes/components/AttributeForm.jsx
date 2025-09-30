@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Button from '../../../shared/components/ui/Button';
 import Form from '../../../shared/components/ui/Form';
 import Modal from '../../../shared/components/ui/Modal';
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
 import { useCreateAttribute, useUpdateAttribute } from '../hooks/useAttributes';
 
 export const AttributeForm = ({ attribute, onClose }) => {
-    const { languageCode } = useLanguage();
-    const { t } = useTranslation(languageCode, 'attributes');
 
     const [formData, setFormData] = useState({
         code: '',
@@ -123,7 +120,7 @@ export const AttributeForm = ({ attribute, onClose }) => {
             <Modal.Header onClose={onClose}>
                 <div className="flex items-center">
                     <i className={`fas ${isEditing ? 'fa-edit' : 'fa-plus'} mr-3 text-blue-600`}></i>
-                    {isEditing ? t('edit_attribute', 'Edit Attribute') : t('add_new_attribute', 'Add New Attribute')}
+                    {isEditing ? 'Edit Attribute' : 'Add New Attribute'}
                 </div>
             </Modal.Header>
 
@@ -133,10 +130,10 @@ export const AttributeForm = ({ attribute, onClose }) => {
                         <div className="flex items-start">
                             <i className="fas fa-info-circle text-blue-600 mr-2 mt-0.5"></i>
                             <div>
-                                <strong className="text-blue-800">{t('attribute_management', 'Attribute Management')}:</strong>
+                                <strong className="text-blue-800">Attribute Management:</strong>
                                 <span className="text-blue-700 ml-1">
-                                    {t('attribute_management_description', 'Create or edit attributes to define product characteristics like color, size, and material.')}
-                                    {t('required_fields_note', 'All fields marked with * are required.')}
+                                    Create or edit attributes to define product characteristics like color, size, and material.
+                                    All fields marked with * are required.
                                 </span>
                             </div>
                         </div>
@@ -148,7 +145,7 @@ export const AttributeForm = ({ attribute, onClose }) => {
                         <Form.Group>
                             <Form.Label htmlFor="code">
                                 <i className="fas fa-code mr-2 text-blue-600"></i>
-                                {t('code', 'Code')} *
+                                Code *
                             </Form.Label>
                             <Form.Control
                                 type="text"
@@ -156,7 +153,7 @@ export const AttributeForm = ({ attribute, onClose }) => {
                                 name="code"
                                 value={formData.code}
                                 onChange={handleChange}
-                                placeholder={t('code_placeholder', 'e.g., color, size, weight')}
+                                placeholder="e.g., color, size, weight"
                                 disabled={isLoading}
                                 className={errors.code ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
                             />
@@ -167,13 +164,13 @@ export const AttributeForm = ({ attribute, onClose }) => {
                                 </Form.Error>
                             )}
                             <Form.Help>
-                                {t('code_help_text', 'Unique identifier for the attribute (lowercase, numbers, underscores only)')}
+                                Unique identifier for the attribute (lowercase, numbers, underscores only)
                             </Form.Help>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label htmlFor="name">
                                 <i className="fas fa-tag mr-2 text-blue-600"></i>
-                                {t('name', 'Name')} *
+                                Name *
                             </Form.Label>
                             <Form.Control
                                 type="text"
@@ -181,7 +178,7 @@ export const AttributeForm = ({ attribute, onClose }) => {
                                 name="name"
                                 value={formData.name}
                                 onChange={handleChange}
-                                placeholder={t('name_placeholder', 'e.g., Color, Size, Weight')}
+                                placeholder="e.g., Color, Size, Weight"
                                 disabled={isLoading}
                                 className={errors.name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
                             />
@@ -198,7 +195,7 @@ export const AttributeForm = ({ attribute, onClose }) => {
                         <Form.Group>
                             <Form.Label htmlFor="inputType">
                                 <i className="fas fa-keyboard mr-2 text-blue-600"></i>
-                                {t('input_type', 'Input Type')} *
+                                Input Type *
                             </Form.Label>
                             <Form.Select
                                 id="inputType"
@@ -208,11 +205,11 @@ export const AttributeForm = ({ attribute, onClose }) => {
                                 disabled={isLoading}
                                 className={errors.inputType ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
                             >
-                                <option value="select">{t('select_single_choice', 'Select (Single Choice)')}</option>
-                                <option value="multiselect">{t('multiselect_multiple_choices', 'Multi-select (Multiple Choices)')}</option>
-                                <option value="text">{t('text_input', 'Text Input')}</option>
-                                <option value="number">{t('number_input', 'Number Input')}</option>
-                                <option value="boolean">{t('boolean_yes_no', 'Boolean (Yes/No)')}</option>
+                                <option value="select">Select (Single Choice)</option>
+                                <option value="multiselect">Multi-select (Multiple Choices)</option>
+                                <option value="text">Text Input</option>
+                                <option value="number">Number Input</option>
+                                <option value="boolean">Boolean (Yes/No)</option>
                             </Form.Select>
                             {errors.inputType && (
                                 <Form.Error>
@@ -224,7 +221,7 @@ export const AttributeForm = ({ attribute, onClose }) => {
                         <Form.Group>
                             <Form.Label htmlFor="dataType">
                                 <i className="fas fa-database mr-2 text-blue-600"></i>
-                                {t('data_type', 'Data Type')} *
+                                Data Type *
                             </Form.Label>
                             <Form.Select
                                 id="dataType"
@@ -234,9 +231,9 @@ export const AttributeForm = ({ attribute, onClose }) => {
                                 disabled={isLoading}
                                 className={errors.dataType ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
                             >
-                                <option value="string">{t('string', 'String')}</option>
-                                <option value="number">{t('number', 'Number')}</option>
-                                <option value="boolean">{t('boolean', 'Boolean')}</option>
+                                <option value="string">String</option>
+                                <option value="number">Number</option>
+                                <option value="boolean">Boolean</option>
                             </Form.Select>
                             {errors.dataType && (
                                 <Form.Error>
@@ -250,7 +247,7 @@ export const AttributeForm = ({ attribute, onClose }) => {
                     <Form.Group>
                         <Form.Label htmlFor="unit">
                             <i className="fas fa-ruler mr-2 text-blue-600"></i>
-                            {t('unit', 'Unit')}
+                            Unit
                         </Form.Label>
                         <Form.Control
                             type="text"
@@ -258,11 +255,11 @@ export const AttributeForm = ({ attribute, onClose }) => {
                             name="unit"
                             value={formData.unit}
                             onChange={handleChange}
-                            placeholder={t('unit_placeholder', 'e.g., kg, cm, ml')}
+                            placeholder="e.g., kg, cm, ml"
                             disabled={isLoading}
                         />
                         <Form.Help>
-                            {t('unit_help_text', 'Optional unit of measurement')}
+                            Optional unit of measurement
                         </Form.Help>
                     </Form.Group>
                 </form>
@@ -272,7 +269,7 @@ export const AttributeForm = ({ attribute, onClose }) => {
                 <div className="flex justify-between items-center w-full">
                     <div className="text-gray-500 text-sm">
                         <i className="fas fa-lightbulb mr-1"></i>
-                        {isEditing ? t('update_attribute_details', 'Update the attribute details') : t('create_new_attribute', 'Create a new attribute for products')}
+                        {isEditing ? 'Update the attribute details' : 'Create a new attribute for products'}
                     </div>
                     <div className="flex space-x-2">
                         <Button
@@ -282,7 +279,7 @@ export const AttributeForm = ({ attribute, onClose }) => {
                             disabled={isLoading}
                         >
                             <i className="fas fa-times mr-1"></i>
-                            {t('cancel', 'Cancel')}
+                            Cancel
                         </Button>
                         <Button
                             variant={isEditing ? 'warning' : 'success'}
@@ -293,12 +290,12 @@ export const AttributeForm = ({ attribute, onClose }) => {
                             {isLoading ? (
                                 <>
                                     <i className="fas fa-spinner fa-spin mr-1"></i>
-                                    {isEditing ? t('updating', 'Updating...') : t('creating', 'Creating...')}
+                                    {isEditing ? 'Updating...' : 'Creating...'}
                                 </>
                             ) : (
                                 <>
                                     <i className={`fas ${isEditing ? 'fa-save' : 'fa-plus'} mr-1`}></i>
-                                    {isEditing ? t('update_attribute', 'Update Attribute') : t('create_attribute', 'Create Attribute')}
+                                    {isEditing ? 'Update Attribute' : 'Create Attribute'}
                                 </>
                             )}
                         </Button>

@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import Form from '../../../shared/components/ui/Form'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { CategoryTreeSelector } from './CategoryTreeSelector'
 
 export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {}, submitting = false, formId = 'category-form', categories = [], tree = [], hierarchy = [], isOpen = false }) {
-  const { languageCode } = useLanguage()
-  const { t } = useTranslation(languageCode, 'categories')
   const [name, setName] = useState('')
   const [parentId, setParentId] = useState('')
 
@@ -32,18 +29,18 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
       <div>
         <h6 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <i className="fas fa-tag mr-2 text-blue-600"></i>
-          {t('category_information', 'Category Information')}
+          Category Information
         </h6>
         <Form.Group>
           <Form.Label htmlFor="categoryName">
             <i className="fas fa-signature mr-2"></i>
-            {t('category_name', 'Category Name')}
+            Category Name
           </Form.Label>
           <Form.Control
             id="categoryName"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder={t('enter_category_name', 'Enter category name (e.g., Electronics, Clothing)')}
+            placeholder="Enter category name (e.g., Electronics, Clothing)"
             required
             disabled={submitting}
             className={nameError ? 'border-red-500' : ''}
@@ -56,7 +53,7 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
           )}
           <Form.Help>
             <i className="fas fa-lightbulb mr-1"></i>
-            {t('category_name_help', 'Choose a clear, descriptive name that helps customers find products.')}
+            Choose a clear, descriptive name that helps customers find products.
           </Form.Help>
         </Form.Group>
       </div>
@@ -65,12 +62,12 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
       <div>
         <h6 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <i className="fas fa-sitemap mr-2 text-blue-600"></i>
-          {t('category_hierarchy', 'Category Hierarchy')}
+          Category Hierarchy
         </h6>
         <Form.Group>
           <Form.Label>
             <i className="fas fa-folder mr-2"></i>
-            {t('parent_category', 'Parent Category')}
+            Parent Category
           </Form.Label>
           <div className="border border-gray-300 rounded-md">
             <CategoryTreeSelector
@@ -92,7 +89,7 @@ export function CategoryForm({ initialCategory, onSubmit, onCancel, errors = {},
           )}
           <Form.Help>
             <i className="fas fa-info-circle mr-1"></i>
-            {t('parent_category_help', 'Leave empty to create a root category, or select a parent to create a subcategory.')}
+            Leave empty to create a root category, or select a parent to create a subcategory.
           </Form.Help>
         </Form.Group>
       </div>

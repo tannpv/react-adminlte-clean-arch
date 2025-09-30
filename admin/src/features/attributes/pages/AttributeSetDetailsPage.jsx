@@ -4,7 +4,6 @@ import Button from '../../../shared/components/ui/Button';
 import Card from '../../../shared/components/ui/Card';
 import Table from '../../../shared/components/ui/Table';
 import { usePermissions } from '../../../shared/hooks/usePermissions';
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
 import { AttributeAssignmentModal } from '../components/AttributeAssignmentModal';
 import { useAddAttributeToSet, useAttributeSet, useRemoveAttributeFromSet } from '../hooks/useAttributeSets';
 import { useAttributes } from '../hooks/useAttributes';
@@ -18,8 +17,6 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
     const addAttributeMutation = useAddAttributeToSet();
     const removeAttributeMutation = useRemoveAttributeFromSet();
     const { can } = usePermissions();
-    const { languageCode } = useLanguage();
-    const { t } = useTranslation(languageCode, 'attributes');
 
     const handleAddAttribute = () => {
         if (!can('attribute-sets:update')) return;
@@ -145,7 +142,7 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                                     variant="outline-secondary"
                                     size="sm"
                                     onClick={onBack}
-                                    title={t('back_to_attribute_sets', 'Back to Attribute Sets')}
+                                    title="Back to Attribute Sets"
                                     className="mr-3"
                                 >
                                     <i className="fas fa-arrow-left mr-2"></i>
@@ -157,7 +154,7 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                                 </h1>
                             </div>
                             <p className="mt-2 text-gray-600 max-w-2xl">
-                                {attributeSet.description || t('manage_attributes_assigned_to_set', 'Manage attributes assigned to this set.')}
+                                {attributeSet.description || 'Manage attributes assigned to this set.'}
                             </p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3">
@@ -168,7 +165,7 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                                     disabled={addAttributeMutation.isPending}
                                 >
                                     <i className="fas fa-plus mr-2"></i>
-                                    {t('add_attribute', 'Add Attribute')}
+                                    Add Attribute
                                 </Button>
                             )}
                         </div>
@@ -183,7 +180,7 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                                 <i className="fas fa-layer-group text-2xl"></i>
                             </div>
                             <div className="ml-4">
-                                <p className="text-blue-100 text-sm font-medium">{t('total_attributes', 'Total Attributes')}</p>
+                                <p className="text-blue-100 text-sm font-medium">Total Attributes</p>
                                 <p className="text-3xl font-bold">{attributeSet.attributes?.length || 0}</p>
                             </div>
                         </div>
@@ -194,9 +191,9 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                                 <i className="fas fa-tag text-2xl"></i>
                             </div>
                             <div className="ml-4">
-                                <p className="text-green-100 text-sm font-medium">{t('set_type', 'Set Type')}</p>
+                                <p className="text-green-100 text-sm font-medium">Set Type</p>
                                 <p className="text-3xl font-bold">
-                                    {attributeSet.isSystem ? t('system', 'System') : t('custom', 'Custom')}
+                                    {attributeSet.isSystem ? 'System' : 'Custom'}
                                 </p>
                             </div>
                         </div>
@@ -210,7 +207,7 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                             <div className="flex items-center justify-between">
                                 <h3 className="text-lg font-medium text-gray-900 flex items-center">
                                     <i className="fas fa-list mr-2 text-blue-600"></i>
-                                    {t('assigned_attributes', 'Assigned Attributes')}
+                                    Assigned Attributes
                                 </h3>
                             </div>
                         </Card.Header>
@@ -218,9 +215,9 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                             {!attributeSet.attributes || attributeSet.attributes.length === 0 ? (
                                 <div className="text-center py-12">
                                     <i className="fas fa-tags text-4xl text-gray-300 mb-4"></i>
-                                    <h4 className="text-xl font-medium text-gray-900 mb-2">{t('no_attributes_assigned', 'No Attributes Assigned')}</h4>
+                                    <h4 className="text-xl font-medium text-gray-900 mb-2">No Attributes Assigned</h4>
                                     <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                        {t('add_attributes_to_set', 'Add attributes to this set to get started.')}
+                                        Add attributes to this set to get started.
                                     </p>
                                     {can('attribute-sets:update') && (
                                         <Button
@@ -228,7 +225,7 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                                             onClick={handleAddAttribute}
                                         >
                                             <i className="fas fa-plus mr-2"></i>
-                                            {t('add_first_attribute', 'Add First Attribute')}
+                                            Add First Attribute
                                         </Button>
                                     )}
                                 </div>
@@ -237,35 +234,35 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                                     <Table.Header>
                                         <Table.HeaderCell>
                                             <i className="fas fa-sort mr-2"></i>
-                                            {t('sort_order', 'Sort Order')}
+                                            Sort Order
                                         </Table.HeaderCell>
                                         <Table.HeaderCell>
                                             <i className="fas fa-code mr-2"></i>
-                                            {t('code', 'Code')}
+                                            Code
                                         </Table.HeaderCell>
                                         <Table.HeaderCell>
                                             <i className="fas fa-tag mr-2"></i>
-                                            {t('name', 'Name')}
+                                            Name
                                         </Table.HeaderCell>
                                         <Table.HeaderCell>
                                             <i className="fas fa-keyboard mr-2"></i>
-                                            {t('input_type', 'Input Type')}
+                                            Input Type
                                         </Table.HeaderCell>
                                         <Table.HeaderCell>
                                             <i className="fas fa-database mr-2"></i>
-                                            {t('data_type', 'Data Type')}
+                                            Data Type
                                         </Table.HeaderCell>
                                         <Table.HeaderCell>
                                             <i className="fas fa-ruler mr-2"></i>
-                                            {t('unit', 'Unit')}
+                                            Unit
                                         </Table.HeaderCell>
                                         <Table.HeaderCell>
                                             <i className="fas fa-exclamation-circle mr-2"></i>
-                                            {t('required', 'Required')}
+                                            Required
                                         </Table.HeaderCell>
                                         <Table.HeaderCell className="text-center">
                                             <i className="fas fa-cogs mr-2"></i>
-                                            {t('actions', 'Actions')}
+                                            Actions
                                         </Table.HeaderCell>
                                     </Table.Header>
                                     <Table.Body>
@@ -303,12 +300,12 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                                                         {attribute.isRequired ? (
                                                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                                                 <i className="fas fa-exclamation-circle mr-1"></i>
-                                                                {t('required', 'Required')}
+                                                                Required
                                                             </span>
                                                         ) : (
                                                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
                                                                 <i className="fas fa-check-circle mr-1"></i>
-                                                                {t('optional', 'Optional')}
+                                                                Optional
                                                             </span>
                                                         )}
                                                     </Table.Cell>
@@ -320,10 +317,10 @@ export const AttributeSetDetailsPage = ({ id, onBack }) => {
                                                                     size="sm"
                                                                     onClick={() => handleRemoveAttribute(attribute)}
                                                                     disabled={removeAttributeMutation.isPending}
-                                                                    title={t('remove_attribute_from_set', 'Remove attribute from set')}
+                                                                    title="Remove attribute from set"
                                                                 >
                                                                     <i className="fas fa-trash mr-1"></i>
-                                                                    {t('remove', 'Remove')}
+                                                                    Remove
                                                                 </Button>
                                                             )}
                                                         </div>

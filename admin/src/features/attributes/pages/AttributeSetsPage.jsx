@@ -4,7 +4,6 @@ import Button from '../../../shared/components/ui/Button';
 import Card from '../../../shared/components/ui/Card';
 import Table from '../../../shared/components/ui/Table';
 import { usePermissions } from '../../../shared/hooks/usePermissions';
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation';
 import { AttributeSetForm } from '../components/AttributeSetForm';
 import { useAttributeSets, useDeleteAttributeSet } from '../hooks/useAttributeSets';
 
@@ -16,8 +15,6 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
     const { data: attributeSets = [], isLoading, error } = useAttributeSets();
     const deleteAttributeSetMutation = useDeleteAttributeSet();
     const { can } = usePermissions();
-    const { languageCode } = useLanguage();
-    const { t } = useTranslation(languageCode, 'attributes');
 
     const handleEdit = (attributeSet) => {
         if (!can('attribute-sets:update')) return;
@@ -59,8 +56,8 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                     <Card.Body>
                         <div className="text-center py-12">
                             <i className="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
-                            <h4 className="text-lg font-medium text-gray-900 mb-2">{t('loading_attribute_sets', 'Loading Attribute Sets')}</h4>
-                            <p className="text-gray-600">{t('loading_attribute_sets_description', 'Please wait while we fetch the attribute sets...')}</p>
+                            <h4 className="text-lg font-medium text-gray-900 mb-2">Loading Attribute Sets</h4>
+                            <p className="text-gray-600">Please wait while we fetch the attribute sets...</p>
                         </div>
                     </Card.Body>
                 </Card>
@@ -75,16 +72,16 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                     <Card.Body>
                         <div className="text-center py-12">
                             <i className="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
-                            <h4 className="text-lg font-medium text-gray-900 mb-2">{t('failed_to_load_attribute_sets', 'Failed to Load Attribute Sets')}</h4>
+                            <h4 className="text-lg font-medium text-gray-900 mb-2">Failed to Load Attribute Sets</h4>
                             <p className="text-gray-600 mb-6">
-                                {error?.message || t('unexpected_error_loading_attribute_sets', 'An unexpected error occurred while loading attribute sets.')}
+                                {error?.message || 'An unexpected error occurred while loading attribute sets.'}
                             </p>
                             <Button
                                 variant="outline-primary"
                                 onClick={() => window.location.reload()}
                             >
                                 <i className="fas fa-redo mr-2"></i>
-                                {t('try_again', 'Try Again')}
+                                Try Again
                             </Button>
                         </div>
                     </Card.Body>
@@ -102,10 +99,10 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900 flex items-center">
                                 <i className="fas fa-layer-group mr-3 text-blue-600"></i>
-                                {t('attribute_sets', 'Attribute Sets')}
+                                Attribute Sets
                             </h1>
                             <p className="mt-2 text-gray-600 max-w-2xl">
-                                {t('manage_attribute_sets_description', 'Organize attributes into reusable sets for products. Create attribute sets to define common product characteristics like size, color, and material.')}
+                                Organize attributes into reusable sets for products. Create attribute sets to define common product characteristics like size, color, and material.
                             </p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3">
@@ -115,7 +112,7 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                     onClick={() => setShowForm(true)}
                                 >
                                     <i className="fas fa-plus mr-2"></i>
-                                    {t('add_attribute_set', 'Add Attribute Set')}
+                                    Add Attribute Set
                                 </Button>
                             )}
                         </div>
@@ -133,7 +130,7 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                 </div>
                                 <div className="ml-4">
                                     <div className="text-3xl font-bold">{attributeSets.length}</div>
-                                    <div className="text-blue-100">{t('total_attribute_sets', 'Total Attribute Sets')}</div>
+                                    <div className="text-blue-100">Total Attribute Sets</div>
                                 </div>
                             </div>
                         </div>
@@ -146,7 +143,7 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                     <div className="text-3xl font-bold">
                                         {attributeSets.filter(set => set.isSystem).length}
                                     </div>
-                                    <div className="text-green-100">{t('system_sets', 'System Sets')}</div>
+                                    <div className="text-green-100">System Sets</div>
                                 </div>
                             </div>
                         </div>
@@ -159,7 +156,7 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                     <div className="text-3xl font-bold">
                                         {attributeSets.filter(set => !set.isSystem).length}
                                     </div>
-                                    <div className="text-purple-100">{t('custom_sets', 'Custom Sets')}</div>
+                                    <div className="text-purple-100">Custom Sets</div>
                                 </div>
                             </div>
                         </div>
@@ -172,7 +169,7 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                     <div className="text-3xl font-bold">
                                         {attributeSets.reduce((total, set) => total + (set.attributes?.length || 0), 0)}
                                     </div>
-                                    <div className="text-orange-100">{t('total_attributes', 'Total Attributes')}</div>
+                                    <div className="text-orange-100">Total Attributes</div>
                                 </div>
                             </div>
                         </div>
@@ -185,10 +182,10 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                 <div>
                                     <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                                         <i className="fas fa-list mr-2 text-blue-600"></i>
-                                        {t('attribute_set_management', 'Attribute Set Management')}
+                                        Attribute Set Management
                                     </h3>
                                     <p className="mt-1 text-sm text-gray-600">
-                                        {t('attribute_set_management_description', 'Manage existing attribute sets, their assigned attributes, and properties. Attribute sets help organize product characteristics into reusable groups.')}
+                                        Manage existing attribute sets, their assigned attributes, and properties. Attribute sets help organize product characteristics into reusable groups.
                                     </p>
                                 </div>
                             </div>
@@ -199,31 +196,31 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                 <Table.Header>
                                     <Table.HeaderCell>
                                         <i className="fas fa-hashtag mr-2"></i>
-                                        {t('id', 'ID')}
+                                        ID
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-layer-group mr-2"></i>
-                                        {t('name', 'Name')}
+                                        Name
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-info-circle mr-2"></i>
-                                        {t('description', 'Description')}
+                                        Description
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-tag mr-2"></i>
-                                        {t('type', 'Type')}
+                                        Type
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-list mr-2"></i>
-                                        {t('attributes', 'Attributes')}
+                                        Attributes
                                     </Table.HeaderCell>
                                     <Table.HeaderCell>
                                         <i className="fas fa-calendar mr-2"></i>
-                                        {t('created', 'Created')}
+                                        Created
                                     </Table.HeaderCell>
                                     <Table.HeaderCell className="text-center">
                                         <i className="fas fa-cogs mr-2"></i>
-                                        {t('actions', 'Actions')}
+                                        Actions
                                     </Table.HeaderCell>
                                 </Table.Header>
                                 <Table.Body>
@@ -239,7 +236,7 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                                     <span className="font-medium text-gray-900">{attributeSet.name}</span>
                                                     {attributeSet.isSystem && (
                                                         <div className="text-sm text-gray-500">
-                                                            {t('system_attribute_set', 'System attribute set')}
+                                                            System attribute set
                                                         </div>
                                                     )}
                                                 </div>
@@ -260,19 +257,19 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                                 {attributeSet.isSystem ? (
                                                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                         <i className="fas fa-lock mr-1"></i>
-                                                        {t('system', 'System')}
+                                                        System
                                                     </span>
                                                 ) : (
                                                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                         <i className="fas fa-user mr-1"></i>
-                                                        {t('custom', 'Custom')}
+                                                        Custom
                                                     </span>
                                                 )}
                                             </Table.Cell>
                                             <Table.Cell>
                                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                     <i className="fas fa-list mr-1"></i>
-                                                    {attributeSet.attributes?.length || 0} {t('attributes', 'attributes')}
+                                                    {attributeSet.attributes?.length || 0} attributes
                                                 </span>
                                             </Table.Cell>
                                             <Table.Cell>
@@ -288,10 +285,10 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                                             size="sm"
                                                             outline
                                                             onClick={() => handleViewDetails(attributeSet)}
-                                                            title={t('view_details', 'View Details & Manage Attributes')}
+                                                            title="View Details & Manage Attributes"
                                                         >
                                                             <i className="fas fa-eye mr-1"></i>
-                                                            {t('view', 'View')}
+                                                            View
                                                         </Button>
                                                     )}
                                                     {can('attribute-sets:update') && (
@@ -300,10 +297,10 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                                             size="sm"
                                                             outline
                                                             onClick={() => handleEdit(attributeSet)}
-                                                            title={t('edit_attribute_set', 'Edit Attribute Set')}
+                                                            title="Edit Attribute Set"
                                                         >
                                                             <i className="fas fa-edit mr-1"></i>
-                                                            {t('edit', 'Edit')}
+                                                            Edit
                                                         </Button>
                                                     )}
                                                     {can('attribute-sets:delete') && !attributeSet.isSystem && (
@@ -312,14 +309,14 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                                             size="sm"
                                                             outline
                                                             onClick={() => handleDelete(attributeSet)}
-                                                            title={t('delete_attribute_set', 'Delete Attribute Set')}
+                                                            title="Delete Attribute Set"
                                                         >
                                                             <i className="fas fa-trash mr-1"></i>
-                                                            {t('delete', 'Delete')}
+                                                            Delete
                                                         </Button>
                                                     )}
                                                     {attributeSet.isSystem && (
-                                                        <span className="text-gray-400" title={t('system_sets_cannot_be_deleted', 'System attribute sets cannot be deleted')}>
+                                                        <span className="text-gray-400" title="System attribute sets cannot be deleted">
                                                             <i className="fas fa-lock"></i>
                                                         </span>
                                                     )}
@@ -339,9 +336,9 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                         <Card.Body>
                             <div className="text-center py-12">
                                 <i className="fas fa-layer-group text-6xl text-gray-300 mb-4"></i>
-                                <h4 className="text-xl font-medium text-gray-900 mb-2">{t('no_attribute_sets_yet', 'No Attribute Sets Yet')}</h4>
+                                <h4 className="text-xl font-medium text-gray-900 mb-2">No Attribute Sets Yet</h4>
                                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                    {t('get_started_create_attribute_set', 'Get started by creating your first attribute set to organize product attributes into reusable groups.')}
+                                    Get started by creating your first attribute set to organize product attributes into reusable groups.
                                 </p>
                                 {can('attribute-sets:create') && (
                                     <Button
@@ -349,7 +346,7 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
                                         onClick={() => setShowForm(true)}
                                     >
                                         <i className="fas fa-plus mr-2"></i>
-                                        {t('add_first_attribute_set', 'Add First Attribute Set')}
+                                        Add First Attribute Set
                                     </Button>
                                 )}
                             </div>
@@ -368,11 +365,11 @@ export const AttributeSetsPage = ({ onViewDetails }) => {
             {deleteConfirm && (
                 <ConfirmModal
                     show={!!deleteConfirm}
-                    title={t('delete_attribute_set', 'Delete Attribute Set')}
-                    message={t('confirm_delete_attribute_set', 'Are you sure you want to delete the attribute set "{{name}}"? This action cannot be undone.', { name: deleteConfirm.name })}
+                    title="Delete Attribute Set"
+                    message={`Are you sure you want to delete the attribute set "${deleteConfirm.name}"? This action cannot be undone.`}
                     onConfirm={confirmDelete}
                     onCancel={() => setDeleteConfirm(null)}
-                    confirmText={t('delete', 'Delete')}
+                    confirmText="Delete"
                     confirmClass="btn-danger"
                     loading={deleteAttributeSetMutation.isPending}
                 />

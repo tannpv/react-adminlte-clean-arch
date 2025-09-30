@@ -4,7 +4,6 @@ import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import Button from '../../../shared/components/ui/Button'
 import Card from '../../../shared/components/ui/Card'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { getUserDisplayName } from '../../../shared/lib/userDisplayName'
 import { fetchRoles } from '../../roles/api/rolesApi'
 import { UserList } from '../components/UserList'
@@ -24,8 +23,6 @@ export function UsersPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [targetUser, setTargetUser] = useState(null)
   const [formErrors, setFormErrors] = useState({})
-  const { languageCode } = useLanguage()
-  const { t } = useTranslation(languageCode, 'users')
 
   const {
     searchTerm,
@@ -87,10 +84,10 @@ export function UsersPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center">
                 <i className="fas fa-users mr-3 text-blue-600"></i>
-                {t('title', 'Users & Members')}
+                Users & Members
               </h1>
               <p className="mt-2 text-gray-600 max-w-2xl">
-                {t('subtitle', 'Manage workspace members, permissions, and access. Add new users and assign roles to control what they can do.')}
+                Manage workspace members, permissions, and access. Add new users and assign roles to control what they can do.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -101,7 +98,7 @@ export function UsersPage() {
                 <input
                   type="search"
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder={t('search_placeholder', 'Search users by name or email...')}
+                  placeholder="Search users by name or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -110,19 +107,19 @@ export function UsersPage() {
                 variant="outline-secondary"
                 onClick={() => qc.invalidateQueries({ queryKey: ['roles'] })}
                 disabled={rolesLoading}
-                title={t('refresh_roles_tooltip', 'Refresh role options')}
+                title="Refresh role options"
               >
                 <i className="fas fa-sync-alt mr-2"></i>
-                {t('refresh_roles', 'Refresh Roles')}
+                Refresh Roles
               </Button>
               <Button
                 variant="primary"
                 onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
                 disabled={!can('users:create')}
-                title={!can('users:create') ? t('not_allowed', 'Not allowed') : undefined}
+                title={!can('users:create') ? 'Not allowed' : undefined}
               >
                 <i className="fas fa-user-plus mr-2"></i>
-                {t('add_user', 'Add New User')}
+                Add New User
               </Button>
             </div>
           </div>
@@ -138,7 +135,7 @@ export function UsersPage() {
                 </div>
                 <div className="ml-4">
                   <div className="text-3xl font-bold">{totalUsers}</div>
-                  <div className="text-blue-100">{t('total_users', 'Total Users')}</div>
+                  <div className="text-blue-100">Total Users</div>
                 </div>
               </div>
             </div>
@@ -150,7 +147,7 @@ export function UsersPage() {
                 </div>
                 <div className="ml-4">
                   <div className="text-3xl font-bold">{activeUsers}</div>
-                  <div className="text-green-100">{t('active_users', 'Active Users')}</div>
+                  <div className="text-green-100">Active Users</div>
                 </div>
               </div>
             </div>
@@ -162,7 +159,7 @@ export function UsersPage() {
                 </div>
                 <div className="ml-4">
                   <div className="text-3xl font-bold">{adminUsers}</div>
-                  <div className="text-purple-100">{t('administrators', 'Administrators')}</div>
+                  <div className="text-purple-100">Administrators</div>
                 </div>
               </div>
             </div>
@@ -174,7 +171,7 @@ export function UsersPage() {
                 </div>
                 <div className="ml-4">
                   <div className="text-3xl font-bold">{usersWithProfile}</div>
-                  <div className="text-orange-100">{t('with_profiles', 'With Profiles')}</div>
+                  <div className="text-orange-100">With Profiles</div>
                 </div>
               </div>
             </div>
@@ -187,8 +184,8 @@ export function UsersPage() {
             <Card.Body>
               <div className="text-center py-12">
                 <i className="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
-                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('loading_title', 'Loading Users')}</h4>
-                <p className="text-gray-600">{t('loading_description', 'Please wait while we fetch the user information...')}</p>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">Loading Users</h4>
+                <p className="text-gray-600">Please wait while we fetch the user information...</p>
               </div>
             </Card.Body>
           </Card>
@@ -204,11 +201,11 @@ export function UsersPage() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                       <i className="fas fa-list mr-2 text-blue-600"></i>
-                      {t('user_management', 'User Management')}
+                      User Management
                     </h3>
                     <p className="mt-1 text-sm text-gray-600">
-                      {t('user_management_description', 'Manage existing users, their roles, and permissions.')}
-                      {searchTerm && ` ${t('showing_results_for', 'Showing results for')} "${searchTerm}"`}
+                      Manage existing users, their roles, and permissions.
+                      {searchTerm && ` Showing results for "${searchTerm}"`}
                     </p>
                   </div>
                 </div>
@@ -237,12 +234,12 @@ export function UsersPage() {
               <div className="text-center py-12">
                 <i className="fas fa-user-slash text-4xl text-gray-400 mb-4"></i>
                 <h4 className="text-lg font-medium text-gray-900 mb-2">
-                  {searchTerm ? t('no_users_found', 'No Users Found') : t('no_users_yet', 'No Users Yet')}
+                  {searchTerm ? 'No Users Found' : 'No Users Yet'}
                 </h4>
                 <p className="text-gray-600 mb-6">
                   {searchTerm
-                    ? t('no_users_match_search', `No users match your search for "${searchTerm}". Try adjusting your search terms.`)
-                    : t('get_started_add_user', 'Get started by adding your first user to the workspace.')
+                    ? `No users match your search for "${searchTerm}". Try adjusting your search terms.`
+                    : 'Get started by adding your first user to the workspace.'
                   }
                 </p>
                 {!searchTerm && can('users:create') && (
@@ -251,7 +248,7 @@ export function UsersPage() {
                     onClick={() => { setEditing({}); setFormErrors({}); setModalOpen(true) }}
                   >
                     <i className="fas fa-user-plus mr-2"></i>
-                    {t('add_first_user', 'Add First User')}
+                    Add First User
                   </Button>
                 )}
               </div>
@@ -265,16 +262,16 @@ export function UsersPage() {
             <Card.Body>
               <div className="text-center py-12">
                 <i className="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
-                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('failed_to_load_users', 'Failed to Load Users')}</h4>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">Failed to Load Users</h4>
                 <p className="text-gray-600 mb-6">
-                  {error?.message || t('unexpected_error_loading_users', 'An unexpected error occurred while loading users.')}
+                  {error?.message || 'An unexpected error occurred while loading users.'}
                 </p>
                 <Button
                   variant="outline-primary"
                   onClick={() => window.location.reload()}
                 >
                   <i className="fas fa-redo mr-2"></i>
-                  {t('try_again', 'Try Again')}
+                  Try Again
                 </Button>
               </div>
             </Card.Body>
@@ -284,7 +281,7 @@ export function UsersPage() {
 
       <UserModal
         show={modalOpen}
-        title={editing ? t('edit_user', 'Edit User') : t('add_user', 'Add User')}
+        title={editing ? 'Edit User' : 'Add User'}
         initialUser={editing}
         errors={formErrors}
         submitting={submitting}
@@ -311,10 +308,10 @@ export function UsersPage() {
 
       <ConfirmModal
         show={confirmOpen}
-        title={t('delete_user', 'Delete User')}
-        message={t('confirm_delete_user', `Are you sure you want to delete ${getUserDisplayName(targetUser) || 'this user'}?`)}
-        confirmText={t('delete', 'Delete')}
-        cancelText={t('cancel', 'Cancel')}
+        title='Delete User'
+        message={`Are you sure you want to delete ${getUserDisplayName(targetUser) || 'this user'}?`}
+        confirmText='Delete'
+        cancelText='Cancel'
         onCancel={() => { setConfirmOpen(false); setTargetUser(null) }}
         onConfirm={async () => {
           const id = targetUser?.id

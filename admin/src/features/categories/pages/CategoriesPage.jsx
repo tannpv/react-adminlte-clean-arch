@@ -3,7 +3,6 @@ import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import Button from '../../../shared/components/ui/Button'
 import Card from '../../../shared/components/ui/Card'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { CategoryList } from '../components/CategoryList'
 import { CategoryModal } from '../components/CategoryModal'
 import { useCategories } from '../hooks/useCategories'
@@ -16,8 +15,6 @@ const isValidationErrorMap = (err) => {
 
 export function CategoriesPage() {
   const { can } = usePermissions()
-  const { languageCode } = useLanguage()
-  const { t } = useTranslation(languageCode, 'categories')
   const [modalOpen, setModalOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -67,10 +64,10 @@ export function CategoriesPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center">
                 <i className="fas fa-tags mr-3 text-blue-600"></i>
-                {t('product_categories', 'Product Categories')}
+                Product Categories
               </h1>
               <p className="mt-2 text-gray-600 max-w-2xl">
-                {t('page_subtitle', 'Organize products into clear, navigable groups. Create hierarchical categories to improve product discovery and management.')}
+                Organize products into clear, navigable groups. Create hierarchical categories to improve product discovery and management.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -81,7 +78,7 @@ export function CategoriesPage() {
                 <input
                   type="search"
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder={t('search_placeholder', 'Search categories by name...')}
+                  placeholder="Search categories by name..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -90,10 +87,10 @@ export function CategoriesPage() {
                 variant="primary"
                 onClick={() => { setEditing(null); setFormErrors({}); setModalOpen(true) }}
                 disabled={!canCreate}
-                title={!canCreate ? t('not_allowed', 'Not allowed') : undefined}
+                title={!canCreate ? 'Not allowed' : undefined}
               >
                 <i className="fas fa-plus mr-2"></i>
-                {t('add_new_category', 'Add New Category')}
+                Add New Category
               </Button>
             </div>
           </div>
@@ -106,9 +103,9 @@ export function CategoriesPage() {
               <div className="flex items-center p-4 bg-red-50 border border-red-200 rounded-md">
                 <i className="fas fa-ban text-red-600 mr-3"></i>
                 <div>
-                  <h4 className="text-red-800 font-medium">{t('access_denied', 'Access Denied')}</h4>
+                  <h4 className="text-red-800 font-medium">Access Denied</h4>
                   <p className="text-red-700 text-sm">
-                    {t('no_permission_view_categories', 'You do not have permission to view categories.')}
+                    You do not have permission to view categories.
                   </p>
                 </div>
               </div>
@@ -122,8 +119,8 @@ export function CategoriesPage() {
             <Card.Body>
               <div className="text-center py-12">
                 <i className="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
-                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('loading_categories', 'Loading Categories')}</h4>
-                <p className="text-gray-600">{t('loading_categories_description', 'Please wait while we fetch your category information...')}</p>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">Loading Categories</h4>
+                <p className="text-gray-600">Please wait while we fetch your category information...</p>
               </div>
             </Card.Body>
           </Card>
@@ -135,16 +132,16 @@ export function CategoriesPage() {
             <Card.Body>
               <div className="text-center py-12">
                 <i className="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
-                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('failed_to_load_categories', 'Failed to Load Categories')}</h4>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">Failed to Load Categories</h4>
                 <p className="text-gray-600 mb-6">
-                  {error?.message || t('unexpected_error_loading_categories', 'An unexpected error occurred while loading categories.')}
+                  {error?.message || 'An unexpected error occurred while loading categories.'}
                 </p>
                 <Button
                   variant="outline-primary"
                   onClick={() => window.location.reload()}
                 >
                   <i className="fas fa-redo mr-2"></i>
-                  {t('try_again', 'Try Again')}
+                  Try Again
                 </Button>
               </div>
             </Card.Body>
@@ -163,7 +160,7 @@ export function CategoriesPage() {
                   </div>
                   <div className="ml-4">
                     <div className="text-3xl font-bold">{totalCategories}</div>
-                    <div className="text-blue-100">{t('total_categories', 'Total Categories')}</div>
+                    <div className="text-blue-100">Total Categories</div>
                   </div>
                 </div>
               </div>
@@ -175,7 +172,7 @@ export function CategoriesPage() {
                   </div>
                   <div className="ml-4">
                     <div className="text-3xl font-bold">{rootCategories}</div>
-                    <div className="text-green-100">{t('root_categories', 'Root Categories')}</div>
+                    <div className="text-green-100">Root Categories</div>
                   </div>
                 </div>
               </div>
@@ -187,7 +184,7 @@ export function CategoriesPage() {
                   </div>
                   <div className="ml-4">
                     <div className="text-3xl font-bold">{childCategories}</div>
-                    <div className="text-purple-100">{t('subcategories', 'Subcategories')}</div>
+                    <div className="text-purple-100">Subcategories</div>
                   </div>
                 </div>
               </div>
@@ -199,7 +196,7 @@ export function CategoriesPage() {
                   </div>
                   <div className="ml-4">
                     <div className="text-3xl font-bold">{maxDepth}</div>
-                    <div className="text-orange-100">{t('max_depth', 'Max Depth')}</div>
+                    <div className="text-orange-100">Max Depth</div>
                   </div>
                 </div>
               </div>
@@ -212,11 +209,11 @@ export function CategoriesPage() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                       <i className="fas fa-list mr-2 text-blue-600"></i>
-                      {t('category_management', 'Category Management')}
+                      Category Management
                     </h3>
                     <p className="mt-1 text-sm text-gray-600">
-                      {t('manage_categories_description', 'Manage your product categories and their hierarchy.')}
-                      {searchTerm && ` ${t('showing_results_for', 'Showing results for')} "${searchTerm}"`}
+                      Manage your product categories and their hierarchy.
+                      {searchTerm && ` Showing results for "${searchTerm}"`}
                     </p>
                   </div>
                 </div>
@@ -245,7 +242,7 @@ export function CategoriesPage() {
 
       <CategoryModal
         show={modalOpen}
-        title={editing?.id ? t('edit_category', 'Edit Category') : t('add_category', 'Add Category')}
+        title={editing?.id ? 'Edit Category' : 'Add Category'}
         initialCategory={editing}
         onClose={() => { setModalOpen(false); setEditing(null); setFormErrors({}) }}
         onSubmit={async (payload) => {
@@ -273,10 +270,10 @@ export function CategoriesPage() {
 
       <ConfirmModal
         show={confirmOpen}
-        title={t('delete_category', 'Delete Category')}
-        message={`${t('confirm_delete_category', 'Are you sure you want to delete')} ${targetCategory?.name || t('this_category', 'this category')}?`}
-        confirmText={t('delete', 'Delete')}
-        cancelText={t('cancel', 'Cancel')}
+        title="Delete Category"
+        message={`Are you sure you want to delete ${targetCategory?.name || 'this category'}?`}
+        confirmText="Delete"
+        cancelText="Cancel"
         onCancel={() => { setConfirmOpen(false); setTargetCategory(null) }}
         onConfirm={async () => {
           const id = targetCategory?.id

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import Form from '../../../shared/components/ui/Form'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 
 const buildInitialProfile = (user) => {
   if (!user || !user.profile) {
@@ -15,8 +14,6 @@ const buildInitialProfile = (user) => {
 }
 
 export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitting = false, formId = 'user-form', roleOptions = [], rolesLoading = false }) {
-  const { languageCode } = useLanguage()
-  const { t } = useTranslation(languageCode, 'users')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -91,19 +88,19 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
       <div>
         <h6 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <i className="fas fa-user mr-2 text-blue-600"></i>
-          {t('basic_information', 'Basic Information')}
+          Basic Information
         </h6>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Form.Group>
             <Form.Label htmlFor="firstName">
               <i className="fas fa-signature mr-2"></i>
-              {t('first_name', 'First Name')}
+              First Name
             </Form.Label>
             <Form.Control
               id="firstName"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              placeholder={t('enter_first_name', 'Enter first name')}
+              placeholder="Enter first name"
               required
               disabled={submitting}
               className={firstNameError ? 'border-red-500' : ''}
@@ -113,13 +110,13 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
           <Form.Group>
             <Form.Label htmlFor="lastName">
               <i className="fas fa-signature mr-2"></i>
-              {t('last_name', 'Last Name')}
+              Last Name
             </Form.Label>
             <Form.Control
               id="lastName"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              placeholder={t('enter_last_name', 'Enter last name')}
+              placeholder="Enter last name"
               required
               disabled={submitting}
               className={lastNameError ? 'border-red-500' : ''}
@@ -132,14 +129,14 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
           <Form.Group>
             <Form.Label htmlFor="email">
               <i className="fas fa-envelope mr-2"></i>
-              {t('email', 'Email Address')}
+              Email Address
             </Form.Label>
             <Form.Control
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder={t('enter_email', 'Enter email address')}
+              placeholder="Enter email address"
               required
               disabled={submitting}
               className={emailError ? 'border-red-500' : ''}
@@ -149,7 +146,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
           <Form.Group>
             <Form.Label htmlFor="dateOfBirth">
               <i className="fas fa-birthday-cake mr-2"></i>
-              {t('date_of_birth', 'Date of Birth')}
+              Date of Birth
             </Form.Label>
             <Form.Control
               id="dateOfBirth"
@@ -168,7 +165,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
       <div>
         <h6 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <i className="fas fa-image mr-2 text-blue-600"></i>
-          {t('profile_picture', 'Profile Picture')}
+          Profile Picture
         </h6>
         <Form.Group>
           <div className="flex items-start space-x-4">
@@ -183,7 +180,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                 ) : (
                   <div className="text-gray-400 text-center">
                     <i className="fas fa-user text-2xl"></i>
-                    <div className="text-xs mt-1">{t('no_image', 'No Image')}</div>
+                    <div className="text-xs mt-1">No Image</div>
                   </div>
                 )}
               </div>
@@ -237,7 +234,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                 />
                 <div className="text-sm text-gray-500">
                   <i className="fas fa-upload mr-1"></i>
-                  {t('choose_image', 'Choose Image')} (Max 5MB)
+                  Choose Image (Max 5MB)
                 </div>
               </div>
               <div className="flex items-center space-x-2 mt-2">
@@ -252,12 +249,12 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                   disabled={submitting || (!pictureData && !picturePreview)}
                 >
                   <i className="fas fa-trash mr-1"></i>
-                  {t('remove', 'Remove')}
+                  Remove
                 </button>
                 {pictureLoading && (
                   <span className="text-sm text-blue-600">
                     <i className="fas fa-spinner fa-spin mr-1"></i>
-                    {t('uploading', 'Uploading...')}
+                    Uploading...
                   </span>
                 )}
               </div>
@@ -276,12 +273,12 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
       <div>
         <h6 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <i className="fas fa-shield-alt mr-2 text-blue-600"></i>
-          {t('roles_permissions', 'Roles & Permissions')}
+          Roles & Permissions
         </h6>
         <Form.Group>
           <Form.Label>
             <i className="fas fa-user-tag mr-2"></i>
-            {t('assign_roles', 'Assign Roles')}
+            Assign Roles
           </Form.Label>
           <div className="border border-gray-300 rounded-md">
             <Form.Select
@@ -303,19 +300,19 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
               {rolesLoading && (
                 <div className="flex items-center">
                   <i className="fas fa-spinner fa-spin mr-1"></i>
-                  {t('loading_roles', 'Loading roles...')}
+                  Loading roles...
                 </div>
               )}
               {!rolesLoading && !roleOptions.length && (
                 <div className="flex items-center text-yellow-600">
                   <i className="fas fa-exclamation-triangle mr-1"></i>
-                  {t('no_roles_available', 'No roles available or not authorized to view roles.')}
+                  No roles available or not authorized to view roles.
                 </div>
               )}
               {!rolesLoading && roleOptions.length > 0 && (
                 <div className="flex items-center">
                   <i className="fas fa-info-circle mr-1"></i>
-                  {t('hold_ctrl_select_multiple', 'Hold Ctrl/Cmd to select multiple roles')}
+                  Hold Ctrl/Cmd to select multiple roles
                 </div>
               )}
             </div>
@@ -329,13 +326,13 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
         <div>
           <h6 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             <i className="fas fa-lock mr-2 text-blue-600"></i>
-            {t('change_password', 'Change Password')}
+            Change Password
           </h6>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Form.Group>
               <Form.Label htmlFor="newPassword">
                 <i className="fas fa-key mr-2"></i>
-                {t('new_password', 'New Password')}
+                New Password
               </Form.Label>
               <Form.Control
                 id="newPassword"
@@ -345,7 +342,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                   setPassword(e.target.value)
                   if (localPasswordError) setLocalPasswordError(null)
                 }}
-                placeholder={t('leave_blank_keep_current', 'Leave blank to keep current password')}
+                placeholder="Leave blank to keep current password"
                 disabled={submitting}
                 className={passwordError ? 'border-red-500' : ''}
               />
@@ -354,7 +351,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
             <Form.Group>
               <Form.Label htmlFor="confirmPassword">
                 <i className="fas fa-key mr-2"></i>
-                {t('confirm_password', 'Confirm Password')}
+                Confirm Password
               </Form.Label>
               <Form.Control
                 id="confirmPassword"
@@ -364,7 +361,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                   setConfirmPassword(e.target.value)
                   if (localPasswordError) setLocalPasswordError(null)
                 }}
-                placeholder={t('re_enter_password', 'Re-enter new password')}
+                placeholder="Re-enter new password"
                 disabled={submitting}
                 className={passwordError ? 'border-red-500' : ''}
               />

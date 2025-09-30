@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import Button from '../../../shared/components/ui/Button'
 import Form from '../../../shared/components/ui/Form'
 import Modal from '../../../shared/components/ui/Modal'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 
 const StoreModal = ({
   isOpen,
@@ -12,8 +11,6 @@ const StoreModal = ({
   isLoading = false,
   error = null
 }) => {
-  const { languageCode } = useLanguage()
-  const { t } = useTranslation(languageCode, 'stores')
   const [formErrors, setFormErrors] = useState({})
   const [formData, setFormData] = useState({
     name: '',
@@ -80,27 +77,27 @@ const StoreModal = ({
     const errors = {}
 
     if (!formData.name.trim()) {
-      errors.name = t('storeNameRequired')
+      errors.name = 'Store name is required'
     } else if (formData.name.length < 2) {
-      errors.name = t('storeNameMinLength')
+      errors.name = 'Store name must be at least 3 characters'
     }
 
     if (!formData.slug.trim()) {
-      errors.slug = t('storeSlugRequired')
+      errors.slug = 'Store slug is required'
     } else if (!/^[a-z0-9-]+$/.test(formData.slug)) {
-      errors.slug = t('storeSlugPattern')
+      errors.slug = 'Store slug must contain only lowercase letters, numbers, and hyphens'
     }
 
     if (formData.logoUrl && !/^https?:\/\/.+/.test(formData.logoUrl)) {
-      errors.logoUrl = t('logoUrlPattern')
+      errors.logoUrl = 'Please enter a valid URL'
     }
 
     if (formData.bannerUrl && !/^https?:\/\/.+/.test(formData.bannerUrl)) {
-      errors.bannerUrl = t('bannerUrlPattern')
+      errors.bannerUrl = 'Please enter a valid URL'
     }
 
     if (formData.commissionRate < 0 || formData.commissionRate > 100) {
-      errors.commissionRate = t('commissionRateMin')
+      errors.commissionRate = 'Commission rate must be at least 0'
     }
 
     setFormErrors(errors)
@@ -122,7 +119,7 @@ const StoreModal = ({
       <Modal.Header onClose={onClose}>
         <div className="flex items-center">
           <i className={`fas ${isEditing ? 'fa-edit' : 'fa-plus'} mr-3 text-blue-600`}></i>
-          {store ? t('editStore', 'Edit Store') : t('createStore', 'Create Store')}
+          {store ? 'Edit Store' : 'Create Store'}
         </div>
       </Modal.Header>
 
@@ -162,7 +159,7 @@ const StoreModal = ({
           {/* Store Name */}
           <Form.Group>
             <Form.Label htmlFor="name" required>
-              {t('storeName')}
+              Store Name
             </Form.Label>
             <Form.Control
               type="text"
@@ -170,7 +167,7 @@ const StoreModal = ({
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              placeholder={t('storeNamePlaceholder')}
+              placeholder="Enter store name"
               className={formErrors.name ? 'border-red-500' : ''}
             />
             {formErrors.name && (
@@ -181,7 +178,7 @@ const StoreModal = ({
           {/* Store Slug */}
           <Form.Group>
             <Form.Label htmlFor="slug" required>
-              {t('storeSlug')}
+              Store Slug
             </Form.Label>
             <Form.Control
               type="text"
@@ -189,10 +186,10 @@ const StoreModal = ({
               name="slug"
               value={formData.slug}
               onChange={handleInputChange}
-              placeholder={t('storeSlugPlaceholder')}
+              placeholder="Enter store slug"
               className={formErrors.slug ? 'border-red-500' : ''}
             />
-            <Form.Help>{t('storeSlugHelp')}</Form.Help>
+            <Form.Help>URL-friendly identifier for the store</Form.Help>
             {formErrors.slug && (
               <Form.Error>{formErrors.slug}</Form.Error>
             )}
@@ -201,14 +198,14 @@ const StoreModal = ({
           {/* Description */}
           <Form.Group>
             <Form.Label htmlFor="description">
-              {t('description')}
+              Description
             </Form.Label>
             <Form.Textarea
               id="description"
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              placeholder={t('descriptionPlaceholder')}
+              placeholder="Enter store description"
               rows={3}
             />
           </Form.Group>
@@ -216,7 +213,7 @@ const StoreModal = ({
           {/* Logo URL */}
           <Form.Group>
             <Form.Label htmlFor="logoUrl">
-              {t('logoUrl')}
+              Logo URL
             </Form.Label>
             <Form.Control
               type="url"
@@ -224,7 +221,7 @@ const StoreModal = ({
               name="logoUrl"
               value={formData.logoUrl}
               onChange={handleInputChange}
-              placeholder={t('logoUrlPlaceholder')}
+              placeholder="Enter logo URL"
               className={formErrors.logoUrl ? 'border-red-500' : ''}
             />
             {formErrors.logoUrl && (
@@ -235,7 +232,7 @@ const StoreModal = ({
           {/* Banner URL */}
           <Form.Group>
             <Form.Label htmlFor="bannerUrl">
-              {t('bannerUrl')}
+              Banner URL
             </Form.Label>
             <Form.Control
               type="url"
@@ -243,7 +240,7 @@ const StoreModal = ({
               name="bannerUrl"
               value={formData.bannerUrl}
               onChange={handleInputChange}
-              placeholder={t('bannerUrlPlaceholder')}
+              placeholder="Enter banner URL"
               className={formErrors.bannerUrl ? 'border-red-500' : ''}
             />
             {formErrors.bannerUrl && (
@@ -254,7 +251,7 @@ const StoreModal = ({
           {/* Commission Rate */}
           <Form.Group>
             <Form.Label htmlFor="commissionRate" required>
-              {t('commissionRate')}
+              Commission Rate
             </Form.Label>
             <Form.Control
               type="number"
@@ -289,7 +286,7 @@ const StoreModal = ({
               disabled={isLoading}
             >
               <i className="fas fa-times mr-1"></i>
-              {t('cancel', 'Cancel')}
+              Cancel
             </Button>
             <Button
               variant={isEditing ? 'warning' : 'success'}
@@ -300,12 +297,12 @@ const StoreModal = ({
               {isLoading ? (
                 <>
                   <i className="fas fa-spinner fa-spin mr-1"></i>
-                  {isEditing ? t('updating', 'Updating...') : t('creating', 'Creating...')}
+                  {isEditing ? 'Updating...' : 'Creating...'}
                 </>
               ) : (
                 <>
                   <i className={`fas ${isEditing ? 'fa-save' : 'fa-plus'} mr-1`}></i>
-                  {isEditing ? t('updateStore', 'Update Store') : t('createStore', 'Create Store')}
+                  {isEditing ? 'Update Store' : 'Create Store'}
                 </>
               )}
             </Button>

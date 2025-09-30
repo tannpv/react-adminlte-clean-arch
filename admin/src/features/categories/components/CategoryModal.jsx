@@ -1,14 +1,11 @@
 import React from 'react'
 import Button from '../../../shared/components/ui/Button'
 import Modal from '../../../shared/components/ui/Modal'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { CategoryForm } from './CategoryForm'
 
 export function CategoryModal({ show, title, initialCategory, onClose, onSubmit, errors, submitting, categories = [], tree = [], hierarchy = [] }) {
   const formId = 'category-modal-form'
   const isEditing = !!initialCategory?.id
-  const { languageCode } = useLanguage()
-  const { t } = useTranslation(languageCode, 'categories')
 
   return (
     <Modal show={show} onClose={onClose} className="max-w-2xl">
@@ -25,9 +22,9 @@ export function CategoryModal({ show, title, initialCategory, onClose, onSubmit,
             <div className="flex items-start">
               <i className="fas fa-info-circle text-blue-600 mr-2 mt-0.5"></i>
               <div>
-                <strong className="text-blue-800">{t('category_management', 'Category Management')}:</strong>
+                <strong className="text-blue-800">Category Management:</strong>
                 <span className="text-blue-700 ml-1">
-                  {t('category_management_description', 'Create or edit product categories to organize your inventory. Categories help customers find products more easily.')}
+                  Create or edit product categories to organize your inventory. Categories help customers find products more easily.
                 </span>
               </div>
             </div>

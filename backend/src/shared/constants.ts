@@ -70,15 +70,6 @@ export const DEFAULT_USER_PERMISSIONS: Permission[] = [
   "attribute-values:read",
   "attribute-sets:read",
   "storage:read",
-  "translations:read",
-];
-
-export const DEFAULT_TRANSLATOR_PERMISSIONS: Permission[] = [
-  "translations:read",
-  "translations:create",
-  "translations:update",
-  "translations:delete",
-  "translations:manage",
 ];
 
 export const DEFAULT_SELLER_PERMISSIONS: Permission[] = [

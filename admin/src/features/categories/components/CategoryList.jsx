@@ -1,34 +1,31 @@
 import React from 'react'
 import Button from '../../../shared/components/ui/Button'
 import Table from '../../../shared/components/ui/Table'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 
 export function CategoryList({ categories, onEdit, onDelete, canEdit = true, canDelete = true }) {
-  const { languageCode } = useLanguage()
-  const { t } = useTranslation(languageCode, 'categories')
   return (
     <>
       <Table hover darkHeader>
         <Table.Header>
           <Table.HeaderCell>
             <i className="fas fa-hashtag mr-2"></i>
-            {t('id', 'ID')}
+            ID
           </Table.HeaderCell>
           <Table.HeaderCell>
             <i className="fas fa-tag mr-2"></i>
-            {t('category_name', 'Category Name')}
+            Category Name
           </Table.HeaderCell>
           <Table.HeaderCell>
             <i className="fas fa-sitemap mr-2"></i>
-            {t('parent_category', 'Parent Category')}
+            Parent Category
           </Table.HeaderCell>
           <Table.HeaderCell>
             <i className="fas fa-layer-group mr-2"></i>
-            {t('hierarchy', 'Hierarchy')}
+            Hierarchy
           </Table.HeaderCell>
           <Table.HeaderCell className="text-center">
             <i className="fas fa-cogs mr-2"></i>
-            {t('actions', 'Actions')}
+            Actions
           </Table.HeaderCell>
         </Table.Header>
         <Table.Body>
@@ -50,12 +47,12 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
                       {isRootCategory && (
                         <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                           <i className="fas fa-folder mr-1"></i>
-                          {t('root', 'Root')}
+                          Root
                         </span>
                       )}
                     </div>
                     <span className="text-xs text-gray-400 mt-1">
-                      {isRootCategory ? t('top_level_category', 'Top-level category') : t('subcategory_level', 'Subcategory (Level {{depth}})', { depth })}
+                      {isRootCategory ? 'Top-level category' : `Subcategory (Level ${depth})`}
                     </span>
                   </div>
                 </Table.Cell>
@@ -69,7 +66,7 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
                     ) : (
                       <>
                         <i className="fas fa-minus mr-2 text-gray-400"></i>
-                        <span className="text-gray-500">{t('no_parent', 'No parent')}</span>
+                        <span className="text-gray-500">No parent</span>
                       </>
                     )}
                   </div>
@@ -85,7 +82,7 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
                     )}
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                       <i className="fas fa-layer-group mr-1"></i>
-                      {t('level', 'Level')} {depth}
+                      Level {depth}
                     </span>
                   </div>
                 </Table.Cell>
@@ -96,20 +93,20 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
                       size="sm"
                       onClick={() => { if (canEdit) onEdit(category) }}
                       disabled={!canEdit}
-                      title={t('edit_category', 'Edit category')}
+                      title="Edit category"
                     >
                       <i className="fas fa-edit mr-1"></i>
-                      {t('edit', 'Edit')}
+                      Edit
                     </Button>
                     <Button
                       variant="danger"
                       size="sm"
                       onClick={() => { if (canDelete) onDelete(category.id) }}
                       disabled={!canDelete}
-                      title={t('delete_category', 'Delete category')}
+                      title="Delete category"
                     >
                       <i className="fas fa-trash mr-1"></i>
-                      {t('delete', 'Delete')}
+                      Delete
                     </Button>
                   </div>
                 </Table.Cell>
@@ -122,9 +119,9 @@ export function CategoryList({ categories, onEdit, onDelete, canEdit = true, can
       {categories.length === 0 && (
         <div className="text-center py-12">
           <i className="fas fa-tags text-4xl text-gray-400 mb-4"></i>
-          <h4 className="text-lg font-medium text-gray-900 mb-2">{t('no_categories_found', 'No Categories Found')}</h4>
+          <h4 className="text-lg font-medium text-gray-900 mb-2">No Categories Found</h4>
           <p className="text-gray-600">
-            {t('get_started_categories', 'Get started by creating your first product category to organize your inventory.')}
+            Get started by creating your first product category to organize your inventory.
           </p>
         </div>
       )}

@@ -1,43 +1,40 @@
 import React from 'react'
 import Button from '../../../shared/components/ui/Button'
 import Table from '../../../shared/components/ui/Table'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import { getUserDisplayName } from '../../../shared/lib/userDisplayName'
 
 export function UserList({ users, onEdit, onDelete, rolesById }) {
-  const { languageCode } = useLanguage()
-  const { t } = useTranslation(languageCode, 'users')
 
   return (
     <Table hover darkHeader>
       <Table.Header>
         <Table.HeaderCell>
           <i className="fas fa-hashtag mr-2"></i>
-          {t('id', 'ID')}
+          ID
         </Table.HeaderCell>
         <Table.HeaderCell>
           <i className="fas fa-user-circle mr-2"></i>
-          {t('avatar', 'Avatar')}
+          Avatar
         </Table.HeaderCell>
         <Table.HeaderCell>
           <i className="fas fa-user mr-2"></i>
-          {t('name', 'Name')}
+          Name
         </Table.HeaderCell>
         <Table.HeaderCell>
           <i className="fas fa-envelope mr-2"></i>
-          {t('email', 'Email')}
+          Email
         </Table.HeaderCell>
         <Table.HeaderCell>
           <i className="fas fa-shield-alt mr-2"></i>
-          {t('roles', 'Roles')}
+          Roles
         </Table.HeaderCell>
         <Table.HeaderCell>
           <i className="fas fa-info-circle mr-2"></i>
-          {t('status', 'Status')}
+          Status
         </Table.HeaderCell>
         <Table.HeaderCell className="text-center">
           <i className="fas fa-cogs mr-2"></i>
-          {t('actions', 'Actions')}
+          Actions
         </Table.HeaderCell>
       </Table.Header>
       <Table.Body>
@@ -79,12 +76,12 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
                     {isAdmin && (
                       <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                         <i className="fas fa-crown mr-1"></i>
-                        {t('admin', 'Admin')}
+                        Admin
                       </span>
                     )}
                   </div>
                   <span className="text-xs text-gray-400 mt-1">
-                    {hasProfile ? t('profile_complete', 'Profile Complete') : t('basic_info_only', 'Basic Info Only')}
+                    {hasProfile ? 'Profile Complete' : 'Basic Info Only'}
                   </span>
                 </div>
               </Table.Cell>
@@ -105,14 +102,14 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
                       ))}
                       {userRoles.length > 2 && (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                          +{userRoles.length - 2} {t('more', 'more')}
+                          +{userRoles.length - 2} more
                         </span>
                       )}
                     </>
                   ) : (
                     <span className="text-gray-500 text-sm">
                       <i className="fas fa-exclamation-triangle mr-1"></i>
-                      {t('no_roles', 'No roles')}
+                      No roles
                     </span>
                   )}
                 </div>
@@ -123,7 +120,7 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
                   : 'bg-red-100 text-red-800'
                   }`}>
                   <i className={`fas ${isActive ? 'fa-check-circle' : 'fa-times-circle'} mr-1`}></i>
-                  {isActive ? t('active', 'Active') : t('inactive', 'Inactive')}
+                  {isActive ? 'Active' : 'Inactive'}
                 </span>
               </Table.Cell>
               <Table.Cell className="whitespace-nowrap">
@@ -132,19 +129,19 @@ export function UserList({ users, onEdit, onDelete, rolesById }) {
                     variant="primary"
                     size="sm"
                     onClick={() => onEdit(user)}
-                    title={t('edit_user_information', 'Edit user information')}
+                    title="Edit user information"
                   >
                     <i className="fas fa-edit mr-1"></i>
-                    {t('edit', 'Edit')}
+                    Edit
                   </Button>
                   <Button
                     variant="danger"
                     size="sm"
                     onClick={() => onDelete(user.id)}
-                    title={t('delete_user', 'Delete user')}
+                    title="Delete user"
                   >
                     <i className="fas fa-trash mr-1"></i>
-                    {t('delete', 'Delete')}
+                    Delete
                   </Button>
                 </div>
               </Table.Cell>

@@ -21,6 +21,7 @@
     "stop:backend": "pkill -f 'ts-node-dev' && pkill -f 'node.*backend'",
     "stop:frontend": "pkill -f 'vite' && pkill -f 'node.*admin'",
     "restart": "npm run stop-all && sleep 2 && npm run start",
+    "dev:restart": "npm run stop-all && sleep 2 && npm run dev:all",
     "restart:backend": "npm run stop:backend && sleep 2 && npm run start:backend",
     "restart:frontend": "npm run stop:frontend && sleep 2 && npm run start:frontend"
   },

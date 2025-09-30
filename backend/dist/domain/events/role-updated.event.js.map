@@ -1,1 +1,0 @@
-{"version":3,"file":"role-updated.event.js","sourceRoot":"","sources":["../../../src/domain/events/role-updated.event.ts"],"names":[],"mappings":";;;AACA,iDAA4C;AAE5C,MAAa,gBAAiB,SAAQ,0BAAW;IAI/C,YAAqB,IAAU;QAC7B,KAAK,EAAE,CAAA;QADY,SAAI,GAAJ,IAAI,CAAM;QAFtB,SAAI,GAAG,gBAAgB,CAAC,SAAS,CAAA;IAI1C,CAAC;;AANH,4CAOC;AANiB,0BAAS,GAAG,cAAc,AAAjB,CAAiB"}

@@ -4,7 +4,6 @@ import { ConfirmModal } from '../../../shared/components/ConfirmModal'
 import Button from '../../../shared/components/ui/Button'
 import Card from '../../../shared/components/ui/Card'
 import { usePermissions } from '../../../shared/hooks/usePermissions'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 import StoreList from '../components/StoreList'
 import StoreModal from '../components/StoreModal'
 import { useStores } from '../hooks/useStores'
@@ -17,8 +16,6 @@ const isValidationErrorMap = (err) => {
 export function StoresPage() {
   const queryClient = useQueryClient()
   const { can } = usePermissions()
-  const { languageCode } = useLanguage()
-  const { t } = useTranslation(languageCode, 'stores')
 
   // State management
   const [modalOpen, setModalOpen] = useState(false)
@@ -143,10 +140,10 @@ export function StoresPage() {
         <Card>
           <div className="p-6 text-center">
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              {t('accessDenied')}
+              Access Denied
             </h2>
             <p className="text-gray-600">
-              {t('accessDeniedMessage')}
+              You do not have permission to access this page.
             </p>
           </div>
         </Card>
@@ -163,10 +160,10 @@ export function StoresPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center">
                 <i className="fas fa-store mr-3 text-blue-600"></i>
-                {t('stores', 'Stores')}
+                Stores
               </h1>
               <p className="mt-2 text-gray-600 max-w-2xl">
-                {t('storesDescription', 'Manage multi-seller stores, approve applications, and monitor store performance.')}
+                Manage multi-seller stores, approve applications, and monitor store performance.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -176,7 +173,7 @@ export function StoresPage() {
                   onClick={handleCreateStoreClick}
                 >
                   <i className="fas fa-plus mr-2"></i>
-                  {t('createStore', 'Add New Store')}
+                  Add New Store
                 </Button>
               )}
             </div>
@@ -189,8 +186,8 @@ export function StoresPage() {
             <Card.Body>
               <div className="text-center py-12">
                 <i className="fas fa-spinner fa-spin text-4xl text-gray-400 mb-4"></i>
-                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('loading_title', 'Loading Stores')}</h4>
-                <p className="text-gray-600">{t('loading_description', 'Please wait while we fetch your stores...')}</p>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">Loading Stores</h4>
+                <p className="text-gray-600">Please wait while we fetch your stores...</p>
               </div>
             </Card.Body>
           </Card>
@@ -202,16 +199,16 @@ export function StoresPage() {
             <Card.Body>
               <div className="text-center py-12">
                 <i className="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
-                <h4 className="text-lg font-medium text-gray-900 mb-2">{t('failed_to_load_stores', 'Failed to Load Stores')}</h4>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">Failed to Load Stores</h4>
                 <p className="text-gray-600 mb-6">
-                  {error?.message || t('unexpected_error_loading_stores', 'An unexpected error occurred while loading stores.')}
+                  {error?.message || 'An unexpected error occurred while loading stores.'}
                 </p>
                 <Button
                   variant="outline-primary"
                   onClick={() => window.location.reload()}
                 >
                   <i className="fas fa-redo mr-2"></i>
-                  {t('try_again', 'Try Again')}
+                  Try Again
                 </Button>
               </div>
             </Card.Body>
@@ -230,7 +227,7 @@ export function StoresPage() {
                   </div>
                   <div className="ml-4">
                     <div className="text-3xl font-bold">{totalStores}</div>
-                    <div className="text-blue-100">{t('totalStores', 'Total Stores')}</div>
+                    <div className="text-blue-100">Total Stores</div>
                   </div>
                 </div>
               </div>
@@ -242,7 +239,7 @@ export function StoresPage() {
                   </div>
                   <div className="ml-4">
                     <div className="text-3xl font-bold">{pendingStores}</div>
-                    <div className="text-yellow-100">{t('pendingStores', 'Pending')}</div>
+                    <div className="text-yellow-100">Pending</div>
                   </div>
                 </div>
               </div>
@@ -254,7 +251,7 @@ export function StoresPage() {
                   </div>
                   <div className="ml-4">
                     <div className="text-3xl font-bold">{approvedStores}</div>
-                    <div className="text-green-100">{t('approvedStores', 'Approved')}</div>
+                    <div className="text-green-100">Approved</div>
                   </div>
                 </div>
               </div>
@@ -266,7 +263,7 @@ export function StoresPage() {
                   </div>
                   <div className="ml-4">
                     <div className="text-3xl font-bold">{suspendedStores}</div>
-                    <div className="text-red-100">{t('suspendedStores', 'Suspended')}</div>
+                    <div className="text-red-100">Suspended</div>
                   </div>
                 </div>
               </div>
@@ -281,7 +278,7 @@ export function StoresPage() {
                 <input
                   type="search"
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder={t('searchStores', 'Search stores by name...')}
+                  placeholder="Search stores by name..."
                   value={searchTerm}
                   onChange={handleSearchChange}
                 />
@@ -295,11 +292,11 @@ export function StoresPage() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                       <i className="fas fa-list mr-2 text-blue-600"></i>
-                      {t('store_management', 'Store Management')}
+                      Store Management
                     </h3>
                     <p className="mt-1 text-sm text-gray-600">
-                      {t('store_management_description', 'Manage your multi-seller stores, approve applications, and monitor performance.')}
-                      {searchTerm && ` ${t('showing_results_for', 'Showing results for')} "${searchTerm}"`}
+                      Manage your multi-seller stores, approve applications, and monitor performance.
+                      {searchTerm && ` Showing results for "${searchTerm}"`}
                     </p>
                   </div>
                 </div>
@@ -340,10 +337,10 @@ export function StoresPage() {
           setTargetStore(null)
         }}
         onConfirm={handleConfirmDelete}
-        title={t('deleteStore')}
-        message={t('deleteStoreConfirm', { name: targetStore?.name })}
-        confirmText={t('delete')}
-        cancelText={t('cancel')}
+        title='Delete Store'
+        message={`Are you sure you want to delete ${targetStore?.name}?`}
+        confirmText='Delete'
+        cancelText='Cancel'
         variant="danger"
         isLoading={deleteStoreMutation.isPending}
       />

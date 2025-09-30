@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Table = ({ children, className = '', ...props }) => {
+const Table = ({ children, className = '', hover, darkHeader, ...props }) => {
     return (
         <div className="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
             <table className={`min-w-full divide-y divide-gray-300 ${className}`} {...props}>

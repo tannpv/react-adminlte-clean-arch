@@ -1,51 +1,41 @@
 import React from 'react'
 import Button from '../../../shared/components/ui/Button'
 import Table from '../../../shared/components/ui/Table'
-import { useLanguage, useTranslation } from '../../../shared/hooks/useTranslation'
 
 const formatPrice = (priceCents, currency = 'USD') => {
   const value = Number(priceCents || 0) / 100
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(value)
+  const validCurrency = currency && currency.trim() !== '' ? currency : 'USD'
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: validCurrency }).format(value)
 }
 
 export function ProductList({ products, onEdit, onDelete }) {
-  const { languageCode } = useLanguage()
-  const { t } = useTranslation(languageCode, 'products')
   return (
-    <>
+    <div className="overflow-x-auto">
       <Table hover darkHeader>
         <Table.Header>
           <Table.HeaderCell>
             <i className="fas fa-hashtag mr-2"></i>
-            {t('id', 'ID')}
+            ID
           </Table.HeaderCell>
           <Table.HeaderCell>
             <i className="fas fa-barcode mr-2"></i>
-            {t('sku', 'SKU')}
+            SKU
           </Table.HeaderCell>
           <Table.HeaderCell>
             <i className="fas fa-box mr-2"></i>
-            {t('product_name', 'Product Name')}
+            Product Name
           </Table.HeaderCell>
           <Table.HeaderCell>
             <i className="fas fa-tag mr-2"></i>
-            {t('type', 'Type')}
+            Type
           </Table.HeaderCell>
           <Table.HeaderCell>
-            <i className="fas fa-info-circle mr-2"></i>
-            {t('status', 'Status')}
-          </Table.HeaderCell>
-          <Table.HeaderCell>
-            <i className="fas fa-tags mr-2"></i>
-            {t('categories', 'Categories')}
-          </Table.HeaderCell>
-          <Table.HeaderCell className="text-right">
             <i className="fas fa-dollar-sign mr-2"></i>
-            {t('price', 'Price')}
+            Price
           </Table.HeaderCell>
           <Table.HeaderCell className="text-center">
             <i className="fas fa-cogs mr-2"></i>
-            {t('actions', 'Actions')}
+            Actions
           </Table.HeaderCell>
         </Table.Header>
         <Table.Body>
@@ -67,12 +57,14 @@ export function ProductList({ products, onEdit, onDelete }) {
                   </code>
                 </Table.Cell>
                 <Table.Cell>
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-gray-900 text-base">{product.name}</span>
+                  <div className="max-w-xs">
+                    <span className="font-semibold text-gray-900 text-base block truncate" title={product.name}>
+                      {product.name}
+                    </span>
                     {product.description && (
-                      <span className="text-xs text-gray-400 mt-1">
-                        {product.description.length > 50
-                          ? `${product.description.substring(0, 50)}...`
+                      <span className="text-xs text-gray-400 mt-1 block truncate" title={product.description}>
+                        {product.description.length > 30
+                          ? `${product.description.substring(0, 30)}...`
                           : product.description
                         }
                       </span>
@@ -84,58 +76,25 @@ export function ProductList({ products, onEdit, onDelete }) {
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isVariable ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
                       }`}>
                       <i className={`fas ${isVariable ? 'fa-cogs' : 'fa-box'} mr-1`}></i>
-                      {product.type || 'simple'}
+                      {product.type}
                     </span>
                     {isVariable && variantCount > 0 && (
                       <span className="text-xs text-gray-500 mt-1">
-                        {t('variant_count', '{{count}} variant', { count: variantCount })}
+                        {variantCount} variant{variantCount !== 1 ? 's' : ''}
                       </span>
                     )}
                   </div>
                 </Table.Cell>
                 <Table.Cell>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.status === 'published' ? 'bg-green-100 text-green-800' :
-                    product.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                    <i className={`fas ${product.status === 'published' ? 'fa-eye' :
-                      product.status === 'draft' ? 'fa-edit' :
-                        'fa-archive'
-                      } mr-1`}></i>
-                    {product.status}
-                  </span>
-                </Table.Cell>
-                <Table.Cell>
-                  <div className="flex flex-wrap gap-1">
-                    {hasCategories ? (
-                      <>
-                        {product.categories.slice(0, 2).map((category) => (
-                          <span key={`${product.id}-${category.id}`} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {category.name}
-                          </span>
-                        ))}
-                        {product.categories.length > 2 && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                            +{product.categories.length - 2} {t('more', 'more')}
-                          </span>
-                        )}
-                      </>
-                    ) : (
-                      <span className="text-gray-500 text-sm">
-                        <i className="fas fa-minus mr-1"></i>
-                        {t('no_categories', 'No categories')}
-                      </span>
-                    )}
-                  </div>
-                </Table.Cell>
-                <Table.Cell className="text-right">
-                  <div className="flex flex-col items-end">
-                    <span className="font-medium text-gray-900">
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-gray-900">
                       {formatPrice(product.priceCents, product.currency)}
                     </span>
-                    <span className="text-xs text-gray-500">
-                      {product.currency || 'USD'}
-                    </span>
+                    {product.compareAtPriceCents && product.compareAtPriceCents > product.priceCents && (
+                      <span className="text-xs text-gray-500 line-through">
+                        {formatPrice(product.compareAtPriceCents, product.currency)}
+                      </span>
+                    )}
                   </div>
                 </Table.Cell>
                 <Table.Cell className="whitespace-nowrap">
@@ -144,38 +103,39 @@ export function ProductList({ products, onEdit, onDelete }) {
                       variant="primary"
                       size="sm"
                       onClick={() => onEdit(product)}
-                      title={t('edit_product', 'Edit product')}
+                      title="Edit product"
                     >
                       <i className="fas fa-edit mr-1"></i>
-                      {t('edit', 'Edit')}
+                      Edit
                     </Button>
                     <Button
                       variant="danger"
                       size="sm"
-                      onClick={() => onDelete(product)}
-                      title={t('delete_product', 'Delete product')}
+                      onClick={() => onDelete(product.id)}
+                      title="Delete product"
                     >
                       <i className="fas fa-trash mr-1"></i>
-                      {t('delete', 'Delete')}
+                      Delete
                     </Button>
                   </div>
                 </Table.Cell>
               </Table.Row>
             )
           })}
+          {products.length === 0 && (
+            <tr>
+              <td colSpan="6" className="text-center py-12">
+                <i className="fas fa-box text-4xl text-gray-400 mb-4"></i>
+                <h4 className="text-lg font-medium text-gray-900 mb-2">No Products Found</h4>
+                <p className="text-gray-600">
+                  Get started by adding your first product to build your catalog.
+                </p>
+              </td>
+            </tr>
+          )}
         </Table.Body>
       </Table>
-
-      {products.length === 0 && (
-        <div className="text-center py-12">
-          <i className="fas fa-box text-4xl text-gray-400 mb-4"></i>
-          <h4 className="text-lg font-medium text-gray-900 mb-2">{t('no_products_found', 'No Products Found')}</h4>
-          <p className="text-gray-600">
-            {t('get_started_products', 'Get started by adding your first product to build your catalog.')}
-          </p>
-        </div>
-      )}
-    </>
+    </div>
   )
 }
 
