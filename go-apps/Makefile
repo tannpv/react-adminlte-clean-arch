@@ -215,6 +215,28 @@ routes:
 	@echo "Carriers API (v1) - Coming Soon:"
 	@echo "  GET    /api/v1/carriers"
 
+# Show registered modules
+.PHONY: modules
+modules:
+	@echo "Registered Modules:"
+	@echo "=================="
+	@echo "1. Users Module:"
+	@echo "   - User management"
+	@echo "   - Role management"
+	@echo "   - Authentication (planned)"
+	@echo ""
+	@echo "2. Carrier Module:"
+	@echo "   - Carrier management (planned)"
+	@echo "   - Shipping operations (planned)"
+	@echo ""
+	@echo "3. Customer Module (planned):"
+	@echo "   - Customer management"
+	@echo "   - Customer profiles"
+	@echo ""
+	@echo "4. Pricing Module (planned):"
+	@echo "   - Pricing calculations"
+	@echo "   - Rate management"
+
 # Generate API documentation
 .PHONY: docs
 docs:
@@ -274,6 +296,7 @@ help:
 	@echo "  setup          - Setup development environment"
 	@echo "  install-tools  - Install development tools"
 	@echo "  routes         - Show all available routes"
+	@echo "  modules        - Show all registered modules"
 	@echo "  docs           - Generate API documentation"
 	@echo "  health         - Health check"
 	@echo "  load-test      - Load test"

@@ -6,6 +6,7 @@ import (
 
 	"go-apps/internal/middleware"
 	"go-apps/internal/modules/carrier/router"
+	"go-apps/internal/modules/users"
 	"go-apps/internal/modules/users/handler"
 	usersRouter "go-apps/internal/modules/users/router"
 
@@ -22,10 +23,21 @@ type Router struct {
 
 // NewRouter creates a new router instance
 func NewRouter(
-	userHandler *handler.UserHandler,
-	roleHandler *handler.RoleHandler,
+	userHandlers []*users.UserHandlerWrapper,
+	roleHandlers []*users.RoleHandlerWrapper,
 	logger *logrus.Logger,
 ) *Router {
+	// Get the first user and role handlers (assuming one of each for now)
+	var userHandler *handler.UserHandler
+	var roleHandler *handler.RoleHandler
+	
+	if len(userHandlers) > 0 {
+		userHandler = userHandlers[0].UserHandler
+	}
+	if len(roleHandlers) > 0 {
+		roleHandler = roleHandlers[0].RoleHandler
+	}
+
 	return &Router{
 		usersRouter:   usersRouter.NewUsersRouter(userHandler, roleHandler),
 		carrierRouter: router.NewCarrierRouter(),

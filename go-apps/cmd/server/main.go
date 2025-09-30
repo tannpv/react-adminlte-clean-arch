@@ -11,13 +11,12 @@ import (
 	"time"
 
 	"go-apps/internal/config"
+	"go-apps/internal/container"
 	"go-apps/internal/infrastructure/database"
 	"go-apps/internal/infrastructure/logger"
-	"go-apps/internal/modules/users/handler"
+	"go-apps/internal/modules/carrier"
+	"go-apps/internal/modules/users"
 	"go-apps/internal/modules/users/model"
-	"go-apps/internal/modules/users/repository"
-	"go-apps/internal/modules/users/service"
-	"go-apps/internal/router"
 
 	"github.com/joho/godotenv"
 )
@@ -49,21 +48,25 @@ func main() {
 		logger.Fatal("Failed to run migrations", "error", err)
 	}
 
-	// Initialize repositories
-	userRepo := repository.NewUserRepository(db)
-	roleRepo := repository.NewRoleRepository(db)
+	// Initialize application container
+	appContainer := container.NewContainer(logger)
 
-	// Initialize services
-	userService := service.NewUserService(userRepo, roleRepo, logger)
-	roleService := service.NewRoleService(roleRepo, logger)
+	// Register modules
+	appContainer.RegisterModule(users.NewUsersModule())
+	appContainer.RegisterModule(carrier.NewCarrierModule())
 
-	// Initialize handlers
-	userHandler := handler.NewUserHandler(userService, logger)
-	roleHandler := handler.NewRoleHandler(roleService, logger)
+	// Initialize all modules
+	if err := appContainer.InitializeModules(db); err != nil {
+		logger.Fatal("Failed to initialize modules", "error", err)
+	}
 
-	// Initialize router
-	appRouter := router.NewRouter(userHandler, roleHandler, logger)
-	ginRouter := appRouter.SetupRoutes()
+	// Setup routes
+	ginRouter := appContainer.SetupRoutes()
+
+	// Perform health checks
+	if err := appContainer.HealthCheck(); err != nil {
+		logger.Fatal("Health check failed", "error", err)
+	}
 
 	// Create server
 	server := &http.Server{
@@ -99,7 +102,6 @@ func main() {
 
 	logger.Info("Server exited")
 }
-
 
 // runMigrations runs database migrations
 func runMigrations(db *database.Database, logger *logger.Logger) error {
