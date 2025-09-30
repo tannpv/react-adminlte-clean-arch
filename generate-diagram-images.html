@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Diagram Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .diagram-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .diagram-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .mermaid {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .export-instructions {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .export-instructions h3 {
+            margin-top: 0;
+            color: #2e7d32;
+        }
+        .export-instructions ol {
+            margin: 10px 0;
+        }
+        .export-instructions li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ Architecture Diagram Generator</h1>
+        <p>This page renders all the Mermaid diagrams from your architecture. You can take screenshots or use browser tools to export them as images.</p>
+        
+        <div class="export-instructions">
+            <h3>📸 How to Export Images:</h3>
+            <ol>
+                <li><strong>Right-click</strong> on any diagram below</li>
+                <li><strong>Select "Save image as..."</strong> or "Copy image"</li>
+                <li><strong>Or use browser dev tools</strong> to export as PNG/SVG</li>
+                <li><strong>Or print to PDF</strong> and convert to images</li>
+            </ol>
+        </div>
+
+        <div class="diagram-section">
+            <div class="diagram-title">🏗️ High-Level Architecture</div>
+            <div class="mermaid">
+graph TB
+    subgraph "🌐 Client Layer"
+        WEB[Web Frontend]
+        MOBILE[Mobile App]
+        API_CLIENT[API Client]
+    end
+    
+    subgraph "🎯 API Gateway Layer"
+        GATEWAY[API Gateway<br/>Port: 3001]
+    end
+    
+    subgraph "🏛️ Application Layer"
+        subgraph "🚛 Carrier Module"
+            C_CTRL[Carrier Controller]
+            C_SVC[Carrier Service]
+            C_ENTITY[Carrier Entity]
+        end
+        
+        subgraph "👥 Customer Module"
+            CU_CTRL[Customer Controller]
+            CU_SVC[Customer Service]
+            CU_ENTITY[Customer Entity]
+        end
+        
+        subgraph "💰 Pricing Module"
+            P_CTRL[Pricing Controller<br/>(Future)]
+            P_SVC[Pricing Service<br/>(Future)]
+            P_ENTITY[Pricing Entity<br/>(Future)]
+        end
+    end
+    
+    subgraph "🔌 Infrastructure Layer"
+        DB[(MySQL Database)]
+        CACHE[(Redis Cache)]
+        LOGS[Logging System]
+        MSG[Message Queue<br/>(Future)]
+    end
+    
+    subgraph "🔗 Shared Components"
+        KERNEL[Shared Kernel<br/>BaseEntity, Result, Events]
+        DTO[Common DTOs<br/>Pagination, Response]
+        UTILS[Utility Functions]
+    end
+    
+    %% Client connections
+    WEB --> GATEWAY
+    MOBILE --> GATEWAY
+    API_CLIENT --> GATEWAY
+    
+    %% API Gateway to Controllers
+    GATEWAY --> C_CTRL
+    GATEWAY --> CU_CTRL
+    GATEWAY --> P_CTRL
+    
+    %% Controller to Service
+    C_CTRL --> C_SVC
+    CU_CTRL --> CU_SVC
+    P_CTRL --> P_SVC
+    
+    %% Service to Entity
+    C_SVC --> C_ENTITY
+    CU_SVC --> CU_ENTITY
+    P_SVC --> P_ENTITY
+    
+    %% Infrastructure connections
+    C_ENTITY --> DB
+    CU_ENTITY --> DB
+    P_ENTITY --> DB
+    
+    C_SVC --> CACHE
+    CU_SVC --> CACHE
+    P_SVC --> CACHE
+    
+    C_SVC --> LOGS
+    CU_SVC --> LOGS
+    P_SVC --> LOGS
+    
+    %% Shared components
+    C_ENTITY -.-> KERNEL
+    CU_ENTITY -.-> KERNEL
+    P_ENTITY -.-> KERNEL
+    
+    C_CTRL -.-> DTO
+    CU_CTRL -.-> DTO
+    P_CTRL -.-> DTO
+    
+    C_SVC -.-> UTILS
+    CU_SVC -.-> UTILS
+    P_SVC -.-> UTILS
+    
+    %% Styling
+    classDef clientClass fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef apiClass fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef serviceClass fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef entityClass fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef infraClass fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef sharedClass fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    
+    class WEB,MOBILE,API_CLIENT clientClass
+    class GATEWAY,C_CTRL,CU_CTRL,P_CTRL apiClass
+    class C_SVC,CU_SVC,P_SVC serviceClass
+    class C_ENTITY,CU_ENTITY,P_ENTITY entityClass
+    class DB,CACHE,LOGS,MSG infraClass
+    class KERNEL,DTO,UTILS sharedClass
+            </div>
+        </div>
+
+        <div class="diagram-section">
+            <div class="diagram-title">🎯 Clean Architecture Layers</div>
+            <div class="mermaid">
+graph TB
+    subgraph "🎯 Clean Architecture Layers"
+        subgraph "🌐 API Layer"
+            CTRL[Controllers<br/>HTTP Handlers<br/>Request/Response]
+        end
+        
+        subgraph "🔧 Application Layer"
+            SVC[Services<br/>Use Cases<br/>Business Logic]
+            DTO[DTOs<br/>Data Transfer<br/>Validation]
+        end
+        
+        subgraph "🏛️ Domain Layer"
+            ENT[Entities<br/>Business Objects<br/>Domain Rules]
+            EVT[Events<br/>Domain Events<br/>Business Events]
+            REPO[Repositories<br/>Data Access<br/>Interfaces]
+        end
+        
+        subgraph "🔌 Infrastructure Layer"
+            DB_REPO[Database<br/>Repositories<br/>TypeORM]
+            CACHE_REPO[Cache<br/>Redis<br/>In-Memory]
+            EXT[External<br/>Services<br/>APIs]
+        end
+    end
+    
+    %% Dependencies (pointing inward)
+    CTRL --> SVC
+    SVC --> ENT
+    SVC --> EVT
+    SVC --> REPO
+    REPO --> DB_REPO
+    REPO --> CACHE_REPO
+    SVC --> EXT
+    
+    %% Styling
+    classDef apiLayer fill:#e3f2fd,stroke:#0277bd,stroke-width:3px
+    classDef appLayer fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
+    classDef domainLayer fill:#fff3e0,stroke:#f57c00,stroke-width:3px
+    classDef infraLayer fill:#fce4ec,stroke:#c2185b,stroke-width:3px
+    
+    class CTRL apiLayer
+    class SVC,DTO appLayer
+    class ENT,EVT,REPO domainLayer
+    class DB_REPO,CACHE_REPO,EXT infraLayer
+            </div>
+        </div>
+
+        <div class="diagram-section">
+            <div class="diagram-title">🔄 Data Flow Sequence</div>
+            <div class="mermaid">
+sequenceDiagram
+    participant Client
+    participant Controller
+    participant Service
+    participant Entity
+    participant Repository
+    participant Database
+    
+    Note over Client,Database: Request Flow
+    Client->>Controller: HTTP Request
+    Controller->>Service: Business Logic Call
+    Service->>Entity: Domain Validation
+    Entity->>Repository: Data Access
+    Repository->>Database: SQL Query
+    
+    Note over Client,Database: Response Flow
+    Database-->>Repository: Query Result
+    Repository-->>Entity: Domain Object
+    Entity-->>Service: Business Object
+    Service-->>Controller: Response DTO
+    Controller-->>Client: HTTP Response
+            </div>
+        </div>
+
+        <div class="diagram-section">
+            <div class="diagram-title">🚀 API Endpoints</div>
+            <div class="mermaid">
+graph LR
+    subgraph "🚛 Carrier Endpoints"
+        C1[POST /carriers]
+        C2[GET /carriers]
+        C3[GET /carriers/active]
+        C4[GET /carriers/:id]
+        C5[PATCH /carriers/:id]
+        C6[DELETE /carriers/:id]
+    end
+    
+    subgraph "👥 Customer Endpoints"
+        CU1[POST /customers]
+        CU2[GET /customers]
+        CU3[GET /customers/active]
+        CU4[GET /customers/email/:email]
+        CU5[GET /customers/:id]
+        CU6[PATCH /customers/:id]
+        CU7[DELETE /customers/:id]
+    end
+    
+    subgraph "💰 Pricing Endpoints"
+        P1[Future Sprint]
+    end
+    
+    %% Styling
+    classDef carrierClass fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef customerClass fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef pricingClass fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    
+    class C1,C2,C3,C4,C5,C6 carrierClass
+    class CU1,CU2,CU3,CU4,CU5,CU6,CU7 customerClass
+    class P1 pricingClass
+            </div>
+        </div>
+
+        <div class="export-instructions">
+            <h3>💡 Pro Tips for Better Images:</h3>
+            <ul>
+                <li><strong>Use browser zoom</strong> to make diagrams larger before screenshot</li>
+                <li><strong>Right-click → Inspect</strong> to get SVG code for vector images</li>
+                <li><strong>Print to PDF</strong> for high-quality vector graphics</li>
+                <li><strong>Use browser dev tools</strong> to export specific elements</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+</body>
+</html>
