@@ -9,6 +9,7 @@ import { ObservabilityModule } from './infrastructure/observability/observabilit
 import { CarrierModule } from './modules/carrier/carrier.module';
 import { CustomerModule } from './modules/customer/customer.module';
 import { PricingModule } from './modules/pricing/pricing.module';
+import { UsersModule } from './modules/users/users.module';
 
 // Shared modules
 import { SharedModule } from './shared/shared.module';
@@ -29,6 +30,7 @@ import { SharedModule } from './shared/shared.module';
     CarrierModule,
     CustomerModule,
     PricingModule,
+    UsersModule,
     
     // Shared
     SharedModule,
