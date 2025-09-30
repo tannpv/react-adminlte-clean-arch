@@ -79,7 +79,7 @@ graph TB
     end
     
     subgraph "🎯 API Gateway Layer"
-        GATEWAY[API Gateway<br/>Port: 3001]
+        GATEWAY["API Gateway - Port: 3001"]
     end
     
     subgraph "🏛️ Application Layer"
@@ -96,9 +96,9 @@ graph TB
         end
         
         subgraph "💰 Pricing Module"
-            P_CTRL[Pricing Controller<br/>(Future)]
-            P_SVC[Pricing Service<br/>(Future)]
-            P_ENTITY[Pricing Entity<br/>(Future)]
+            P_CTRL["Pricing Controller (Future)"]
+            P_SVC["Pricing Service (Future)"]
+            P_ENTITY["Pricing Entity (Future)"]
         end
     end
     
@@ -106,12 +106,12 @@ graph TB
         DB[(MySQL Database)]
         CACHE[(Redis Cache)]
         LOGS[Logging System]
-        MSG[Message Queue<br/>(Future)]
+        MSG["Message Queue (Future)"]
     end
     
     subgraph "🔗 Shared Components"
-        KERNEL[Shared Kernel<br/>BaseEntity, Result, Events]
-        DTO[Common DTOs<br/>Pagination, Response]
+        KERNEL["Shared Kernel - BaseEntity, Result, Events"]
+        DTO["Common DTOs - Pagination, Response"]
         UTILS[Utility Functions]
     end
     
@@ -184,24 +184,24 @@ graph TB
 graph TB
     subgraph "🎯 Clean Architecture Layers"
         subgraph "🌐 API Layer"
-            CTRL[Controllers<br/>HTTP Handlers<br/>Request/Response]
+            CTRL["Controllers - HTTP Handlers - Request/Response"]
         end
         
         subgraph "🔧 Application Layer"
-            SVC[Services<br/>Use Cases<br/>Business Logic]
-            DTO[DTOs<br/>Data Transfer<br/>Validation]
+            SVC["Services - Use Cases - Business Logic"]
+            DTO["DTOs - Data Transfer - Validation"]
         end
         
         subgraph "🏛️ Domain Layer"
-            ENT[Entities<br/>Business Objects<br/>Domain Rules]
-            EVT[Events<br/>Domain Events<br/>Business Events]
-            REPO[Repositories<br/>Data Access<br/>Interfaces]
+            ENT["Entities - Business Objects - Domain Rules"]
+            EVT["Events - Domain Events - Business Events"]
+            REPO["Repositories - Data Access - Interfaces"]
         end
         
         subgraph "🔌 Infrastructure Layer"
-            DB_REPO[Database<br/>Repositories<br/>TypeORM]
-            CACHE_REPO[Cache<br/>Redis<br/>In-Memory]
-            EXT[External<br/>Services<br/>APIs]
+            DB_REPO["Database - Repositories - TypeORM"]
+            CACHE_REPO["Cache - Redis - In-Memory"]
+            EXT["External - Services - APIs"]
         end
     end
     
