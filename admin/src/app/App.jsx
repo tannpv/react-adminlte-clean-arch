@@ -15,11 +15,11 @@ import { RolesPage } from '../features/roles/pages/RolesPage'
 import { StoresPage } from '../features/stores/pages/StoresPage'
 import TranslationsPage from '../features/translations/pages/TranslationsPage'
 import { UsersPage } from '../features/users/pages/UsersPage'
-import Sidebar from '../shared/components/layout/Sidebar'
-import FloatingToggle from '../shared/components/ui/FloatingToggle'
 import LanguageSwitcher from '../shared/components/LanguageSwitcher'
-import NavigationStatus from '../shared/components/ui/NavigationStatus'
+import Sidebar from '../shared/components/layout/Sidebar'
 import Translation from '../shared/components/Translation'
+import FloatingToggle from '../shared/components/ui/FloatingToggle'
+import NavigationStatus from '../shared/components/ui/NavigationStatus'
 import NavigationToggle from '../shared/components/ui/NavigationToggle'
 import { NavigationProvider } from '../shared/context/NavigationContext'
 import { queryClient } from '../shared/lib/queryClient'
@@ -74,10 +74,10 @@ function AppContent() {
                         <span className="text-sm text-gray-500">
                             <Translation k="header.welcome" fallback="Welcome" />, {currentUser?.name || 'Admin'}
                         </span>
-                        <LanguageSwitcher 
-                            variant="dropdown" 
-                            size="sm" 
-                            showFlags={true} 
+                        <LanguageSwitcher
+                            variant="dropdown"
+                            size="sm"
+                            showFlags={true}
                             showNames={true}
                             className="ml-2"
                         />

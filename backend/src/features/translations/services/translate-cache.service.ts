@@ -25,7 +25,7 @@ export class TranslateCacheService {
     return TranslateCacheService.instance;
   }
 
-  async get(key: string): Promise<string> {
+  async get(key: string, languageCode?: string): Promise<string> {
     try {
       const translateCacheDisable = await this.getSetting(
         "translate.cache.disable",
@@ -35,7 +35,7 @@ export class TranslateCacheService {
         return key;
       }
 
-      const langCode = await this.getLangCode();
+      const langCode = languageCode || await this.getLangCode();
       return this.dictionaryService.get(langCode, key);
     } catch (error) {
       this.logger.error(`Error getting translation for key: ${key}`, error);

@@ -70,21 +70,25 @@ export const useTranslation = () => {
 
     const t = useCallback(async (key) => {
         try {
-            // Try backend first
-            const response = await ApiClient.get(`/translations/translate/${encodeURIComponent(key)}`);
+            // Try backend first with language header
+            const response = await ApiClient.get(`/translations/translate/${encodeURIComponent(key)}`, {
+                headers: {
+                    'X-Language-Code': language
+                }
+            });
             return response.data.translation;
         } catch (error) {
             console.warn(`Backend translation failed for key: ${key}, trying local fallback`, error);
-
+            
             try {
                 // Fallback to local translations
                 const localTranslations = await loadLocalTranslations(language);
                 const translation = getNestedValue(localTranslations, key);
-
+                
                 if (translation) {
                     return translation;
                 }
-
+                
                 // If not found in current language, try English
                 if (language !== 'en') {
                     const englishTranslations = await loadLocalTranslations('en');
@@ -96,7 +100,7 @@ export const useTranslation = () => {
             } catch (localError) {
                 console.warn(`Local translation failed for key: ${key}`, localError);
             }
-
+            
             return key; // Final fallback to original key
         }
     }, [language]);

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   HttpException,
   HttpStatus,
   Param,
@@ -24,9 +25,15 @@ export class TranslationController {
   ) {}
 
   @Get("translate/:key")
-  async translate(@Param("key") key: string): Promise<{ translation: string }> {
+  async translate(
+    @Param("key") key: string,
+    @Headers("x-language-code") languageCode?: string
+  ): Promise<{ translation: string }> {
     try {
-      const translation = await this.translateCacheService.get(
+      // Use the language from header or default to 'en'
+      const langCode = languageCode || 'en';
+      const translation = await this.dictionaryService.get(
+        langCode,
         decodeURIComponent(key)
       );
       return { translation };
