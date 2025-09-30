@@ -1,0 +1,17 @@
+{
+  "nav": {
+    "admin_panel": "Admin Panel",
+    "admin_panel_version": "Admin Panel v1.0",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "roles": "Roles",
+    "categories": "Categories",
+    "products": "Products",
+    "attributes": "Attributes",
+    "attribute_values": "Attribute Values",
+    "attribute_sets": "Attribute Sets",
+    "stores": "Stores",
+    "orders": "Orders",
+    "translations": "Translations"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "nav": {
+    "admin_panel": "Panel de Administración",
+    "admin_panel_version": "Panel de Administración v1.0",
+    "dashboard": "Tablero",
+    "users": "Usuarios",
+    "roles": "Roles",
+    "categories": "Categorías",
+    "products": "Productos",
+    "attributes": "Atributos",
+    "attribute_values": "Valores de Atributos",
+    "attribute_sets": "Conjuntos de Atributos",
+    "stores": "Tiendas",
+    "orders": "Pedidos",
+    "translations": "Traducciones"
+  }
+}

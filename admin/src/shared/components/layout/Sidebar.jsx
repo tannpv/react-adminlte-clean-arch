@@ -1,7 +1,9 @@
 import React from 'react';
 import { useNavigation } from '../../hooks/useNavigation';
+import { useTranslation } from '../../hooks/useTranslation';
 import NavigationItem from '../ui/NavigationItem';
 import NavigationToggle from '../ui/NavigationToggle';
+import Translation from '../Translation';
 
 /**
  * Enhanced Sidebar Component
@@ -11,61 +13,73 @@ import NavigationToggle from '../ui/NavigationToggle';
  */
 export const Sidebar = ({ currentPage, onPageChange }) => {
     const { isCollapsed, isMobile } = useNavigation();
+    const { t } = useTranslation();
 
     const navigationItems = [
         {
             icon: 'fas fa-home',
-            label: 'Dashboard',
+            labelKey: 'nav.dashboard',
+            fallbackLabel: 'Dashboard',
             page: 'dashboard',
         },
         {
             icon: 'fas fa-users',
-            label: 'Users',
+            labelKey: 'nav.users',
+            fallbackLabel: 'Users',
             page: 'users',
         },
         {
             icon: 'fas fa-user-tag',
-            label: 'Roles',
+            labelKey: 'nav.roles',
+            fallbackLabel: 'Roles',
             page: 'roles',
         },
         {
             icon: 'fas fa-tags',
-            label: 'Categories',
+            labelKey: 'nav.categories',
+            fallbackLabel: 'Categories',
             page: 'categories',
         },
         {
             icon: 'fas fa-box',
-            label: 'Products',
+            labelKey: 'nav.products',
+            fallbackLabel: 'Products',
             page: 'products',
         },
         {
             icon: 'fas fa-sliders-h',
-            label: 'Attributes',
+            labelKey: 'nav.attributes',
+            fallbackLabel: 'Attributes',
             page: 'attributes',
         },
         {
             icon: 'fas fa-list',
-            label: 'Attribute Values',
+            labelKey: 'nav.attribute_values',
+            fallbackLabel: 'Attribute Values',
             page: 'attribute-values',
         },
         {
             icon: 'fas fa-layer-group',
-            label: 'Attribute Sets',
+            labelKey: 'nav.attribute_sets',
+            fallbackLabel: 'Attribute Sets',
             page: 'attribute-sets',
         },
         {
             icon: 'fas fa-store',
-            label: 'Stores',
+            labelKey: 'nav.stores',
+            fallbackLabel: 'Stores',
             page: 'stores',
         },
         {
             icon: 'fas fa-shopping-cart',
-            label: 'Orders',
+            labelKey: 'nav.orders',
+            fallbackLabel: 'Orders',
             page: 'orders',
         },
         {
             icon: 'fas fa-language',
-            label: 'Translations',
+            labelKey: 'nav.translations',
+            fallbackLabel: 'Translations',
             page: 'translations',
         },
     ];
@@ -87,7 +101,9 @@ export const Sidebar = ({ currentPage, onPageChange }) => {
                             alt="Company Logo"
                             className="w-8 h-8 mr-2 object-contain"
                         />
-                        <span className="brand-text">Admin Panel</span>
+                        <span className="brand-text">
+                            <Translation k="nav.admin_panel" fallback="Admin Panel" />
+                        </span>
                     </div>
                 )}
                 {isCollapsed && (
@@ -113,7 +129,9 @@ export const Sidebar = ({ currentPage, onPageChange }) => {
                         <li key={item.page} className="nav-list-item">
                             <NavigationItem
                                 icon={item.icon}
-                                label={item.label}
+                                label={item.fallbackLabel}
+                                labelKey={item.labelKey}
+                                fallbackLabel={item.fallbackLabel}
                                 active={currentPage === item.page}
                                 onClick={() => handleItemClick(item.page)}
                             />
@@ -127,7 +145,7 @@ export const Sidebar = ({ currentPage, onPageChange }) => {
                 {!isCollapsed && (
                     <div className="sidebar-footer-content">
                         <div className="text-xs text-gray-500">
-                            Admin Panel v1.0
+                            <Translation k="nav.admin_panel_version" fallback="Admin Panel v1.0" />
                         </div>
                     </div>
                 )}
