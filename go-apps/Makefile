@@ -237,6 +237,26 @@ modules:
 	@echo "   - Pricing calculations"
 	@echo "   - Rate management"
 
+# Show database models
+.PHONY: models
+models:
+	@echo "Database Models by Module:"
+	@echo "========================="
+	@echo "Users Module:"
+	@echo "  - User (id, email, first_name, last_name, password, is_active, is_email_verified, metadata, created_at, updated_at)"
+	@echo "  - Role (id, name, description, permissions, is_active, metadata, created_at, updated_at)"
+	@echo "  - user_roles (many-to-many relationship table)"
+	@echo ""
+	@echo "Carrier Module (planned):"
+	@echo "  - Carrier (id, name, code, is_active, metadata, created_at, updated_at)"
+	@echo "  - Shipment (id, carrier_id, tracking_number, status, metadata, created_at, updated_at)"
+	@echo ""
+	@echo "Customer Module (planned):"
+	@echo "  - Customer (id, first_name, last_name, email, phone, address, is_active, date_of_birth, preferences, created_at, updated_at)"
+	@echo ""
+	@echo "Pricing Module (planned):"
+	@echo "  - PricingRule (id, name, type, conditions, rates, is_active, created_at, updated_at)"
+
 # Generate API documentation
 .PHONY: docs
 docs:
@@ -297,6 +317,7 @@ help:
 	@echo "  install-tools  - Install development tools"
 	@echo "  routes         - Show all available routes"
 	@echo "  modules        - Show all registered modules"
+	@echo "  models         - Show all database models"
 	@echo "  docs           - Generate API documentation"
 	@echo "  health         - Health check"
 	@echo "  load-test      - Load test"

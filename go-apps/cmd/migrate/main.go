@@ -8,9 +8,11 @@ import (
 	"os"
 
 	"go-apps/internal/config"
+	"go-apps/internal/container"
 	"go-apps/internal/infrastructure/database"
 	"go-apps/internal/infrastructure/logger"
-	"go-apps/internal/modules/users/model"
+	"go-apps/internal/modules/carrier"
+	"go-apps/internal/modules/users"
 
 	"github.com/joho/godotenv"
 )
@@ -74,17 +76,16 @@ func main() {
 func runMigrations(db *database.Database, logger *logger.Logger) error {
 	logger.Info("Running database migrations...")
 
-	// Auto-migrate all models
-	models := []interface{}{
-		&model.User{},
-		&model.Role{},
-	}
+	// Initialize application container
+	appContainer := container.NewContainer(logger)
 
-	for _, model := range models {
-		if err := db.Migrate(model); err != nil {
-			return fmt.Errorf("failed to migrate %T: %w", model, err)
-		}
-		logger.Info("Migrated model", "model", fmt.Sprintf("%T", model))
+	// Register modules
+	appContainer.RegisterModule(users.NewUsersModule())
+	appContainer.RegisterModule(carrier.NewCarrierModule())
+
+	// Run migrations for all modules
+	if err := appContainer.RunMigrations(db); err != nil {
+		return fmt.Errorf("failed to run module migrations: %w", err)
 	}
 
 	return nil

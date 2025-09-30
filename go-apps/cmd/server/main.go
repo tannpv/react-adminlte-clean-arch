@@ -16,7 +16,6 @@ import (
 	"go-apps/internal/infrastructure/logger"
 	"go-apps/internal/modules/carrier"
 	"go-apps/internal/modules/users"
-	"go-apps/internal/modules/users/model"
 
 	"github.com/joho/godotenv"
 )
@@ -43,17 +42,17 @@ func main() {
 	}
 	defer db.Close()
 
-	// Run database migrations
-	if err := runMigrations(db, logger); err != nil {
-		logger.Fatal("Failed to run migrations", "error", err)
-	}
-
 	// Initialize application container
 	appContainer := container.NewContainer(logger)
 
 	// Register modules
 	appContainer.RegisterModule(users.NewUsersModule())
 	appContainer.RegisterModule(carrier.NewCarrierModule())
+
+	// Run database migrations for all modules
+	if err := appContainer.RunMigrations(db); err != nil {
+		logger.Fatal("Failed to run migrations", "error", err)
+	}
 
 	// Initialize all modules
 	if err := appContainer.InitializeModules(db); err != nil {
@@ -103,22 +102,3 @@ func main() {
 	logger.Info("Server exited")
 }
 
-// runMigrations runs database migrations
-func runMigrations(db *database.Database, logger *logger.Logger) error {
-	logger.Info("Running database migrations...")
-
-	// Auto-migrate all models
-	models := []interface{}{
-		&model.User{},
-		&model.Role{},
-	}
-
-	for _, model := range models {
-		if err := db.Migrate(model); err != nil {
-			return fmt.Errorf("failed to migrate %T: %w", model, err)
-		}
-		logger.Info("Migrated model", "model", fmt.Sprintf("%T", model))
-	}
-
-	return nil
-}

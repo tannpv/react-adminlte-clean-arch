@@ -1,6 +1,8 @@
 package carrier
 
 import (
+	"fmt"
+
 	"go-apps/internal/infrastructure/database"
 	"go-apps/internal/modules/carrier/router"
 
@@ -71,5 +73,36 @@ func (m *CarrierModule) SetupRoutes(router *gin.RouterGroup) error {
 func (m *CarrierModule) HealthCheck() error {
 	// TODO: Add carrier-specific health checks
 	m.logger.Debug("Carrier module health check passed")
+	return nil
+}
+
+// GetModels returns the database models for this module
+func (m *CarrierModule) GetModels() []interface{} {
+	// TODO: Return actual carrier models when implemented
+	// return []interface{}{
+	//     &model.Carrier{},
+	//     &model.Shipment{},
+	// }
+	return []interface{}{}
+}
+
+// RunMigrations runs database migrations for this module
+func (m *CarrierModule) RunMigrations(db *database.Database) error {
+	m.logger.Info("Running migrations for carrier module...")
+
+	models := m.GetModels()
+	if len(models) == 0 {
+		m.logger.Info("No models to migrate for carrier module")
+		return nil
+	}
+
+	for _, model := range models {
+		if err := db.Migrate(model); err != nil {
+			return fmt.Errorf("failed to migrate %T: %w", model, err)
+		}
+		m.logger.Info("Migrated model", "model", fmt.Sprintf("%T", model))
+	}
+
+	m.logger.Info("Carrier module migrations completed successfully")
 	return nil
 }

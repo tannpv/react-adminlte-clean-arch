@@ -5,6 +5,7 @@ import (
 
 	"go-apps/internal/infrastructure/database"
 	"go-apps/internal/modules/users/handler"
+	"go-apps/internal/modules/users/model"
 	"go-apps/internal/modules/users/repository"
 	"go-apps/internal/modules/users/router"
 	"go-apps/internal/modules/users/service"
@@ -109,6 +110,30 @@ func (m *UsersModule) GetUserHandler() *handler.UserHandler {
 // GetRoleHandler returns the role handler (for external access)
 func (m *UsersModule) GetRoleHandler() *handler.RoleHandler {
 	return m.roleHandler
+}
+
+// GetModels returns the database models for this module
+func (m *UsersModule) GetModels() []interface{} {
+	return []interface{}{
+		&model.User{},
+		&model.Role{},
+	}
+}
+
+// RunMigrations runs database migrations for this module
+func (m *UsersModule) RunMigrations(db *database.Database) error {
+	m.logger.Info("Running migrations for users module...")
+
+	models := m.GetModels()
+	for _, model := range models {
+		if err := db.Migrate(model); err != nil {
+			return fmt.Errorf("failed to migrate %T: %w", model, err)
+		}
+		m.logger.Info("Migrated model", "model", fmt.Sprintf("%T", model))
+	}
+
+	m.logger.Info("Users module migrations completed successfully")
+	return nil
 }
 
 // Handler interface implementations

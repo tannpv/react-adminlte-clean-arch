@@ -25,6 +25,8 @@ type Module interface {
 	GetHandlers() []Handler
 	SetupRoutes(router *gin.RouterGroup) error
 	HealthCheck() error
+	GetModels() []interface{}
+	RunMigrations(db *database.Database) error
 }
 
 // Handler represents a module handler
@@ -45,6 +47,22 @@ func NewContainer(logger *logrus.Logger) *Container {
 func (c *Container) RegisterModule(module Module) {
 	c.modules = append(c.modules, module)
 	c.logger.Info("Module registered", "name", module.Name())
+}
+
+// RunMigrations runs migrations for all registered modules
+func (c *Container) RunMigrations(db *database.Database) error {
+	c.logger.Info("Running migrations for all modules...")
+
+	for _, module := range c.modules {
+		c.logger.Info("Running migrations for module", "name", module.Name())
+		if err := module.RunMigrations(db); err != nil {
+			return fmt.Errorf("failed to run migrations for module %s: %w", module.Name(), err)
+		}
+		c.logger.Info("Module migrations completed", "name", module.Name())
+	}
+
+	c.logger.Info("All module migrations completed successfully")
+	return nil
 }
 
 // InitializeModules initializes all registered modules

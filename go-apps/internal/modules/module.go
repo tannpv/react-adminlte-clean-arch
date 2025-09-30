@@ -24,6 +24,12 @@ type Module interface {
 	
 	// HealthCheck performs module-specific health checks
 	HealthCheck() error
+	
+	// GetModels returns the database models for this module
+	GetModels() []interface{}
+	
+	// RunMigrations runs database migrations for this module
+	RunMigrations(db *database.Database) error
 }
 
 // Handler represents a module handler
