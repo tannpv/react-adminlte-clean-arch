@@ -17,7 +17,9 @@ import TranslationsPage from '../features/translations/pages/TranslationsPage'
 import { UsersPage } from '../features/users/pages/UsersPage'
 import Sidebar from '../shared/components/layout/Sidebar'
 import FloatingToggle from '../shared/components/ui/FloatingToggle'
+import LanguageSwitcher from '../shared/components/LanguageSwitcher'
 import NavigationStatus from '../shared/components/ui/NavigationStatus'
+import Translation from '../shared/components/Translation'
 import NavigationToggle from '../shared/components/ui/NavigationToggle'
 import { NavigationProvider } from '../shared/context/NavigationContext'
 import { queryClient } from '../shared/lib/queryClient'
@@ -64,15 +66,26 @@ function AppContent() {
                     <div className="flex items-center space-x-4">
                         <NavigationToggle variant="header" />
                         <NavigationStatus />
-                        <h1 className="text-xl font-semibold text-gray-900">Admin Dashboard</h1>
+                        <h1 className="text-xl font-semibold text-gray-900">
+                            <Translation k="header.admin_dashboard" fallback="Admin Dashboard" />
+                        </h1>
                     </div>
                     <div className="flex items-center space-x-4">
-                        <span className="text-sm text-gray-500">Welcome, {currentUser?.name || 'Admin'}</span>
+                        <span className="text-sm text-gray-500">
+                            <Translation k="header.welcome" fallback="Welcome" />, {currentUser?.name || 'Admin'}
+                        </span>
+                        <LanguageSwitcher 
+                            variant="dropdown" 
+                            size="sm" 
+                            showFlags={true} 
+                            showNames={true}
+                            className="ml-2"
+                        />
                         <button
                             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             onClick={() => setCurrentUser(null)}
                         >
-                            Logout
+                            <Translation k="header.logout" fallback="Logout" />
                         </button>
                     </div>
                 </div>

@@ -13,5 +13,10 @@
     "stores": "Tiendas",
     "orders": "Pedidos",
     "translations": "Traducciones"
+  },
+  "header": {
+    "admin_dashboard": "Panel de Administración",
+    "welcome": "Bienvenido",
+    "logout": "Cerrar Sesión"
   }
 }

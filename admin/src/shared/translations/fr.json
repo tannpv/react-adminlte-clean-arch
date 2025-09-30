@@ -13,5 +13,10 @@
     "stores": "Magasins",
     "orders": "Commandes",
     "translations": "Traductions"
+  },
+  "header": {
+    "admin_dashboard": "Panneau d'Administration",
+    "welcome": "Bienvenue",
+    "logout": "Déconnexion"
   }
 }

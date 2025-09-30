@@ -13,5 +13,10 @@
     "stores": "Stores",
     "orders": "Orders",
     "translations": "Translations"
+  },
+  "header": {
+    "admin_dashboard": "Admin Dashboard",
+    "welcome": "Welcome",
+    "logout": "Logout"
   }
 }

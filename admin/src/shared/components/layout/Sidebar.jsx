@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigation } from '../../hooks/useNavigation';
 import { useTranslation } from '../../hooks/useTranslation';
+import Translation from '../Translation';
 import NavigationItem from '../ui/NavigationItem';
 import NavigationToggle from '../ui/NavigationToggle';
-import Translation from '../Translation';
 
 /**
  * Enhanced Sidebar Component
