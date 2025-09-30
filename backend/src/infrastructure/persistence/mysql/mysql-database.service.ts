@@ -115,6 +115,41 @@ export class MysqlDatabaseService implements OnModuleInit, OnModuleDestroy {
       ) ENGINE=InnoDB;
     `);
 
+    // Translation system tables
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS languages (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        code VARCHAR(5) NOT NULL UNIQUE,
+        name VARCHAR(100) NOT NULL,
+        native_name VARCHAR(100) NULL,
+        is_default BOOLEAN NOT NULL DEFAULT FALSE,
+        is_active BOOLEAN NOT NULL DEFAULT TRUE,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL,
+        INDEX idx_languages_code (code),
+        INDEX idx_languages_active (is_active),
+        INDEX idx_languages_default (is_default)
+      ) ENGINE=InnoDB;
+    `);
+
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS language_values (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        key_hash VARCHAR(32) NOT NULL,
+        language_code VARCHAR(5) NOT NULL,
+        original_key TEXT NOT NULL,
+        destination_value TEXT NOT NULL,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL,
+        UNIQUE KEY unique_language_key (language_code, key_hash),
+        INDEX idx_language_values_key_hash (key_hash),
+        INDEX idx_language_values_language_code (language_code),
+        INDEX idx_language_values_original_key (original_key(255)),
+        CONSTRAINT fk_language_values_language FOREIGN KEY (language_code)
+          REFERENCES languages(code) ON DELETE CASCADE
+      ) ENGINE=InnoDB;
+    `);
+
     await this.execute(`
       CREATE TABLE IF NOT EXISTS products (
         id INT AUTO_INCREMENT PRIMARY KEY,

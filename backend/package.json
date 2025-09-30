@@ -11,13 +11,18 @@
     "populate:translations": "ts-node src/scripts/populate-translations.ts"
   },
   "dependencies": {
+    "@nestjs-modules/ioredis": "^2.0.2",
+    "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "^10.3.8",
     "@nestjs/config": "^3.2.0",
     "@nestjs/core": "^10.3.8",
     "@nestjs/platform-express": "^10.3.8",
     "bcryptjs": "^2.4.3",
+    "cache-manager": "^7.2.2",
+    "cache-manager-redis-store": "^3.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "ioredis": "^5.8.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.10.2",
     "reflect-metadata": "^0.2.2",

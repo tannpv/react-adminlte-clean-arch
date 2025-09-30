@@ -27,8 +27,7 @@ async function populateTranslations() {
     for (const langData of languages) {
       let language = await languageRepository.findByCode(langData.code);
       if (!language) {
-        language = languageRepository.create(langData);
-        await languageRepository.save(language);
+        language = await languageRepository.create(langData);
         console.log(`✅ Created language: ${langData.name} (${langData.code})`);
       } else {
         console.log(`ℹ️  Language already exists: ${langData.name} (${langData.code})`);
@@ -60,14 +59,13 @@ async function populateTranslations() {
         const existingTranslation = await languageValueRepository.findByLanguageAndKey(langCode, keyHash);
         
         if (!existingTranslation) {
-          const languageValue = languageValueRepository.create({
+          const languageValue = await languageValueRepository.create({
             keyHash,
             languageCode: langCode,
             originalKey: key,
             destinationValue: value as string,
           });
           
-          await languageValueRepository.save(languageValue);
           console.log(`  ✅ Added: ${key} = ${value}`);
         } else {
           console.log(`  ℹ️  Already exists: ${key}`);

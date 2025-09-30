@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { TranslationModule } from "./features/translations/translation.module";
 import { OrdersModule } from "./infrastructure/http/modules/orders.module";
 import { StoresModule } from "./infrastructure/http/modules/stores.module";
 import { AttributesModule } from "./modules/attributes/attributes.module";
@@ -10,7 +11,6 @@ import { ProductsModule } from "./modules/products/products.module";
 import { RolesModule } from "./modules/roles/roles.module";
 import { StorageModule } from "./modules/storage/storage.module";
 import { UsersModule } from "./modules/users/users.module";
-import { TranslationModule } from "./features/translations/translation.module";
 
 @Module({
   imports: [
