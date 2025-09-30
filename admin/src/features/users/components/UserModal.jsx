@@ -17,17 +17,19 @@ export function UserModal({ show, title, initialUser, onClose, onSubmit, errors,
       </Modal.Header>
 
       <Modal.Body>
-        <div className="mb-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="mb-6">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
             <div className="flex items-start">
-              <i className="fas fa-info-circle text-blue-600 mr-2 mt-0.5"></i>
+              <i className="fas fa-info-circle text-blue-600 mr-3 mt-0.5 text-lg"></i>
               <div>
-                <strong className="text-blue-800">User Management:</strong>
-                <span className="text-blue-700 ml-1">
-                  Create or edit user accounts with proper roles and permissions.
-                </span>
-                <div className="text-blue-600 text-sm mt-1">
-                  All fields marked with * are required.
+                <strong className="text-blue-800 text-lg">User Management:</strong>
+                <p className="text-blue-700 mt-1">
+                  Create or edit user accounts with proper roles and permissions. 
+                  Users can be assigned multiple roles to control their access to different features.
+                </p>
+                <div className="flex items-center mt-2 text-blue-600 text-sm">
+                  <i className="fas fa-asterisk mr-1"></i>
+                  All fields marked with * are required
                 </div>
               </div>
             </div>
