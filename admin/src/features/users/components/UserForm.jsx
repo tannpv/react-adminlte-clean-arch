@@ -306,11 +306,10 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                   return (
                     <div
                       key={role.id}
-                      className={`group relative border rounded-xl transition-all duration-200 ${
-                        isSelected
+                      className={`group relative border rounded-xl transition-all duration-200 ${isSelected
                           ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg ring-2 ring-blue-200'
                           : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'
-                      } ${rolesError ? 'border-red-300' : ''}`}
+                        } ${rolesError ? 'border-red-300' : ''}`}
                     >
                       <label className="flex items-start p-5 cursor-pointer">
                         <div className="flex items-center h-5">
@@ -327,11 +326,10 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                             }}
                             disabled={submitting}
                           />
-                          <div className={`relative w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200 ${
-                            isSelected
+                          <div className={`relative w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200 ${isSelected
                               ? 'border-blue-600 bg-blue-600 shadow-sm'
                               : 'border-gray-300 group-hover:border-blue-400'
-                          }`}>
+                            }`}>
                             {isSelected && (
                               <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -339,31 +337,28 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                             )}
                           </div>
                         </div>
-                        
+
                         <div className="ml-4 flex-1 min-w-0">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${
-                                isSelected
+                              <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${isSelected
                                   ? 'bg-blue-100 text-blue-600'
                                   : 'bg-gray-100 text-gray-600 group-hover:bg-blue-50 group-hover:text-blue-600'
-                              } transition-colors duration-200`}>
+                                } transition-colors duration-200`}>
                                 <i className="fas fa-user-shield text-lg"></i>
                               </div>
                               <div>
-                                <h3 className={`text-lg font-semibold transition-colors duration-200 ${
-                                  isSelected ? 'text-blue-900' : 'text-gray-900'
-                                }`}>
+                                <h3 className={`text-lg font-semibold transition-colors duration-200 ${isSelected ? 'text-blue-900' : 'text-gray-900'
+                                  }`}>
                                   {role.name}
                                 </h3>
-                                <p className={`text-sm transition-colors duration-200 ${
-                                  isSelected ? 'text-blue-700' : 'text-gray-600'
-                                }`}>
+                                <p className={`text-sm transition-colors duration-200 ${isSelected ? 'text-blue-700' : 'text-gray-600'
+                                  }`}>
                                   Role Assignment
                                 </p>
                               </div>
                             </div>
-                            
+
                             {isSelected && (
                               <div className="flex items-center text-blue-600">
                                 <span className="text-sm font-medium mr-2">Selected</span>
@@ -373,7 +368,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                               </div>
                             )}
                           </div>
-                          
+
                           {role.permissions && role.permissions.length > 0 && (
                             <div className="mt-4 pl-13">
                               <div className="flex items-center mb-2">
@@ -384,11 +379,10 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                                 {formatPermissionsForDisplay(role.permissions).map((permission, idx) => (
                                   <span
                                     key={idx}
-                                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors duration-200 ${
-                                      isSelected
+                                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors duration-200 ${isSelected
                                         ? 'bg-blue-200 text-blue-800'
                                         : 'bg-gray-100 text-gray-700 group-hover:bg-blue-100 group-hover:text-blue-800'
-                                    }`}
+                                      }`}
                                   >
                                     {permission}
                                   </span>
@@ -396,7 +390,7 @@ export function UserForm({ onSubmit, initialUser, onCancel, errors = {}, submitt
                               </div>
                             </div>
                           )}
-                          
+
                           {(!role.permissions || role.permissions.length === 0) && (
                             <div className="mt-4 pl-13">
                               <div className="flex items-center text-gray-500">
