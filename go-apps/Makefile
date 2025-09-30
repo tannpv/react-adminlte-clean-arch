@@ -177,6 +177,44 @@ install-tools:
 	go install github.com/golang/mock/mockgen@latest
 	@echo "Development tools installed!"
 
+# Show available routes
+.PHONY: routes
+routes:
+	@echo "Available API Routes:"
+	@echo "===================="
+	@echo "Health Check:"
+	@echo "  GET  /health"
+	@echo "  GET  /health/ready"
+	@echo "  GET  /health/live"
+	@echo ""
+	@echo "Users API (v1):"
+	@echo "  POST   /api/v1/users"
+	@echo "  GET    /api/v1/users"
+	@echo "  GET    /api/v1/users/active"
+	@echo "  GET    /api/v1/users/count"
+	@echo "  GET    /api/v1/users/email/:email"
+	@echo "  GET    /api/v1/users/role/:roleName"
+	@echo "  GET    /api/v1/users/exists/:email"
+	@echo "  GET    /api/v1/users/:id"
+	@echo "  PATCH  /api/v1/users/:id"
+	@echo "  PATCH  /api/v1/users/:id/roles"
+	@echo "  DELETE /api/v1/users/:id"
+	@echo ""
+	@echo "Roles API (v1):"
+	@echo "  POST   /api/v1/roles"
+	@echo "  GET    /api/v1/roles"
+	@echo "  GET    /api/v1/roles/active"
+	@echo "  GET    /api/v1/roles/count"
+	@echo "  GET    /api/v1/roles/permission/:permission"
+	@echo "  GET    /api/v1/roles/name/:name"
+	@echo "  GET    /api/v1/roles/exists/:name"
+	@echo "  GET    /api/v1/roles/:id"
+	@echo "  PATCH  /api/v1/roles/:id"
+	@echo "  DELETE /api/v1/roles/:id"
+	@echo ""
+	@echo "Carriers API (v1) - Coming Soon:"
+	@echo "  GET    /api/v1/carriers"
+
 # Generate API documentation
 .PHONY: docs
 docs:
@@ -235,6 +273,7 @@ help:
 	@echo "  compose-logs   - Show Docker Compose logs"
 	@echo "  setup          - Setup development environment"
 	@echo "  install-tools  - Install development tools"
+	@echo "  routes         - Show all available routes"
 	@echo "  docs           - Generate API documentation"
 	@echo "  health         - Health check"
 	@echo "  load-test      - Load test"

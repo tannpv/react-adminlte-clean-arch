@@ -17,8 +17,8 @@ import (
 	"go-apps/internal/modules/users/model"
 	"go-apps/internal/modules/users/repository"
 	"go-apps/internal/modules/users/service"
+	"go-apps/internal/router"
 
-	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
@@ -61,13 +61,14 @@ func main() {
 	userHandler := handler.NewUserHandler(userService, logger)
 	roleHandler := handler.NewRoleHandler(roleService, logger)
 
-	// Setup router
-	router := setupRouter(userHandler, roleHandler)
+	// Initialize router
+	appRouter := router.NewRouter(userHandler, roleHandler, logger)
+	ginRouter := appRouter.SetupRoutes()
 
 	// Create server
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Port),
-		Handler:      router,
+		Handler:      ginRouter,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,
@@ -99,64 +100,6 @@ func main() {
 	logger.Info("Server exited")
 }
 
-func setupRouter(userHandler *handler.UserHandler, roleHandler *handler.RoleHandler) *gin.Engine {
-	// Set Gin mode based on environment
-	if os.Getenv("GIN_MODE") == "" {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
-	router := gin.New()
-
-	// Middleware
-	router.Use(gin.Logger())
-	router.Use(gin.Recovery())
-
-	// Health check
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status":  "ok",
-			"service": "go-apps-api",
-			"time":    time.Now().UTC(),
-		})
-	})
-
-	// API v1 routes
-	v1 := router.Group("/api/v1")
-	{
-		// User routes
-		users := v1.Group("/users")
-		{
-			users.POST("", userHandler.CreateUser)
-			users.GET("", userHandler.GetUsers)
-			users.GET("/active", userHandler.GetActiveUsers)
-			users.GET("/count", userHandler.GetUserCount)
-			users.GET("/email/:email", userHandler.GetUserByEmail)
-			users.GET("/role/:roleName", userHandler.GetUsersByRole)
-			users.GET("/exists/:email", userHandler.CheckEmailExists)
-			users.GET("/:id", userHandler.GetUser)
-			users.PATCH("/:id", userHandler.UpdateUser)
-			users.PATCH("/:id/roles", userHandler.AssignRoles)
-			users.DELETE("/:id", userHandler.DeleteUser)
-		}
-
-		// Role routes
-		roles := v1.Group("/roles")
-		{
-			roles.POST("", roleHandler.CreateRole)
-			roles.GET("", roleHandler.GetRoles)
-			roles.GET("/active", roleHandler.GetActiveRoles)
-			roles.GET("/count", roleHandler.GetRoleCount)
-			roles.GET("/permission/:permission", roleHandler.GetRolesByPermission)
-			roles.GET("/name/:name", roleHandler.GetRoleByName)
-			roles.GET("/exists/:name", roleHandler.CheckNameExists)
-			roles.GET("/:id", roleHandler.GetRole)
-			roles.PATCH("/:id", roleHandler.UpdateRole)
-			roles.DELETE("/:id", roleHandler.DeleteRole)
-		}
-	}
-
-	return router
-}
 
 // runMigrations runs database migrations
 func runMigrations(db *database.Database, logger *logger.Logger) error {
