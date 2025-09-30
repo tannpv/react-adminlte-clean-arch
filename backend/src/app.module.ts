@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { TranslationModule } from "./features/translations/translation.module";
-import { OrdersModule } from "./infrastructure/http/modules/orders.module";
-import { StoresModule } from "./infrastructure/http/modules/stores.module";
+// import { OrdersModule } from "./infrastructure/http/modules/orders.module";
+// import { StoresModule } from "./infrastructure/http/modules/stores.module";
 import { AttributesModule } from "./modules/attributes/attributes.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { CategoriesModule } from "./modules/categories/categories.module";
@@ -23,8 +23,8 @@ import { UsersModule } from "./modules/users/users.module";
     ProductsModule,
     StorageModule,
     AttributesModule,
-    StoresModule,
-    OrdersModule,
+    // StoresModule,
+    // OrdersModule,
     TranslationModule,
   ],
 })
