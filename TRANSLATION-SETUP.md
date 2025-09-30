@@ -33,25 +33,20 @@ npm run populate:translations
 
 This script will:
 - Create language entries for English, Spanish, and French
-- Import all translation keys from the JSON files
+- Import hardcoded translation keys and values
 - Generate MD5 hashes for translation keys
 - Store translations in the database
 
 ## Frontend Setup
 
-### 1. Translation Files
-Translation files are located in:
-- `admin/src/shared/translations/en.json`
-- `admin/src/shared/translations/es.json`
-- `admin/src/shared/translations/fr.json`
+### 1. Server-Only Translations
+The translation system now uses **server-only translations** from the database. Local JSON files have been removed to ensure consistency and centralized management.
 
 ### 2. Usage
-The translation system works with a fallback hierarchy:
+The translation system works with a simple fallback:
 
 1. **Backend API** - Primary source (from database)
-2. **Local JSON** - Fallback when backend is unavailable
-3. **English JSON** - Fallback for missing translations
-4. **Original Key** - Final fallback
+2. **Original Key** - Fallback if translation not found
 
 ### 3. Components
 - `useTranslation` hook - Main translation functionality
@@ -133,13 +128,10 @@ Keys are accessed as: `nav.dashboard`, `header.welcome`
    - Verify database connection
    - Check Redis connection for caching
 
-2. **Fallback to local JSON**
-   - This is normal when backend is unavailable
-   - Check browser console for API errors
-
-3. **Missing translations**
-   - Add missing keys to JSON files
-   - Run populate script to update database
+2. **Missing translations**
+   - Add missing keys directly to the database
+   - Use the translation management API endpoints
+   - Run populate script to add new translations
 
 ### Debug Mode
 Enable debug logging by setting:
@@ -149,7 +141,7 @@ NODE_ENV=development
 
 ## Performance Considerations
 
-- Translations are cached in Redis for 1 hour
-- Frontend caches translations in memory
+- Translations are cached in memory for 1 hour
+- Frontend makes API calls for each translation request
 - Use `refresh` endpoint to update cache when translations change
 - Consider warming up cache for frequently used translations

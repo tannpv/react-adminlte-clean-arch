@@ -21,7 +21,9 @@ export class LanguageRepository {
       SELECT * FROM languages 
       WHERE code = ? AND is_active = 1
     `;
-    const [rows] = await this.databaseService.execute(query, [code.toLowerCase()]);
+    const [rows] = await this.databaseService.execute(query, [
+      code.toLowerCase(),
+    ]);
     return rows.length > 0 ? this.mapRowToLanguage(rows[0]) : null;
   }
 
@@ -46,41 +48,41 @@ export class LanguageRepository {
       languageData.isDefault ? 1 : 0,
       languageData.isActive !== false ? 1 : 0,
     ]);
-    
+
     return this.findById((result as any).insertId);
   }
 
   async update(id: number, languageData: Partial<Language>): Promise<Language> {
     const fields = [];
     const values = [];
-    
+
     if (languageData.code !== undefined) {
-      fields.push('code = ?');
+      fields.push("code = ?");
       values.push(languageData.code);
     }
     if (languageData.name !== undefined) {
-      fields.push('name = ?');
+      fields.push("name = ?");
       values.push(languageData.name);
     }
     if (languageData.nativeName !== undefined) {
-      fields.push('native_name = ?');
+      fields.push("native_name = ?");
       values.push(languageData.nativeName);
     }
     if (languageData.isDefault !== undefined) {
-      fields.push('is_default = ?');
+      fields.push("is_default = ?");
       values.push(languageData.isDefault ? 1 : 0);
     }
     if (languageData.isActive !== undefined) {
-      fields.push('is_active = ?');
+      fields.push("is_active = ?");
       values.push(languageData.isActive ? 1 : 0);
     }
-    
-    fields.push('updated_at = NOW()');
+
+    fields.push("updated_at = NOW()");
     values.push(id);
-    
-    const query = `UPDATE languages SET ${fields.join(', ')} WHERE id = ?`;
+
+    const query = `UPDATE languages SET ${fields.join(", ")} WHERE id = ?`;
     await this.databaseService.execute(query, values);
-    
+
     return this.findById(id);
   }
 
@@ -91,10 +93,13 @@ export class LanguageRepository {
 
   async setDefault(id: number): Promise<void> {
     // Remove default from all languages
-    await this.databaseService.execute('UPDATE languages SET is_default = 0');
-    
+    await this.databaseService.execute("UPDATE languages SET is_default = 0");
+
     // Set new default
-    await this.databaseService.execute('UPDATE languages SET is_default = 1 WHERE id = ?', [id]);
+    await this.databaseService.execute(
+      "UPDATE languages SET is_default = 1 WHERE id = ?",
+      [id]
+    );
   }
 
   private async findById(id: number): Promise<Language> {

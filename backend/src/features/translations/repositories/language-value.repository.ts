@@ -42,7 +42,9 @@ export class LanguageValueRepository {
       WHERE language_code = ? 
       ORDER BY original_key ASC
     `;
-    const [rows] = await this.databaseService.execute(query, [languageCode.toLowerCase()]);
+    const [rows] = await this.databaseService.execute(query, [
+      languageCode.toLowerCase(),
+    ]);
     return rows.map(this.mapRowToLanguageValue);
   }
 
@@ -59,7 +61,7 @@ export class LanguageValueRepository {
       languageValueData.originalKey,
       languageValueData.destinationValue,
     ]);
-    
+
     return this.findById((result as any).insertId);
   }
 
@@ -69,30 +71,32 @@ export class LanguageValueRepository {
   ): Promise<LanguageValue> {
     const fields = [];
     const values = [];
-    
+
     if (languageValueData.keyHash !== undefined) {
-      fields.push('key_hash = ?');
+      fields.push("key_hash = ?");
       values.push(languageValueData.keyHash);
     }
     if (languageValueData.languageCode !== undefined) {
-      fields.push('language_code = ?');
+      fields.push("language_code = ?");
       values.push(languageValueData.languageCode);
     }
     if (languageValueData.originalKey !== undefined) {
-      fields.push('original_key = ?');
+      fields.push("original_key = ?");
       values.push(languageValueData.originalKey);
     }
     if (languageValueData.destinationValue !== undefined) {
-      fields.push('destination_value = ?');
+      fields.push("destination_value = ?");
       values.push(languageValueData.destinationValue);
     }
-    
-    fields.push('updated_at = NOW()');
+
+    fields.push("updated_at = NOW()");
     values.push(id);
-    
-    const query = `UPDATE language_values SET ${fields.join(', ')} WHERE id = ?`;
+
+    const query = `UPDATE language_values SET ${fields.join(
+      ", "
+    )} WHERE id = ?`;
     await this.databaseService.execute(query, values);
-    
+
     return this.findById(id);
   }
 
@@ -133,10 +137,13 @@ export class LanguageValueRepository {
       languageCode.toLowerCase(),
       languageCode.toLowerCase(),
     ]);
-    return rows.map((row: any) => ({
-      keyHash: row.key_hash,
-      originalKey: row.original_key,
-    } as any));
+    return rows.map(
+      (row: any) =>
+        ({
+          keyHash: row.key_hash,
+          originalKey: row.original_key,
+        } as any)
+    );
   }
 
   private async findById(id: number): Promise<LanguageValue> {

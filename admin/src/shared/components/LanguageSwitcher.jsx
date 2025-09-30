@@ -21,12 +21,8 @@ const LanguageSwitcher = ({
                 setLanguages(response.data);
             } catch (error) {
                 console.error('Failed to load languages:', error);
-                // Fallback languages
-                setLanguages([
-                    { code: 'en', name: 'English', nativeName: 'English', isDefault: true },
-                    { code: 'es', name: 'Spanish', nativeName: 'Español', isDefault: false },
-                    { code: 'fr', name: 'French', nativeName: 'Français', isDefault: false },
-                ]);
+                // If server fails, show empty array - user will see loading state
+                setLanguages([]);
             } finally {
                 setLoading(false);
             }
