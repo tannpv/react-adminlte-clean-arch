@@ -150,7 +150,7 @@ export class TranslateCacheService {
   private async getDefaultLang(): Promise<string | null> {
     try {
       const language = await this.languageRepository.findDefault();
-      return language ? language.code : null;
+      return language && language.code ? language.code : null;
     } catch (error) {
       this.logger.error("Error getting default language", error);
       return null;

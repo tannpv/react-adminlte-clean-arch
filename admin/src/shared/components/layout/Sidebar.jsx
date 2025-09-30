@@ -129,7 +129,6 @@ export const Sidebar = ({ currentPage, onPageChange }) => {
                         <li key={item.page} className="nav-list-item">
                             <NavigationItem
                                 icon={item.icon}
-                                label={item.fallbackLabel}
                                 labelKey={item.labelKey}
                                 fallbackLabel={item.fallbackLabel}
                                 active={currentPage === item.page}

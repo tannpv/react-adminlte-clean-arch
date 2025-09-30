@@ -45,7 +45,7 @@ export class DictionaryService {
             await this.cacheService.setLanguageValue(
               encryptLookupKey,
               lookupLangCode,
-              result
+              result || ''
             );
           }
         }
@@ -162,7 +162,7 @@ export class DictionaryService {
     const languages = await this.languageRepository.findAll();
 
     languages.forEach((language) => {
-      if (language.code !== langCode) {
+      if (language.code && language.code !== langCode) {
         languageCodes.push(language.code);
       }
     });
