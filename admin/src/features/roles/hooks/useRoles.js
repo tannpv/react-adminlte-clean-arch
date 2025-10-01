@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import React from 'react'
 import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
-import { fetchRoles, createRole, updateRole, deleteRole } from '../api/rolesApi'
+import { createRole, deleteRole, fetchRoles, updateRole } from '../api/rolesApi'
 
 const extractValidationErrors = (error) => {
   const status = error?.response?.status

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect, useCallback } from 'react';
 import { attributeValuesApi } from '../api/attributesApi';
 
 export const useAttributeValues = () => {

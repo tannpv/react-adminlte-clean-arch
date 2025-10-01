@@ -1,11 +1,7 @@
-import { LoggerModule, Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
 
 @Module({
-  imports: [
-    LoggerModule.forRoot({
-      // Configure logging here
-    }),
-  ],
-  exports: [LoggerModule],
+  imports: [],
+  exports: [],
 })
 export class ObservabilityModule {}

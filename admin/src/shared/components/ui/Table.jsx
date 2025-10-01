@@ -13,7 +13,9 @@ const Table = ({ children, className = '', hover, darkHeader, ...props }) => {
 const TableHeader = ({ children, className = '', ...props }) => {
     return (
         <thead className={`bg-gray-50 ${className}`} {...props}>
-            {children}
+            <tr>
+                {children}
+            </tr>
         </thead>
     );
 };

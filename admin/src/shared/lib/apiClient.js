@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // Always prefer env; fallback to direct backend URL for development
-const baseURL = import.meta?.env?.VITE_API_BASE_URL || 'http://localhost:3001/api'
+const baseURL = import.meta?.env?.VITE_API_BASE_URL || 'http://localhost:3001/api/v1'
 
 export const ApiClient = axios.create({ baseURL })
 

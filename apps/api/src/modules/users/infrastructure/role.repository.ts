@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Role } from '../domain/entities/role.entity';
 import { RoleRepositoryInterface } from '../domain/repositories/role.repository.interface';
 
@@ -17,6 +17,13 @@ export class RoleRepository implements RoleRepositoryInterface {
 
   async findById(id: number): Promise<Role | null> {
     return this.repository.findOne({ where: { id } });
+  }
+
+  async findByIds(ids: number[]): Promise<Role[]> {
+    if (!ids || ids.length === 0) {
+      return [];
+    }
+    return this.repository.findBy({ id: In(ids) });
   }
 
   async findByName(name: string): Promise<Role | null> {

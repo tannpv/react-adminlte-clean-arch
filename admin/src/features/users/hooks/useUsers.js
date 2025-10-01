@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import React from 'react'
+import { useEffect } from 'react'
 import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
-import { fetchUsers, createUser, updateUser, deleteUser } from '../api/usersApi'
+import { createUser, deleteUser, fetchUsers, updateUser } from '../api/usersApi'
 
 const extractValidationErrors = (error) => {
   const status = error?.response?.status
@@ -15,9 +15,9 @@ const extractValidationErrors = (error) => {
 }
 
 export function useUsers({ search } = {}) {
-  const qc = useQueryClient()
+  const queryClient = useQueryClient()
 
-  React.useEffect(() => {
+  useEffect(() => {
     toastr.options = {
       positionClass: 'toast-top-right',
       timeOut: 3000,
@@ -27,47 +27,56 @@ export function useUsers({ search } = {}) {
     }
   }, [])
 
-  const searchValue = search?.trim() || ''
-
+  // Query for users
   const { data: users = [], isLoading, isError, error } = useQuery({
-    queryKey: ['users', { search: searchValue }],
-    queryFn: () => fetchUsers({ search: searchValue }),
-    keepPreviousData: true,
+    queryKey: ['users', { search: search?.trim() || '' }],
+    queryFn: () => fetchUsers({ search: search?.trim() || '' }),
+    staleTime: 2 * 60 * 1000, // 2 minutes
   })
 
+  // Create user mutation
   const createUserMutation = useMutation({
-    mutationFn: (payload) => createUser(payload),
-    onSuccess: async () => {
-      await qc.invalidateQueries({ queryKey: ['users'] })
+    mutationFn: createUser,
+    onSuccess: () => {
       toastr.success('User created successfully')
+      queryClient.invalidateQueries({ queryKey: ['users'] })
     },
-    onError: (e) => {
-      const status = e?.response?.status
-      if (status !== 400) toastr.error(e?.message || 'Failed to create user')
+    onError: (error) => {
+      const validationErrors = extractValidationErrors(error)
+      if (!validationErrors) {
+        toastr.error(error?.message || 'Failed to create user')
+      }
     },
   })
 
+  // Update user mutation
   const updateUserMutation = useMutation({
     mutationFn: ({ id, payload }) => updateUser(id, payload),
-    onSuccess: async () => {
-      await qc.invalidateQueries({ queryKey: ['users'] })
+    onSuccess: () => {
       toastr.success('User updated successfully')
+      queryClient.invalidateQueries({ queryKey: ['users'] })
     },
-    onError: (e) => {
-      const status = e?.response?.status
-      if (status !== 400) toastr.error(e?.message || 'Failed to update user')
+    onError: (error) => {
+      const validationErrors = extractValidationErrors(error)
+      if (!validationErrors) {
+        toastr.error(error?.message || 'Failed to update user')
+      }
     },
   })
 
+  // Delete user mutation
   const deleteUserMutation = useMutation({
-    mutationFn: (id) => deleteUser(id),
-    onSuccess: async () => {
-      await qc.invalidateQueries({ queryKey: ['users'] })
+    mutationFn: deleteUser,
+    onSuccess: () => {
       toastr.success('User deleted successfully')
+      queryClient.invalidateQueries({ queryKey: ['users'] })
     },
-    onError: (e) => toastr.error(e?.message || 'Failed to delete user'),
+    onError: (error) => {
+      toastr.error(error?.message || 'Failed to delete user')
+    },
   })
 
+  // Handler functions that throw validation errors for form handling
   const handleCreateUser = async (payload) => {
     try {
       await createUserMutation.mutateAsync(payload)

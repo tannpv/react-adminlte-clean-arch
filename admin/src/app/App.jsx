@@ -1,5 +1,4 @@
-import { QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React, { useState } from 'react'
 import { AttributeSetDetailsPage } from '../features/attributes/pages/AttributeSetDetailsPage'
 import { AttributeSetsPage } from '../features/attributes/pages/AttributeSetsPage'
@@ -22,13 +21,24 @@ import FloatingToggle from '../shared/components/ui/FloatingToggle'
 import NavigationStatus from '../shared/components/ui/NavigationStatus'
 import NavigationToggle from '../shared/components/ui/NavigationToggle'
 import { NavigationProvider } from '../shared/context/NavigationContext'
-import { queryClient } from '../shared/lib/queryClient'
+
+// Create a client
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 5 * 60 * 1000, // 5 minutes
+            retry: 1,
+            refetchOnWindowFocus: false,
+        },
+    },
+})
 
 function AppContent() {
     const [authScreen, setAuthScreen] = useState('login')
     const [currentUser, setCurrentUser] = useState(null)
     const [currentPage, setCurrentPage] = useState('users')
     const [attributeSetDetailsId, setAttributeSetDetailsId] = useState(null)
+
 
     const handleViewAttributeSetDetails = (id) => {
         setAttributeSetDetailsId(id)
@@ -147,7 +157,6 @@ export default function App() {
                     <AppContent />
                 </NavigationProvider>
             </AuthProvider>
-            <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
         </QueryClientProvider>
     )
 }

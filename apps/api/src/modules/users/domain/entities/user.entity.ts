@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToMany, JoinTable, BeforeInsert, BeforeUpdate } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { BaseEntity } from '../../../../shared/kernel';
 import { Role } from './role.entity';
 
@@ -6,6 +6,9 @@ import { Role } from './role.entity';
 export class User extends BaseEntity {
   @Column({ unique: true })
   email: string;
+
+  @Column()
+  password: string;
 
   @Column()
   firstName: string;
